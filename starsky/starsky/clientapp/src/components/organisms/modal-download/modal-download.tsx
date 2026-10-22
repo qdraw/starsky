@@ -153,7 +153,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
             <button
               type="button"
               onClick={() => {
-                postZip(false);
+                void postZip(false);
               }}
               className="btn btn--info"
               data-test="original"
@@ -164,7 +164,7 @@ const ModalDownload: React.FunctionComponent<IModalExportProps> = (props) => {
             <button
               type="button"
               onClick={() => {
-                postZip(true);
+                void postZip(true);
               }}
               className="btn btn--default"
               data-test="thumbnail"

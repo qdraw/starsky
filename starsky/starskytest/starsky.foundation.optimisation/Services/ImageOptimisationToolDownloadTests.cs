@@ -389,8 +389,8 @@ public class ImageOptimisationToolDownloadTests
 		{
 			ToolName = "mozjpeg",
 			RunChmodOnUnix = false,
-			IndexUrls = new List<Uri> { new("https://example.com/") },
-			BaseUrls = new List<Uri> { new("https://example.com/") }
+			IndexUrls = [new("https://example.com/")],
+			BaseUrls = [new("https://example.com/")]
 		};
 		var architectures = new List<string> { "osx-x64", "win-x64" };
 

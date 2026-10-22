@@ -1,0 +1,122 @@
+using Microsoft.Extensions.Logging.Abstractions;
+using Starsky.Desktop.Models;
+using Starsky.Desktop.Services;
+
+namespace starsky.Tests.Services;
+
+[TestClass]
+public sealed class RoutePersistenceServiceTests : IDisposable
+{
+    private readonly string _tempFile;
+    private readonly SettingsService _settings;
+    private readonly RoutePersistenceService _sut;
+
+    public RoutePersistenceServiceTests()
+    {
+        _tempFile = Path.Combine(Path.GetTempPath(), $"starsky-routes-{Guid.NewGuid()}.json");
+        _settings = new SettingsService(NullLogger<SettingsService>.Instance, _tempFile);
+        _settings.Load();
+        _sut = new RoutePersistenceService(_settings);
+    }
+
+    [TestMethod]
+    public void GetRoutes_WhenEmpty_ReturnsEmptyList()
+    {
+        Assert.IsEmpty(_sut.GetRoutes());
+    }
+
+    [TestMethod]
+    public void SaveRoute_AddsEntry()
+    {
+        _sut.SaveRoute(0, "?f=/photos");
+
+        var routes = _sut.GetRoutes();
+        Assert.HasCount(1, routes);
+        Assert.AreEqual("?f=/photos", routes[0].Route);
+    }
+
+    [TestMethod]
+    public void SaveRoute_WithGeometry_PersistsGeometry()
+    {
+        var geo = new SavedWindowState { Left = 50, Top = 60, Width = 800, Height = 600, IsMaximized = true };
+
+        _sut.SaveRoute(0, "?f=/", geo);
+
+        var state = _sut.GetRoutes()[0];
+        Assert.AreEqual(50, state.Left);
+        Assert.AreEqual(60, state.Top);
+        Assert.AreEqual(800, state.Width);
+        Assert.AreEqual(600, state.Height);
+        Assert.IsTrue(state.IsMaximized);
+    }
+
+    [TestMethod]
+    public void SaveRoute_ExpandsListWithBlanks()
+    {
+        _sut.SaveRoute(2, "?f=/deep");
+
+        var routes = _sut.GetRoutes();
+        Assert.HasCount(3, routes);
+        Assert.AreEqual("?f=/", routes[0].Route);
+        Assert.AreEqual("?f=/", routes[1].Route);
+        Assert.AreEqual("?f=/deep", routes[2].Route);
+    }
+
+    [TestMethod]
+    public void RemoveRoute_RemovesEntry()
+    {
+        _sut.SaveRoute(0, "?f=/a");
+        _sut.SaveRoute(1, "?f=/b");
+
+        _sut.RemoveRoute(0);
+
+        var routes = _sut.GetRoutes();
+        Assert.HasCount(1, routes);
+        Assert.AreEqual("?f=/b", routes[0].Route);
+    }
+
+    [TestMethod]
+    public void SaveAll_ReplacesEntireList()
+    {
+        _sut.SaveRoute(0, "?f=/old");
+
+        var states = new List<SavedWindowState>
+        {
+            new() { Route = "?f=/a", Left = 10, Top = 20, Width = 800, Height = 600 },
+            new() { Route = "?f=/b", Left = 50, Top = 60, Width = 1200, Height = 800 },
+        };
+        _sut.SaveAll(states);
+
+        var routes = _sut.GetRoutes();
+        Assert.HasCount(2, routes);
+        Assert.AreEqual("?f=/a", routes[0].Route);
+        Assert.AreEqual("?f=/b", routes[1].Route);
+    }
+
+    [TestMethod]
+    public void SaveAll_WithEmptyList_ClearsRoutes()
+    {
+        _sut.SaveRoute(0, "?f=/a");
+
+        _sut.SaveAll([]);
+
+        Assert.IsEmpty(_sut.GetRoutes());
+    }
+
+    [TestMethod]
+    public void ClearAll_EmptiesList()
+    {
+        _sut.SaveRoute(0, "?f=/a");
+        _sut.SaveRoute(1, "?f=/b");
+
+        _sut.ClearAll();
+
+        Assert.IsEmpty(_sut.GetRoutes());
+    }
+
+    public void Dispose()
+    {
+        try { File.Delete(_tempFile); } catch { /* best-effort */ }
+        GC.SuppressFinalize(this);
+    }
+}

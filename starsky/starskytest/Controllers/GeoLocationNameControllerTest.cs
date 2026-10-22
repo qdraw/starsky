@@ -236,7 +236,7 @@ public class GeoLocationNameControllerTest : VerifyBase
 		controller.ModelState.AddModelError("city", "Required");
 
 		var result = await controller.SearchCityTimezone("2026-01-30T12:00:00Z", "Amsterdam");
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -247,6 +247,6 @@ public class GeoLocationNameControllerTest : VerifyBase
 		controller.ModelState.AddModelError("city", "Required");
 
 		var result = await controller.SearchCity("Amsterdam");
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 }

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using starsky.feature.export.Interfaces;
 using starsky.foundation.database.Helpers;
@@ -32,7 +33,7 @@ namespace starsky.feature.export.Services;
 ///     Also known as Download
 /// </summary>
 [Service(typeof(IExport), InjectionLifetime = InjectionLifetime.Scoped)]
-public class ExportService : IExport
+public partial class ExportService : IExport
 {
 	private readonly AppSettings _appSettings;
 	private readonly IStorage _hostFileSystemStorage;
@@ -114,6 +115,12 @@ public class ExportService : IExport
 	public async Task CreateZip(List<FileIndexItem> fileIndexResultsList, bool thumbnail,
 		string zipOutputFileName)
 	{
+		if ( !IsValidZipName(zipOutputFileName) )
+		{
+			_logger.LogError("[CreateZip] invalid zip name");
+			return;
+		}
+
 		var fullFilePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
 		var fileNames = await FilePathToFileNameAsync(fullFilePaths, thumbnail);
 
@@ -131,12 +138,29 @@ public class ExportService : IExport
 	}
 
 	/// <summary>
+	///     Generated names are 'TN'/'SR' + digits (see GetName); the name comes from the url
+	///     so path characters (path traversal) are not allowed
+	/// </summary>
+	internal static bool IsValidZipName(string? zipName)
+	{
+		return !string.IsNullOrEmpty(zipName) && ZipNameRegex().IsMatch(zipName);
+	}
+
+	[GeneratedRegex("^[a-zA-Z0-9]{1,64}$", RegexOptions.None, 100)]
+	private static partial Regex ZipNameRegex();
+
+	/// <summary>
 	///     Is Zip Ready?
 	/// </summary>
 	/// <param name="zipOutputFileName">fileName without extension</param>
 	/// <returns>null if status file is not found, true if done file exist</returns>
 	public Tuple<bool?, string?> StatusIsReady(string zipOutputFileName)
 	{
+		if ( !IsValidZipName(zipOutputFileName) )
+		{
+			return new Tuple<bool?, string?>(null, null);
+		}
+
 		var sourceFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".zip";
 		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
 

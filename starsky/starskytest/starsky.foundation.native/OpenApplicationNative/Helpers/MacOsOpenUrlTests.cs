@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -108,7 +107,7 @@ public class MacOsOpenUrlTests
 	public void OpenApplicationAtUrl_NonMacOs()
 	{
 		var result = MacOsOpenUrl.OpenApplicationAtUrl(
-			new List<string> { "OpenApplicationAtUrl_NonMacOs any value" }, "app",
+			["OpenApplicationAtUrl_NonMacOs any value"], "app",
 			OSPlatform.Linux);
 		Assert.IsNull(result);
 	}

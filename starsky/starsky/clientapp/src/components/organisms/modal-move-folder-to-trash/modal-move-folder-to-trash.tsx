@@ -41,32 +41,34 @@ const ModalMoveFolderToTrash: React.FunctionComponent<IModalMoveFolderToTrashPro
     const bodyParams = new URLSearchParams();
     bodyParams.append("f", subPath);
 
-    FetchPost(new UrlQuery().UrlMoveToTrashApi(), bodyParams.toString(), "post").then((result) => {
-      if (result.statusCode === 200 || result.statusCode === 404) {
-        document.body.dispatchEvent(
-          new CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>(useSocketsEventName, {
-            bubbles: false,
-            detail: {
-              data: result.data as IFileIndexItem[],
-              type: "move-folder-to-trash-internal"
-            }
-          })
-        );
+    void FetchPost(new UrlQuery().UrlMoveToTrashApi(), bodyParams.toString(), "post").then(
+      (result) => {
+        if (result.statusCode === 200 || result.statusCode === 404) {
+          document.body.dispatchEvent(
+            new CustomEvent<IApiNotificationResponseModel<IFileIndexItem[]>>(useSocketsEventName, {
+              bubbles: false,
+              detail: {
+                data: result.data as IFileIndexItem[],
+                type: "move-folder-to-trash-internal"
+              }
+            })
+          );
 
-        history.navigate(
-          new UrlQuery().updateFilePathHash(
-            history.location.search,
-            new FileExtensions().GetParentPath(subPath),
-            true
-          )
-        );
-        // nothing happens after navigating away
-        return;
+          history.navigate(
+            new UrlQuery().updateFilePathHash(
+              history.location.search,
+              new FileExtensions().GetParentPath(subPath),
+              true
+            )
+          );
+          // nothing happens after navigating away
+          return;
+        }
+
+        ClearSearchCache(history.location.search);
+        setIsLoading(false);
       }
-
-      ClearSearchCache(history.location.search);
-      setIsLoading(false);
-    });
+    );
   }
 
   return (

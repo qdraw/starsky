@@ -66,6 +66,6 @@ public class LocationNameServiceTest
 		var service = new LocationNameService(query, seed, logger);
 		var result = await service.SearchCityTimezone(
 			DateTime.Now.ToString(CultureInfo.InvariantCulture), "Am");
-		Assert.HasCount(0, result);
+		Assert.IsEmpty(result);
 	}
 }

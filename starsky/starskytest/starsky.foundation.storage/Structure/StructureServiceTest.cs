@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Helpers;
@@ -155,8 +154,8 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_DefaultAsterisk()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string>());
+			["/"],
+			[]);
 
 		const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 		var structureModel = new AppSettingsStructureModel(structure);
@@ -175,8 +174,8 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_ExistingAsterisk()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/any" },
-			new List<string>());
+			["/", "/any"],
+			[]);
 
 		const string structure = "/*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 		var structureModel = new AppSettingsStructureModel(structure);
@@ -195,15 +194,14 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_GetExistingFolder()
 	{
 		var storage = new FakeIStorage(
-			new List<string>
-			{
+			[
 				"/",
 				"/2020",
 				"/2020/01",
 				"/2020/01/2020_01_01 test",
 				"/2020/01/2020_01_01 test/ignore"
-			},
-			new List<string>());
+			],
+			[]);
 
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 		var model =
@@ -220,15 +218,14 @@ public sealed class StructureServiceTest
 	public void ParseSubfolders_GetExistingPreferSimpleName()
 	{
 		var storage = new FakeIStorage(
-			new List<string>
-			{
+			[
 				"/",
 				"/2020",
 				"/2020/01",
 				"/2020/01/2020_01_01",
 				"/2020/01/2020_01_01 test"
-			},
-			new List<string>());
+			],
+			[]);
 
 		const string structure = "/yyyy/MM/yyyy_MM_dd*/yyyyMMdd_HHmmss_{filenamebase}.ext";
 		var model =
@@ -244,8 +241,8 @@ public sealed class StructureServiceTest
 	[TestMethod]
 	public void ParseSubfolders_FileNameBaseOnFolder()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>());
+		var storage = new FakeIStorage(["/"],
+			[]);
 
 		const string structure = "/{filenamebase}/file.ext";
 
@@ -261,7 +258,7 @@ public sealed class StructureServiceTest
 	[TestMethod]
 	public void ParseSubfolders_ExtensionWantedInFolderName()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
+		var storage = new FakeIStorage(["/"],
 			[]);
 
 		const string structure = @"/con\ten\t.ext/file.ext";

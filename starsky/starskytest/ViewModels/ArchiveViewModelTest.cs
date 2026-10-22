@@ -23,9 +23,9 @@ public sealed class ArchiveViewModelTest
 		var viewModel = new ArchiveViewModel
 		{
 			ColorClassActiveList =
-				new List<ColorClassParser.Color> { ColorClassParser.Color.None },
+				[ColorClassParser.Color.None],
 			ColorClassUsage =
-				new List<ColorClassParser.Color> { ColorClassParser.Color.None }
+				[ColorClassParser.Color.None]
 		};
 
 		Assert.AreEqual(ColorClassParser.Color.None,
@@ -40,7 +40,7 @@ public sealed class ArchiveViewModelTest
 		var archiveViewModel = new ArchiveViewModel
 		{
 			FileIndexItems = new List<FileIndexItem>(),
-			Breadcrumb = new List<string> { "/" },
+			Breadcrumb = ["/"],
 			RelativeObjects = new RelativeObjects { NextFilePath = "/" },
 			SearchQuery = "test",
 			SubPath = "/",

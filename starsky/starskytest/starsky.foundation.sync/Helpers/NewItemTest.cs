@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
@@ -13,11 +12,11 @@ public class NewItemTest
 	[TestMethod]
 	public async Task NewItemTest_KeepDefault()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var newItem =
 			await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
 				.PrepareUpdateFileItemAsync(
-					new FileIndexItem("/test.jpg") { LastChanged = new List<string> { "test" } },
+					new FileIndexItem("/test.jpg") { LastChanged = ["test"] },
 					100);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, newItem.Status);
@@ -28,13 +27,13 @@ public class NewItemTest
 	[TestMethod]
 	public async Task NewItemTest_SetOkAndSame()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" });
+		var storage = new FakeIStorage(["/"], ["/test.jpg"]);
 		var newItem =
 			await new NewItem(storage, new FakeReadMeta(), new FakeIWebLogger())
 				.PrepareUpdateFileItemAsync(
 					new FileIndexItem("/test.jpg")
 					{
-						Tags = "test, fake read meta", LastChanged = new List<string>()
+						Tags = "test, fake read meta", LastChanged = []
 					}, 100);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, newItem.Status);

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Thumbnails;
@@ -14,8 +13,9 @@ namespace starskytest.starsky.foundation.thumbnailgeneration.Services;
 public class UpdateStatusGeneratedThumbnailServiceTest
 {
 	[SuppressMessage("Usage", "S3887:Mutable, non-private fields should not be \"readonly\"")]
-	private static readonly List<GenerationResultModel> ExampleData = new()
-	{
+	private static readonly List<GenerationResultModel> ExampleData =
+	[
+
 		new GenerationResultModel
 		{
 			FileHash = "large_1",
@@ -23,6 +23,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Size = ThumbnailSize.Large,
 			Success = true
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "large_2",
@@ -30,6 +31,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Size = ThumbnailSize.Large,
 			Success = false
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "small_1",
@@ -37,6 +39,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Size = ThumbnailSize.Small,
 			Success = true
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "small_2",
@@ -44,6 +47,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Size = ThumbnailSize.Small,
 			Success = false
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "extra_large_1",
@@ -51,6 +55,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Size = ThumbnailSize.ExtraLarge,
 			Success = true
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "extra_large_2",
@@ -58,11 +63,12 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Size = ThumbnailSize.ExtraLarge,
 			Success = false
 		}
-	};
+	];
 
 	[SuppressMessage("Usage", "S3887:Mutable, non-private fields should not be \"readonly\"")]
-	private static readonly List<GenerationResultModel> ExampleData2 = new()
-	{
+	private static readonly List<GenerationResultModel> ExampleData2 =
+	[
+
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
@@ -70,6 +76,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Success = true,
 			SubPath = "test.jpg"
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
@@ -77,6 +84,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Success = true,
 			SubPath = "test.jpg"
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
@@ -84,6 +92,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Success = true,
 			SubPath = "test.jpg"
 		},
+
 		new GenerationResultModel
 		{
 			FileHash = "image_01",
@@ -91,14 +100,14 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 			Success = false,
 			SubPath = "test.jpg"
 		}
-	};
+	];
 
 	[TestMethod]
 	public async Task UpdateStatusGeneratedThumbnailService_NoItems()
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>());
+		await service.AddOrUpdateStatusAsync([]);
 
 		var getResult = await query.Get();
 		Assert.IsEmpty(getResult);
@@ -205,7 +214,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 	{
 		var query = new FakeIThumbnailQuery();
 		var service = new UpdateStatusGeneratedThumbnailService(query);
-		await service.AddOrUpdateStatusAsync(ExampleData2.ToList());
+		await service.AddOrUpdateStatusAsync([.. ExampleData2]);
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.HasCount(1, getResult);
@@ -222,8 +231,8 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 		var service = new UpdateStatusGeneratedThumbnailService(query);
 		await service.AddOrUpdateStatusAsync(ExampleData2);
 
-		await service.AddOrUpdateStatusAsync(new List<GenerationResultModel>
-		{
+		await service.AddOrUpdateStatusAsync([
+
 			new()
 			{
 				FileHash = "image_01",
@@ -231,7 +240,7 @@ public class UpdateStatusGeneratedThumbnailServiceTest
 				Success = false,
 				SubPath = "test.jpg"
 			}
-		});
+		]);
 
 		var getResult = await query.Get(ExampleData2[0].FileHash);
 		Assert.HasCount(1, getResult);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -110,6 +111,38 @@ public sealed class SearchSuggestionsServiceTest
 		// The feature does not work without cache enabled
 		var result = await new SearchSuggestionsService(_dbContext, null, null!, new AppSettings())
 			.SearchSuggest("sch", false);
+
+		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
+	public async Task SearchSuggestionsService_Inflate_MemoryCacheIsNull_ReturnsEmptyList()
+	{
+		var result = await new SearchSuggestionsService(_dbContext, null, new FakeIWebLogger(),
+			new AppSettings()).Inflate();
+
+		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task SearchSuggestionsService_Inflate_CacheHit_ReturnsExpectedResult(bool cachedValueHasExpectedType)
+	{
+		object cachedValue = cachedValueHasExpectedType
+			? new List<KeyValuePair<string, int>> { new("cached", 42) }
+			: "invalid-cache-payload";
+
+		_memoryCache.Set(nameof(SearchSuggestionsService), cachedValue);
+
+		var result = await _suggest.Inflate();
+
+		if ( cachedValueHasExpectedType )
+		{
+			Assert.AreEqual("cached", result.First().Key);
+			Assert.AreEqual(42, result.First().Value);
+			return;
+		}
 
 		Assert.IsEmpty(result);
 	}

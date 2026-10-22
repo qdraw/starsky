@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.storage.Interfaces;
 
-namespace starsky.feature.rename.RelatedFilePaths;
+namespace starsky.feature.rename.Helpers;
 
 public class ReleatedFilePaths(IStorage storage)
 {

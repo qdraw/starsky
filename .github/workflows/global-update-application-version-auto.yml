@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
-      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
     - name: Set up Node.js
-      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
       with:
         node-version: 22.x
       
@@ -29,7 +29,7 @@ jobs:
       run: npm run app-version-update
 
     - name: Commit changes
-      uses: EndBug/add-and-commit@89a45cd262132841bcd49652235fd81123e3675f
+      uses: EndBug/add-and-commit@9532192d1b36bc6e7fe18e44d50dace071388166
       with:
         author_name: Application Version Update Bot
         author_email: qdraw@users.noreply.github.com

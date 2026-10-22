@@ -42,7 +42,7 @@ public sealed class RabbitMqChannelAdapterTest
 	{
 		var firstClient = new FakeRabbitMqChannelClient { IsOpenValue = true, MessageCount = 1 };
 		var secondClient = new FakeRabbitMqChannelClient { IsOpenValue = true, MessageCount = 2 };
-		var clients = new Queue<FakeRabbitMqChannelClient>(new[] { firstClient, secondClient });
+		var clients = new Queue<FakeRabbitMqChannelClient>([firstClient, secondClient]);
 		var createCount = 0;
 		var adapter = new RabbitMqChannelAdapter(_ =>
 		{

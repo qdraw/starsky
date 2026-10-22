@@ -79,6 +79,7 @@ internal class WindowsMountWatcher : BaseMountWatcher
 	public override void Stop()
 	{
 		IsRunning = false;
+		CancelPolling();
 
 		if ( IsWindows() )
 		{

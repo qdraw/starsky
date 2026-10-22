@@ -37,13 +37,19 @@ public sealed class DiskWatcherBackgroundService : BackgroundService
 		_logger.LogInformation(( _appSettings.UseDiskWatcher != false
 				? "UseDiskWatcher is enabled"
 				: "UseDiskWatcher is disabled" ) + $" on {Environment.MachineName}");
-		if ( _appSettings.UseDiskWatcher == false
-		     && _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
+		if ( _appSettings.ApplicationType != AppSettings.StarskyAppType.WebController
+		     || _appSettings.UseDiskWatcher == false )
 		{
 			return Task.CompletedTask;
 		}
 
 		_diskWatcher.Watcher(_appSettings.StorageFolder);
+
+		foreach ( var physicalPath in _appSettings.StorageFolderMappings.Values )
+		{
+			_diskWatcher.Watcher(physicalPath);
+		}
+
 		return Task.CompletedTask;
 	}
 }

@@ -164,6 +164,7 @@ public class Import : IImport
 	public async Task<List<ImportIndexItem>> Importer(IEnumerable<string> inputFullPathList,
 		ImportSettingsModel importSettings)
 	{
+		AddedParentDirectories.Clear();
 		var preflightItemList = await Preflight(inputFullPathList.ToList(), importSettings);
 
 		// When directory is empty 

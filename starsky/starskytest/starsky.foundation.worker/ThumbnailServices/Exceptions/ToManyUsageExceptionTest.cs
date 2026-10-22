@@ -50,10 +50,9 @@ public sealed class ToManyUsageExceptionTest
 		}
 
 		var instance =
-			( ToManyUsageException ) ctor.Invoke(new object[]
-			{
+			( ToManyUsageException ) ctor.Invoke([
 				info, new StreamingContext(StreamingContextStates.All)
-			});
+			]);
 
 		Assert.ThrowsExactly<ToManyUsageException>(() => throw instance);
 #pragma warning restore SYSLIB0050

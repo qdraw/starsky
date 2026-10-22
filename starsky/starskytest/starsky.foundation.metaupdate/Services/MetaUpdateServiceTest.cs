@@ -45,8 +45,8 @@ public sealed class MetaUpdateServiceTest
 
 		_appSettings = new AppSettings();
 
-		_iStorageFake = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg", "_exampleHash", "/test_default.jpg" },
+		_iStorageFake = new FakeIStorage(["/"],
+			["/test.jpg", "_exampleHash", "/test_default.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
 		_exifTool = new FakeExifTool(_iStorageFake, _appSettings);
@@ -67,7 +67,7 @@ public sealed class MetaUpdateServiceTest
 
 		var changedFileIndexItemName = new Dictionary<string, List<string>>
 		{
-			{ "/test_default.jpg", new List<string> { nameof(FileIndexItem.Tags) } }
+			{ "/test_default.jpg", [nameof(FileIndexItem.Tags)] }
 		};
 
 		var fileIndexResultsList = new List<FileIndexItem>
@@ -134,7 +134,7 @@ public sealed class MetaUpdateServiceTest
 
 		var changedFileIndexItemName = new Dictionary<string, List<string>>
 		{
-			{ "/delete/test_delete.jpg", new List<string> { nameof(FileIndexItem.Tags) } }
+			{ "/delete/test_delete.jpg", [nameof(FileIndexItem.Tags)] }
 		};
 
 		var fileIndexResultsList = new List<FileIndexItem> { item0 };
@@ -227,9 +227,9 @@ public sealed class MetaUpdateServiceTest
 	public async Task Update_Write_GPX()
 	{
 		var changedFileIndexItemName =
-			new Dictionary<string, List<string>> { { "/test.gpx", new List<string> { "Tags" } } };
+			new Dictionary<string, List<string>> { { "/test.gpx", ["Tags"] } };
 
-		await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnGpx.Bytes.ToArray()),
+		await _iStorageFake.WriteStreamAsync(new MemoryStream([.. CreateAnGpx.Bytes]),
 			"/test.gpx");
 		var updateItem = new FileIndexItem("/test.gpx")
 		{
@@ -284,9 +284,9 @@ public sealed class MetaUpdateServiceTest
 		var changedFileIndexItemName =
 			new Dictionary<string, List<string>>
 			{
-				{ "/test.jpg", new List<string> { "orientation" } }
+				{ "/test.jpg", ["orientation"] }
 			};
-		await _iStorageFake.WriteStreamAsync(new MemoryStream(CreateAnImage.Bytes.ToArray()),
+		await _iStorageFake.WriteStreamAsync(new MemoryStream([.. CreateAnImage.Bytes]),
 			"/test.jpg");
 		var updateItem = new FileIndexItem("/test.jpg")
 		{
@@ -332,7 +332,7 @@ public sealed class MetaUpdateServiceTest
 			new FakeIThumbnailService(new FakeSelectorStorage(_iStorageFake)),
 			new FakeIThumbnailQuery(), new AppSettings());
 
-		await service.ApplyOrGenerateUpdatedFileHash(new List<string>(),
+		await service.ApplyOrGenerateUpdatedFileHash([],
 			detailView.FileIndexItem);
 
 		Assert.IsNotNull(detailView.FileIndexItem.FileHash);
@@ -417,7 +417,7 @@ public sealed class MetaUpdateServiceTest
 
 		var changedFileIndexItemName = new Dictionary<string, List<string>>
 		{
-			{ "/test_default.jpg", new List<string> { nameof(FileIndexItem.Tags) } }
+			{ "/test_default.jpg", [nameof(FileIndexItem.Tags)] }
 		};
 
 		var fileIndexResultsList = new List<FileIndexItem>

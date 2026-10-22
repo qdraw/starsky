@@ -7,7 +7,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySqlConnector;
-using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microting.EntityFrameworkCore.MySql.Infrastructure;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Extensions;
 using starskytest.FakeMocks;
@@ -122,10 +122,9 @@ public sealed class EntityFrameworkExtensionsTest
 				"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
 
 			var instance =
-				( MySqlException? ) ctor?.Invoke(new object[]
-				{
+				( MySqlException? ) ctor?.Invoke([
 					MySqlErrorCode.AccessDenied, "test", message, new Exception()
-				});
+				]);
 			return instance!;
 		}
 	}

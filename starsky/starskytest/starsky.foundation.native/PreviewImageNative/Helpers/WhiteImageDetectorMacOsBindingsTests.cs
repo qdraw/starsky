@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.native.PreviewImageNative.Helpers;
 using starskytest.FakeCreateAn;
@@ -72,10 +74,11 @@ public class WhiteImageDetectorMacOsBindingsTests
 		const int height = 2;
 		const int bytesPerRow = 8;
 		const int bytesPerPixel = 4;
-		byte[] pixelData = {
+		byte[] pixelData =
+		[
 			255, 255, 255, 0, 255, 255, 255, 0, // Row 1
 			255, 255, 255, 0, 255, 255, 255, 0  // Row 2
-		};
+		];
 
 		// Act
 		var result = WhiteImageDetectorMacOsBindings.IsPixelDataWhite(
@@ -93,10 +96,11 @@ public class WhiteImageDetectorMacOsBindingsTests
 		const int height = 2;
 		const int bytesPerRow = 8;
 		const int bytesPerPixel = 4;
-		byte[] pixelData = {
+		byte[] pixelData =
+		[
 			255, 255, 255, 0, 255, 255, 255, 0, // Row 1
 			255, 255, 255, 0, 0, 0, 0, 0        // Row 2 (non-white pixel)
-		};
+		];
 
 		// Act
 		var result = WhiteImageDetectorMacOsBindings.IsPixelDataWhite(
@@ -105,6 +109,12 @@ public class WhiteImageDetectorMacOsBindingsTests
 		// Assert
 		Assert.IsFalse(result, "Expected non-white pixel to return false.");
 	}
+
+	[SuppressMessage("Interoperability",
+		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
+		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
+	[DllImport("/usr/lib/system/libsystem_malloc.dylib")]
+	private static extern UIntPtr malloc_zone_pressure_relief(IntPtr zone, UIntPtr goal);
 
 	private static bool IsMacOs()
 	{

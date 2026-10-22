@@ -176,5 +176,44 @@ describe("HealthCheckForUpdates", () => {
       component.unmount();
       (window as unknown as { isElectron: null }).isElectron = null;
     });
+
+    it("renders no release info when the response data is not a string", () => {
+      localStorage.removeItem(CheckForUpdatesLocalStorageName);
+      (window as unknown as { isElectron: boolean }).isElectron = false;
+      jest.restoreAllMocks();
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementation((url) =>
+          String(url).includes("release-info")
+            ? ({ statusCode: 200, data: { not: "a string" } } as IConnectionDefault)
+            : ({ statusCode: 202, data: "1.0" } as IConnectionDefault)
+        );
+
+      const component = render(<HealthCheckForUpdates />);
+
+      expect(document.body.textContent).not.toContain("[object Object]");
+      component.unmount();
+    });
+
+    it("renders externally sourced release info as inert text", () => {
+      localStorage.removeItem(CheckForUpdatesLocalStorageName);
+      (window as unknown as { isElectron: boolean }).isElectron = false;
+      jest.restoreAllMocks();
+      // the release-info request is the one with the version query
+      jest
+        .spyOn(useFetch, "default")
+        .mockImplementation((url) =>
+          String(url).includes("release-info")
+            ? ({ statusCode: 200, data: "<img src=x onerror=alert(1)>" } as IConnectionDefault)
+            : ({ statusCode: 202, data: "1.0" } as IConnectionDefault)
+        );
+
+      const component = render(<HealthCheckForUpdates />);
+
+      // Notification renders in a portal outside the container
+      expect(document.body.querySelector("img")).toBeNull();
+      expect(document.body.textContent).toContain("<img src=x onerror=alert(1)>");
+      component.unmount();
+    });
   });
 });

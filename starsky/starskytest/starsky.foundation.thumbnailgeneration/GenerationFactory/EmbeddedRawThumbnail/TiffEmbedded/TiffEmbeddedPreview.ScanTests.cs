@@ -108,13 +108,12 @@ public class TryBuildScanCandidateTests
 		ms.Write(padding, 0, padding.Length);
 		var soi = ( uint ) 10;
 		ms.Seek(soi, SeekOrigin.Begin);
-		ms.Write(new byte[]
-			{
-				0xFF, 0xD8,
+		ms.Write([
+			0xFF, 0xD8,
 				0xFF, 0xC4, 0x00, 0x04, 0x00, 0x00,
 				0xFF, 0xC3, 0x00, 0x0B, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01,
 				0x11, 0x00
-			}, 0, 21); // lossless SOF3 marker chain
+		], 0, 21); // lossless SOF3 marker chain
 
 		// resume position should be different from soi to ensure it's restored
 		ms.Seek(5, SeekOrigin.Begin);

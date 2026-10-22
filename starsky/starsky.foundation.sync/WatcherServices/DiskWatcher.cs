@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -23,6 +24,8 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	private readonly IQueueProcessor _queueProcessor;
 	private readonly IWebLogger _webLogger;
 	private IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
+	private readonly List<IFileSystemWatcherWrapper> _additionalWatchers = [];
+	private bool _primaryWatcherConfigured;
 
 	public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 		IServiceScopeFactory scopeFactory)
@@ -54,43 +57,56 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 			return;
 		}
 
-		_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}" +
-		                          $"{DateTimeDebug()}");
+		if ( !_primaryWatcherConfigured )
+		{
+			_primaryWatcherConfigured = true;
+			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}{DateTimeDebug()}");
+			ConfigureWatcher(_fileSystemWatcherWrapper, fullFilePath, isPrimary: true);
+		}
+		else
+		{
+			_webLogger.LogInformation(
+				$"[DiskWatcher] started mapped path {fullFilePath}{DateTimeDebug()}");
+			var wrapper = new BufferingFileSystemWatcher();
+			_additionalWatchers.Add(wrapper);
+			ConfigureWatcher(wrapper, fullFilePath, isPrimary: false);
+		}
+	}
 
-		// Create a new FileSystemWatcher and set its properties.
-
-		_fileSystemWatcherWrapper.Path = fullFilePath;
-		_fileSystemWatcherWrapper.Filter = "*";
-		_fileSystemWatcherWrapper.IncludeSubdirectories = true;
-		_fileSystemWatcherWrapper.NotifyFilter = NotifyFilters.FileName
-		                                         | NotifyFilters.DirectoryName
-		                                         | NotifyFilters.Attributes
-		                                         | NotifyFilters.Size
-		                                         | NotifyFilters.LastWrite
-		                                         | NotifyFilters.CreationTime
-		                                         | NotifyFilters.Security;
-
-		// Watch for changes in LastAccess and LastWrite times, and
-		// the renaming of files or directories.
+	private void ConfigureWatcher(IFileSystemWatcherWrapper wrapper, string fullFilePath,
+		bool isPrimary)
+	{
+		wrapper.Path = fullFilePath;
+		wrapper.Filter = "*";
+		wrapper.IncludeSubdirectories = true;
+		wrapper.NotifyFilter = NotifyFilters.FileName
+		                       | NotifyFilters.DirectoryName
+		                       | NotifyFilters.Size
+		                       | NotifyFilters.LastWrite;
 
 		// handle many file system events quickly
-		_fileSystemWatcherWrapper.InternalBufferSize = 64 * 1024; // 64 KB - default = 4096 / 4 KB
+		wrapper.InternalBufferSize = 64 * 1024; // 64 KB - default = 4096 / 4 KB
 
-		// Add event handlers.
-		_fileSystemWatcherWrapper.Created += OnChanged;
-		_fileSystemWatcherWrapper.Changed += OnChanged;
-		_fileSystemWatcherWrapper.Deleted += OnChanged;
-		_fileSystemWatcherWrapper.Renamed += OnRenamed;
-		_fileSystemWatcherWrapper.Error += OnError;
+		wrapper.Created += OnChanged;
+		wrapper.Changed += OnChanged;
+		wrapper.Deleted += OnChanged;
+		wrapper.Renamed += OnRenamed;
+		wrapper.Error += isPrimary ? OnError : (_, e) =>
+			_webLogger.LogError(e.GetException(),
+				$"[DiskWatcher] Error on mapped path {fullFilePath}{DateTimeDebug()}");
 
-		// Begin watching.
-		_fileSystemWatcherWrapper.EnableRaisingEvents = true;
+		wrapper.EnableRaisingEvents = true;
 	}
 
 	public void Dispose()
 	{
 		_fileSystemWatcherWrapper.EnableRaisingEvents = false;
 		_fileSystemWatcherWrapper.Dispose();
+		foreach ( var w in _additionalWatchers )
+		{
+			w.EnableRaisingEvents = false;
+			w.Dispose();
+		}
 	}
 
 	private void OnError(object source, ErrorEventArgs e)
@@ -140,9 +156,17 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		{
 			try
 			{
-				// This will throw an error at the
-				// watcher.NotifyFilter line if it can't get the path.
-				Watcher(path);
+				if ( !Directory.Exists(path) )
+				{
+					throw new DirectoryNotFoundException(
+						$"[DiskWatcher] FAIL can't find directory: {path} so watcher is not started");
+				}
+
+				// Reconfigure the wrapper that was just swapped in above as the primary
+				// watcher. Do NOT call Watcher(path) here: since _primaryWatcherConfigured
+				// is already true, that would spawn yet another BufferingFileSystemWatcher
+				// into _additionalWatchers on every retry instead of re-arming this one.
+				ConfigureWatcher(_fileSystemWatcherWrapper, path, isPrimary: true);
 				if ( _fileSystemWatcherWrapper.EnableRaisingEvents )
 				{
 					_webLogger.LogInformation("[DiskWatcher] I'm Back!");

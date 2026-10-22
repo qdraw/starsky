@@ -77,8 +77,8 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 	internal static void SaveHBitmapToBmp(BITMAP bmp, string outputPath)
 	{
-		var headerSize = Marshal.SizeOf(typeof(BITMAPFILEHEADER)) +
-		                 Marshal.SizeOf(typeof(BITMAPINFOHEADER));
+		var headerSize = Marshal.SizeOf<BITMAPFILEHEADER>() +
+		                 Marshal.SizeOf<BITMAPINFOHEADER>();
 		var pixelDataSize = bmp.bmWidthBytes * bmp.bmHeight;
 		var totalSize = headerSize + pixelDataSize;
 
@@ -93,7 +93,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 		var infoHeader = new BITMAPINFOHEADER
 		{
-			biSize = ( uint ) Marshal.SizeOf(typeof(BITMAPINFOHEADER)),
+			biSize = ( uint ) Marshal.SizeOf<BITMAPINFOHEADER>(),
 			biWidth = bmp.bmWidth,
 			biHeight = bmp.bmHeight,
 			biPlanes = 1,

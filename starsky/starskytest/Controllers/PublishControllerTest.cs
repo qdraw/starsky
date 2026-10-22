@@ -99,7 +99,7 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_newItem()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
+			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -114,7 +114,7 @@ public sealed class PublishControllerTest
 	public async Task PublishCreate_newItem_readonly()
 	{
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
-			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }]),
+			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }]),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -154,7 +154,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(),
 			new FakeIPublishPreflight(),
 			new FakeIMetaInfo(
-				[new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
+				[new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -182,7 +182,7 @@ public sealed class PublishControllerTest
 			"test", "test", true);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 
@@ -192,7 +192,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(),
 			new FakeIPublishPreflight([], false),
 			new FakeIMetaInfo(
-				[new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
+				[new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
 			_bgTaskQueue, new FakeIWebLogger());
@@ -213,7 +213,7 @@ public sealed class PublishControllerTest
 			[Path.DirectorySeparatorChar + "test.zip"]);
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
+			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -231,10 +231,10 @@ public sealed class PublishControllerTest
 			new AppSettings { TempFolder = Path.DirectorySeparatorChar.ToString() };
 		var storage = new FakeIStorage(
 			[Path.DirectorySeparatorChar + "test"],
-			[Path.DirectorySeparatorChar + "test.zip"]);
+			[Path.DirectorySeparatorChar + "test.zip", Path.DirectorySeparatorChar + "test.done"]);
 
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
-			new FakeIMetaInfo([new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
+			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
 			_bgTaskQueue, new FakeIWebLogger());
 
@@ -245,6 +245,7 @@ public sealed class PublishControllerTest
 		Assert.AreEqual("test", result);
 		Assert.IsFalse(storage.ExistFolder(Path.DirectorySeparatorChar + "test"));
 		Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.zip"));
+		Assert.IsFalse(storage.ExistFile(Path.DirectorySeparatorChar + "test.done"));
 	}
 
 	[TestMethod]
@@ -273,6 +274,6 @@ public sealed class PublishControllerTest
 		var result = controller.Exist(string.Empty);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 }

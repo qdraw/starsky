@@ -1,5 +1,6 @@
 import { envName, envFolder } from '../../support/commands'
 import configFile from './config.json'
+import { ensureFolderWithImages } from '../helpers/create-directory-helper.cy'
 import flow from './flow.json'
 const config = configFile[envFolder][envName]
 
@@ -15,15 +16,8 @@ describe('DetailView (from upload) (40)', () => {
 
     cy.sendAuthenticationHeader()
 
-    // check if folder /starsky-end2end-test is here
-    cy.request({
-      url: config.urlMkdir,
-      failOnStatusCode: true,
-      method: 'GET',
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    })
+    // check if folder /starsky-end2end-test and its images are here, create them if not
+    ensureFolderWithImages(config)
   })
 
   const fileName2 = '20200822_111408.jpg'
@@ -34,7 +28,8 @@ describe('DetailView (from upload) (40)', () => {
     if (!config.isEnabled) return
     cy.visit(config.url)
     cy.get(flow.content)
-    cy.get('.folder > div').should(($lis) => {
+    // other suites can leave folders or videos in this folder, so only look at the images
+    cy.get('.folder > div[data-filepath$=".jpg"]').should(($lis) => {
       expect($lis).to.have.length(3)
       expect($lis.eq(0)).to.contain(fileName2)
       expect($lis.eq(1)).to.contain(fileName1)
@@ -57,11 +52,15 @@ describe('DetailView (from upload) (40)', () => {
     cy.get(flow.content)
   })
 
-  it('go next to filename3 (40)', () => {
+  it('go next to filename3 (40)', {
+    retries: { runMode: 3, openMode: 3 }
+  }, () => {
     if (!config.isEnabled) return
-    cy.visit(config.url + '/' + fileName2)
 
     cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_112430.jpg').as('index1')
+    cy.intercept('/starsky/api/index?f=/starsky-end2end-test/20200822_134151.jpg').as('index3')
+
+    cy.visit(config.url + '/' + fileName2)
 
     cy.get('.nextprev.nextprev--next').first()
       .click()
@@ -71,7 +70,11 @@ describe('DetailView (from upload) (40)', () => {
     cy.url()
       .should('contain', fileName1)
 
+    cy.wait(100)
+
     cy.get('.nextprev.nextprev--next').first().click()
+
+    cy.wait('@index3')
 
     cy.url()
       .should('contain', fileName3)
@@ -126,9 +129,18 @@ describe('DetailView (from upload) (40)', () => {
       cy.get(tagFileSelector).should('contain', sourceTags)
     }).then(() => {
       // and now we going back to the orginal state
-      cy.get(tagFileSelector).type('{backspace}'.repeat(appendText.length))
+      cy.get(tagFileSelector).focus()
+      cy.get(tagFileSelector).type('{selectall}').type(
+        sourceTags.length > 0 ? sourceTags : '{del}',
+        { parseSpecialCharSequences: false }
+      )
+      // intercept AFTER typing so keystrokes don't satisfy the alias early
+      cy.intercept('POST', '**/api/update').as('cleanupUpdate')
       cy.get(tagFileSelector).blur()
+      cy.wait('@cleanupUpdate')
     }).then(() => {
+      // verify the live DOM reflects the cleanup before reloading
+      cy.get(tagFileSelector).should('not.contain', 'test')
       sessionStorage.clear()
       cy.reload()
     }).then(() => {

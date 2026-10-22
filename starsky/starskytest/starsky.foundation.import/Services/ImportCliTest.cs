@@ -89,7 +89,7 @@ public sealed class ImportCliTest
 				new AppSettings(), fakeConsole, new FakeIWebLogger(),
 				new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector)
 			.Importer(
-				new List<string> { "-p", "/test", "--output", "csv" }.ToArray());
+				["-p", "/test", "--output", "csv"]);
 		Assert.IsFalse(fakeConsole.WrittenLines.FirstOrDefault()?.Contains("Done Importing"));
 		Assert.AreEqual("Id;Status;SourceFullFilePath;SubPath;FileHash",
 			fakeConsole.WrittenLines.FirstOrDefault());
@@ -110,7 +110,7 @@ public sealed class ImportCliTest
 			new AppSettings { Verbose = true }, fakeConsole, webLogger,
 			new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector);
 		// verbose is entered here 
-		await cli.Importer(new List<string> { "-p", "/test", "-v", "true" }.ToArray());
+		await cli.Importer(["-p", "/test", "-v", "true"]);
 		Assert.IsTrue(
 			webLogger.TrackedInformation.Exists(p => p.Item2?.Contains("Failed: 2") == true));
 	}
@@ -127,7 +127,7 @@ public sealed class ImportCliTest
 		await new ImportCli(new FakeIImport(new FakeSelectorStorage(storage)),
 				new AppSettings { Verbose = false }, fakeConsole, webLogger,
 				new FakeExifToolDownload(), new FakeIGeoFileDownload(), fakeCameraStorageDetector)
-			.Importer(new List<string> { "-p", "/test" }.ToArray());
+			.Importer(["-p", "/test"]);
 		Assert.IsTrue(
 			webLogger.TrackedInformation.Exists(p => p.Item2?.Contains("Failed") == true));
 	}

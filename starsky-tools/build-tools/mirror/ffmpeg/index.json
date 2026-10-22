@@ -11,11 +11,6 @@
             "sha256": "8bb4a27f5fd02f3dd9a5e75c9eddf6ace1d50a08929ee0d20bbf17eb467fb711"
         },
         {
-            "architecture": "linux-arm",
-            "fileName": "ffmpeg-linux-armhf-32.zip",
-            "sha256": "8766d3d118e589750dd35fdece8cb0e9b66deb22ff8dc35d4377915f73124dd5"
-        },
-        {
             "architecture": "linux-arm64",
             "fileName": "ffmpeg-linux-arm-64.zip",
             "sha256": "0e3a60df317df0bbfbe25e8b777864b5407d166e5b5ac692fb1e477568a4c886"

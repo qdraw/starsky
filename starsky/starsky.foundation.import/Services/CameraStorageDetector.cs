@@ -124,7 +124,7 @@ public class CameraStorageDetector(ISelectorStorage selectorStorage, IWebLogger 
 		// 3. File system heuristic (portable, but soft)
 		if ( !IsCameraFriendlyFileSystem(drive.DriveFormat) )
 		{
-			logger.LogError(
+			logger.LogInformation(
 				$"[CameraStorageDetector] IS NOT IsCameraFriendlyFileSystem " +
 				$"Path: \"{drive.RootDirectory.FullName}\" " +
 				$"DriveFormat: \"{drive.DriveFormat}\"");

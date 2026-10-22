@@ -117,10 +117,9 @@ public sealed class SyncWatcherConnectorTest
 	[TestMethod]
 	public void Sync_CheckInput_Socket()
 	{
-		var sync = new FakeISynchronize(new List<FileIndexItem>
-		{
+		var sync = new FakeISynchronize([
 			new("/test") { Status = FileIndexItem.ExifStatus.Ok }
-		});
+		]);
 		var websockets = new FakeIWebSocketConnectionsService();
 		var appSettings = new AppSettings();
 		var syncWatcherPreflight = new SyncWatcherConnector(new AppSettings(),
@@ -143,10 +142,9 @@ public sealed class SyncWatcherConnectorTest
 	[TestMethod]
 	public void Sync_CheckInput_Socket_Ignore()
 	{
-		var sync = new FakeISynchronize(new List<FileIndexItem>
-		{
+		var sync = new FakeISynchronize([
 			new("/test") { Status = FileIndexItem.ExifStatus.OperationNotSupported }
-		});
+		]);
 		var websockets = new FakeIWebSocketConnectionsService();
 		var appSettings = new AppSettings();
 		var syncWatcherConnector = new SyncWatcherConnector(appSettings,
@@ -164,10 +162,9 @@ public sealed class SyncWatcherConnectorTest
 	[TestMethod]
 	public void Sync_CheckInput_CheckIfCacheIsUpdated()
 	{
-		var sync = new FakeISynchronize(new List<FileIndexItem>
-		{
+		var sync = new FakeISynchronize([
 			new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
-		});
+		]);
 		var websockets = new FakeIWebSocketConnectionsService();
 		var appSettings = new AppSettings();
 
@@ -185,15 +182,13 @@ public sealed class SyncWatcherConnectorTest
 			memoryCache);
 
 		query.AddCacheParentItem("/",
-			new List<FileIndexItem>
+		[
+
+			new("/test.jpg")
 			{
-				new("/test.jpg")
-				{
-					IsDirectory = false,
-					Tags = "This should not be the tags",
-					ParentDirectory = "/"
-				}
-			});
+				IsDirectory = false, Tags = "This should not be the tags", ParentDirectory = "/"
+			}
+		]);
 
 		var syncWatcherConnector = new SyncWatcherConnector(appSettings,
 			sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());
@@ -209,11 +204,10 @@ public sealed class SyncWatcherConnectorTest
 	[TestMethod]
 	public void Sync_CheckInput_CheckIfCacheIsUpdated_ButIgnoreNotInIndexFile()
 	{
-		var sync = new FakeISynchronize(new List<FileIndexItem>
-		{
+		var sync = new FakeISynchronize([
 			//    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = > source is missing
 			new("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundSourceMissing }
-		});
+		]);
 		var websockets = new FakeIWebSocketConnectionsService();
 		var appSettings = new AppSettings();
 
@@ -231,15 +225,13 @@ public sealed class SyncWatcherConnectorTest
 			memoryCache);
 
 		query.AddCacheParentItem("/",
-			new List<FileIndexItem>
+		[
+
+			new("/test.jpg")
 			{
-				new("/test.jpg")
-				{
-					IsDirectory = false,
-					Tags = "This should not be the tags",
-					ParentDirectory = "/"
-				}
-			});
+				IsDirectory = false, Tags = "This should not be the tags", ParentDirectory = "/"
+			}
+		]);
 
 		var syncWatcherConnector = new SyncWatcherConnector(appSettings,
 			sync, websockets, query, new FakeIWebLogger(), new FakeINotificationQuery());

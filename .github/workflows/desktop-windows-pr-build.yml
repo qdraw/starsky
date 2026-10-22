@@ -1,0 +1,67 @@
+name: Desktop Windows PR Build
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'windows/**'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'windows/**'
+      - '.github/workflows/desktop-windows-pr-build.yml'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.402
+
+      - name: Cache NuGet packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-windows-${{ hashFiles('windows/**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-windows-
+
+      - name: Build
+        shell: pwsh
+        run: dotnet build windows/starsky.Tests/starsky.Tests.csproj -c Release
+
+      - name: Test
+        shell: pwsh
+        run: |
+          windows/starsky.Tests/bin/Release/net10.0-windows/starsky.Tests.exe `
+            --report-trx `
+            --report-trx-filename test-results.trx `
+            --results-directory TestResults
+
+      - name: Publish test results
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        if: always()
+        with:
+          name: test-results-windows
+          path: '**/test-results.trx'
+
+      - name: Publish (verify self-contained)
+        shell: pwsh
+        run: |
+          dotnet publish windows/Starsky.Desktop.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -o ./publish-win

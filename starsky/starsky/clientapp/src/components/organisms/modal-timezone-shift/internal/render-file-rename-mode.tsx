@@ -74,7 +74,7 @@ export const FileRenameMode: React.FC<IRenderFileRenameModeProps> = (props) => {
 
   // Load rename preview when component mounts
   useEffect(() => {
-    loadRenamePreview({
+    void loadRenamePreview({
       mode,
       select,
       state,

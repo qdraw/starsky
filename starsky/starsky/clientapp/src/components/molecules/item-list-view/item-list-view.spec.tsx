@@ -6,10 +6,17 @@ import { IUseLocation } from "../../../hooks/use-location/interfaces/IUseLocatio
 import * as useLocation from "../../../hooks/use-location/use-location";
 import { IFileIndexItem, newIFileIndexItemArray } from "../../../interfaces/IFileIndexItem";
 import { Router } from "../../../router-app/router-app";
+import * as MoveFileHelper from "../../../shared/move-file-helper";
+import { DRAG_MOVE_MIME } from "../../../shared/move-file-helper";
 import * as FlatListItem from "../../atoms/flat-list-item/flat-list-item";
 import * as ListImageChildItem from "../../atoms/list-image-child-item/list-image-child-item";
 import * as ShiftSelectionHelper from "./internal/shift-selection-helper";
 import ItemListView from "./item-list-view";
+
+jest.mock("../../../shared/move-file-helper", () => ({
+  ...jest.requireActual("../../../shared/move-file-helper"),
+  moveDragAndDropFiles: jest.fn().mockResolvedValue(true)
+}));
 
 describe("ItemListView", () => {
   it("renders (without state component)", () => {
@@ -142,6 +149,37 @@ describe("ItemListView", () => {
       component.unmount();
     });
 
+    it("scroll to state with filePath [item does not exist in DOM] skips scrollTo", () => {
+      const scrollTo = jest.spyOn(window, "scrollTo").mockReset().mockImplementationOnce(() => {});
+
+      const useLocationMock = {
+        location: {
+          state: {
+            filePath: "/nonexistent.jpg"
+          }
+        },
+        navigate: jest.fn()
+      } as unknown as IUseLocation;
+
+      jest.spyOn(useLocation, "default").mockImplementationOnce(() => useLocationMock);
+      jest.useFakeTimers();
+
+      const component = render(
+        <MemoryRouter>
+          <ItemListView iconList={true} fileIndexItems={exampleData} colorClassUsage={[]} />
+        </MemoryRouter>
+      );
+
+      act(() => {
+        jest.advanceTimersByTime(100);
+      });
+
+      expect(scrollTo).not.toHaveBeenCalled();
+
+      jest.clearAllTimers();
+      component.unmount();
+    });
+
     it("when clicking shift in selection mode", () => {
       const listImageChildItemSpy = jest.spyOn(ListImageChildItem, "default");
       Router.navigate("/?select=");
@@ -195,6 +233,122 @@ describe("ItemListView", () => {
       expect(listImageChildItemSpy).toHaveBeenCalled();
       component.unmount();
       jest.spyOn(ListImageChildItem, "default").mockReset();
+    });
+
+    describe("drag-and-drop", () => {
+      const mixedItems = [
+        { fileName: "test.jpg", filePath: "/test.jpg", colorClass: 1, isDirectory: false },
+        { fileName: "subfolder", filePath: "/subfolder", colorClass: 0, isDirectory: true }
+      ] as IFileIndexItem[];
+
+      function makeDragEvent(type: string) {
+        return Object.assign(new Event(type, { bubbles: true, cancelable: true }), {
+          dataTransfer: {
+            types: [DRAG_MOVE_MIME],
+            getData: jest.fn(() => ""),
+            setData: jest.fn(),
+            dropEffect: "none",
+            effectAllowed: "none"
+          }
+        });
+      }
+
+      beforeEach(() => {
+        jest.useRealTimers();
+      });
+
+      afterEach(() => {
+        jest.restoreAllMocks();
+      });
+
+      it("drop on directory in select mode calls moveDragAndDropFiles with selected file paths", async () => {
+        Router.navigate("/?select=test.jpg");
+        const mockMove = jest
+          .spyOn(MoveFileHelper, "moveDragAndDropFiles")
+          .mockResolvedValue(true);
+
+        const { container } = render(
+          <MemoryRouter>
+            <ItemListView iconList={true} fileIndexItems={mixedItems} colorClassUsage={[]} />
+          </MemoryRouter>
+        );
+
+        const allContainers = container.querySelectorAll(
+          "[data-test='list-image-view-select-container']"
+        );
+        const dirContainer = Array.from(allContainers).find(
+          (el) => (el as HTMLElement).dataset["filepath"] === "/subfolder"
+        ) as HTMLElement;
+        expect(dirContainer).not.toBeNull();
+
+        fireEvent(dirContainer, makeDragEvent("drop"));
+
+        await new Promise((r) => setTimeout(r, 0));
+        expect(mockMove).toHaveBeenCalledWith(["/test.jpg"], [], "/subfolder");
+      });
+
+      it("getDragSelection classifies directory items into folderPaths", async () => {
+        Router.navigate("/?select=test.jpg,subfolder");
+        const mockMove = jest
+          .spyOn(MoveFileHelper, "moveDragAndDropFiles")
+          .mockResolvedValue(true);
+
+        const itemsWithExtraDir = [
+          ...mixedItems,
+          { fileName: "other", filePath: "/other", colorClass: 0, isDirectory: true }
+        ] as IFileIndexItem[];
+
+        const { container } = render(
+          <MemoryRouter>
+            <ItemListView iconList={true} fileIndexItems={itemsWithExtraDir} colorClassUsage={[]} />
+          </MemoryRouter>
+        );
+
+        const allContainers = container.querySelectorAll(
+          "[data-test='list-image-view-select-container']"
+        );
+        const dirContainer = Array.from(allContainers).find(
+          (el) => (el as HTMLElement).dataset["filepath"] === "/other"
+        ) as HTMLElement;
+        expect(dirContainer).not.toBeNull();
+
+        fireEvent(dirContainer, makeDragEvent("drop"));
+
+        await new Promise((r) => setTimeout(r, 0));
+        expect(mockMove).toHaveBeenCalledWith(["/test.jpg"], ["/subfolder"], "/other");
+      });
+
+      it("after successful drop navigate is called with location.search not location.href", async () => {
+        const navigateMock = jest.fn();
+        const useLocationMock = {
+          location: {
+            search: "?f=/&select=test.jpg",
+            href: "http://localhost/?f=/&select=test.jpg",
+            state: undefined
+          },
+          navigate: navigateMock
+        } as unknown as IUseLocation;
+        jest.spyOn(useLocation, "default").mockImplementation(() => useLocationMock);
+        jest.spyOn(MoveFileHelper, "moveDragAndDropFiles").mockResolvedValue(true);
+
+        const { container } = render(
+          <MemoryRouter>
+            <ItemListView iconList={true} fileIndexItems={mixedItems} colorClassUsage={[]} />
+          </MemoryRouter>
+        );
+
+        const allContainers = container.querySelectorAll(
+          "[data-test='list-image-view-select-container']"
+        );
+        const dirContainer = Array.from(allContainers).find(
+          (el) => (el as HTMLElement).dataset["filepath"] === "/subfolder"
+        ) as HTMLElement;
+
+        fireEvent(dirContainer, makeDragEvent("drop"));
+
+        await new Promise((r) => setTimeout(r, 0));
+        expect(navigateMock).toHaveBeenCalledWith("?f=/&select=test.jpg", { replace: true });
+      });
     });
   });
 });

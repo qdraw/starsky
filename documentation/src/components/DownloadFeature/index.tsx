@@ -51,29 +51,18 @@ export default function DownloadFeatures(): ReactElement {
           const windowsItem = firstItem.assets.find(
             (item: { name: string }) => item.name === "starsky-win-x64-desktop.exe"
           );
-          const macIntelItem = firstItem.assets.find(
-            (item: { name: string }) => item.name === "starsky-mac-x64-desktop.dmg"
-          );
-          const macArm64Item = firstItem.assets.find(
-            (item: { name: string }) => item.name === "starsky-mac-arm64-desktop.dmg"
+          const macUniversalItem = firstItem.assets.find(
+            (item: { name: string }) => item.name === "starsky-mac-universal-desktop.dmg"
           );
           if (detectOS() === "Windows") {
             setDownloadUrl1(windowsItem.browser_download_url);
             setDownloadButton1Text("Download App for Windows " + firstItem.tag_name);
           } else if (detectOS() === "Mac") {
-            setDownloadUrl1(macIntelItem.browser_download_url);
-            setDownloadButton1Text("Download App for Intel Mac " + firstItem.tag_name);
+            setDownloadUrl1(macUniversalItem.browser_download_url);
+            setDownloadButton1Text("Download App for Mac " + firstItem.tag_name);
             setSystemDescription(
-              "<b>You need to manually sign the code because we haven't purchased certificates from Apple:</b>" +
-                "<br />Run this command in the terminal: <br /> " +
-                "<code>codesign --force --deep -s - /Applications/Starsky.app && xattr -rd com.apple.quarantine /Applications/Starsky.app</code>" +
-                "<br /><br />" +
                 "<a href='/docs/getting-started/desktop/desktop-macos'>Read more about how to install on Mac</a> "
             );
-            if (macArm64Item?.name) {
-              setDownloadUrl2(macArm64Item.browser_download_url);
-              setDownloadButton2Text(`Apple Silicon ${firstItem.tag_name}`);
-            }
           } else {
             setSystemDescription(
               "You need to manually sign the code because we haven't purchased certificates from Apple<br />" +

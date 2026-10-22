@@ -1,4 +1,4 @@
-namespace starsky.foundation.video.Process;
+namespace starsky.foundation.video.Process.Types;
 
 public enum VideoProcessTypes
 {

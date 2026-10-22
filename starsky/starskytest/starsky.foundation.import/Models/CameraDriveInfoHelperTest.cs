@@ -22,8 +22,8 @@ public class CameraDriveInfoHelperTest
 		var bytes = Encoding.UTF8.GetBytes(mountLine + "\n");
 
 		var fakeStorage = new FakeIStorage(
-			new List<string> { tempDir },
-			new List<string> { "/proc/mounts" },
+			[tempDir],
+			["/proc/mounts"],
 			new List<byte[]> { bytes }
 		);
 
@@ -42,7 +42,7 @@ public class CameraDriveInfoHelperTest
 			"camera_drive_test2" + Guid.NewGuid());
 
 		var fakeStorage = new FakeIStorage(
-			new List<string> { tempDir }
+			[tempDir]
 		);
 
 		var info = CameraDriveInfoHelper.ToCameraDriveInfo(fakeStorage, tempDir);
@@ -59,7 +59,7 @@ public class CameraDriveInfoHelperTest
 			"camera_drive_test3" + Guid.NewGuid());
 
 		var fakeStorage = new FakeIStorage(
-			new List<string> { tempDir },
+			[tempDir],
 			exception: new InvalidOperationException("io")
 		);
 

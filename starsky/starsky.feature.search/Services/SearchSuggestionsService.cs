@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -15,111 +14,53 @@ using starsky.foundation.platform.Models;
 namespace starsky.feature.search.Services;
 
 [Service(typeof(ISearchSuggest), InjectionLifetime = InjectionLifetime.Scoped)]
-public class SearchSuggestionsService : ISearchSuggest
+public class SearchSuggestionsService(
+	ApplicationDbContext context,
+	IMemoryCache? memoryCache,
+	IWebLogger logger,
+	AppSettings appSettings)
+	: ISearchSuggest
 {
 	private const int MaxResult = 20;
-	private readonly AppSettings _appSettings;
-	private readonly IMemoryCache? _cache;
-	private readonly ApplicationDbContext _context;
-	private readonly IWebLogger _logger;
-
-	public SearchSuggestionsService(
-		ApplicationDbContext context,
-		IMemoryCache? memoryCache,
-		IWebLogger logger,
-		AppSettings appSettings)
-	{
-		_context = context;
-		_cache = memoryCache;
-		_logger = logger;
-		_appSettings = appSettings;
-	}
+	private const int InflateBatchSize = 5000;
 
 	/// <summary>
 	///     Used to fill the cache with an array of
 	///     All keywords are stored lowercase
 	/// </summary>
 	/// <returns></returns>
-	[SuppressMessage("Performance",
-		"CA1827:Do not use Count() or LongCount() when Any() can be used")]
-	[SuppressMessage("Performance",
-		"S1155:Do not use Count() or LongCount() when Any() can be used",
-		Justification = "ANY is not supported by EF Core")]
 	public async Task<List<KeyValuePair<string, int>>> Inflate()
 	{
-		if ( _cache == null )
+		if ( memoryCache == null )
 		{
 			return [];
 		}
 
-		if ( _cache.TryGetValue(nameof(SearchSuggestionsService), out _) )
+		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService), out var objectFileFolders) )
 		{
-			return new Dictionary<string, int>().ToList();
+			return objectFileFolders as List<KeyValuePair<string, int>> ?? [];
 		}
 
-		var allFilesList = new List<KeyValuePair<string, int>>();
 		try
 		{
-			allFilesList = await _context.FileIndex
-				.AsNoTracking()
-				.Where(p => !string.IsNullOrEmpty(p.Tags))
-				.GroupBy(i => i.Tags)
-				// ReSharper disable once UseMethodAny.1
-				.Where(x => x.Count() >= 1) // .ANY is not supported by EF Core
-				.TagWith("Inflate SearchSuggestionsService")
-				.Select(val =>
-					new KeyValuePair<string, int>(val.Key!, val.Count())).ToListAsync();
+			var suggestions = await LoadSuggestionsAsync();
+			var suggestionsFiltered = FilterSuggestions(suggestions);
+			memoryCache.Set(nameof(SearchSuggestionsService), suggestionsFiltered,
+				GetCacheExpire(suggestionsFiltered.Count));
+
+			return suggestionsFiltered;
 		}
 		catch ( Exception exception )
 		{
 			if ( !exception.Message.Contains("Unknown column") )
 			{
-				_logger.LogError(exception,
-					$"[SearchSuggestionsService] exception catch-ed {exception.Message} {exception.StackTrace}");
+				logger.LogError(exception,
+					$"[SearchSuggestionsService] " +
+					$"exception catch-ed {exception.Message} {exception.StackTrace}");
 			}
 
-			return allFilesList;
+			return [];
 		}
-
-		var suggestions =
-			new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
-
-		foreach ( var tag in allFilesList )
-		{
-			if ( string.IsNullOrEmpty(tag.Key) )
-			{
-				continue;
-			}
-
-			var keywordsHashSet = HashSetHelper.StringToHashSet(tag.Key.Trim());
-
-			foreach ( var keyword in keywordsHashSet )
-			{
-				if ( suggestions.ContainsKey(keyword) )
-				{
-					suggestions[keyword] += tag.Value;
-				}
-				else
-				{
-					suggestions.Add(keyword, tag.Value);
-				}
-			}
-		}
-
-		var suggestionsFiltered = suggestions
-			.Where(p => p.Value >= 10)
-			.OrderByDescending(p => p.Value)
-			.ToList();
-
-		// When changing here also change the cache expire time in SearchSuggestionsInflateHostedService
-		var cacheExpire = suggestionsFiltered.Count != 0
-			? new TimeSpan(120, 0, 0)
-			: new TimeSpan(0, 1, 0);
-
-		_cache.Set(nameof(SearchSuggestionsService), suggestionsFiltered,
-			cacheExpire);
-
-		return suggestionsFiltered;
 	}
 
 	/// <summary>
@@ -128,12 +69,12 @@ public class SearchSuggestionsService : ISearchSuggest
 	/// <returns>Key/Value pared list</returns>
 	public async Task<List<KeyValuePair<string, int>>> GetAllSuggestions()
 	{
-		if ( _cache == null || _appSettings.AddMemoryCache == false )
+		if ( memoryCache == null || appSettings.AddMemoryCache == false )
 		{
 			return [];
 		}
 
-		if ( _cache.TryGetValue(nameof(SearchSuggestionsService),
+		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService),
 			    out var objectFileFolders) )
 		{
 			return objectFileFolders as List<KeyValuePair<string, int>> ??
@@ -151,7 +92,8 @@ public class SearchSuggestionsService : ISearchSuggest
 	/// <returns>list of suggested keywords</returns>
 	public async Task<IEnumerable<string>> SearchSuggest(string query, bool system)
 	{
-		if ( string.IsNullOrEmpty(query) || _cache == null || _appSettings.AddMemoryCache == false )
+		if ( string.IsNullOrEmpty(query) || memoryCache == null ||
+		     appSettings.AddMemoryCache == false )
 		{
 			return new List<string>();
 		}
@@ -196,4 +138,66 @@ public class SearchSuggestionsService : ISearchSuggest
 			"-isDirectory:false"
 		];
 	}
+
+	private async Task<Dictionary<string, int>> LoadSuggestionsAsync()
+	{
+		var suggestions = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+		var lastId = 0;
+
+		while ( true )
+		{
+			var currentLastId = lastId;
+			var tagBatch = await context.FileIndex
+				.AsNoTracking()
+				.Where(p => p.Id > currentLastId && !string.IsNullOrEmpty(p.Tags))
+				.OrderBy(p => p.Id)
+				.Select(p => new TagBatchItem(p.Id, p.Tags!))
+				.Take(InflateBatchSize)
+				.TagWith("Inflate SearchSuggestionsService")
+				.ToListAsync();
+
+			if ( tagBatch.Count == 0 )
+			{
+				break;
+			}
+
+			foreach ( var item in tagBatch )
+			{
+				AddKeywords(suggestions, item.Tags);
+			}
+
+			lastId = tagBatch[^1].Id;
+		}
+
+		return suggestions;
+	}
+
+	private static void AddKeywords(Dictionary<string, int> suggestions, string tags)
+	{
+		var keywordsHashSet = HashSetHelper.StringToHashSet(tags.Trim());
+		foreach ( var keyword in keywordsHashSet )
+		{
+			suggestions.TryGetValue(keyword, out var count);
+			suggestions[keyword] = count + 1;
+		}
+	}
+
+	private static List<KeyValuePair<string, int>> FilterSuggestions(
+		Dictionary<string, int> suggestions)
+	{
+		return
+		[
+			.. suggestions
+				.Where(p => p.Value >= 10)
+				.OrderByDescending(p => p.Value)
+		];
+	}
+
+	private static TimeSpan GetCacheExpire(int count)
+	{
+		// When changing here also change the cache expire time in SearchSuggestionsInflateHostedService
+		return count != 0 ? new TimeSpan(120, 0, 0) : new TimeSpan(0, 1, 0);
+	}
+
+	private sealed record TagBatchItem(int Id, string Tags);
 }

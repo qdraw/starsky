@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
-using starsky.foundation.database.Models;
 using starsky.foundation.geo.ReverseGeoCode;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Helpers;
@@ -94,8 +93,8 @@ public sealed class GeoBackgroundTaskTest
 	[TestMethod]
 	public async Task GeoBackgroundTask_WithResults_AlreadyHasGps()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/2QOYZWMPACZAJ2MABGMOZ6CCPY.jpg" },
+		var storage = new FakeIStorage(["/"],
+			["/2QOYZWMPACZAJ2MABGMOZ6CCPY.jpg"],
 			new List<byte[]> { CreateAnImageA6600.Bytes.ToArray() }
 		);
 		var storageSelector = new FakeSelectorStorage(storage);
@@ -118,16 +117,15 @@ public sealed class GeoBackgroundTaskTest
 	public async Task GeoBackgroundTask_WithResults_NoGps()
 	{
 		_appSettings.Verbose = true;
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string>(),
+		var storage = new FakeIStorage(["/"],
+			[],
 			new List<byte[]>()
 		);
 		var storageSelector = new FakeSelectorStorage(storage);
 
-		var geoReverseLookup = new FakeIGeoFolderReverseLookup(new List<FileIndexItem>
-		{
+		var geoReverseLookup = new FakeIGeoFolderReverseLookup([
 			new("/test.jpg") { FileHash = "2QOYZWMPACZAJ2MABGMOZ6CCPY" }
-		});
+		]);
 
 		var controller = new GeoBackgroundTask(_appSettings, storageSelector,
 			_geoLocationWrite, _memoryCache, new FakeIWebLogger(),

@@ -4,10 +4,14 @@ using System.IO;
 using System.Linq;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using MetadataExtractor.Formats.Bmp;
 using MetadataExtractor.Formats.Exif.Makernotes;
+using MetadataExtractor.Formats.Gif;
+using MetadataExtractor.Formats.Jpeg;
 using MetadataExtractor.Formats.Xmp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.database.Models;
+using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starskytest.FakeCreateAn;
@@ -198,11 +202,11 @@ public class ReadMetaExifTest
 	{
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
-		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></ai:SuggestedTags>" +
-		                       "<ai:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></ai:RejectedTags>" +
-		                       "<ai:ImageClassificationModel>vit-base-1</ai:ImageClassificationModel>" +
-		                       "<ai:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</ai:ImageClassificationGeneratedAt>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
+		                       "<qdraw:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></qdraw:RejectedTags>" +
+		                       "<qdraw:ImageClassificationModel>vit-base-1</qdraw:ImageClassificationModel>" +
+		                       "<qdraw:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</qdraw:ImageClassificationGeneratedAt>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var xmpDirectory = new XmpDirectory();
@@ -220,5 +224,134 @@ public class ReadMetaExifTest
 		Assert.AreEqual("vit-base-1", result.ImageClassificationModel);
 		Assert.AreEqual(new DateTime(2026, 4, 21, 10, 20, 30, DateTimeKind.Utc),
 			result.ImageClassificationGeneratedAt);
+	}
+
+	private static XmpDirectory CreateXmpDirectory(string attributes, string children = "")
+	{
+		var xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		              "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>" +
+		              "<rdf:Description rdf:about='' xmlns:exif='http://ns.adobe.com/exif/1.0/' " +
+		              "xmlns:dc='http://purl.org/dc/elements/1.1/' " +
+		              "xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/' " +
+		              $"{attributes}>{children}</rdf:Description></rdf:RDF></x:xmpmeta>";
+		var xmpDirectory = new XmpDirectory();
+		xmpDirectory.SetXmpMeta(XmpMetaFactory.ParseFromString(xmpData));
+		return xmpDirectory;
+	}
+
+	private static FileIndexItem Parse(params Directory[] directories)
+	{
+		return new ReadMetaExif(new FakeIStorage(), new AppSettings(), new FakeIWebLogger())
+			.ParseExifDirectory(directories.ToList(), new FileIndexItem("/test.jpg"));
+	}
+
+	[TestMethod]
+	[DataRow("On", ImageStabilisationType.On)]
+	[DataRow("Off", ImageStabilisationType.Off)]
+	[DataRow("Other", ImageStabilisationType.Unknown)]
+	public void ParseExifDirectory_XmpImageStabilization(string value,
+		ImageStabilisationType expected)
+	{
+		var result = Parse(CreateXmpDirectory($"qdraw:ImageStabilization='{value}'"));
+
+		Assert.AreEqual(expected, result.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_BmpHeader_SetsImageFormat()
+	{
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.bmp, Parse(new BmpHeaderDirectory()).ImageFormat);
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_GifHeader_SetsImageFormat()
+	{
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gif, Parse(new GifHeaderDirectory()).ImageFormat);
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_ExistingLensModel_IsNotOverwrittenBySony()
+	{
+		var item = new FileIndexItem("/test.jpg");
+		item.SetMakeModel("My Lens", 2);
+		var sony = new SonyType1MakernoteDirectory();
+		sony.Set(SonyType1MakernoteDirectory.TagLensId, 1);
+
+		var result = new ReadMetaExif(new FakeIStorage(), new AppSettings(),
+			new FakeIWebLogger()).ParseExifDirectory([sony], item);
+
+		Assert.AreEqual("My Lens", result.LensModel);
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_XmpDcCreator_IsUsedAsArtist()
+	{
+		var xmp = new XmpDirectory();
+		xmp.SetXmpMeta(new XmpMeta());
+		xmp.XmpMeta?.SetProperty("http://purl.org/dc/elements/1.1/", "creator", "Jane");
+
+		var result = Parse(xmp);
+
+		Assert.AreEqual("Jane", result.Artist);
+	}
+
+	[TestMethod]
+	public void GetXmpGeoData_WithoutHemisphere_ReturnsZero()
+	{
+		var xmp = CreateXmpDirectory("exif:GPSLatitude='52,20.708'");
+
+		var result = ReadMetaExif.GetXmpGeoData([xmp], "exif:GPSLatitude");
+
+		Assert.AreEqual(0, result, 0.00001);
+	}
+
+	[TestMethod]
+	public void GetImageWidthHeight_FewerItemsThanMaxCount_DoesNotThrow()
+	{
+		// 7 items: more than 5 (maxCount of 6/30) but less than the 30 of "Exif SubIFD"
+		List<Directory> list = [.. Enumerable.Range(0, 7).Select(_ => new ExifIfd0Directory())];
+
+		Assert.AreEqual(0, ReadMetaExif.GetImageWidthHeight(list, true));
+	}
+
+	[TestMethod]
+	public void GetImageWidthHeight_NegativeWidth_ReturnsZero()
+	{
+		var jpeg = new JpegDirectory();
+		jpeg.Set(JpegDirectory.TagImageWidth, -5);
+
+		Assert.AreEqual(0, ReadMetaExif.GetImageWidthHeight([jpeg], true));
+	}
+
+	[TestMethod]
+	public void GetImageWidthHeight_NonNumericWidth_ReturnsZero()
+	{
+		var jpeg = new JpegDirectory();
+		jpeg.Set(JpegDirectory.TagImageWidth, "abc");
+
+		Assert.AreEqual(0, ReadMetaExif.GetImageWidthHeight([jpeg], true));
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_XmpFallbacks_ApertureShutterFocalIso()
+	{
+		var result = Parse(CreateXmpDirectory(
+			"exif:FNumber='9/1' exif:ExposureTime='1/20' exif:FocalLength='28/1'",
+			"<exif:ISOSpeedRatings><rdf:Seq xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>" +
+			"<rdf:li>400</rdf:li></rdf:Seq></exif:ISOSpeedRatings>"));
+
+		Assert.AreEqual(9d, result.Aperture, 0.0001);
+		Assert.AreEqual("1/20", result.ShutterSpeed);
+		Assert.AreEqual(28d, result.FocalLength, 0.0001);
+		Assert.AreEqual(400, result.IsoSpeed);
+	}
+
+	[TestMethod]
+	public void ParseExifDirectory_TooLongShutterSpeed_IsIgnored()
+	{
+		var sub = new ExifSubIfdDirectory();
+		sub.Set(ExifDirectoryBase.TagExposureTime, "123456789012345678901234");
+
+		Assert.AreEqual(string.Empty, Parse(sub).ShutterSpeed);
 	}
 }

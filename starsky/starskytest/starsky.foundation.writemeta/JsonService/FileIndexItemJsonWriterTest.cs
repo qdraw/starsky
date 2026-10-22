@@ -62,7 +62,7 @@ public sealed class FileIndexItemJsonParserTest
 		var stream = fakeStorage.ReadStream(jsonSubPath, 67) as MemoryStream;
 		var byteArray = stream!.ToArray().Take(67).ToArray();
 		Console.WriteLine(string.Join(", ", byteArray));
-		Console.WriteLine(BitConverter.ToString(byteArray).Replace("-", string.Empty));
+		Console.WriteLine(Convert.ToHexString(byteArray));
 
 		var imageFormat = new ExtensionRolesHelper(new FakeIWebLogger()).GetImageFormat(
 			fakeStorage.ReadStream(jsonSubPath, ExtensionRolesHelper.ImageFormatByteSize));

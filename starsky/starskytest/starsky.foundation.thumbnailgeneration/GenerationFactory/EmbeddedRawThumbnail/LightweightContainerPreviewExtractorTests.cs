@@ -418,7 +418,7 @@ public class LightweightContainerPreviewExtractorTests
 	{
 		var buf = MakeBufferWithTiffHeader(512, 8, true, 8u);
 		var ts = new TestSeekableStream(buf);
-		ts.EnqueueSmallResponse(new byte[] { 0x49 });
+		ts.EnqueueSmallResponse([0x49]);
 		var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ts, out _,
 			out _, out _);
 		Assert.IsFalse(ok);
@@ -429,8 +429,8 @@ public class LightweightContainerPreviewExtractorTests
 	{
 		var buf = MakeBufferWithTiffHeader(512, 16, true, 16u);
 		var ts = new TestSeekableStream(buf);
-		ts.EnqueueSmallResponse("II"u8.ToArray());
-		ts.EnqueueSmallResponse("\0\0"u8.ToArray());
+		ts.EnqueueSmallResponse([.. "II"u8]);
+		ts.EnqueueSmallResponse([.. "\0\0"u8]);
 		var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ts, out _,
 			out _, out _);
 		Assert.IsFalse(ok);
@@ -441,9 +441,9 @@ public class LightweightContainerPreviewExtractorTests
 	{
 		var buf = MakeBufferWithTiffHeader(1024, 32, true, 32u);
 		var ts = new TestSeekableStream(buf);
-		ts.EnqueueSmallResponse("II"u8.ToArray());
-		ts.EnqueueSmallResponse("*\0"u8.ToArray());
-		ts.EnqueueSmallResponse(new byte[] { 0x01, 0x02 });
+		ts.EnqueueSmallResponse([.. "II"u8]);
+		ts.EnqueueSmallResponse([.. "*\0"u8]);
+		ts.EnqueueSmallResponse([0x01, 0x02]);
 		var ok = LightweightContainerPreviewExtractor.TryParseTiffHeader(ts, out _,
 			out _, out _);
 		Assert.IsFalse(ok);

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Data.Sqlite;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.Helpers;
@@ -86,16 +88,33 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	public async Task<bool> UpdateAsync(ThumbnailItem item)
 	{
-		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
-		return await retry.ExecuteWithRetryAsync(ctx => UpdateInternalAsync(ctx, item));
+		try
+		{
+			var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+			return await retry.ExecuteWithRetryAsync(ctx => UpdateInternalAsync(ctx, item));
+		}
+		catch ( DbUpdateConcurrencyException concurrencyException )
+		{
+			return await SolveDbUpdateConcurrencyException(concurrencyException);
+		}
 	}
 
 	public async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchAsync(int pageNumber,
 		int pageSize)
 	{
-		var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
-		return await retry.ExecuteWithRetryAsync(ctx =>
-			GetMissingThumbnailsBatchInternalAsync(ctx, pageNumber, pageSize));
+		try
+		{
+			var retry = new ExecuteWithRetry(_context, _scopeFactory, _logger);
+			return await retry.ExecuteWithRetryAsync(ctx =>
+				GetMissingThumbnailsBatchInternalAsync(ctx, pageNumber, pageSize));
+		}
+		catch ( InvalidOperationException ex )
+			when ( ex.InnerException is RetryLimitExceededException )
+		{
+			_logger.LogInformation(
+				"[ThumbnailQuery] database unavailable, skipping thumbnail batch");
+			return [];
+		}
 	}
 
 	public bool IsRunningJob()
@@ -130,6 +149,16 @@ public class ThumbnailQuery : IThumbnailQuery
 		_logger.LogInformation("[ThumbnailQuery] try to fix DbUpdateConcurrencyException",
 			concurrencyException);
 		SolveConcurrency.SolveConcurrencyExceptionLoop(concurrencyException.Entries);
+
+		// All entries were detached (rows deleted from DB); nothing to save.
+		if ( concurrencyException.Entries.Count > 0 &&
+		     concurrencyException.Entries.All(e => e.State == EntityState.Detached) )
+		{
+			_logger.LogInformation(
+				"[ThumbnailQuery] all entries detached after DbUpdateConcurrencyException; rows were deleted");
+			return false;
+		}
+
 		try
 		{
 			await _context.SaveChangesAsync();
@@ -144,7 +173,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		return true;
 	}
 
-	private static async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchInternalAsync(
+	protected virtual async Task<List<ThumbnailItem>> GetMissingThumbnailsBatchInternalAsync(
 		ApplicationDbContext context, int pageNumber,
 		int pageSize)
 	{
@@ -186,7 +215,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 	private async Task<List<ThumbnailItem>?> AddThumbnailRangeInternalAsync(
 		ApplicationDbContext dbContext,
-		IReadOnlyCollection<ThumbnailResultDataTransferModel> thumbnailItems)
+		List<ThumbnailResultDataTransferModel> thumbnailItems)
 	{
 		if ( thumbnailItems.Count == 0 )
 		{
@@ -216,7 +245,6 @@ public class ThumbnailQuery : IThumbnailQuery
 		{
 			dbContext.Thumbnails.UpdateRange(alreadyExistingThumbnailItems);
 			// not optimized for bulk operations yet
-			await dbContext.SaveChangesAsync();
 			await SaveChangesDuplicate(dbContext);
 		}
 
@@ -259,6 +287,24 @@ public class ThumbnailQuery : IThumbnailQuery
 			{
 				_logger.LogInformation(
 					"[SaveChangesDuplicate] OK Duplicate entry error occurred: " +
+					$"{mySqlException.Message}");
+				return;
+			}
+
+			// SQLite UNIQUE constraint violation (error code 19)
+			if ( exception.InnerException is SqliteException { SqliteErrorCode: 19 } sqliteException )
+			{
+				_logger.LogInformation(
+					"[SaveChangesDuplicate] OK SQLite unique constraint error occurred: " +
+					$"{sqliteException.Message}");
+				return;
+			}
+
+			// DB is under load; thumbnails are regenerable so skip and let the next sync retry
+			if ( mySqlException is { ErrorCode: MySqlErrorCode.CommandTimeoutExpired } )
+			{
+				_logger.LogInformation(
+					"[SaveChangesDuplicate] Command timeout, will retry on next sync: " +
 					$"{mySqlException.Message}");
 				return;
 			}

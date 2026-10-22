@@ -147,7 +147,7 @@ public class WindowsOpenDesktopAppTests
 	public void W_OpenApplicationAtUrl_NonWindows()
 	{
 		var result = WindowsOpenDesktopApp.OpenApplicationAtUrl(
-			new List<string> { "W_OpenApplicationAtUrl_NonWindows any value" },
+			["W_OpenApplicationAtUrl_NonWindows any value"],
 			"app", OSPlatform.Linux);
 		Assert.IsNull(result);
 	}
@@ -249,7 +249,7 @@ public class WindowsOpenDesktopAppTests
 	[TestMethod]
 	public void WindowsOpenDesktopApp_OpenDefault_Count0()
 	{
-		var result = WindowsOpenDesktopApp.OpenDefault(new List<string>());
+		var result = WindowsOpenDesktopApp.OpenDefault([]);
 		Assert.IsFalse(result);
 	}
 

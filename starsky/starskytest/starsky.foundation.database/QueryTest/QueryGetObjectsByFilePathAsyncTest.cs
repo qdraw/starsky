@@ -305,7 +305,7 @@ public sealed class QueryGetObjectsByFilePathAsyncTest
 		var fakeQuery = new Query(null!,
 			null!, null!, logger);
 
-		var result = await fakeQuery.GetObjectsByFilePathQuery(new List<string>().ToArray(), true);
+		var result = await fakeQuery.GetObjectsByFilePathQuery([], true);
 		Assert.IsEmpty(result);
 	}
 }
@@ -342,13 +342,13 @@ public class QueryGetObjectsByFilePathAsync_MySqlProtocolException_Test
 
 		// Fake scope factory that returns throwingContext first, then realContext
 		var fakeFactory =
-			new SequentialFakeServiceScopeFactory(new[] { throwingContext, realContext });
+			new SequentialFakeServiceScopeFactory([throwingContext, realContext]);
 
 		var query = new Query(primary, new AppSettings(), fakeFactory, new FakeIWebLogger());
 
 		// Act
 		var result =
-			await query.GetObjectsByFilePathAsync(new List<string> { expected.FilePath! }, false);
+			await query.GetObjectsByFilePathAsync([expected.FilePath!], false);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -383,13 +383,12 @@ public class QueryGetObjectsByFilePathAsync_MySqlProtocolException_Test
 				var ctor = exceptionType.GetConstructor(
 					BindingFlags.NonPublic | BindingFlags.Instance,
 					null,
-					new[] { typeof(string) },
+					[typeof(string)],
 					null) ?? throw new InvalidOperationException("Constructor not found.");
 
-				var ex = ( MySqlProtocolException ) ctor.Invoke(new object[]
-				{
+				var ex = ( MySqlProtocolException ) ctor.Invoke([
 					"Test MySqlProtocolException"
-				});
+				]);
 				throw ex;
 			}
 			set

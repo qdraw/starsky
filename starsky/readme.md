@@ -20,7 +20,7 @@
       libraries (.NET)_
     - [starskyTest](../starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](../starsky-tools/readme.md) _nodejs tools to add-on tasks_
-- [Starsky Desktop](../starskydesktop/readme.md) _Desktop Application (Pre-alpha code)_
+- [Starsky Desktop](../readme-desktop.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - [Changelog](../history.md) _Release notes and history_
 
@@ -42,7 +42,7 @@ to compile the application for development
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. Get the `dotnet` 8.0.423 SDK. To get the 'Build apps - SDK' .NET Core
+2. Get the `dotnet` 10.0.302 SDK. To get the 'Build apps - SDK' .NET Core
    from https://www.microsoft.com/net/download or https://versionsof.net/
 3. Get a recent version of node.js (20.x or newer)
 
@@ -118,8 +118,7 @@ http://localhost:4000/account/register
 
 ## Build for Raspberry Pi (Raspbian/Linux ARM)
 
-From .NET Core 2.1 or newer there is a SDK available for Raspberry Pi (only ARMv7 or newer, so no
-ARMv6). We use NET Core
+There is a .NET SDK available for 64 bits Raspberry Pi's (ARM64, so no ARMv6 or ARMv7). We use NET Core
 But in this guide we build it first on your laptop and copy to your Raspberry Pi. Use the following
 steps to setup:
 
@@ -138,16 +137,16 @@ git clone "https://github.com/qdraw/starsky.git"
 _Using bash_
 
 ```sh
-./build.sh --runtime "linux-arm"
+./build.sh --runtime "linux-arm64"
 ```
 
 _Using Powershell_
 
 ```powershell
-powershell -File build.ps1 -ScriptArgs '-runtime "linux-arm"'
+powershell -File build.ps1 -ScriptArgs '-runtime "linux-arm64"'
 ```
 
-4. Copy contents from the `linux-arm` folder to your Raspberry Pi
+4. Copy contents from the `linux-arm64` folder to your Raspberry Pi
 
 5. On the Raspi, install the dependency packages first. Those are required by .NET Core
 
@@ -243,7 +242,7 @@ It uses the following default parameters
 
 ```sh
 --name starsky
---runtime linux-arm
+--runtime linux-arm64
 ```
 
 #### pm2 `./pm2-new-instance.sh`

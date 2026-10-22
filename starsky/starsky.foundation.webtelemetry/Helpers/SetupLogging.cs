@@ -20,6 +20,7 @@ public static class SetupLogging
 	internal const string DeploymentEnvironmentName = "deployment.environment";
 	internal const string AppVersionName = "service.version";
 	internal const string AppVersionBuildDateTimeName = "service.build_datetime";
+	internal const string AppVersionCommitHash = "service.build_commit_hash";
 	internal const string FrameworkDescriptionName = "runtime.framework";
 
 	[SuppressMessage("Usage", "S4792:Make sure that this logger's configuration is safe.")]
@@ -30,8 +31,11 @@ public static class SetupLogging
 		{
 			logging.ClearProviders();
 			logging.AddConsole();
+			logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
 
 			new AddEventLogger().AddEventLog(logging, appSettings.ApplicationType);
+			// log lines become crash report breadcrumbs, they are scrubbed in SetupSentry
+			logging.AddProvider(new SentryBreadcrumbLoggerProvider());
 
 			if ( string.IsNullOrEmpty(appSettings.OpenTelemetry?.LogsEndpoint) )
 			{
@@ -63,6 +67,8 @@ public static class SetupLogging
 	{
 		return
 		[
+			// When adding also update the tests
+
 			new KeyValuePair<string, object>(HostNameKey, Environment.MachineName),
 			// ASPNETCORE_ENVIRONMENT
 			new KeyValuePair<string, object>(DeploymentEnvironmentName,
@@ -71,6 +77,8 @@ public static class SetupLogging
 			new KeyValuePair<string, object>(AppVersionBuildDateTimeName,
 				appSettings.AppVersionBuildDateTime.ToString(
 					new CultureInfo("nl-NL"))),
+			new KeyValuePair<string, object>(AppVersionCommitHash,
+				appSettings.AppVersionCommitHash),
 			new KeyValuePair<string, object>(FrameworkDescriptionName,
 				RuntimeInformation.FrameworkDescription)
 		];

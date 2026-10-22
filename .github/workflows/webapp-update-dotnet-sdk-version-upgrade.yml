@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
       with:
         ref: master
 
@@ -45,7 +45,7 @@ jobs:
       
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
-      uses: peter-evans/create-pull-request@eec7ab75b2f71ddc8a223341c83a67f6f774c39f
+      uses: peter-evans/create-pull-request@bd09a93810788ce61d2d5fb7d6b221b9b4a4aab7
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'Auto .NET SDK version Upgrade to ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}'
@@ -60,7 +60,7 @@ jobs:
         body: |
           ## Upgrade of .NET with newer SDK Version
           - Install SDK version ${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }} on your development machine ${{ steps.dotnet_sdk_version_update.outputs.SDK_RELEASE_NOTES }}
-          - First test on linux-arm test envs before approve
+          - First test on linux-arm64 test envs before approve
           - update azure runtime on test https://demostarsky.scm.azurewebsites.net/
           - update docs with minimal version https://github.com/qdraw/starsky/blob/feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}/starsky/readme.md
           - update changelog https://github.com/qdraw/starsky/blob/feature/auto_dotnet_sdk_version_upgrade_${{ steps.dotnet_sdk_version_update.outputs.SDK_VERSION }}/history.md

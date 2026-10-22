@@ -1,0 +1,74 @@
+name: Desktop macOS PR Build
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'mac/**'
+  pull_request:
+    paths:
+      - 'mac/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-macos-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test (macOS)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
+
+      - name: Build
+        env:
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            ENABLE_TESTABILITY=YES \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
+
+      - name: Test
+        env:
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Debug \
+            -destination 'platform=macOS' \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY" \
+            -resultBundlePath TestResults/macos.xcresult \
+            | xcpretty --report junit --output TestResults/test-results.xml
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: test-results-macos
+          path: TestResults/

@@ -60,8 +60,8 @@ public sealed class ImportTestInMemoryDb : VerifyBase
 		_console = new ConsoleWrapper();
 
 		_iStorageFake = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/color_class_winner.jpg" },
+			["/"],
+			["/test.jpg", "/color_class_winner.jpg"],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(), CreateAnImageColorClass.Bytes.ToArray()
@@ -78,8 +78,8 @@ public sealed class ImportTestInMemoryDb : VerifyBase
 	public async Task Importer_Gpx()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.gpx" },
+			["/"],
+			["/test.gpx"],
 			new List<byte[]> { CreateAnGpx.Bytes.ToArray() });
 
 		var importService = new Import(new FakeSelectorStorage(storage), _appSettings,

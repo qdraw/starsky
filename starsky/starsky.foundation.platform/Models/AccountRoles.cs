@@ -13,7 +13,7 @@ namespace starsky.foundation.platform.Models
 
 		public static IEnumerable<string> GetAllRoles()
 		{
-			return Enum.GetNames(typeof(AppAccountRoles));
+			return Enum.GetNames<AppAccountRoles>();
 		}
 	}
 }

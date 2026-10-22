@@ -37,7 +37,7 @@ public sealed class SyncMultiFileTest
 	[TestMethod]
 	public async Task FileType_NotSupported()
 	{
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+		var fakeQuery = new FakeIQuery([]);
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 		var result = await sync.MultiFile(["/non_exist.ext"]);
@@ -48,15 +48,15 @@ public sealed class SyncMultiFileTest
 	[TestMethod]
 	public async Task MultiFile_ImageFormat_Corrupt()
 	{
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+		var fakeQuery = new FakeIQuery([]);
 
-		var storage = new FakeIStorage(new List<string> { "/" },
+		var storage = new FakeIStorage(["/"],
 			["/corrupt.jpg"],
 			new List<byte[]> { new byte[5] });
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			storage, null, new FakeIWebLogger());
-		var result = await sync.MultiFile(new List<string> { "/corrupt.jpg" });
+		var result = await sync.MultiFile(["/corrupt.jpg"]);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, result[0].Status);
 	}
@@ -64,11 +64,11 @@ public sealed class SyncMultiFileTest
 	[TestMethod]
 	public async Task MultiFile_AddNewFile()
 	{
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+		var fakeQuery = new FakeIQuery([]);
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 
-		var result = await sync.MultiFile(new List<string> { "/test.jpg" });
+		var result = await sync.MultiFile(["/test.jpg"]);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 
 		// should add files to db
@@ -86,11 +86,11 @@ public sealed class SyncMultiFileTest
 	[TestMethod]
 	public async Task MultiFile_AddNewFile_StatusDeleted()
 	{
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+		var fakeQuery = new FakeIQuery([]);
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 
-		var result = await sync.MultiFile(new List<string> { "/status_deleted.jpg" });
+		var result = await sync.MultiFile(["/status_deleted.jpg"]);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result[0].Status);
 	}
@@ -99,14 +99,14 @@ public sealed class SyncMultiFileTest
 	[TestMethod]
 	public async Task MultiFile_AddNewFile_WithParentFolders()
 	{
-		var iStorageFake = new FakeIStorage(new List<string> { "/", "/level", "/level/deep" },
-			new List<string> { "/level/deep/test.jpg" },
+		var iStorageFake = new FakeIStorage(["/", "/level", "/level/deep"],
+			["/level/deep/test.jpg"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray() });
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>());
+		var fakeQuery = new FakeIQuery([]);
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			iStorageFake, null, new FakeIWebLogger());
-		await sync.MultiFile(new List<string> { "/level/deep/test.jpg" });
+		await sync.MultiFile(["/level/deep/test.jpg"]);
 
 		var detailView = fakeQuery.SingleItem("/level/deep/test.jpg");
 		// should add files to db
@@ -144,14 +144,13 @@ public sealed class SyncMultiFileTest
 				"/test.jpg",
 				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/test.jpg") { FileHash = fileHash, LastEdited = _lastEditedDateTime }
-		});
+		]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
-		var result = await sync.MultiFile(new List<string> { "/test.jpg" });
+		var result = await sync.MultiFile(["/test.jpg"]);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
 
@@ -173,10 +172,9 @@ public sealed class SyncMultiFileTest
 				"/test.jpg",
 				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/"), new("/test.jpg") { FileHash = fileHash, LastEdited = _lastEditedDateTime }
-		});
+		]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -189,7 +187,7 @@ public sealed class SyncMultiFileTest
 			return Task.CompletedTask;
 		}
 
-		await sync.MultiFile(new List<string> { "/test.jpg" }, TestTask);
+		await sync.MultiFile(["/test.jpg"], TestTask);
 
 		Assert.IsFalse(isCalled);
 	}
@@ -203,11 +201,10 @@ public sealed class SyncMultiFileTest
 				"/test.jpg",
 				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			// no parent folder in database
 			new("/test.jpg") { FileHash = fileHash, LastEdited = _lastEditedDateTime }
-		});
+		]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -220,7 +217,7 @@ public sealed class SyncMultiFileTest
 			return Task.CompletedTask;
 		}
 
-		var result = await sync.MultiFile(new List<string> { "/test.jpg" }, TestTask);
+		var result = await sync.MultiFile(["/test.jpg"], TestTask);
 
 		Assert.IsTrue(isCalled);
 
@@ -237,8 +234,8 @@ public sealed class SyncMultiFileTest
 				"/test.jpg",
 				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
+
 			new("/test.jpg")
 			{
 				FileHash = fileHash,
@@ -246,12 +243,12 @@ public sealed class SyncMultiFileTest
 				Tags = "the tags should not be updated", // <= the tags in /test.jpg is nothing,
 				LastEdited = _lastEditedDateTime
 			}
-		});
+		]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 
-		var result = await sync.MultiFile(new List<string> { "/test.jpg" });
+		var result = await sync.MultiFile(["/test.jpg"]);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.OkAndSame, result[0].Status);
 
@@ -283,7 +280,7 @@ public sealed class SyncMultiFileTest
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
-		var result = await sync.MultiFile(new List<string> { currentFilePath });
+		var result = await sync.MultiFile([currentFilePath]);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 
@@ -308,14 +305,14 @@ public sealed class SyncMultiFileTest
 	[TestMethod]
 	public async Task MultiFile_FileAlreadyExist_With_Changed_FileHash_ShouldTriggerDelegate()
 	{
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
+
 			new("/test.jpg")
 			{
 				FileHash = "THIS_IS_THE_OLD_HASH",
 				Size = 99999999 // % % % that's not the right size % % %
 			}
-		});
+		]);
 		var isCalled = false;
 
 		Task TestTask(List<FileIndexItem> _)
@@ -326,7 +323,7 @@ public sealed class SyncMultiFileTest
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
-		await sync.MultiFile(new List<string> { "/test.jpg" }, TestTask);
+		await sync.MultiFile(["/test.jpg"], TestTask);
 
 		Assert.IsTrue(isCalled);
 	}
@@ -343,16 +340,15 @@ public sealed class SyncMultiFileTest
 			FileHash = "THIS_IS_THE_OLD_HASH",
 			Size = 99999999 // % % % that's not the right size % % %
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 
 		var result =
-			await sync.MultiFile(new List<FileIndexItem>
-			{
+			await sync.MultiFile([
 				item
-			}); // % % % % Enter item here % % % % % 
+			]); // % % % % Enter item here % % % % % 
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
 
@@ -376,7 +372,7 @@ public sealed class SyncMultiFileTest
 			FileHash = "THIS_IS_THE_OLD_HASH",
 			Size = 99999999 // % % % that's not the right size % % %
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -389,7 +385,7 @@ public sealed class SyncMultiFileTest
 			return Task.CompletedTask;
 		}
 
-		await sync.MultiFile(new List<FileIndexItem> { item },
+		await sync.MultiFile([item],
 			TestTask); // % % % % Enter item here % % % % % 
 		Assert.IsTrue(isCalled);
 	}
@@ -402,15 +398,14 @@ public sealed class SyncMultiFileTest
 			FileHash = "THIS_IS_THE_OLD_HASH",
 			Size = 99999999 // % % % that's not the right size % % %
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 		var result =
-			await sync.MultiFile(new List<FileIndexItem>
-			{
+			await sync.MultiFile([
 				item
-			}); // % % % % Enter item here % % % % % 
+			]); // % % % % Enter item here % % % % % 
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted, result[0].Status);
 	}
@@ -423,7 +418,7 @@ public sealed class SyncMultiFileTest
 			FileHash = "THIS_IS_THE_OLD_HASH",
 			Size = 99999999 // % % % that's not the right size % % %
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
@@ -448,14 +443,13 @@ public sealed class SyncMultiFileTest
 			Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
 			Tags = "the tags should not be updated" // <= the tags in /test.jpg is nothing
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncMultiFile(new AppSettings { Verbose = true }, fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
-		await sync.MultiFile(new List<FileIndexItem>
-		{
+		await sync.MultiFile([
 			item
-		}); // % % % % Enter item here % % % % % 
+		]); // % % % % Enter item here % % % % % 
 
 		var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
@@ -468,8 +462,8 @@ public sealed class SyncMultiFileTest
 	{
 		var lastEdited = DateTime.Now;
 		// It should update the Sidecar field when a sidecar file is add to the directory
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() },
 			new List<DateTime> { lastEdited, lastEdited });
 
@@ -484,11 +478,11 @@ public sealed class SyncMultiFileTest
 			Size = _iStorageFake.Info("/test.dng").Size, // < right byte size
 			LastEdited = lastEdited
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncMultiFile(new AppSettings { Verbose = true }, fakeQuery,
 			storage, null, new FakeIWebLogger());
-		await sync.MultiFile(new List<string> { "/test.dng", "/test.xmp" });
+		await sync.MultiFile(["/test.dng", "/test.xmp"]);
 
 		var fileIndexItem = fakeQuery.SingleItem("/test.dng")?.FileIndexItem;
 
@@ -505,8 +499,8 @@ public sealed class SyncMultiFileTest
 		var lastEdited = DateTime.Now;
 
 		// It should update the Sidecar field when a sidecar file is add to the directory
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 
 		var (fileHash, _) =
@@ -527,11 +521,11 @@ public sealed class SyncMultiFileTest
 			LastEdited = lastEdited
 		};
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item, item2 });
+		var fakeQuery = new FakeIQuery([item, item2]);
 
 		var sync = new SyncMultiFile(new AppSettings { Verbose = true }, fakeQuery,
 			storage, null, new FakeIWebLogger());
-		await sync.MultiFile(new List<string> { "/test.dng", "/test.xmp" });
+		await sync.MultiFile(["/test.dng", "/test.xmp"]);
 
 		var fileIndexItem = fakeQuery.SingleItem("/test.dng")?.FileIndexItem;
 
@@ -548,8 +542,8 @@ public sealed class SyncMultiFileTest
 	public async Task MultiFile_ShouldIgnoreSidecarFieldWhenItAlreadyExist()
 	{
 		// It should ignore the Sidecar field when a sidecar file when it already is there
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.dng", "/test.xmp" },
+		var storage = new FakeIStorage(["/"],
+			["/test.dng", "/test.xmp"],
 			new List<byte[]> { CreateAnImageNoExif.Bytes.ToArray(), Array.Empty<byte>() });
 
 		var (fileHash, _) =
@@ -563,11 +557,11 @@ public sealed class SyncMultiFileTest
 			Size = _iStorageFake.Info("/test.jpg").Size, // < right byte size
 			SidecarExtensions = "xmp" // <- is already here
 		};
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem> { item });
+		var fakeQuery = new FakeIQuery([item]);
 
 		var sync = new SyncMultiFile(new AppSettings { Verbose = true }, fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
-		await sync.MultiFile(new List<FileIndexItem> { item });
+		await sync.MultiFile([item]);
 
 		var fileIndexItem = fakeQuery.SingleItem("/test.jpg")?.FileIndexItem;
 
@@ -582,15 +576,14 @@ public sealed class SyncMultiFileTest
 			.GetHashCodeAsync("/color_class_test.jpg",
 				ExtensionRolesHelper.ImageFormat.jpg);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/color_class_test.jpg") { FileHash = "THIS_IS_THE_OLD_HASH" }
-		});
+		]);
 
 		var sync = new SyncMultiFile(new AppSettings(), fakeQuery,
 			_iStorageFake, null, new FakeIWebLogger());
 
-		await sync.MultiFile(new List<string> { "/color_class_test.jpg" });
+		await sync.MultiFile(["/color_class_test.jpg"]);
 
 		var fileIndexItem = fakeQuery.SingleItem("/color_class_test.jpg")?.FileIndexItem;
 

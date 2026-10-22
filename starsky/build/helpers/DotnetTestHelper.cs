@@ -62,18 +62,25 @@ public static class DotnetTestHelper
 				"TestResults",
 				"test_results.trx");
 
+			// MTP (Microsoft.Testing.Platform) args — coverage file lands in testResultsFolder
+			var mtpArgs = string.Join(" ",
+				"--coverage",
+				"--coverage-output coverage.cobertura.xml",
+				"--coverage-output-format cobertura",
+				$"--results-directory \"{testResultsFolder}\"",
+				"--report-trx",
+				"--report-trx-filename test_results.trx",
+				$"--settings \"{runSettingsFile}\"");
+
 			try
 			{
-				// search for: dotnet test
-				DotNetTest(p => p
-					.SetConfiguration(configuration)
-					.EnableNoRestore()
-					.EnableNoBuild()
-					.SetVerbosity(DotNetVerbosity.normal)
-					.SetLoggers("trx;LogFileName=test_results.trx")
-					.SetDataCollector("XPlat Code Coverage")
-					.SetSettingsFile(runSettingsFile)
-					.SetProjectFile(projectFullPath));
+				// dotnet msbuild -t:Test routes through Microsoft.Testing.Platform
+				// (VSTest target removed on .NET 10 SDK for MTP projects)
+				DotNetMSBuild(p => p
+					.SetTargets("Test")
+					.SetTargetPath(projectFullPath)
+					.SetProperty("Configuration", configuration.ToString())
+					.SetProperty("TestingPlatformCommandLineArguments", mtpArgs));
 			}
 			catch ( ProcessException )
 			{
@@ -85,21 +92,14 @@ public static class DotnetTestHelper
 				TrxParserHelper.DisplaySlowestTests(trxFullFilePath);
 			}
 
-			var coverageEnum = GetFilesHelper.GetFiles("**/coverage.opencover.xml");
-
-			foreach ( var coverageItem in coverageEnum )
-			{
-				Log.Information("coverageItem: {CoverageItem}", coverageItem);
-			}
-
-			// Get the FirstOrDefault() but there is no LINQ here
-			var coverageFilePath =
-				Path.Combine(testParentPath, "netcore-coverage.opencover.xml");
+			// Coverage file is written directly to testResultsFolder with a fixed name
+			var coverageSourcePath = Path.Combine(testResultsFolder, "coverage.cobertura.xml");
+			var coverageFilePath = Path.Combine(testParentPath, "netcore-coverage.cobertura.xml");
 			Log.Information("next copy: coverageFilePath {CoverageFilePath}", coverageFilePath);
 
-			foreach ( var item in coverageEnum )
+			if ( FileExists(coverageSourcePath) )
 			{
-				var fromPath = AbsolutePath.Create(Path.Combine(WorkingDirectory.GetSolutionParentFolder(), item));
+				var fromPath = AbsolutePath.Create(coverageSourcePath);
 				var toPath = AbsolutePath.Create(coverageFilePath);
 				fromPath.Copy(toPath, ExistsPolicy.FileOverwrite);
 			}

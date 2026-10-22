@@ -51,13 +51,12 @@ public sealed class SyncFolderTestInMemoryDb
 	public async Task Folder_FilesOnDiskButNotInTheDb()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/", "/Folder_FilesOnDiskButNotInTheDb" },
-			new List<string>
-			{
+			["/", "/Folder_FilesOnDiskButNotInTheDb"],
+			[
 				"/Folder_FilesOnDiskButNotInTheDb/test1.jpg",
 				"/Folder_FilesOnDiskButNotInTheDb/test2.jpg",
 				"/Folder_FilesOnDiskButNotInTheDb/test3.jpg"
-			},
+			],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),
@@ -174,10 +173,9 @@ public sealed class SyncFolderTestInMemoryDb
 		await _query.AddItemAsync(
 			new FileIndexItem("/Folder_InDbButNotOnDisk4/test_dir/child/test.jpg"));
 
-		var storage = new FakeIStorage(new List<string>
-		{
+		var storage = new FakeIStorage([
 			"/Folder_InDbButNotOnDisk4", "/Folder_InDbButNotOnDisk4/test_dir"
-		});
+		]);
 		var syncFolder = new SyncFolder(_appSettings, _query, new FakeSelectorStorage(storage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeMemoryCache(), null);
 		var result = ( await syncFolder.Folder("/Folder_InDbButNotOnDisk4") )

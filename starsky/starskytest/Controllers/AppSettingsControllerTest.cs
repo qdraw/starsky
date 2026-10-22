@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -16,6 +15,7 @@ using starskytest.FakeMocks;
 namespace starskytest.Controllers;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class AppSettingsControllerTest
 {
 	[TestMethod]
@@ -46,9 +46,9 @@ public sealed class AppSettingsControllerTest
 	public async Task UpdateAppSettings_Verbose()
 	{
 		var appSettings = new AppSettings();
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage), new FakeDiskWatcher()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(new AppSettingsTransferObject { Verbose = true })
@@ -65,11 +65,9 @@ public sealed class AppSettingsControllerTest
 		var controller = new AppSettingsController(appSettings, new UpdateAppSettingsByPath(
 			appSettings,
 			new FakeSelectorStorage(
-				new FakeIStorage(new List<string>
-				{
+				new FakeIStorage([
 					$"{Path.DirectorySeparatorChar}{testFolder}"
-				}))));
-
+				])), new FakeDiskWatcher()));
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
 		var actionResult = await controller.UpdateAppSettings(new AppSettingsTransferObject
@@ -120,8 +118,9 @@ public sealed class AppSettingsControllerTest
 	public async Task UpdateAppSettingsTest_StorageFolder_JsonCheck()
 	{
 		const string testFolder = "test-update-json-check";
-		var storage = new FakeIStorage(new List<string> { testFolder });
-		Environment.SetEnvironmentVariable("app__storageFolder", string.Empty);
+		var storage = new FakeIStorage([testFolder]);
+		var before = Environment.GetEnvironmentVariable("app__storageFolder");
+		Environment.SetEnvironmentVariable("app__storageFolder", null);
 
 		var appSettings = new AppSettings
 		{
@@ -129,9 +128,11 @@ public sealed class AppSettingsControllerTest
 				$"{Path.DirectorySeparatorChar}temp{Path.DirectorySeparatorChar}appsettings.json"
 		};
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage), new FakeDiskWatcher()));
 		await controller.UpdateAppSettings(
 			new AppSettingsTransferObject { Verbose = true, StorageFolder = testFolder });
+
+		Environment.SetEnvironmentVariable("app__storageFolder", before);
 
 		Assert.IsTrue(storage.ExistFile(appSettings.AppSettingsPath));
 
@@ -146,9 +147,9 @@ public sealed class AppSettingsControllerTest
 	public async Task UpdateAppSettings_UseLocalDesktop()
 	{
 		var appSettings = new AppSettings();
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage), new FakeDiskWatcher()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(
@@ -161,9 +162,9 @@ public sealed class AppSettingsControllerTest
 	public async Task UpdateAppSettings_UseSystemTrash()
 	{
 		var appSettings = new AppSettings();
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage), new FakeDiskWatcher()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(
@@ -176,9 +177,9 @@ public sealed class AppSettingsControllerTest
 	public async Task UpdateAppSettings_Verbose_IgnoreSystemTrashValue()
 	{
 		var appSettings = new AppSettings();
-		var storage = new FakeIStorage(new List<string> { "/" });
+		var storage = new FakeIStorage(["/"]);
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage)));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(storage), new FakeDiskWatcher()));
 
 		var actionResult =
 			await controller.UpdateAppSettings(new AppSettingsTransferObject { Verbose = true })
@@ -194,7 +195,7 @@ public sealed class AppSettingsControllerTest
 		// Arrange
 		var appSettings = new AppSettings();
 		var controller = new AppSettingsController(appSettings,
-			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(new FakeIStorage())));
+			new UpdateAppSettingsByPath(appSettings, new FakeSelectorStorage(new FakeIStorage()), new FakeDiskWatcher()));
 
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 

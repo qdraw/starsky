@@ -125,12 +125,16 @@ public sealed class WindowsMountWatcherTest
 	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
 	public async Task WindowsMountWatcher_Start_DoesNotThrow_WhenPlatformIsUnsupported()
 	{
-		// Arrange
-		var watcher = new WindowsMountWatcher(new FakeIWebLogger(), 10);
+		// Arrange: use a fake system so GetMountedVolumes() never blocks on real I/O.
+		var watcher = new WindowsMountWatcher(
+			new FakeIWebLogger(),
+			() => OSPlatform.Linux,
+			10,
+			new FakeWindowsMountWatcherSystem());
 
 		// Act: run Start on a worker thread because polling fallback is a blocking loop.
 		var startTask = Task.Run(watcher.Start, TestContext.CancellationToken);
-		await Task.Delay(100, TestContext.CancellationToken);
+		await watcher.Started.Task.WaitAsync(TestContext.CancellationToken);
 
 		// Assert: Stop should cause Start to return promptly and without exceptions.
 		watcher.Stop();

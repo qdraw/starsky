@@ -60,7 +60,7 @@ public sealed class NotificationControllerTest
 			await controller.GetNotifications(
 				DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)) as BadRequestObjectResult;
 
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]

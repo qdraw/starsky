@@ -9,6 +9,7 @@ describe("Desktop move to trash (100)", () => {
   let shouldRunTest = false;
 
   beforeEach("Check some config settings and do them before each test", () => {
+    shouldRunTest = false;
     // Check if test is enabled for current environment
     if (!config.isEnabled) {
       return false;
@@ -77,18 +78,30 @@ describe("Desktop move to trash (100)", () => {
     waitOnUploadIsDone(0);
   });
 
-  it("check if upload is done (90)", () => {
-    
+  it("check if upload is done (90)", {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
+
     if (shouldRunTest === false) {
       cy.log("shouldRunTest is false, skip test \n due on system trash is not supported")
       return;
     }
 
+    waitOnUploadIsDone(0);
+
     cy.request(config.urlApiCollectionsFalse).then((res) => {
       expect(res.status).to.eq(200);
-      expect(res.body.fileIndexItems.length).to.eq(4);
+      // other suites can leave files in this folder, so check only the files of this suite
+      expect(countOwnFiles(res.body.fileIndexItems)).to.eq(4);
     });
   });
+
+  function countOwnFiles(items: { filePath: string }[]): number {
+    const own = [fileName1, fileName2, fileName3, fileName4].map(
+      (name) => `/starsky-end2end-test/${name}`
+    );
+    return items.filter((item) => own.includes(item.filePath)).length;
+  }
 
   function waitOnUploadIsDone(index: number, max: number = 10) {
     cy.request({
@@ -101,7 +114,7 @@ describe("Desktop move to trash (100)", () => {
       expect(response.status).to.eq(200);
       cy.log(JSON.stringify(response.body.fileIndexItems));
 
-      if (response.body.fileIndexItems.length === 4) {
+      if (countOwnFiles(response.body.fileIndexItems) === 4) {
         cy.log("4 items, done");
         return;
       }
@@ -113,7 +126,9 @@ describe("Desktop move to trash (100)", () => {
     });
   }
 
-  it("remove item (90)", () => {
+  it("remove item (90)", {
+    retries: { runMode: 2, openMode: 2 }
+  }, () => {
 
     if (shouldRunTest === false) {
       cy.log("shouldRunTest is false, skip test")
@@ -131,9 +146,10 @@ describe("Desktop move to trash (100)", () => {
     cy.get(".item.item--more").click();
     cy.get("[data-test=trash]").click();
 
-    cy.get(".folder > div").should(($lis) => {
-      expect($lis).to.have.length(2);
-    });
+    // other suites can leave items (e.g. a child folder) in this folder, so check by path
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName1}"]`).should("not.exist");
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName2}"]`).should("have.length", 1);
+    cy.get(`[data-filepath="/starsky-end2end-test/${fileName3}"]`).should("have.length", 1);
 
     cy.intercept("/starsky/api/search?json=true&t=!delete!&p=0").as(
       "trashPage"

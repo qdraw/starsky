@@ -10,6 +10,9 @@ on:
       - '.github/workflows/webapp-update-nuget-packages-list.yml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs: 
   run:
     name: Update Nuget packages list
@@ -18,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
     - name: Checkout repo
-      uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
     - name: Set up Node.js
-      uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
       with:
         node-version: 22.x
       
@@ -47,7 +50,7 @@ jobs:
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
       if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
-      uses: peter-evans/create-pull-request@eec7ab75b2f71ddc8a223341c83a67f6f774c39f
+      uses: peter-evans/create-pull-request@bd09a93810788ce61d2d5fb7d6b221b9b4a4aab7
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: '[NugetPackagesListUpdate] Auto commited nugetPackages list'

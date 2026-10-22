@@ -63,6 +63,23 @@ public sealed class XmpReadHelperTest
 		"</rdf:Description>\n\n </rdf:RDF>\n</x:xmpmeta>\n";
 
 	[TestMethod]
+	public void XmpReadHelperTest_GetData_ZeroDenominator_NoInfinityOrNaN()
+	{
+		// x/0 used to become Infinity, which MySQL rejects as "Unknown column 'Infinity'"
+		var input = Input
+			.Replace("exif:FNumber=\"9/1\"", "exif:FNumber=\"9/0\"")
+			.Replace("exif:FocalLength=\"28/1\"", "exif:FocalLength=\"0/0\"")
+			.Replace("exif:GPSAltitude=\"190/10\"", "exif:GPSAltitude=\"190/0\"");
+
+		var data = new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger())
+			.GetDataFromString(input);
+
+		Assert.IsTrue(double.IsFinite(data.Aperture), "Aperture");
+		Assert.IsTrue(double.IsFinite(data.FocalLength), "FocalLength");
+		Assert.IsTrue(double.IsFinite(data.LocationAltitude), "LocationAltitude");
+	}
+
+	[TestMethod]
 	public void XmpReadHelperTest_GetData_usingStringExample()
 	{
 		var data =
@@ -108,8 +125,8 @@ public sealed class XmpReadHelperTest
 		var xmpByteArray = Encoding.UTF8.GetBytes(Input);
 
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.arw", "/test.xmp" },
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.arw", "/test.xmp"],
 			new List<byte[]> { null!, xmpByteArray });
 		var fileIndexItem = new FileIndexItem { ParentDirectory = "/", FileName = "test.arw" };
 
@@ -152,8 +169,8 @@ public sealed class XmpReadHelperTest
 		var xmpByteArray = Encoding.UTF8.GetBytes(Input);
 
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.arw", "/test.xmp" },
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.arw", "/test.xmp"],
 			new List<byte[]> { null!, xmpByteArray });
 		var fileIndexItem = new FileIndexItem
 		{
@@ -228,6 +245,27 @@ public sealed class XmpReadHelperTest
 		Assert.AreEqual(string.Empty, data.Tags);
 	}
 
+	[TestMethod]
+	public void XmpBasicRead_InvalidXml_SetsOperationNotSupportedStatusAndClearsColorClass()
+	{
+		// Covers the catch(XmpException) branch: Status, ColorClass and Tags should be reset
+		const string xmpStart =
+			"<?xml version=\"1.0\"?>\n<!DOCTYPE WISHES\n<!ELEMENT WISHES (to, from)>\n" +
+			"\n<Wishes >\nHave a good day!!\n</WISHES >";
+		var databaseItem = new FileIndexItem("/test.arw")
+		{
+			ColorClass = ColorClassParser.Color.Winner
+		};
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpStart,
+				databaseItem);
+
+		Assert.AreEqual(string.Empty, data.Tags);
+		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported, data.Status);
+		Assert.AreEqual(ColorClassParser.Color.None, data.ColorClass);
+	}
+
 
 	[TestMethod]
 	public async Task XmpGetSidecarFile_LocationCountryCode()
@@ -243,8 +281,8 @@ public sealed class XmpReadHelperTest
 
 		var xmpByteArray = Encoding.UTF8.GetBytes(xmpData);
 
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.arw", "/test.xmp" },
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.arw", "/test.xmp"],
 			new List<byte[]> { null!, xmpByteArray });
 
 		var readMetaXmp = new ReadMetaXmp(fakeIStorage, new FakeIWebLogger());
@@ -254,14 +292,78 @@ public sealed class XmpReadHelperTest
 	}
 
 	[TestMethod]
+	public void XmpGetSidecarFile_GpsAltitudeRef_BelowSeaLevel_IsNegative()
+	{
+		// Covers GpsAltitudeRef: gpsAltitudeRef == "1" -> altitude is multiplied by -1
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:exif='http://ns.adobe.com/exif/1.0/' " +
+		                       "exif:GPSAltitude='190/10' exif:GPSAltitudeRef='1'>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(-19, data.LocationAltitude, 0.001);
+	}
+
+	[TestMethod]
+	public void XmpGetSidecarFile_GpsAltitude_WithoutFraction_IsIgnored()
+	{
+		// Covers GpsAltitudeRef: gpsAltitude without '/' -> early return, LocationAltitude stays default
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:exif='http://ns.adobe.com/exif/1.0/' " +
+		                       "exif:GPSAltitude='19' exif:GPSAltitudeRef='0'>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(0, data.LocationAltitude, 0.001);
+	}
+
+	[TestMethod]
+	public void XmpGetSidecarFile_InvalidDateTimeOriginal_IsIgnored()
+	{
+		// Covers SetCombinedDateTime: DateTimeOriginal fails to parse -> dateTime.Year < 3, item.DateTime not set
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:exif='http://ns.adobe.com/exif/1.0/' " +
+		                       "exif:DateTimeOriginal='not-a-date'>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(default, data.DateTime);
+	}
+
+	[TestMethod]
+	public void AddCommaSeparatedUnique_DuplicateValue_IsNotAddedTwice()
+	{
+		// Covers AddCommaSeparatedUnique: value already present in the HashSet -> no duplicate entry
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>cat</rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual("cat", data.SuggestedTags);
+	}
+
+	[TestMethod]
 	public void AddCommaSeparatedUnique_EmptyNextValue_ReturnsCurrentValue()
 	{
 		// Tests AddCommaSeparatedUnique: when next is empty the current value is preserved
-		// ai:SuggestedTags bag items contain whitespace-only values -> early return path
+		// qdraw:SuggestedTags bag items contain whitespace-only values -> early return path
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
-		                       "<rdf:li>cat</rdf:li><rdf:li>   </rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>   </rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
@@ -278,8 +380,8 @@ public sealed class XmpReadHelperTest
 		// An ai bag with only whitespace items and no prior value produces empty SuggestedTags
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
-		                       "<rdf:li>   </rdf:li></rdf:Bag></ai:SuggestedTags>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>   </rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
@@ -295,8 +397,8 @@ public sealed class XmpReadHelperTest
 		// RejectedTags starts empty and stays empty when all bag items are whitespace
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:RejectedTags><rdf:Bag>" +
-		                       "<rdf:li></rdf:li></rdf:Bag></ai:RejectedTags>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:RejectedTags><rdf:Bag>" +
+		                       "<rdf:li></rdf:li></rdf:Bag></qdraw:RejectedTags>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
@@ -310,11 +412,11 @@ public sealed class XmpReadHelperTest
 	{
 		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
 		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
-		                       "rdf:about='' xmlns:ai='https://qdraw.nl/ns/ai/1.0/'><ai:SuggestedTags><rdf:Bag>" +
-		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></ai:SuggestedTags>" +
-		                       "<ai:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></ai:RejectedTags>" +
-		                       "<ai:ImageClassificationModel>vit-base-1</ai:ImageClassificationModel>" +
-		                       "<ai:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</ai:ImageClassificationGeneratedAt>" +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'><qdraw:SuggestedTags><rdf:Bag>" +
+		                       "<rdf:li>cat</rdf:li><rdf:li>park</rdf:li></rdf:Bag></qdraw:SuggestedTags>" +
+		                       "<qdraw:RejectedTags><rdf:Bag><rdf:li>car</rdf:li></rdf:Bag></qdraw:RejectedTags>" +
+		                       "<qdraw:ImageClassificationModel>vit-base-1</qdraw:ImageClassificationModel>" +
+		                       "<qdraw:ImageClassificationGeneratedAt>2026-04-21T10:20:30Z</qdraw:ImageClassificationGeneratedAt>" +
 		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
 
 		var data =
@@ -325,5 +427,76 @@ public sealed class XmpReadHelperTest
 		Assert.AreEqual("vit-base-1", data.ImageClassificationModel);
 		Assert.AreEqual(new DateTime(2026, 4, 21, 10, 20, 30, DateTimeKind.Utc),
 			data.ImageClassificationGeneratedAt);
+	}
+
+	[TestMethod]
+	[DataRow("2026-04-21T10:20:30Z", 2026, true)]
+	[DataRow("not-a-date", 1, false)]
+	[DataRow("0001-04-21T10:20:30Z", 1, false)]
+	[DataRow("   ", 1, false)]
+	public void XmpReadHelperTest_GetData_ImageClassificationGeneratedAtCases(string generatedAtValue,
+		int expectedYear, bool shouldSetGeneratedAt)
+	{
+		var xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		              "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		              "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		              $"<qdraw:ImageClassificationGeneratedAt>{generatedAtValue}</qdraw:ImageClassificationGeneratedAt>" +
+		              "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		if ( shouldSetGeneratedAt )
+		{
+			Assert.AreEqual(expectedYear, data.ImageClassificationGeneratedAt.Year);
+			return;
+		}
+
+		Assert.AreEqual(default, data.ImageClassificationGeneratedAt);
+	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_QdrawImageStabilizationOn()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>On</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(ImageStabilisationType.On, data.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_QdrawImageStabilizationOff()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>Off</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(ImageStabilisationType.Off, data.ImageStabilisation);
+	}
+
+	[TestMethod]
+	public void XmpReadHelperTest_GetData_QdrawImageStabilizationUnknown()
+	{
+		const string xmpData = "<x:xmpmeta xmlns:x='adobe:ns:meta/'><rdf:RDF " +
+		                       "xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'><rdf:Description " +
+		                       "rdf:about='' xmlns:qdraw='https://qdraw.nl/ns/qdraw/1.0/'>" +
+		                       "<qdraw:ImageStabilization>SomeUnknownValue</qdraw:ImageStabilization>" +
+		                       "</rdf:Description></rdf:RDF></x:xmpmeta>";
+
+		var data =
+			new ReadMetaXmp(new FakeIStorage(), new FakeIWebLogger()).GetDataFromString(xmpData);
+
+		Assert.AreEqual(ImageStabilisationType.Unknown, data.ImageStabilisation);
 	}
 }

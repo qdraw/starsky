@@ -11,7 +11,7 @@ namespace starskytest.starsky.feature.cloudimport.Clients;
 [TestClass]
 public class DropboxClientWrapperTest
 {
-	private const string InvalidAccessToken = "";
+	private const string InvalidAccessToken = "invalid-token";
 
 	private static void SetHttpClientTimeout(DropboxClientWrapper client, TimeSpan timeout)
 	{

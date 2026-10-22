@@ -43,8 +43,8 @@ public sealed class SynchronizeTest
 	public async Task Sync_File()
 	{
 		var sync = new Synchronize(new AppSettings(), new FakeIQuery(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" })), new FakeIWebLogger(),
+			new FakeSelectorStorage(new FakeIStorage(["/"],
+				["/test.jpg"])), new FakeIWebLogger(),
 			new FakeISyncAddThumbnailTable(), null, new FakeMemoryCache());
 
 		var result = await sync.Sync("/test.jpg");
@@ -59,8 +59,8 @@ public sealed class SynchronizeTest
 		var sync = new Synchronize(
 			new AppSettings { DatabaseType = AppSettings.DatabaseTypeList.InMemoryDatabase },
 			new FakeIQuery(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
+			new FakeSelectorStorage(new FakeIStorage(["/"],
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() })), new FakeIWebLogger(),
 			new FakeISyncAddThumbnailTable(), null, new FakeMemoryCache());
 
@@ -77,8 +77,8 @@ public sealed class SynchronizeTest
 	public async Task Sync_TempFile_DS_Store()
 	{
 		var sync = new Synchronize(new AppSettings(), new FakeIQuery(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
+			new FakeSelectorStorage(new FakeIStorage(["/"],
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() })), new FakeIWebLogger(),
 			new FakeISyncAddThumbnailTable(), null, new FakeMemoryCache());
 
@@ -90,8 +90,8 @@ public sealed class SynchronizeTest
 	public async Task Sync_TempFile_DesktopIni()
 	{
 		var sync = new Synchronize(new AppSettings(), new FakeIQuery(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg" },
+			new FakeSelectorStorage(new FakeIStorage(["/"],
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() })), new FakeIWebLogger(),
 			new FakeISyncAddThumbnailTable(), null,
 			new FakeMemoryCache());
@@ -104,13 +104,13 @@ public sealed class SynchronizeTest
 	public async Task Sync_MultipleItems()
 	{
 		var sync = new Synchronize(new AppSettings(), new FakeIQuery(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test.jpg", "/test2.jpg" },
+			new FakeSelectorStorage(new FakeIStorage(["/"],
+				["/test.jpg", "/test2.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() })),
 			new FakeIWebLogger(),
 			new FakeISyncAddThumbnailTable(), null, new FakeMemoryCache());
 
-		var result = ( await sync.Sync(new List<string> { "/test.jpg", "/test2.jpg" }) )
+		var result = ( await sync.Sync(["/test.jpg", "/test2.jpg"]) )
 			.Where(p => p.FilePath != "/").ToList();
 
 		Assert.HasCount(2, result);

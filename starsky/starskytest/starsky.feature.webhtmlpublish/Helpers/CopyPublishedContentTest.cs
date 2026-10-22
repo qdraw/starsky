@@ -17,8 +17,8 @@ public sealed class CopyPublishedContentTest
 	{
 		var contentPath = CopyPublishedContent.GetContentFolder();
 
-		var fakeStorage = new FakeIStorage(new List<string> { contentPath },
-			new List<string> { Path.Combine(contentPath, "copy.jsx") },
+		var fakeStorage = new FakeIStorage([contentPath],
+			[Path.Combine(contentPath, "copy.jsx")],
 			new List<byte[]> { Array.Empty<byte>() });
 
 		var service = new CopyPublishedContent(new ToCreateSubfolder(fakeStorage),

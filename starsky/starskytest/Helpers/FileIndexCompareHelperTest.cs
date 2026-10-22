@@ -31,8 +31,8 @@ public sealed class FileIndexCompareHelperTest
 	[TestMethod]
 	public void FileIndexCompareHelperTest_StringList_Compare()
 	{
-		var source = new FileIndexItem { CollectionPaths = new List<string> { "source" } };
-		var update = new FileIndexItem { CollectionPaths = new List<string> { "update" } };
+		var source = new FileIndexItem { CollectionPaths = ["source"] };
+		var update = new FileIndexItem { CollectionPaths = ["update"] };
 		FileIndexCompareHelper.Compare(source, update);
 		Assert.AreEqual("update", source.CollectionPaths[0]);
 	}
@@ -126,7 +126,7 @@ public sealed class FileIndexCompareHelperTest
 		var source = new FileIndexItem { DateTime = new DateTime() };
 		var update = new FileIndexItem { DateTime = DateTime.Now };
 		var result =
-			FileIndexCompareHelper.SetCompare(source, update, new List<string> { "DateTime" });
+			FileIndexCompareHelper.SetCompare(source, update, ["DateTime"]);
 		Assert.AreEqual(update.DateTime, result.DateTime);
 	}
 
@@ -153,8 +153,8 @@ public sealed class FileIndexCompareHelperTest
 	[TestMethod]
 	public void FileIndexCompareHelperTest_LastChanged_Compare_Update()
 	{
-		var source = new FileIndexItem { LastChanged = new List<string>() };
-		var update = new FileIndexItem { LastChanged = new List<string> { "test" } };
+		var source = new FileIndexItem { LastChanged = [] };
+		var update = new FileIndexItem { LastChanged = ["test"] };
 		FileIndexCompareHelper.Compare(source,
 			update); // it element is updated, but the list not
 		Assert.HasCount(1, source.LastChanged);
@@ -163,8 +163,8 @@ public sealed class FileIndexCompareHelperTest
 	[TestMethod]
 	public void FileIndexCompareHelperTest_LastChanged_Compare_RemoveFromList()
 	{
-		var source = new FileIndexItem { LastChanged = new List<string>() };
-		var update = new FileIndexItem { LastChanged = new List<string> { "test" } };
+		var source = new FileIndexItem { LastChanged = [] };
+		var update = new FileIndexItem { LastChanged = ["test"] };
 		var result = FileIndexCompareHelper.Compare(source, update);
 		Assert.IsEmpty(result);
 	}
@@ -336,8 +336,8 @@ public sealed class FileIndexCompareHelperTest
 		var list = new List<string>();
 		FileIndexCompareHelper.CompareListString("t",
 			new FileIndexItem(),
-			new List<string> { "1" },
-			new List<string> { "1" }, list);
+			["1"],
+			["1"], list);
 		Assert.IsNotNull(list);
 	}
 

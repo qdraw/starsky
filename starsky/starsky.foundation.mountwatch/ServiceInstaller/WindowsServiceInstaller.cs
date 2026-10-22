@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using starsky.foundation.mountwatch.ServiceInstaller.Helpers;
@@ -52,16 +53,33 @@ internal class WindowsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 	{
 		try
 		{
-			string binPath;
+			string exePart;
 			if ( executablePath.EndsWith(".dll", StringComparison.OrdinalIgnoreCase) )
 			{
 				const string dotnetPath = "dotnet.exe";
-				binPath = $"\\\"{dotnetPath}\\\" \\\"{executablePath}\\\"";
+				exePart = $"\\\"{dotnetPath}\\\" \\\"{executablePath}\\\"";
 			}
 			else
 			{
-				binPath = $"\\\"{executablePath}\\\"";
+				exePart = $"\\\"{executablePath}\\\"";
 			}
+
+			// Bake the AppData paths into the service command line as CLI args so that
+			// SetEnvironmentByArgs picks them up at startup. The paths are resolved at install
+			// time (while the desktop app is running as the real user) and stored verbatim in
+			// the Windows service registry entry (ImagePath).
+			var appData = Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "starsky");
+			var localAppData = Path.Combine(
+				Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "starsky");
+
+			var serviceArgs = $" --connection \\\"Data Source={appData}\\starsky.db\\\"" +
+			                  $" --appsettingspath \\\"{appData}\\appsettings.json\\\"" +
+			                  $" --appsettingslocalpath \\\"{appData}\\appsettings.local.json\\\"" +
+			                  $" --thumbnailtempfolder \\\"{appData}\\thumbnailTempFolder\\\"" +
+			                  $" --tempfolder \\\"{localAppData}\\tempFolder\\\"";
+
+			var binPath = exePart + serviceArgs;
 
 			// sc.exe create "service" binPath= "path"
 			// Note the space after "binPath=" is mandatory for sc.exe

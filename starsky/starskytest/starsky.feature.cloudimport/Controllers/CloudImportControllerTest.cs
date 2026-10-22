@@ -161,7 +161,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>()
+				Providers = []
 			}
 		};
 		var fakeService = new FakeCloudImportService { IsSyncInProgress = false };
@@ -222,7 +222,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings> { provider }
+				Providers = [provider]
 			}
 		};
 		var fakeService = new FakeCloudImportService();
@@ -245,7 +245,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>()
+				Providers = []
 			}
 		};
 		var fakeService = new FakeCloudImportService();
@@ -277,7 +277,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings> { provider }
+				Providers = [provider]
 			}
 		};
 		var fakeService = new FakeCloudImportService();
@@ -306,7 +306,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>()
+				Providers = []
 			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -330,7 +330,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>()
+				Providers = []
 			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -358,7 +358,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>()
+				Providers = []
 			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -382,7 +382,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = new List<CloudImportProviderSettings>()
+				Providers = []
 			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);

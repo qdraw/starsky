@@ -29,6 +29,7 @@ namespace starskytest.Controllers;
 [TestClass]
 public sealed class DownloadPhotoControllerTest
 {
+	private readonly string _databaseName = $"{nameof(DownloadPhotoControllerTest)}_{Guid.NewGuid()}";
 	private readonly Query _query;
 
 	public DownloadPhotoControllerTest()
@@ -39,7 +40,7 @@ public sealed class DownloadPhotoControllerTest
 		var memoryCache = provider.GetService<IMemoryCache>();
 
 		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
-		builderDb.UseInMemoryDatabase(nameof(DownloadPhotoControllerTest));
+		builderDb.UseInMemoryDatabase(_databaseName);
 		var options = builderDb.Options;
 		var context = new ApplicationDbContext(options);
 		var scopeFactory = provider.GetRequiredService<IServiceScopeFactory>();
@@ -112,7 +113,7 @@ public sealed class DownloadPhotoControllerTest
 		var actionResult = controller.DownloadSidecar(null!);
 
 		// Assert
-		Assert.IsInstanceOfType(actionResult, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(actionResult);
 	}
 
 	[TestMethod]
@@ -224,7 +225,7 @@ public sealed class DownloadPhotoControllerTest
 		var actionResult = await controller.DownloadPhoto(null!);
 
 		// Assert
-		Assert.IsInstanceOfType(actionResult, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(actionResult);
 	}
 
 	[TestMethod]
@@ -413,8 +414,8 @@ public sealed class DownloadPhotoControllerTest
 		var fileHash = "FAKEHASH123";
 
 		// subpath storage has the source file
-		var subPathStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { filePath },
+		var subPathStorage = new FakeIStorage(["/"],
+			[filePath],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		// thumbnail storage only has small and meta but NOT large
@@ -431,10 +432,9 @@ public sealed class DownloadPhotoControllerTest
 			new FakeIStorage(), new FakeIStorage());
 
 		// Query contains the FileIndexItem with a FileHash
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new(filePath) { FileHash = fileHash, IsDirectory = false }
-		});
+		]);
 
 		var fakeLogger = new FakeIWebLogger();
 

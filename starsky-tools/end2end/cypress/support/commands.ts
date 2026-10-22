@@ -161,21 +161,22 @@ declare global {
 function fileRequest(fileName: string, to: string, imageType: string) {
   cy.fixture(fileName, "binary").then((imageBin) => {
     const blob = Cypress.Blob.binaryStringToBlob(imageBin, imageType);
-    const xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
     const data = new FormData();
     data.set("data", blob, fileName);
 
-    xhr.open("POST", "/api/upload");
-    xhr.setRequestHeader("accept", "application/json");
-    xhr.setRequestHeader("to", to);
-    xhr.onload = function () {
-      // done(xhr)
-    };
-    xhr.onerror = function () {
-      // done(xhr)
-    };
-    xhr.send(data);
+    // Return a Promise so Cypress waits for the upload to finish before
+    // proceeding. Without this the XHR was fire-and-forget, causing the
+    // subsequent index-polling step to race against an in-flight upload.
+    return new Promise<void>((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.withCredentials = true;
+      xhr.open("POST", "/api/upload");
+      xhr.setRequestHeader("accept", "application/json");
+      xhr.setRequestHeader("to", to);
+      xhr.onload = () => resolve();
+      xhr.onerror = () => reject(new Error(`Upload failed: ${fileName}`));
+      xhr.send(data);
+    });
   });
 }
 

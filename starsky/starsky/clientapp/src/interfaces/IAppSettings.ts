@@ -5,7 +5,9 @@ export interface IAppSettings {
   verbose: boolean;
   storageFolder: string;
   storageFolderAllowEdit: boolean;
+  storageFolderMappings: Record<string, string>;
   useLocalDesktop: boolean;
   defaultDesktopEditor: IAppSettingsDefaultEditorApplication[];
   desktopCollectionsOpen: RawJpegMode;
+  readOnlyFolders: string[];
 }

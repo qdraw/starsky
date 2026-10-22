@@ -18,8 +18,8 @@ public sealed class UpdateImportTransformationsTest
 	public async Task UpdateTransformations_ShouldUpdate_ColorClass_IndexModeOn()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 		var appSettings = new AppSettings();
 
@@ -89,8 +89,8 @@ public sealed class UpdateImportTransformationsTest
 	public async Task UpdateTransformations_ShouldNotUpdate_IndexOff()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 		var appSettings = new AppSettings();
 
@@ -117,8 +117,8 @@ public sealed class UpdateImportTransformationsTest
 	public async Task UpdateTransformations_ShouldUpdate_Description_IndexModeOn()
 	{
 		var storage = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string> { "/test.jpg", "/test.xmp" },
+			["/"],
+			["/test.jpg", "/test.xmp"],
 			new List<byte[]> { CreateAnPng.Bytes.ToArray(), CreateAnXmp.Bytes.ToArray() });
 		var appSettings = new AppSettings();
 
@@ -153,7 +153,7 @@ public sealed class UpdateImportTransformationsTest
 	[TestMethod]
 	public void ColorClassComparedNamesList_Contain()
 	{
-		var list = UpdateImportTransformations.AddColorClassToComparedNamesList(new List<string>());
+		var list = UpdateImportTransformations.AddColorClassToComparedNamesList([]);
 		Assert.HasCount(1, list);
 		Assert.AreEqual(nameof(FileIndexItem.ColorClass).ToLowerInvariant(), list[0]);
 	}

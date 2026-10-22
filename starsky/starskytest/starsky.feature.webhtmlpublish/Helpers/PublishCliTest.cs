@@ -61,7 +61,7 @@ public sealed class PublishCliTest
 	{
 		var console = new FakeConsoleWrapper();
 		var fakeSelectorStorage =
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/test" }));
+			new FakeSelectorStorage(new FakeIStorage(["/test"]));
 
 		await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(),
 			new FakeIWebHtmlPublishService(),
@@ -77,11 +77,10 @@ public sealed class PublishCliTest
 	{
 		var console = new FakeConsoleWrapper();
 		var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(
-			new List<string> { Path.DirectorySeparatorChar + "test" },
-			new List<string>
-			{
+			[Path.DirectorySeparatorChar + "test"],
+			[
 				$"{Path.DirectorySeparatorChar}test{Path.DirectorySeparatorChar}_settings.json"
-			}));
+			]));
 
 		await new PublishCli(fakeSelectorStorage, new FakeIPublishPreflight(),
 			new FakeIWebHtmlPublishService(),
@@ -98,26 +97,22 @@ public sealed class PublishCliTest
 	{
 		var console = new FakeConsoleWrapper();
 		var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(
-			new List<string> { Path.DirectorySeparatorChar + "test" },
-			new List<string>()));
+			[Path.DirectorySeparatorChar + "test"],
+			[]));
 
 		var appSettings = new AppSettings
 		{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test1",
-					new List<AppSettingsPublishProfiles>
-					{
+					"test1", [
 						new() { Path = Path.DirectorySeparatorChar + "test" }
-					}
+					]
 				},
 				{
-					"test2",
-					new List<AppSettingsPublishProfiles>
-					{
+					"test2", [
 						new() { Path = Path.DirectorySeparatorChar + "test" }
-					}
+					]
 				}
 			}
 		};
@@ -137,26 +132,22 @@ public sealed class PublishCliTest
 	{
 		var console = new FakeConsoleWrapper();
 		var fakeSelectorStorage = new FakeSelectorStorage(new FakeIStorage(
-			new List<string> { Path.DirectorySeparatorChar + "test" },
-			new List<string>()));
+			[Path.DirectorySeparatorChar + "test"],
+			[]));
 
 		var appSettings = new AppSettings
 		{
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test1",
-					new List<AppSettingsPublishProfiles>
-					{
+					"test1", [
 						new() { Path = Path.DirectorySeparatorChar + "test" }
-					}
+					]
 				},
 				{
-					"test2",
-					new List<AppSettingsPublishProfiles>
-					{
+					"test2", [
 						new() { Path = Path.DirectorySeparatorChar + "test" }
-					}
+					]
 				}
 			}
 		};

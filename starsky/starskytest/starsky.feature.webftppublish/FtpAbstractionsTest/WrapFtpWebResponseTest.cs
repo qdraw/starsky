@@ -32,8 +32,7 @@ public sealed class WrapFtpWebResponseTest
 
 		// using reflection
 		// ReSharper disable once PossibleNullReferenceException
-		var instance = ( FtpWebResponse? ) ctor!.Invoke(new object[]
-		{
+		var instance = ( FtpWebResponse? ) ctor!.Invoke([
 			new MemoryStream(), // Stream responseStream,
 			1L, // long contentLength,
 			new Uri("ftp://google.com"), // Uri responseUri,
@@ -43,7 +42,7 @@ public sealed class WrapFtpWebResponseTest
 			string.Empty, //  string bannerMessage,
 			string.Empty, // string welcomeMessage
 			string.Empty // string exitMessage
-		});
+		]);
 
 		var response = new WrapFtpWebResponse(instance!);
 		response.Dispose();

@@ -9,6 +9,7 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.video.GetDependencies.Models;
 using starsky.foundation.video.Process;
+using starsky.foundation.video.Process.Types;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 
@@ -59,7 +60,7 @@ public class VideoProcessTests
 		// Arrange
 		const string subPath = "/test.mp4";
 		var fileHashService = new FileHash(_storage, new FakeIWebLogger());
-		var beforeFileHash = ( await fileHashService.GetHashCodeAsync(subPath, 
+		var beforeFileHash = ( await fileHashService.GetHashCodeAsync(subPath,
 			ExtensionRolesHelper.ImageFormat.mp4) ).Key;
 		var expectedPath = $"{beforeFileHash}.jpg";
 

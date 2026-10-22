@@ -16,7 +16,7 @@ public sealed class ConsoleAdminTest
 	public async Task StarskyAdminCliProgramTest_UserDoesNotExist_AndCreateAccount()
 	{
 		var console =
-			new FakeConsoleWrapper(new List<string> { "dont@mail.me", "1234567890123456" });
+			new FakeConsoleWrapper(["dont@mail.me", "1234567890123456"]);
 
 		var service = new ConsoleAdmin(new FakeUserManagerActiveUsers(), console,
 			new FakeIHttpClientHelper(new FakeIStorage(),
@@ -44,7 +44,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task UserCreate_ValidationShouldFail()
 	{
-		var console = new FakeConsoleWrapper(new List<string> { "no_email", "false" });
+		var console = new FakeConsoleWrapper(["no_email", "false"]);
 
 		var service = new ConsoleAdmin(new FakeUserManagerActiveUsers(), console,
 			new FakeIHttpClientHelper(new FakeIStorage(),
@@ -58,7 +58,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task UserCreate_NoInput()
 	{
-		var console = new FakeConsoleWrapper(new List<string> { "dont@mail.me", string.Empty });
+		var console = new FakeConsoleWrapper(["dont@mail.me", string.Empty]);
 
 		var service = new ConsoleAdmin(new FakeUserManagerActiveUsers(), console,
 			new FakeIHttpClientHelper(new FakeIStorage(),
@@ -72,7 +72,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task StarskyAdminCliProgramTest_NoInput()
 	{
-		var console = new FakeConsoleWrapper(new List<string> { string.Empty });
+		var console = new FakeConsoleWrapper([string.Empty]);
 		await new ConsoleAdmin(new FakeUserManagerActiveUsers(), console, new FakeIHttpClientHelper(
 			new FakeIStorage(),
 			new Dictionary<string, KeyValuePair<bool, string>>())).Tool(string.Empty,
@@ -85,7 +85,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task StarskyAdminCliProgramTest_Removed()
 	{
-		var console = new FakeConsoleWrapper(new List<string> { "test", "2" });
+		var console = new FakeConsoleWrapper(["test", "2"]);
 		await new ConsoleAdmin(
 				new FakeUserManagerActiveUsers("test", new User { Name = "t1", Id = 99 }),
 				console, new FakeIHttpClientHelper(new FakeIStorage(),
@@ -99,7 +99,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task ToggleUserAdminRole_toAdmin()
 	{
-		var console = new FakeConsoleWrapper(new List<string> { "test", "3" });
+		var console = new FakeConsoleWrapper(["test", "3"]);
 		var service = new ConsoleAdmin(
 			new FakeUserManagerActiveUsers("test",
 				new User
@@ -120,7 +120,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task ToggleUserAdminRole_toUser()
 	{
-		var console = new FakeConsoleWrapper(new List<string> { "test", "3" });
+		var console = new FakeConsoleWrapper(["test", "3"]);
 
 		var userMan =
 			new FakeUserManagerActiveUsers("test",
@@ -143,7 +143,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task ToggleUserAdminRole_toUser_invalidEnum_selected()
 	{
-		var console = new FakeConsoleWrapper(new List<string> { "test", "q" });
+		var console = new FakeConsoleWrapper(["test", "q"]);
 
 		var userMan = new FakeUserManagerActiveUsers("test", new User { Name = "t1", Id = 99 })
 		{
@@ -158,15 +158,14 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task DropboxSetup()
 	{
-		var console = new FakeConsoleWrapper(new List<string>
-		{
+		var console = new FakeConsoleWrapper([
 			"test",
 			"4",
 			"test-app-key", // Dropbox App Key
 			"test-app-secret", // Dropbox App Secret
 			"test-access-code", // Access code
 			""
-		});
+		]);
 		var httpClientHelper = new FakeIHttpClientHelper(
 			new FakeIStorage(),
 			new Dictionary<string, KeyValuePair<bool, string>>

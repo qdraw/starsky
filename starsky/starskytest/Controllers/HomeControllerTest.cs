@@ -180,7 +180,7 @@ public sealed class HomeControllerTest
 		var result = _controller.SearchPost(t, p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(RedirectResult));
+		Assert.IsInstanceOfType<RedirectResult>(result);
 		var redirectResult = ( RedirectResult ) result;
 		Assert.AreEqual("/search", redirectResult.Url);
 	}
@@ -196,7 +196,7 @@ public sealed class HomeControllerTest
 		var result = _controller.SearchPost(t, p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -210,7 +210,7 @@ public sealed class HomeControllerTest
 		var result = _controller.SearchPost(t, p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(RedirectResult));
+		Assert.IsInstanceOfType<RedirectResult>(result);
 		var redirectResult = ( RedirectResult ) result;
 		Assert.AreEqual($"/search?t={t}&p={p}", redirectResult.Url);
 	}
@@ -244,7 +244,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Search(t, p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(PhysicalFileResult));
+		Assert.IsInstanceOfType<PhysicalFileResult>(result);
 		var physicalFileResult = ( PhysicalFileResult ) result;
 		Assert.AreEqual("text/html", physicalFileResult.ContentType);
 	}
@@ -260,7 +260,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Search(t, p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(RedirectResult));
+		Assert.IsInstanceOfType<RedirectResult>(result);
 		var redirectResult = ( RedirectResult ) result;
 		Assert.AreEqual("/search", redirectResult.Url);
 	}
@@ -276,7 +276,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Search(t, p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 
 	[TestMethod]
@@ -290,7 +290,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Search(t, p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(RedirectResult));
+		Assert.IsInstanceOfType<RedirectResult>(result);
 		var redirectResult = ( RedirectResult ) result;
 		Assert.AreEqual($"/search?t={t}&p={p}", redirectResult.Url);
 	}
@@ -320,7 +320,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Trash(p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(PhysicalFileResult));
+		Assert.IsInstanceOfType<PhysicalFileResult>(result);
 		var physicalFileResult = ( PhysicalFileResult ) result;
 		Assert.AreEqual("text/html", physicalFileResult.ContentType);
 	}
@@ -345,7 +345,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Trash(p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(RedirectResult));
+		Assert.IsInstanceOfType<RedirectResult>(result);
 		var redirectResult = ( RedirectResult ) result;
 		Assert.AreEqual("/trash?p=0", redirectResult.Url);
 	}
@@ -362,7 +362,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Trash(p);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(PhysicalFileResult));
+		Assert.IsInstanceOfType<PhysicalFileResult>(result);
 		var physicalFileResult = ( PhysicalFileResult ) result;
 		Assert.AreEqual("text/html", physicalFileResult.ContentType);
 	}
@@ -389,7 +389,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Import();
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(PhysicalFileResult));
+		Assert.IsInstanceOfType<PhysicalFileResult>(result);
 		var physicalFileResult = ( PhysicalFileResult ) result;
 		Assert.AreEqual("text/html", physicalFileResult.ContentType);
 	}
@@ -404,7 +404,7 @@ public sealed class HomeControllerTest
 		var result = _controller.Import();
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(PhysicalFileResult));
+		Assert.IsInstanceOfType<PhysicalFileResult>(result);
 		var physicalFileResult = ( PhysicalFileResult ) result;
 		Assert.AreEqual("text/html", physicalFileResult.ContentType);
 	}

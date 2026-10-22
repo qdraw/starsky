@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -158,13 +159,14 @@ public class ThumbnailQueryTest
 
 		// Act
 		var result = await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel>
-			{
-				new(
-					"file" + ThumbnailSize.Small, null, true),
-				new(
-					"file" + ThumbnailSize.Large, null, null, true)
-			});
+		[
+
+			new(
+				"file" + ThumbnailSize.Small, null, true),
+
+			new(
+				"file" + ThumbnailSize.Large, null, null, true)
+		]);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -205,10 +207,9 @@ public class ThumbnailQueryTest
 
 		// Act
 		var result = await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel>
-			{
-				new("9123", null, true, true), new("9456", null, true)
-			});
+		[
+			new("9123", null, true, true), new("9456", null, true)
+		]);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -236,10 +237,9 @@ public class ThumbnailQueryTest
 
 		// Act
 		var result = await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel>
-			{
-				new("789", null, true), new("1011", null, true)
-			});
+		[
+			new("789", null, true), new("1011", null, true)
+		]);
 
 		// Assert
 		Assert.IsNotNull(result);
@@ -259,7 +259,7 @@ public class ThumbnailQueryTest
 		await Assert.ThrowsExactlyAsync<ArgumentNullException>(async () =>
 		{
 			await thumbnailQuery.AddThumbnailRangeAsync(
-				new List<ThumbnailResultDataTransferModel> { new(null!) });
+				[new(null!)]);
 		});
 	}
 
@@ -269,7 +269,7 @@ public class ThumbnailQueryTest
 	{
 		var result =
 			await _thumbnailQuery.AddThumbnailRangeAsync(
-				new List<ThumbnailResultDataTransferModel>());
+				[]);
 		Assert.AreEqual(0, result?.Count);
 	}
 
@@ -280,13 +280,12 @@ public class ThumbnailQueryTest
 	{
 		// Act
 		await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel> { new("9475", true) { Reasons = "test" } });
+			[new("9475", true) { Reasons = "test" }]);
 
 		await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel>
-			{
-				new("9475", null, true, true, true) { Reasons = "test" }
-			});
+		[
+			new("9475", null, true, true, true) { Reasons = "test" }
+		]);
 
 		// Assert
 		var result3 = await _thumbnailQuery.Get("9475");
@@ -307,16 +306,14 @@ public class ThumbnailQueryTest
 	{
 		// Act
 		await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel>
-			{
-				new("457838", true) { Reasons = "word" }
-			});
+		[
+			new("457838", true) { Reasons = "word" }
+		]);
 
 		await _thumbnailQuery.AddThumbnailRangeAsync(
-			new List<ThumbnailResultDataTransferModel>
-			{
-				new("457838", null, true, true, true) { Reasons = "test2" }
-			});
+		[
+			new("457838", null, true, true, true) { Reasons = "test2" }
+		]);
 
 		// Assert
 		var result3 = await _thumbnailQuery.Get("457838");
@@ -418,7 +415,7 @@ public class ThumbnailQueryTest
 		// Act
 		var query =
 			new ThumbnailQuery(_context, null!, new FakeIWebLogger(), new FakeMemoryCache());
-		await query.RemoveThumbnailsAsync(new List<string> { "3478534758" });
+		await query.RemoveThumbnailsAsync(["3478534758"]);
 
 		// Assert
 		var getter = await query.Get("3478534758");
@@ -441,7 +438,7 @@ public class ThumbnailQueryTest
 		// Act
 		var query =
 			new ThumbnailQuery(_context, null!, new FakeIWebLogger(), new FakeMemoryCache());
-		await query.RemoveThumbnailsAsync(new List<string> { "9086798654", "9607374598453" });
+		await query.RemoveThumbnailsAsync(["9086798654", "9607374598453"]);
 
 		// Assert
 		var getter = await query.Get("9607374598453");
@@ -454,7 +451,7 @@ public class ThumbnailQueryTest
 		// Act
 		var query =
 			new ThumbnailQuery(_context, null!, new FakeIWebLogger(), new FakeMemoryCache());
-		await query.RemoveThumbnailsAsync(new List<string>());
+		await query.RemoveThumbnailsAsync([]);
 
 		// Assert
 		var getter = await query.Get("3787453");
@@ -490,10 +487,9 @@ public class ThumbnailQueryTest
 		var fileHashes = new List<string> { "457838754" };
 
 		// Act
-		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
+		await _thumbnailQuery.AddThumbnailRangeAsync([
 			new("457838754", null, true)
-		});
+		]);
 
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get("457838754");
@@ -510,10 +506,9 @@ public class ThumbnailQueryTest
 		var fileHashes = new List<string> { "3456789" };
 
 		// Act
-		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
+		await _thumbnailQuery.AddThumbnailRangeAsync([
 			new("3456789", null, true)
-		});
+		]);
 
 		// Assert
 		var thumbnails = await _thumbnailQuery.Get();
@@ -539,12 +534,12 @@ public class ThumbnailQueryTest
 
 		await ThumbnailQuery.CheckForDuplicates(_context, items);
 
-		items = new List<ThumbnailItem?>
-		{
+		items =
+		[
 			new("1718", null, null, true, null),
 			// item 2
 			new("1920", null, null, true, null)
-		};
+		];
 
 		// Act
 		var (newThumbnailItems, updateThumbnailItems, _) =
@@ -583,10 +578,9 @@ public class ThumbnailQueryTest
 		// Act
 		var query =
 			new ThumbnailQuery(_context, null!, new FakeIWebLogger(), new FakeMemoryCache());
-		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
+		await _thumbnailQuery.AddThumbnailRangeAsync([
 			new("3787453", null, true)
-		});
+		]);
 
 		// Assert
 		var getter = await query.RenameAsync("3787453", "__new__hash__");
@@ -638,10 +632,9 @@ public class ThumbnailQueryTest
 		// Act
 		var query =
 			new ThumbnailQuery(_context, null!, new FakeIWebLogger(), new FakeMemoryCache());
-		await _thumbnailQuery.AddThumbnailRangeAsync(new List<ThumbnailResultDataTransferModel>
-		{
+		await _thumbnailQuery.AddThumbnailRangeAsync([
 			new("357484875", null, true)
-		});
+		]);
 
 		// Assert
 		var getter = await query.RenameAsync("357484875", "357484875");
@@ -862,7 +855,7 @@ public class ThumbnailQueryTest
 
 		// Act & Assert
 		await Assert.ThrowsExactlyAsync<ObjectDisposedException>(async () =>
-			await thumbnailQuery.RemoveThumbnailsAsync(new List<string> { "data" }));
+			await thumbnailQuery.RemoveThumbnailsAsync(["data"]));
 	}
 
 	[TestMethod]
@@ -888,7 +881,7 @@ public class ThumbnailQueryTest
 		await dbContext.DisposeAsync();
 
 		// Act
-		await thumbnailQuery.RemoveThumbnailsAsync(new List<string> { "8439573458435" });
+		await thumbnailQuery.RemoveThumbnailsAsync(["8439573458435"]);
 
 		// Assert
 
@@ -1018,6 +1011,68 @@ public class ThumbnailQueryTest
 			"[ThumbnailQuery] try to fix DbUpdateConcurrencyException"));
 	}
 
+	[TestMethod]
+	public async Task UpdateAsync_DbUpdateConcurrencyException()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(UpdateAsync_DbUpdateConcurrencyException))
+			.Options;
+		var dbContext = new ConcurrencyExceptionApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, null, webLogger);
+
+		var result = await thumbnailQuery.UpdateAsync(new ThumbnailItem("hash_update_test", null, null, null, null, null));
+
+		Assert.IsFalse(result);
+		Assert.HasCount(2, webLogger.TrackedInformation);
+		Assert.IsTrue(webLogger.TrackedInformation[0].Item2?.StartsWith(
+			"[ThumbnailQuery] try to fix DbUpdateConcurrencyException"));
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?.StartsWith(
+			"[ThumbnailQuery] save failed after DbUpdateConcurrencyException"));
+	}
+
+	[TestMethod]
+	public async Task UpdateAsync_DbUpdateConcurrencyExceptionWithDeletedRow_ReturnsFalse()
+	{
+		await using var connection = new SqliteConnection("Filename=:memory:");
+		await connection.OpenAsync(TestContext.CancellationToken);
+
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseSqlite(connection)
+			.Options;
+		await using ( var setupContext = new ApplicationDbContext(options) )
+		{
+			await setupContext.Database.EnsureCreatedAsync(TestContext.CancellationToken);
+			await setupContext.Thumbnails.AddAsync(
+				new ThumbnailItem("hash_update_test", null, null, null, null),
+				TestContext.CancellationToken);
+			await setupContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		await using ( var deleteContext = new ApplicationDbContext(options) )
+		{
+			deleteContext.Thumbnails.Remove(
+				await deleteContext.Thumbnails.SingleAsync(
+					thumbnail => thumbnail.FileHash == "hash_update_test",
+					TestContext.CancellationToken));
+			await deleteContext.SaveChangesAsync(TestContext.CancellationToken);
+		}
+
+		await using var dbContext = new ApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var thumbnailQuery = new ThumbnailQuery(dbContext, null, webLogger);
+
+		var result = await thumbnailQuery.UpdateAsync(
+			new ThumbnailItem("hash_update_test", null, null, null, null, null));
+
+		Assert.IsFalse(result);
+		Assert.HasCount(2, webLogger.TrackedInformation);
+		Assert.IsTrue(webLogger.TrackedInformation[1].Item2?.StartsWith(
+			"[ThumbnailQuery] all entries detached after DbUpdateConcurrencyException; rows were deleted"));
+	}
+
 	private sealed class ConcurrencyExceptionApplicationDbContext(DbContextOptions options)
 		: ApplicationDbContext(options)
 	{
@@ -1033,6 +1088,37 @@ public class ThumbnailQueryTest
 		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 		{
 			throw new DbUpdateConcurrencyException();
+		}
+	}
+
+	[TestMethod]
+	public async Task AddThumbnailRangeAsync_SqliteUniqueConstraintException()
+	{
+		var addedItems = new List<ThumbnailResultDataTransferModel> { new("test123", null, true) };
+
+		var serviceScopeFactory =
+			CreateNewScope(nameof(AddThumbnailRangeAsync_SqliteUniqueConstraintException));
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(AddThumbnailRangeAsync_SqliteUniqueConstraintException))
+			.Options;
+		var dbContext = new SqliteUniqueConstraintApplicationDbContext(options);
+
+		var webLogger = new FakeIWebLogger();
+		var importQuery = new ThumbnailQuery(dbContext, serviceScopeFactory, webLogger);
+
+		await importQuery.AddThumbnailRangeAsync(addedItems);
+
+		Assert.IsTrue(webLogger.TrackedInformation.Exists(x =>
+			x.Item2?.StartsWith("[SaveChangesDuplicate] OK SQLite unique constraint") == true));
+	}
+
+	private sealed class SqliteUniqueConstraintApplicationDbContext(DbContextOptions options)
+		: ApplicationDbContext(options)
+	{
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			var sqliteException = new SqliteException("SQLite Error 19: 'UNIQUE constraint failed'", 19);
+			throw new DbUpdateException("unique constraint", sqliteException);
 		}
 	}
 }

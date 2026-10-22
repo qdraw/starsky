@@ -32,6 +32,12 @@ public class OnStartupSyncBackgroundService(IServiceScopeFactory serviceScopeFac
 	{
 		using var scope = serviceScopeFactory.CreateScope();
 		var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
+
+		if ( appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
+		{
+			return;
+		}
+
 		var diskWatcherBackgroundTaskQueue = scope.ServiceProvider
 			.GetRequiredService<IDiskWatcherBackgroundTaskQueue>();
 

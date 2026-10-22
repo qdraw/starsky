@@ -1,0 +1,671 @@
+name: Desktop Release on tag (.NET, Swift & WPF)
+permissions:
+  contents: read
+
+on:
+  push:
+    branches: [master]
+    paths:
+    - '.github/workflows/desktop-release-on-tag-native.yml'
+    - 'starsky-tools/build-tools/app-version-update.js'
+    - 'mac/**'
+    - 'windows/**'
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  schedule:
+    - cron: '25 0 * * *'
+  workflow_dispatch:
+
+jobs:
+
+  build_net:
+
+    name: Build .NET
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Remove Android
+        run: sudo rm -rf /usr/local/lib/android
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.402
+
+      - name: Build --no-unit-test linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64 --ready-to-run
+        shell: bash
+        working-directory: ./starsky
+        env:
+          # embedded as assembly metadata in Release builds, see starsky.foundation.webtelemetry.csproj
+          STARSKY_CRASH_REPORT_DSN: ${{ secrets.STARSKY_CRASH_REPORT_DSN }}
+        run: bash build.sh --runtime "linux-arm64,win-x64,osx-x64,linux-x64,osx-arm64" --no-unit-test --ready-to-run
+
+      - name: Upload linux-arm64 as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: linux-arm64
+          path: ./starsky/starsky-linux-arm64.zip
+
+      - name: Upload win-x64 as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: win-x64
+          path: ./starsky/starsky-win-x64.zip
+
+      - name: Upload linux-x64 as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: linux-x64
+          path: ./starsky/starsky-linux-x64.zip
+
+      - name: Upload osx-x64 as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: osx-x64
+          path: ./starsky/starsky-osx-x64.zip
+
+      - name: Upload osx-arm64 as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: osx-arm64
+          path: ./starsky/starsky-osx-arm64.zip
+
+      - name: Upload slack-notification as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: starsky-tools-slack-notification
+          path: ./starsky-tools/slack-notification
+
+  build_mac_native:
+    name: Build Mac Desktop app (native Swift, universal)
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    needs: [build_net]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Download osx-x64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: osx-x64
+          path: ./starsky
+
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: osx-arm64
+          path: ./starsky
+
+      - name: Unzip osx-x64 backend
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-x64.zip -d osx-x64
+
+      - name: Unzip osx-arm64 backend
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-arm64.zip -d osx-arm64
+
+      - name: Install tools
+        run: brew install xcodegen create-dmg
+
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
+
+      - name: Import code signing certificate
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.STARSKY_MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.STARSKY_MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.STARSKY_MACOS_KEYCHAIN_PASSWORD }}
+        run: bash mac/scripts/import-cert.sh
+
+      - name: Archive (universal)
+        env:
+          DEVELOPMENT_TEAM: "LHZ4426ABB"
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
+        run: |
+          xcodebuild archive \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Release \
+            -archivePath build/starsky.xcarchive \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            ARCHS="arm64 x86_64" \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
+
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/starsky.xcarchive \
+            -exportPath build/ \
+            -exportOptionsPlist mac/ExportOptions.plist
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-universal-desktop.dmg \
+            "build/starsky.app"
+
+      - name: Sign DMG
+        run: codesign --force --sign "Developer ID Application" build/starsky-mac-universal-desktop.dmg
+
+      - name: Notarize and staple
+        run: |
+          bash mac/scripts/notarize.sh \
+            build/starsky-mac-universal-desktop.dmg \
+            "${{ secrets.STARSKY_APPLE_ID }}" \
+            "LHZ4426ABB" \
+            "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
+
+      - name: Upload starsky-mac-universal-desktop as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: starsky-mac-universal-desktop
+          path: build/starsky-mac-universal-desktop.dmg
+
+  build_mac_arm64:
+    name: Build Mac Desktop app (native Swift, arm64)
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    needs: [build_net]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: osx-arm64
+          path: ./starsky
+
+      - name: Unzip osx-arm64 backend
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-arm64.zip -d osx-arm64
+
+      - name: Install tools
+        run: brew install xcodegen create-dmg
+
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
+
+      - name: Import code signing certificate
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.STARSKY_MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.STARSKY_MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.STARSKY_MACOS_KEYCHAIN_PASSWORD }}
+        run: bash mac/scripts/import-cert.sh
+
+      - name: Archive (arm64)
+        env:
+          DEVELOPMENT_TEAM: "LHZ4426ABB"
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
+        run: |
+          xcodebuild archive \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Release \
+            -archivePath build/starsky.xcarchive \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            ARCHS="arm64" \
+            ONLY_ACTIVE_ARCH=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
+
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/starsky.xcarchive \
+            -exportPath build/ \
+            -exportOptionsPlist mac/ExportOptions.plist
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-arm64-desktop.dmg \
+            "build/starsky.app"
+
+      - name: Sign DMG
+        run: codesign --force --sign "Developer ID Application" build/starsky-mac-arm64-desktop.dmg
+
+      - name: Notarize and staple
+        run: |
+          bash mac/scripts/notarize.sh \
+            build/starsky-mac-arm64-desktop.dmg \
+            "${{ secrets.STARSKY_APPLE_ID }}" \
+            "LHZ4426ABB" \
+            "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
+
+      - name: Upload starsky-mac-arm64-desktop as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: starsky-mac-arm64-desktop
+          path: build/starsky-mac-arm64-desktop.dmg
+
+  build_mac_x64:
+    name: Build Mac Desktop app (native Swift, x64)
+    runs-on: macos-latest
+    permissions:
+      contents: read
+    needs: [build_net]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Download osx-x64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: osx-x64
+          path: ./starsky
+
+      - name: Unzip osx-x64 backend
+        shell: bash
+        working-directory: ./starsky
+        run: unzip starsky-osx-x64.zip -d osx-x64
+
+      - name: Install tools
+        run: brew install xcodegen create-dmg
+
+      - name: Generate Xcode project
+        run: cd mac && xcodegen generate
+
+      - name: Import code signing certificate
+        env:
+          MACOS_CERTIFICATE: ${{ secrets.STARSKY_MACOS_CERTIFICATE }}
+          MACOS_CERTIFICATE_PWD: ${{ secrets.STARSKY_MACOS_CERTIFICATE_PWD }}
+          MACOS_KEYCHAIN_PASSWORD: ${{ secrets.STARSKY_MACOS_KEYCHAIN_PASSWORD }}
+        run: bash mac/scripts/import-cert.sh
+
+      - name: Archive (x64)
+        env:
+          DEVELOPMENT_TEAM: "LHZ4426ABB"
+          SPARKLE_PUBLIC_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PUBLIC_ED_KEY }}
+        run: |
+          xcodebuild archive \
+            -project mac/starsky.xcodeproj \
+            -scheme starsky \
+            -configuration Release \
+            -archivePath build/starsky.xcarchive \
+            DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+            CODE_SIGN_IDENTITY="Developer ID Application" \
+            ARCHS="x86_64" \
+            ONLY_ACTIVE_ARCH=NO \
+            SPARKLE_PUBLIC_ED_KEY="$SPARKLE_PUBLIC_ED_KEY"
+
+      - name: Export
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/starsky.xcarchive \
+            -exportPath build/ \
+            -exportOptionsPlist mac/ExportOptions.plist
+
+      - name: Create DMG
+        run: |
+          create-dmg \
+            --volname "Starsky" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "starsky.app" 175 190 \
+            --app-drop-link 425 190 \
+            build/starsky-mac-x64-desktop.dmg \
+            "build/starsky.app"
+
+      - name: Sign DMG
+        run: codesign --force --sign "Developer ID Application" build/starsky-mac-x64-desktop.dmg
+
+      - name: Notarize and staple
+        run: |
+          bash mac/scripts/notarize.sh \
+            build/starsky-mac-x64-desktop.dmg \
+            "${{ secrets.STARSKY_APPLE_ID }}" \
+            "LHZ4426ABB" \
+            "${{ secrets.STARSKY_MACOS_NOTARYTOOL_APP_PASSWORD }}"
+
+      - name: Upload starsky-mac-x64-desktop as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: starsky-mac-x64-desktop
+          path: build/starsky-mac-x64-desktop.dmg
+
+  build_win:
+    name: Build Windows Desktop app (WPF + Velopack)
+    runs-on: windows-latest
+    needs: [build_net]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Download starsky-win-x64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: win-x64
+          path: ./starsky
+
+      - name: Unzip Windows backend bundle
+        shell: pwsh
+        working-directory: ./starsky
+        run: Expand-Archive starsky-win-x64.zip -DestinationPath win-x64
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+        with:
+          dotnet-version: 10.0.402
+
+      - name: Install Velopack CLI
+        run: dotnet tool install -g vpk --version 1.2.0
+
+      - name: Get version
+        id: get_version
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF -match 'refs/tags/v(.+)') {
+            $version = $Matches[1]
+          } else {
+            [xml]$proj = Get-Content windows/Starsky.Desktop.csproj
+            $version = ($proj.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          }
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Building version: $version"
+
+      - name: Publish WPF app
+        shell: pwsh
+        run: |
+          dotnet publish windows/Starsky.Desktop.csproj `
+            -c Release `
+            -r win-x64 `
+            --self-contained true `
+            -o ./publish-win
+
+      - name: Pack with Velopack
+        shell: pwsh
+        run: |
+          vpk pack `
+            --packId Starsky.Desktop `
+            --packVersion ${{ steps.get_version.outputs.VERSION }} `
+            --packDir ./publish-win `
+            --mainExe Starsky.Desktop.exe `
+            --outputDir ./velopack-releases `
+            --packTitle "Starsky Desktop" `
+            --icon windows/Resources/starsky.ico
+
+      - name: Rename setup to starsky-win-x64-desktop.exe
+        shell: pwsh
+        run: |
+          $setup = Get-Item ./velopack-releases/*-Setup.exe
+          Move-Item $setup.FullName ./velopack-releases/starsky-win-x64-desktop.exe
+
+      - name: Upload starsky-win-x64-desktop as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: starsky-win-x64-desktop
+          path: ./velopack-releases/starsky-win-x64-desktop.exe
+
+      - name: Upload Velopack feed as build artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: starsky-win-x64-velopack-feed
+          path: |
+            ./velopack-releases/*.nupkg
+            ./velopack-releases/releases.win.json
+
+  create_release:
+    name: Create Release
+    needs: [build_net, build_mac_native, build_mac_arm64, build_mac_x64, build_win]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      discussions: write
+    steps:
+
+      - name: Create parent directories
+        shell: bash
+        working-directory: ./
+        run: mkdir -p starsky && mkdir -p desktop-releases
+
+      - name: Download starsky-win-x64-desktop as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: starsky-win-x64-desktop
+          path: ./desktop-releases
+
+      - name: Download starsky-win-x64-velopack-feed as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: starsky-win-x64-velopack-feed
+          path: ./desktop-releases
+
+      - name: Download starsky-mac-universal-desktop as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: starsky-mac-universal-desktop
+          path: ./desktop-releases
+
+      - name: Download starsky-mac-arm64-desktop as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: starsky-mac-arm64-desktop
+          path: ./desktop-releases
+
+      - name: Download starsky-mac-x64-desktop as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: starsky-mac-x64-desktop
+          path: ./desktop-releases
+
+      - name: Download linux-arm64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: linux-arm64
+          path: ./starsky
+
+      - name: Download osx-x64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: osx-x64
+          path: ./starsky
+
+      - name: Download osx-arm64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: osx-arm64
+          path: ./starsky
+
+      - name: Download win-x64 as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: win-x64
+          path: ./starsky
+
+      - name: show downloads starsky
+        working-directory: ./starsky
+        run: ls
+
+      - name: show downloads desktop-releases
+        working-directory: ./desktop-releases
+        run: ls
+
+      - name: Get tag name (needed for slack/create release)
+        id: get_tag_name
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+
+      - name: Detect pre-release
+        id: detect_prerelease
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION="${GITHUB_REF/refs\/tags\//}"
+          if [[ "$VERSION" =~ -(alpha|beta|rc) ]]; then
+            echo "IS_PRERELEASE=true" >> $GITHUB_OUTPUT
+          else
+            echo "IS_PRERELEASE=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          files: |
+            ./desktop-releases/starsky-mac-universal-desktop.dmg
+            ./desktop-releases/starsky-mac-arm64-desktop.dmg
+            ./desktop-releases/starsky-mac-x64-desktop.dmg
+            ./desktop-releases/starsky-win-x64-desktop.exe
+            ./desktop-releases/*.nupkg
+            ./desktop-releases/releases.win.json
+            ./starsky/starsky-linux-arm64.zip
+            ./starsky/starsky-osx-x64.zip
+            ./starsky/starsky-osx-arm64.zip
+            ./starsky/starsky-win-x64.zip
+          name: Release ${{ steps.get_tag_name.outputs.VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: true
+          body: |
+            ## Desktop app versions:
+            _When you are not sure pick the Desktop App_
+            - starsky-mac-universal-desktop.dmg - __Starsky Desktop App for Mac OS *13.0* or newer (Intel & Apple Silicon, recommended)__
+            - starsky-win-x64-desktop.exe - __Starsky Desktop App for Windows 10 1809+ or Windows 11 (21H2) 22000+ (Intel 64 bits)__
+
+            ## Server versions:
+            - starsky-linux-arm64.zip - Starsky as Web Application (start from command line) only for 64 bits Raspberry Pi's
+            - starsky-osx-x64.zip - Starsky as Web Application (start from command line) only for Intel Mac OS *13.0* or newer
+            - starsky-osx-arm64.zip - Starsky as Web Application (start from command line) only for Apple Silicon (newer then end of 2020) Mac OS *13* or newer
+            - starsky-win-x64.zip - Starsky as Web Application (start from command line) only for Windows 10 1809+ or 11 (21H2) 22000+ (Intel 64 bits)
+
+            ## Other Desktop versions:
+            - starsky-mac-arm64-desktop.dmg - Starsky Desktop App for Apple Silicon, Mac OS 13.0 or newer
+            - starsky-mac-x64-desktop.dmg - Starsky Desktop App for Intel, Mac OS 13.0 or newer
+
+            ## Getting started
+            [Read about the first steps](https://docs.qdraw.nl/docs/getting-started/first-steps)
+
+            ## Changelog
+            [There is an changelog to see the recent changes](https://docs.qdraw.nl/docs/advanced-options/history/#${{ steps.get_tag_name.outputs.VERSION }})
+          draft: true
+          prerelease: ${{ steps.detect_prerelease.outputs.IS_PRERELEASE == 'true' }}
+
+      # - name: Upload Release Asset osx-x64 -- reference only
+      #   id: upload-osx-x64
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   uses: actions/upload-release-asset@e8f9f06c4b078e705bd2ea027f0926603fc9b4d5
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: ./starsky/starsky-osx-x64.zip
+      #     asset_name: starsky-osx-x64.zip
+      #     asset_content_type: application/zip
+
+      - name: Download slack-notification as build artifact
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: starsky-tools-slack-notification
+          path: ./starsky-tools-slack-notification
+
+      - name: Run Slack Notification
+        working-directory: ./starsky-tools-slack-notification
+        run: ls
+
+      - name: Replace outputs url for edit
+        id: create_release_outputs_url
+        if: startsWith(github.ref, 'refs/tags/v')
+        run:  |
+          EDIT_NAME="edit/"
+          URL=${{ steps.create_release.outputs.url }}
+          echo "EDIT_URL="${URL/tag\//"$EDIT_NAME"}"" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+
+      - name: Run Slack Notification
+        if: startsWith(github.ref, 'refs/tags/v')
+        working-directory: ./starsky-tools-slack-notification
+        run: node slack-notification
+        env:
+           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+           SLACK_TITLE: 'Release ${{ steps.get_tag_name.outputs.VERSION }} is ready'
+           SLACK_MESSAGE: 'The release is ready ${{ steps.create_release_outputs_url.outputs.EDIT_URL }}'
+
+  publish_appcast:
+    name: Publish Sparkle appcast
+    needs: [create_release]
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Download universal DMG
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333
+        with:
+          name: starsky-mac-universal-desktop
+          path: ./desktop-releases
+
+      - name: Get version from Info.plist
+        id: get_version
+        run: |
+          VERSION="$(/usr/libexec/PlistBuddy -c \
+            "Print :CFBundleShortVersionString" mac/starsky/Info.plist)"
+          echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Version: $VERSION"
+
+      - name: Generate appcast
+        env:
+          SPARKLE_PRIVATE_ED_KEY: ${{ secrets.STARSKY_MACOS_SPARKLE_PRIVATE_ED_KEY }}
+        run: |
+          bash mac/scripts/publish-appcast.sh \
+            ./desktop-releases/starsky-mac-universal-desktop.dmg \
+            "${{ steps.get_version.outputs.VERSION }}" \
+            Starsky.Desktop.appcast.xml
+
+      - name: Upload appcast to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "${{ github.ref_name }}" Starsky.Desktop.appcast.xml --clobber
+
+      - name: Upload appcast as workflow artifact
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: Starsky.Desktop.appcast.xml
+          path: Starsky.Desktop.appcast.xml
+
+  trigger_pipe:
+    runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    needs: [build_net, build_mac_native, build_mac_arm64, build_mac_x64, build_win]
+    steps:
+      - name: trigger end2end-ubuntu-ci.yml
+        shell: bash
+        env:
+          NOTE_READ_THIS_NOW: "Need a github token that has more rights otherwise it will be ignored"
+          WORKFLOW_GITHUB: ${{ secrets.WORKFLOW_GITHUB }}
+        run: |
+          curl \
+          -H "authorization: Bearer $WORKFLOW_GITHUB" \
+          -X POST \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/end2end-ubuntu-ci.yml/dispatches \
+          -d '{"ref":"master"}' -v

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using starsky.feature.webhtmlpublish.Interfaces;
 using starsky.feature.webhtmlpublish.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeCreateAn;
@@ -23,7 +24,7 @@ public class FakeIOverlayImage : IOverlayImage
 	public string FilePathOverlayImage(string sourceFilePath,
 		AppSettingsPublishProfiles profile)
 	{
-		return new OverlayImage(new FakeSelectorStorage(), new AppSettings()).FilePathOverlayImage(
+		return new OverlayImageSkia(new FakeSelectorStorage(), new AppSettings()).FilePathOverlayImage(
 			sourceFilePath, profile);
 	}
 
@@ -31,12 +32,13 @@ public class FakeIOverlayImage : IOverlayImage
 		string sourceFilePath,
 		AppSettingsPublishProfiles profile)
 	{
-		return new OverlayImage(new FakeSelectorStorage(), new AppSettings()).FilePathOverlayImage(
+		return new OverlayImageSkia(new FakeSelectorStorage(), new AppSettings()).FilePathOverlayImage(
 			outputParentFullFilePathFolder,
 			sourceFilePath, profile);
 	}
 
 	public async Task<bool> ResizeOverlayImageThumbnails(string itemFileHash,
+		ThumbnailSize size,
 		string outputFullFilePath,
 		AppSettingsPublishProfiles profile)
 	{

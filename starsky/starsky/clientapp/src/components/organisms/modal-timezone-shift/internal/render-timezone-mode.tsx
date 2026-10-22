@@ -90,7 +90,7 @@ export function TimezoneMode({ ...props }: Readonly<IRenderTimezoneModeProps>) {
                 onSelect={(id, displayName) => {
                   setRecordedTimezoneId(id);
                   setRecordedTimezoneDisplayName(displayName);
-                  generateTimezonePreview({
+                  void generateTimezonePreview({
                     filePathList,
                     recordedTimezoneId: id,
                     correctTimezoneId,
@@ -116,7 +116,7 @@ export function TimezoneMode({ ...props }: Readonly<IRenderTimezoneModeProps>) {
                 onSelect={(id, displayName) => {
                   setCorrectTimezoneId(id);
                   setCorrectTimezoneDisplayName(displayName);
-                  generateTimezonePreview({
+                  void generateTimezonePreview({
                     filePathList,
                     recordedTimezoneId,
                     correctTimezoneId: id,

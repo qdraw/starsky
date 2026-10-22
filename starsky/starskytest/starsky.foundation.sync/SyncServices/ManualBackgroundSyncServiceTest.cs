@@ -24,7 +24,7 @@ public sealed class ManualBackgroundSyncServiceTest
 	public async Task NotFound()
 	{
 		var service = new ManualBackgroundSyncService(
-			new FakeISynchronize(new List<FileIndexItem>()),
+			new FakeISynchronize([]),
 			new FakeIQuery(),
 			new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(),
 				new FakeINotificationQuery(), new FakeIWebLogger()),
@@ -41,7 +41,7 @@ public sealed class ManualBackgroundSyncServiceTest
 	public async Task HomeIsAlwaysFound()
 	{
 		var service = new ManualBackgroundSyncService(
-			new FakeISynchronize(new List<FileIndexItem>()),
+			new FakeISynchronize([]),
 			new FakeIQuery(),
 			new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(),
 				new FakeINotificationQuery(), new FakeIWebLogger()),
@@ -84,8 +84,8 @@ public sealed class ManualBackgroundSyncServiceTest
 		await query!.AddItemAsync(new FileIndexItem("/999_not_found_1.jpg"));
 
 		var item = new FakeSelectorStorage(
-			new FakeIStorage(new List<string> { "/" },
-				new List<string> { "/test2__1234.jpg", "/test3__1234.jpg" },
+			new FakeIStorage(["/"],
+				["/test2__1234.jpg", "/test3__1234.jpg"],
 				new List<byte[]>
 				{
 					CreateAnImageNoExif.Bytes.ToArray(), CreateAnImageNoExif.Bytes.ToArray()
@@ -121,8 +121,8 @@ public sealed class ManualBackgroundSyncServiceTest
 	public async Task ObjectStarted()
 	{
 		var service = new ManualBackgroundSyncService(
-			new FakeISynchronize(new List<FileIndexItem>()),
-			new FakeIQuery(new List<FileIndexItem> { new("/test") }),
+			new FakeISynchronize([]),
+			new FakeIQuery([new("/test")]),
 			new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(),
 				new FakeINotificationQuery(), new FakeIWebLogger()),
 			new FakeMemoryCache(new Dictionary<string, object>()),
@@ -137,8 +137,8 @@ public sealed class ManualBackgroundSyncServiceTest
 	public async Task IgnoreWhenCacheValue()
 	{
 		var service = new ManualBackgroundSyncService(
-			new FakeISynchronize(new List<FileIndexItem>()),
-			new FakeIQuery(new List<FileIndexItem> { new("/test") }),
+			new FakeISynchronize([]),
+			new FakeIQuery([new("/test")]),
 			new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(),
 				new FakeINotificationQuery(), new FakeIWebLogger()),
 			new FakeMemoryCache(new Dictionary<string, object>
@@ -162,7 +162,7 @@ public sealed class ManualBackgroundSyncServiceTest
 		Assert.IsNotNull(memoryCache);
 
 		var service = new ManualBackgroundSyncService(
-			new FakeISynchronize(new List<FileIndexItem>()),
+			new FakeISynchronize([]),
 			null!,
 			new SocketSyncUpdateService(new FakeIWebSocketConnectionsService(),
 				new FakeINotificationQuery(), new FakeIWebLogger()),

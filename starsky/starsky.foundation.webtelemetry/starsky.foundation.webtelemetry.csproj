@@ -1,11 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <!-- SonarQube needs this -->
         <ProjectGuid>{3b84ed27-fef0-4c2b-8cb5-04b7fdb613f8}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.7.21</Version>
+        <Version>0.9.7</Version>
         <RootNamespace>starsky.foundation.webtelemetry</RootNamespace>
         <LangVersion>latest</LangVersion>
         <Nullable>enable</Nullable>
@@ -20,20 +20,24 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="8.0.29" />
-        <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.13" />
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions 2.2.0-->
-        <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
-        <PackageReference Include="OpenTelemetry" Version="1.16.0"/>
-        <PackageReference Include="OpenTelemetry.Api" Version="1.16.0"/>
-        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.16.0"/>
-        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.16.0"/>
-        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.2"/>
+        <PackageReference Include="Sentry" Version="6.12.1"/>
+        <PackageReference Include="OpenTelemetry" Version="1.18.0"/>
+        <PackageReference Include="OpenTelemetry.Api" Version="1.18.0"/>
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.18.0"/>
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0"/>
         <PackageReference Include="OpenTelemetry.Instrumentation.EntityFrameworkCore" Version="1.0.0-beta.11"/>
-        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.1"/>
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.7"/>
-        <PackageReference Include="System.Text.Json" Version="10.0.7"/>
+        <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0"/>
+    </ItemGroup>
+
+    <!-- Release builds in CI pass the DSN via the STARSKY_CRASH_REPORT_DSN env var (GitHub secret) -->
+    <PropertyGroup>
+        <SentryDsn Condition="'$(SentryDsn)' == '' and '$(STARSKY_CRASH_REPORT_DSN)' != ''">$(STARSKY_CRASH_REPORT_DSN)</SentryDsn>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(SentryDsn)' != '' and '$(Configuration)' == 'Release'">
+        <AssemblyMetadata Include="SentryDsn" Value="$(SentryDsn)"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using starsky.foundation.platform.Enums;
@@ -562,20 +563,27 @@ public static class AppSettingsCompareHelper
 		Dictionary<string, string>? oldDictionaryValue,
 		Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
 	{
-		if ( oldDictionaryValue == null || newDictionaryValue?.Count == 0 )
+		if ( oldDictionaryValue == null || newDictionaryValue == null ||
+		     newDictionaryValue.Count == 0 )
 		{
 			return;
 		}
 
+		var merged = new Dictionary<string, string>(oldDictionaryValue);
+		foreach ( var kvp in newDictionaryValue )
+		{
+			merged[kvp.Key] = kvp.Value;
+		}
+
 		if ( JsonSerializer.Serialize(oldDictionaryValue,
-			    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newDictionaryValue,
+			    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(merged,
 			    DefaultJsonSerializer.CamelCase) )
 		{
 			return;
 		}
 
 		sourceIndexItem.GetType().GetProperty(propertyName)
-			?.SetValue(sourceIndexItem, newDictionaryValue, null);
+			?.SetValue(sourceIndexItem, merged, null);
 		differenceList.Add(propertyName.ToLowerInvariant());
 	}
 
@@ -655,7 +663,7 @@ public static class AppSettingsCompareHelper
 	/// <summary>
 	///     Compare List String
 	/// </summary>
-	/// <param name="propertyName">name of property e.g. Readonly folders</param>
+	/// <param name="propertyName">name of property e.g., Readonly folders</param>
 	/// <param name="sourceIndexItem">source object</param>
 	/// <param name="oldListStringValue">oldListStringValue to compare with newListStringValue</param>
 	/// <param name="newListStringValue">newListStringValue to compare with oldListStringValue</param>
@@ -677,7 +685,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		sourceIndexItem.GetType().GetProperty(propertyName)
-			?.SetValue(sourceIndexItem, newListStringValue, null);
+			?.SetValue(sourceIndexItem,
+				newListStringValue!.Distinct(StringComparer.Ordinal).ToList(), null);
 		differenceList.Add(propertyName.ToLowerInvariant());
 	}
 

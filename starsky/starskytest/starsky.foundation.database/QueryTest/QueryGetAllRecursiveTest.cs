@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -57,19 +56,23 @@ public sealed class QueryGetAllRecursiveTest
 			new FileIndexItem("/recursive_test/image2.jpg"));
 		await _query.AddItemAsync(
 			new FileIndexItem("/recursive_test/image3.jpg"));
+		await _query.AddItemAsync(
+			new FileIndexItem("/recursive_test_other/image4.jpg"));
 
 
-		var result = await _query.GetAllRecursiveAsync(new List<string> { "/recursive_test/" });
+		var result = await _query.GetAllRecursiveAsync(["/recursive_test/"]);
 
 		Assert.AreEqual("/recursive_test/image0.jpg", result[0].FilePath);
 		Assert.AreEqual("/recursive_test/image2.jpg", result[1].FilePath);
 		Assert.AreEqual("/recursive_test/image3.jpg", result[2].FilePath);
 		Assert.AreEqual("/recursive_test/sub/image1.jpg", result[3].FilePath);
+		Assert.IsFalse(result.Exists(p => p.FilePath == "/recursive_test_other/image4.jpg"));
 
 		await _query.RemoveItemAsync(result[0]);
 		await _query.RemoveItemAsync(result[1]);
 		await _query.RemoveItemAsync(result[2]);
 		await _query.RemoveItemAsync(result[3]);
+		await _query.RemoveItemAsync(new FileIndexItem("/recursive_test_other/image4.jpg"));
 	}
 
 	[SuppressMessage("Usage",
@@ -88,14 +91,14 @@ public sealed class QueryGetAllRecursiveTest
 			"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
 
 		var instance =
-			( MySqlException ) ctor?.Invoke(new object[]
-			{
+			( MySqlException ) ctor?.Invoke([
 				code, "test", message, new Exception()
-			})!;
+			])!;
 		return instance;
 	}
 
 	[TestMethod] // [Theory]
+	[DataRow(MySqlErrorCode.CommandTimeoutExpired)]
 	[DataRow(MySqlErrorCode.QueryTimeout)]
 	[DataRow(MySqlErrorCode.QueryInterrupted)]
 	public async Task Retry_When_HitTimeout(MySqlErrorCode code)
@@ -127,6 +130,41 @@ public sealed class QueryGetAllRecursiveTest
 		// Assert that a MySqlException is thrown when GetAllRecursiveAsync is called
 		await Assert.ThrowsExactlyAsync<MySqlException>(async () =>
 			await fakeQuery.GetAllRecursiveAsync("test"));
+	}
+
+	[TestMethod]
+	public async Task GivesUpAfterMaxRetries_WhenAlwaysTimingOut()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("MovieListDatabase")
+			.Options;
+
+		var alwaysFailingScope = CreateAlwaysFailingScope(MySqlErrorCode.CommandTimeoutExpired);
+
+		var fakeQuery = new Query(
+			new MySqlSaveDbExceptionContext(options, MySqlErrorCode.CommandTimeoutExpired),
+			null!, alwaysFailingScope, new FakeIWebLogger());
+
+		// Every attempt (initial + all retries) keeps timing out, so RetryHelper
+		// should eventually give up and rethrow (wrapped in an AggregateException)
+		// instead of crashing the whole process with an unhandled exception.
+		var aggregateException = await Assert.ThrowsExactlyAsync<AggregateException>(async () =>
+			await fakeQuery.GetAllRecursiveAsync("test"));
+
+		Assert.IsTrue(aggregateException.InnerExceptions.All(p => p is MySqlException));
+	}
+
+	private static IServiceScopeFactory CreateAlwaysFailingScope(MySqlErrorCode code)
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(nameof(CreateAlwaysFailingScope))
+			.Options;
+
+		var services = new ServiceCollection();
+		services.AddSingleton<ApplicationDbContext>(_ =>
+			new MySqlSaveDbExceptionContext(options, code));
+		var serviceProvider = services.BuildServiceProvider();
+		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
 
 	private sealed class MySqlSaveDbExceptionContext : ApplicationDbContext

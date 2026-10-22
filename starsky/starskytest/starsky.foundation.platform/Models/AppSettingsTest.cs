@@ -13,6 +13,7 @@ using starskytest.FakeCreateAn;
 namespace starskytest.starsky.foundation.platform.Models;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class AppSettingsTest
 {
 	private readonly AppSettings _appSettings;
@@ -46,7 +47,7 @@ public sealed class AppSettingsTest
 	[TestMethod]
 	public void AppSettingsProviderTest_ReadOnlyFoldersTest()
 	{
-		_appSettings.ReadOnlyFolders = new List<string> { "test" };
+		_appSettings.ReadOnlyFolders = ["test"];
 		Assert.AreSequenceEqual(new List<string> { "test" }, _appSettings.ReadOnlyFolders);
 	}
 
@@ -302,6 +303,29 @@ public sealed class AppSettingsTest
 
 
 	[TestMethod]
+	public void AppSettings_CloneToDisplay_hideSentryDsn()
+	{
+		var appSettings = new AppSettings
+		{
+			Sentry = new SentrySettings { Dsn = "https://publickey@example.test/1" }
+		};
+
+		var display = appSettings.CloneToDisplay();
+
+		Assert.AreEqual(AppSettings.CloneToDisplaySecurityWarning, display.Sentry?.Dsn);
+	}
+
+	[TestMethod]
+	public void AppSettings_CloneToDisplay_SentryDsnEmpty_StaysEmpty()
+	{
+		var display = new AppSettings { Sentry = null }.CloneToDisplay();
+
+		Assert.IsNull(display.Sentry);
+		Assert.IsTrue(display.EnableCrashReports);
+	}
+
+
+	[TestMethod]
 	public void AppSettings_CloneToDisplay_skip_Null_SecurityItems2_OpenTelemetrySettings()
 	{
 		var appSettings = new AppSettings
@@ -339,11 +363,10 @@ public sealed class AppSettingsTest
 			PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 			{
 				{
-					"test",
-					new List<AppSettingsPublishProfiles>
-					{
-						new() { Copy = true }, new() { Path = "value", Prepend = "value" }
-					}
+					"test", [
+						new AppSettingsPublishProfiles { Copy = true },
+						new AppSettingsPublishProfiles { Path = "value", Prepend = "value" }
+					]
 				}
 			}
 		};
@@ -451,7 +474,7 @@ public sealed class AppSettingsTest
 		Assert.IsFalse(appSettings.EnablePackageTelemetry);
 	}
 
-#if(DEBUG)
+#if DEBUG
 	[TestMethod]
 	public void EnablePackageTelemetry_Debug_False()
 	{
@@ -587,5 +610,146 @@ public sealed class AppSettingsTest
 		var expectedResult = $"/test/{appSettings.BaseDirectoryProject}";
 
 		Assert.AreEqual(expectedResult, appSettings.AppSettingsLocalPath);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	[DataRow("/2024/photo.jpg", "/data/archive/2024/photo.jpg", "RedirectsToPhysicalPath")]
+	[DataRow("/2024", "/data/archive/2024", "ExactFolderMatch")]
+	[DataRow("/archive/2024/photo.jpg", "/data/specific-archive/2024/photo.jpg", "LongerKeyWinsOverShorterKey")]
+	public void DatabasePathToFilePath_WithMappings_UnixOnly(string dbPath, string expected, string scenario)
+	{
+		var storageFolder = "/data/fotobieb";
+		var mappings = scenario == "LongerKeyWinsOverShorterKey" 
+			? new Dictionary<string, string>
+			{
+				{ "/archive", "/data/main-archive" },
+				{ "/archive/2024", "/data/specific-archive/2024" }
+			}
+			: new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			};
+
+		var appSettings = new AppSettings
+		{
+			StorageFolder = storageFolder,
+			StorageFolderMappings = mappings
+		};
+
+		var result = appSettings.DatabasePathToFilePath(dbPath);
+
+		Assert.AreEqual(expected, result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_WithMapping_NonMappedPathUsesStorageFolder__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result = appSettings.DatabasePathToFilePath("/2023/photo.jpg");
+
+		Assert.Contains("fotobieb", result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	[DataRow("/data/archive/2024/photo.jpg", "/2024/photo.jpg", "ConvertsToSubPath")]
+	[DataRow("/data/archive/2024", "/2024", "ExactFolderMatch")]
+	public void FullPathStorageFolderToDatabaseStyle_WithMappings_UnixOnly(string fullPath, string expected, string scenario)
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result = appSettings.FullPathStorageFolderToDatabaseStyle(fullPath);
+
+		Assert.AreEqual(expected, result, $"Failed for scenario: {scenario}");
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb/",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result =
+			appSettings.FullPathStorageFolderToDatabaseStyle("/data/fotobieb/photo.jpg");
+
+		Assert.AreEqual("/photo.jpg", result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Windows)]
+	public void FullPathStorageFolderToDatabaseStyle_NonMappedPath_UsesStorageFolder__WindowsOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = @"C:\data\fotobieb\",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		var result =
+			appSettings.FullPathStorageFolderToDatabaseStyle(@"C:\data\fotobieb\photo.jpg");
+
+		Assert.AreEqual("/photo.jpg", result);
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void DatabasePathToFilePath_PathTraversal_ThrowsUnauthorizedAccess__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		Assert.ThrowsExactly<UnauthorizedAccessException>(() =>
+			appSettings.DatabasePathToFilePath("/2024/../../../etc/shadow"));
+	}
+
+	[TestMethod]
+	[OSCondition(OperatingSystems.Linux | OperatingSystems.OSX)]
+	public void
+		DatabasePathToFilePath_PathTraversal_SiblingDirectory_ThrowsUnauthorizedAccess__UnixOnly()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = "/data/fotobieb",
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/2024", "/data/archive/2024" }
+			}
+		};
+
+		Assert.ThrowsExactly<UnauthorizedAccessException>(() =>
+			appSettings.DatabasePathToFilePath("/2024/../archive-sibling/secret.jpg"));
 	}
 }

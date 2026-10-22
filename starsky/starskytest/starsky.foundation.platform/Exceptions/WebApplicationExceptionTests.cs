@@ -70,14 +70,13 @@ public class WebApplicationExceptionTests
 		var streamingContext = new StreamingContext();
 		var constructorInfo = typeof(WebApplicationException).GetConstructor(
 			BindingFlags.NonPublic | BindingFlags.Instance, null,
-			new[] { typeof(SerializationInfo), typeof(StreamingContext) }, null);
+			[typeof(SerializationInfo), typeof(StreamingContext)], null);
 
 		// Act
 		var exception =
-			( WebApplicationException )constructorInfo!.Invoke(new object[]
-			{
+			( WebApplicationException )constructorInfo!.Invoke([
 				serializationInfo, streamingContext
-			});
+			]);
 
 		// Assert
 		Assert.AreEqual(message, exception.Message);

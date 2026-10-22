@@ -18,6 +18,7 @@ interface IFormControlProps {
   children?: React.ReactNode;
   warning?: boolean;
   spellcheck?: boolean;
+  placeholder?: string;
   "data-test"?: string;
 }
 
@@ -55,6 +56,7 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, onFoc
       {/* NOSONAR(S6847) */}
       <div
         data-test={props["data-test"] ?? "form-control"}
+        data-placeholder={props.placeholder}
         onBlur={new LimitLength(setChildLength, onBlur, maxlength).LimitLengthBlur}
         onFocus={onFocus}
         data-name={props.name}

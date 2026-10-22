@@ -21,7 +21,7 @@ public class CheckSha256Helper(IStorage hostFileSystemStorage)
 		using var hashAlgorithm = SHA256.Create();
 
 		var byteHash = hashAlgorithm.ComputeHash(buffer);
-		var hash = BitConverter.ToString(byteHash).Replace("-", string.Empty).ToLowerInvariant();
+		var hash = Convert.ToHexStringLower(byteHash);
 
 		return checkSumOptions.AsEnumerable()
 			.Any(p => p.Equals(hash, StringComparison.InvariantCultureIgnoreCase));

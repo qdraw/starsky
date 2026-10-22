@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using starsky.foundation.platform.Interfaces;
 
@@ -304,13 +305,13 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	/// <summary>
 	///     Gets the extension thumb supported list.
-	///     ImageSharp => The IImageFormat interface, Jpeg, Png, Bmp, and Gif formats.
+	///     SkiaSharp => Jpeg, Png, Bmp, Gif and WebP formats.
 	///     Tiff based images are not supported by the thumbnail application
 	/// </summary>
 	/// <value>
 	///     The extension thumb supported list.
 	/// </value>
-	public static List<string> ExtensionImageSharpThumbnailSupportedList
+	public static List<string> ExtensionSkiaSharpThumbnailSupportedList
 	{
 		get
 		{
@@ -484,20 +485,20 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	}
 
 	/// <summary>
-	///     is this filename with extension a filetype that imageSharp can read/write
+	///     is this filename with extension a filetype that SkiaSharp can read/write
 	/// </summary>
 	/// <param name="filename">the name of the file with extenstion</param>
-	/// <returns>true, if imageSharp can write to this</returns>
-	public static bool IsExtensionImageSharpThumbnailSupported(string? filename)
+	/// <returns>true, if SkiaSharp can write to this</returns>
+	public static bool IsExtensionSkiaSharpThumbnailSupported(string? filename)
 	{
 		return IsExtensionForce(filename?.ToLowerInvariant(),
-			ExtensionImageSharpThumbnailSupportedList);
+			ExtensionSkiaSharpThumbnailSupportedList);
 	}
 
 	public static bool IsExtensionNativeSupported(string? filename)
 	{
 		List<string> nativeSupportList =
-			[..ExtensionImageSharpThumbnailSupportedList, ..ExtensionHeic];
+			[..ExtensionSkiaSharpThumbnailSupportedList, ..ExtensionHeic];
 		return IsExtensionForce(filename?.ToLowerInvariant(),
 			nativeSupportList);
 	}
@@ -645,6 +646,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	[SuppressMessage("ReSharper", "MustUseReturnValue")]
 	[SuppressMessage("Sonar", "S2674: stream.Read return value isn't used")]
 	[SuppressMessage("ReSharper", "StreamReadReturnValueIgnored")]
+	[SuppressMessage("Reliability", "CA2022:Avoid inexact read with 'System.IO.Stream.Read(byte[], int, int)'")]
 	private byte[] ReadBuffer(Stream stream, int size)
 	{
 		var buffer = new byte[size];
@@ -950,23 +952,15 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 	private static ImageFormat? GetImageFormatGpx(byte[] bytes)
 	{
-		var gpx = new byte[] { 60, 103, 112 }; // <gpx
-
-		if ( gpx.SequenceEqual(bytes.Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(21).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(38).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(39).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(1).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(56).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(57).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(60).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(58).Take(gpx.Length)) ||
-		     gpx.SequenceEqual(bytes.Skip(55).Take(gpx.Length)) )
+		// The <gpx root tag follows an xml declaration (and optional comments) of varying
+		// length, so a fixed offset is not reliable; search the header instead
+		var header = Encoding.UTF8.GetString(bytes).TrimStart('\uFEFF', ' ', '\t', '\r', '\n');
+		if ( !header.StartsWith('<') )
 		{
-			return ImageFormat.gpx;
+			return null;
 		}
 
-		return null;
+		return header.Contains("<gpx", StringComparison.Ordinal) ? ImageFormat.gpx : null;
 	}
 
 	private static ImageFormat? GetImageFormatZip(IEnumerable<byte> bytes)

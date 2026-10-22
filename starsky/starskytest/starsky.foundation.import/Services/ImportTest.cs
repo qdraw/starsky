@@ -943,7 +943,7 @@ public sealed class ImportTest : VerifyBase
 
 		Assert.IsTrue(result[0].FileIndexItem?.AddToDatabase >=
 		              DateTime.UtcNow.AddMinutes(-10));
-		Assert.IsTrue(result[0].AddToDatabase >= DateTime.UtcNow.AddMinutes(-10));
+		Assert.IsGreaterThanOrEqualTo(DateTime.UtcNow.AddMinutes(-10), result[0].AddToDatabase);
 	}
 
 	[TestMethod]

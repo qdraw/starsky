@@ -81,7 +81,7 @@ public sealed class StatusCodesHelperTest
 	public void IsReadOnlyStatus_DetailView_DirReadOnly()
 	{
 		// this is the only diff -->>
-		var appSettings = new AppSettings { ReadOnlyFolders = new List<string> { "/" } };
+		var appSettings = new AppSettings { ReadOnlyFolders = ["/"] };
 		var detailView = new DetailView { IsDirectory = true, SubPath = "/" };
 		var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
 		Assert.AreEqual(FileIndexItem.ExifStatus.DirReadOnly, status);
@@ -110,7 +110,7 @@ public sealed class StatusCodesHelperTest
 	public void IsReadOnlyStatus_FileIndexItem_DirReadOnly()
 	{
 		// this is the only diff -->>
-		var appSettings = new AppSettings { ReadOnlyFolders = new List<string> { "/" } };
+		var appSettings = new AppSettings { ReadOnlyFolders = ["/"] };
 		var detailView = new FileIndexItem { IsDirectory = true, FilePath = "/" };
 		var status = new StatusCodesHelper(appSettings).IsReadOnlyStatus(detailView);
 		Assert.AreEqual(FileIndexItem.ExifStatus.DirReadOnly, status);
@@ -128,7 +128,7 @@ public sealed class StatusCodesHelperTest
 				ParentDirectory = "/",
 				Tags = TrashKeyword.TrashKeywordString,
 				FileName = "test.jpg",
-				CollectionPaths = new List<string> { "/test.jpg" }
+				CollectionPaths = ["/test.jpg"]
 			}
 		};
 

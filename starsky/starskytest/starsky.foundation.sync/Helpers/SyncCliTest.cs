@@ -1,9 +1,7 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Structure;
@@ -41,10 +39,10 @@ public sealed class SyncCliTest
 	[TestMethod]
 	public async Task Sync_NoArgs_ShouldNotSee_NotFound()
 	{
-		var fakeSync = new FakeISynchronize(new List<FileIndexItem> { new("/") });
+		var fakeSync = new FakeISynchronize([new("/")]);
 		var console = new FakeConsoleWrapper();
 		await new SyncCli(fakeSync, new AppSettings(), console,
-			new FakeSelectorStorage(new FakeIStorage(new List<string> { "/" })),
+			new FakeSelectorStorage(new FakeIStorage(["/"])),
 			new FakeIWebLogger()).Sync(
 			[""]);
 

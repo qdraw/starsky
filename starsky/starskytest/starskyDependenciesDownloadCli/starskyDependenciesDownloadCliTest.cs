@@ -7,6 +7,7 @@ using starskyDependenciesDownloadCli;
 namespace starskytest.starskyDependenciesDownloadCli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class StarskyDependenciesDownloadCliTest
 {
 	private static string? _imageOptimisationDownloadOnStartup;

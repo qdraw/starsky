@@ -68,6 +68,21 @@ public sealed class RunProcessTest
 
 		Assert.IsTrue(success);
 		Assert.AreEqual(9, exitCode);
+		// Allowed exit codes must NOT produce error log entries — they are expected outcomes.
+		Assert.IsEmpty(logger.TrackedExceptions);
+	}
+
+	[TestMethod]
+	[OSCondition(ConditionMode.Exclude, OperatingSystems.Windows)]
+	public async Task RunProcessAsync_AllowedExitCode_TreatedAsSuccess_NoErrorLogged()
+	{
+		var logger = new FakeIWebLogger();
+		var sut = new RunProcess(logger);
+
+		var result = await sut.RunProcessAsync("/bin/sh", "-c \"exit 5\"", [5]);
+
+		Assert.IsTrue(result);
+		Assert.IsEmpty(logger.TrackedExceptions);
 	}
 
 	[TestMethod]

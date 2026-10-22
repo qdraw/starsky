@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starskytest.FakeMocks;
 
@@ -29,7 +27,7 @@ public sealed class QueryFactoryTest
 	[TestMethod]
 	public void QueryFactoryTest_FakeIQueryReturn()
 	{
-		var fakeIQuery = new FakeIQuery(new List<FileIndexItem> { new("/test.jpg") });
+		var fakeIQuery = new FakeIQuery([new("/test.jpg")]);
 		var query = new QueryFactory(null, fakeIQuery, null,
 			null, null, null).Query();
 
@@ -41,7 +39,7 @@ public sealed class QueryFactoryTest
 	[TestMethod]
 	public void QueryFactoryTest_FakeIQuery_IgnoreNoItemsInList()
 	{
-		var fakeIQuery = new FakeIQuery(new List<FileIndexItem>());
+		var fakeIQuery = new FakeIQuery([]);
 		var query = new QueryFactory(null, fakeIQuery, null,
 			null, null, null).Query();
 

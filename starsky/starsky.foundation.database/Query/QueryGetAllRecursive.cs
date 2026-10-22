@@ -34,41 +34,26 @@ public partial class Query
 	/// <returns>items from database</returns>
 	public async Task<List<FileIndexItem>> GetAllRecursiveAsync(List<string> filePathList)
 	{
-		async Task<List<FileIndexItem>> LocalQuery(ApplicationDbContext context)
-		{
-			var predicates = new List<Expression<Func<FileIndexItem, bool>>>();
-
-			// ReSharper disable once ForeachCanBeConvertedToQueryUsingAnotherGetEnumerator
-			foreach ( var filePath in filePathList )
-			{
-				var subPath = PathHelper.RemoveLatestSlash(filePath);
-				predicates.Add(p => p.ParentDirectory!.StartsWith(subPath));
-			}
-
-			var predicate = PredicateBuilder.OrLoop(predicates);
-
-			return await context.FileIndex.Where(predicate).OrderBy(r => r.FilePath).ToListAsync();
-		}
-
 		try
 		{
-			return await LocalQuery(_context);
+			return await QueryRecursiveAsync(_context, filePathList);
 		}
 		catch ( ObjectDisposedException )
 		{
 			var scope = new InjectServiceScope(_scopeFactory);
-			return await scope.ExecuteAsync(LocalQuery);
+			return await scope.ExecuteAsync(context => QueryRecursiveAsync(context, filePathList));
 		}
 		catch ( InvalidOperationException )
 		{
 			var scope = new InjectServiceScope(_scopeFactory);
-			return await scope.ExecuteAsync(LocalQuery);
+			return await scope.ExecuteAsync(context => QueryRecursiveAsync(context, filePathList));
 		}
 		catch ( MySqlException exception )
 		{
 			// https://github.com/qdraw/starsky/issues/1243
 			// https://github.com/qdraw/starsky/issues/1628
-			if ( exception.ErrorCode is not (MySqlErrorCode.QueryTimeout or
+			if ( exception.ErrorCode is not (MySqlErrorCode.CommandTimeoutExpired or
+			    MySqlErrorCode.QueryTimeout or
 			    MySqlErrorCode.LockWaitTimeout or
 			    MySqlErrorCode.QueryInterrupted) )
 			{
@@ -77,12 +62,52 @@ public partial class Query
 				throw;
 			}
 
-			_logger.LogInformation($"[GetAllRecursiveAsync] Next Retry Timeout/interrupted " +
+			_logger.LogInformation($"[GetAllRecursiveAsync] Retry Timeout/interrupted " +
 			                       $"{exception.ErrorCode} in GetAllRecursiveAsync");
 
-			await Task.Delay(1000);
-			var scope = new InjectServiceScope(_scopeFactory);
-			return await scope.ExecuteAsync(LocalQuery);
+			return await RetryHelper.DoAsync(LocalRetryQuery, TimeSpan.FromSeconds(2), 4);
 		}
+
+		async Task<List<FileIndexItem>> LocalRetryQuery()
+		{
+			var scope = new InjectServiceScope(_scopeFactory);
+			return await scope.ExecuteAsync(context => QueryRecursiveAsync(context, filePathList));
+		}
+	}
+
+	private static async Task<List<FileIndexItem>> QueryRecursiveAsync(
+		ApplicationDbContext context, List<string> filePathList)
+	{
+		var predicate = BuildRecursivePredicate(filePathList);
+
+		return await context.FileIndex.AsNoTracking().Where(predicate)
+			.OrderBy(r => r.FilePath).ToListAsync();
+	}
+
+	private static Expression<Func<FileIndexItem, bool>> BuildRecursivePredicate(
+		List<string> filePathList)
+	{
+		var predicates = filePathList.Select(BuildRecursivePredicate).ToList();
+		return PredicateBuilder.OrLoop(predicates);
+	}
+
+	private static Expression<Func<FileIndexItem, bool>> BuildRecursivePredicate(string filePath)
+	{
+		var prefix = BuildRecursivePrefix(filePath);
+
+		if ( prefix == "/" )
+		{
+			return p => p.FilePath != null &&
+			            p.FilePath != "/" &&
+			            p.FilePath.StartsWith(prefix);
+		}
+
+		return p => p.FilePath != null && p.FilePath.StartsWith(prefix);
+	}
+
+	private static string BuildRecursivePrefix(string filePath)
+	{
+		var subPath = PathHelper.RemoveLatestSlash(filePath);
+		return string.IsNullOrEmpty(subPath) ? "/" : $"{subPath}/";
 	}
 }

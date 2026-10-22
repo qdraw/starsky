@@ -1,9 +1,10 @@
 using System;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
-namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
+namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.
+	Helpers;
 
 [TestClass]
 public class JpegScannerUtilitiesTests
@@ -117,7 +118,7 @@ public class JpegScannerUtilitiesTests
 	public void DetectJpegLengthFromStart_ReturnsZero_WhenReadReturnsZero()
 	{
 		// Seekable stream that returns 0 on Read should cause scanner to break and return 0
-		using var s = new SeekableZeroReadStream(length: 8192);
+		using var s = new SeekableZeroReadStream(8192);
 
 		var found = JpegScannerUtilities.DetectJpegLengthFromStart(s, 0, 8192);
 
@@ -128,7 +129,7 @@ public class JpegScannerUtilitiesTests
 	public void DetectJpegLengthFromSoi_ReturnsZero_WhenReadReturnsZero()
 	{
 		// Seekable stream that returns 0 on Read should cause SOI-based scanner to return 0
-		using var s = new SeekableZeroReadStream(length: 8192);
+		using var s = new SeekableZeroReadStream(8192);
 		// Pretend SOI at offset 0; DetectJpegLengthFromSoi will seek to offset+2 and then read
 
 		var found = JpegScannerUtilities.DetectJpegLengthFromSoi(s, 0, 8192);
@@ -184,26 +185,26 @@ public class JpegScannerUtilitiesTests
 	}
 
 	/// <summary>
-	/// A seekable stream with a valid Length/Position but that always returns 0 from Read()
-	/// to simulate an unexpected EOF or unreadable underlying stream chunk.
+	///     A seekable stream with a valid Length/Position but that always returns 0 from Read()
+	///     to simulate an unexpected EOF or unreadable underlying stream chunk.
 	/// </summary>
 	private sealed class SeekableZeroReadStream : Stream
 	{
-		private long _pos;
-		private readonly long _length;
-
 		public SeekableZeroReadStream(long length)
 		{
-			_length = Math.Max(0, length);
+			Length = Math.Max(0, length);
 		}
 
 		public override bool CanRead => true;
 		public override bool CanSeek => true;
 		public override bool CanWrite => false;
-		public override long Length => _length;
-		public override long Position { get => _pos; set => _pos = value; }
+		public override long Length { get; }
 
-		public override void Flush() { }
+		public override long Position { get; set; }
+
+		public override void Flush()
+		{
+		}
 
 		public override int Read(byte[] buffer, int offset, int count)
 		{
@@ -215,23 +216,32 @@ public class JpegScannerUtilitiesTests
 		{
 			switch ( origin )
 			{
-				case SeekOrigin.Begin: _pos = offset; break;
-				case SeekOrigin.Current: _pos += offset; break;
-				case SeekOrigin.End: _pos = _length + offset; break;
-			}
-			if ( _pos < 0 )
-			{
-				_pos = 0;
+				case SeekOrigin.Begin: Position = offset; break;
+				case SeekOrigin.Current: Position += offset; break;
+				case SeekOrigin.End: Position = Length + offset; break;
 			}
 
-			if ( _pos > _length )
+			if ( Position < 0 )
 			{
-				_pos = _length;
+				Position = 0;
 			}
-			return _pos;
+
+			if ( Position > Length )
+			{
+				Position = Length;
+			}
+
+			return Position;
 		}
 
-		public override void SetLength(long value) => throw new NotSupportedException();
-		public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+		public override void SetLength(long value)
+		{
+			throw new NotSupportedException();
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			throw new NotSupportedException();
+		}
 	}
 }

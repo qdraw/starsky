@@ -19,7 +19,7 @@ public class SocketSyncUpdateServiceTest
 		var service =
 			new SocketSyncUpdateService(socket, new FakeINotificationQuery(), new FakeIWebLogger());
 
-		await service.PushToSockets(new List<FileIndexItem> { new("/test.jpg") });
+		await service.PushToSockets([new("/test.jpg")]);
 
 		Assert.Contains("/test.jpg", socket.FakeSendToAllAsync[0]);
 	}
@@ -32,7 +32,7 @@ public class SocketSyncUpdateServiceTest
 		var service =
 			new SocketSyncUpdateService(socket, new FakeINotificationQuery(), new FakeIWebLogger());
 
-		await service.PushToSockets(new List<FileIndexItem> { new("/test.jpg") });
+		await service.PushToSockets([new("/test.jpg")]);
 
 		Assert.IsEmpty(socket.FakeSendToAllAsync);
 	}

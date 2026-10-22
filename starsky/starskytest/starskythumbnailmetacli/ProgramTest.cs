@@ -7,6 +7,7 @@ using starskythumbnailmetacli;
 namespace starskytest.starskythumbnailmetacli;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class ProgramTest
 {
 	[TestMethod]

@@ -11,17 +11,13 @@
 
 # source: /opt/starsky/starsky/github-artifacts-download.sh
 
-WORKFLOW_ID="desktop-release-on-tag-net-electron.yml"
+WORKFLOW_ID="desktop-release-on-tag-native.yml"
 
 # default will be overwritten
-RUNTIME="linux-arm"
+RUNTIME="linux-arm64"
 case $(uname -m) in
   "aarch64")
     RUNTIME="linux-arm64"
-    ;;
-
-  "armv7l")
-    RUNTIME="linux-arm"
     ;;
 
   "arm64")
@@ -59,7 +55,7 @@ for ((i = 1; i <= $#; i++ )); do
   CURRENT=$(($i-1))
   if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
   then
-    echo "--runtime linux-arm OR --runtime osx-x64 OR --runtime win-x64"
+    echo "--runtime linux-arm64 OR --runtime osx-x64 OR --runtime win-x64"
     echo "     (or as fallback:) --runtime "$RUNTIME
     echo "Desktop versions:  --runtime starsky-mac-x64-desktop OR --runtime starsky-win-x64-desktop"
     echo "--branch master"

@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -64,38 +63,30 @@ public sealed class SwaggerHelperTest
 		var fakeSelectorStorage = new FakeSelectorStorage(storage);
 
 
-		var host = WebHost.CreateDefaultBuilder()
-			.UseUrls("http://localhost:5051")
-			.ConfigureServices(services =>
-			{
-				services.AddMvcCore().AddApiExplorer();
-				services.AddSwaggerGen();
-				new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
-			})
-			.Configure(app =>
-			{
-				app.UseRouting();
-				app.UseEndpoints(endpoints =>
-				{
-					endpoints.MapControllerRoute("default",
-						"{controller=Home}/{action=Index}/{id?}");
-				});
+		var hostBuilder = WebApplication.CreateBuilder();
+		hostBuilder.WebHost.UseUrls("http://localhost:5051");
+		hostBuilder.Services.AddMvcCore().AddApiExplorer();
+		hostBuilder.Services.AddSwaggerGen();
+		new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(hostBuilder.Services);
+		var app = hostBuilder.Build();
 
-				new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
-				using ( var serviceScope = app.ApplicationServices
-					       .GetRequiredService<IServiceScopeFactory>()
-					       .CreateScope() )
-				{
-					var swaggerProvider =
-						( ISwaggerProvider ) serviceScope.ServiceProvider.GetRequiredService(
-							typeof(ISwaggerProvider));
-					new SwaggerExportHelper(null!).Add03AppExport(_appSettings,
-						fakeSelectorStorage, swaggerProvider);
-				}
-			}).Build();
+		app.UseRouting();
+		app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+		new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
 
-		await host.StartAsync(TestContext.CancellationTokenSource.Token);
-		await host.StopAsync(TestContext.CancellationTokenSource.Token);
+		using ( var serviceScope = app.Services
+			       .GetRequiredService<IServiceScopeFactory>()
+			       .CreateScope() )
+		{
+			var swaggerProvider =
+				( ISwaggerProvider ) serviceScope.ServiceProvider.GetRequiredService(
+					typeof(ISwaggerProvider));
+			new SwaggerExportHelper(null!).Add03AppExport(_appSettings,
+				fakeSelectorStorage, swaggerProvider);
+		}
+
+		await app.StartAsync(TestContext.CancellationTokenSource.Token);
+		await app.StopAsync(TestContext.CancellationTokenSource.Token);
 
 		Assert.IsTrue(storage.ExistFile(swaggerFilePath));
 

@@ -245,7 +245,7 @@ public class SearchService : ISearch
 		foreach ( var group in grouped.Where(group => group.Count() > 1) )
 		{
 			result.AddRange(group.Where(item =>
-				ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(item.FileName)));
+				ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(item.FileName)));
 		}
 
 		result.AddRange(grouped.Where(group
@@ -392,7 +392,7 @@ public class SearchService : ISearch
 	}
 
 	private static Expression<Func<FileIndexItem, bool>> PredicateExecution(
-		IReadOnlyList<Expression<Func<FileIndexItem, bool>>> predicates,
+		List<Expression<Func<FileIndexItem, bool>>> predicates,
 		SearchViewModel model)
 	{
 		var predicate = PredicateBuilder.False<FileIndexItem>();

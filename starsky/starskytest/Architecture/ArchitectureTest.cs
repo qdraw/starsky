@@ -65,14 +65,14 @@ public partial class TheSolutionShould
 		{
 			if ( project.Key.Contains(Foundation, StringComparison.OrdinalIgnoreCase) )
 			{
-				GetInvalidReferences(project, new[] { Feature, Project },
+				GetInvalidReferences(project, [Feature, Project],
 					invalidFoundationReferences);
 				continue;
 			}
 
 			if ( project.Key.Contains(Feature, StringComparison.OrdinalIgnoreCase) )
 			{
-				GetInvalidReferences(project, new[] { Feature, Project },
+				GetInvalidReferences(project, [Feature, Project],
 					invalidFeatureReferences);
 				continue;
 			}
@@ -80,7 +80,7 @@ public partial class TheSolutionShould
 			if ( project.Key.Contains(Project, StringComparison.OrdinalIgnoreCase) &&
 			     project.Key != MainProjectWeb && project.Key != MainProject )
 			{
-				GetInvalidReferences(project, new[] { Project }, invalidProjectReferences);
+				GetInvalidReferences(project, [Project], invalidProjectReferences);
 				continue;
 			}
 
@@ -224,7 +224,7 @@ public partial class TheSolutionShould
 		return projectName.Split('.')[2] == referencedProject.Split('.')[2];
 	}
 
-	private static void AssertLayerReferences(IReadOnlyCollection<string> invalidReferences,
+	private static void AssertLayerReferences(List<string> invalidReferences,
 		string layer)
 	{
 		Assert.IsEmpty(invalidReferences,

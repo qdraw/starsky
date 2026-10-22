@@ -14,25 +14,25 @@ namespace starskytest.starsky.foundation.metaupdate.Services;
 [TestClass]
 public sealed class MetaPreflightTest
 {
-	private static readonly string[] TestJpgArray = new[] { "/test.jpg" };
-	private static readonly string[] OnlyTestWordArray = new[] { "test" };
-	private static readonly string[] ReadonlyFolderTestJpgArray = new[] { "/readonly/test.jpg" };
-	private static readonly string[] DeletedJpgArray = new[] { "/deleted.jpg" };
+	private static readonly string[] TestJpgArray = ["/test.jpg"];
+	private static readonly string[] OnlyTestWordArray = ["test"];
+	private static readonly string[] ReadonlyFolderTestJpgArray = ["/readonly/test.jpg"];
+	private static readonly string[] DeletedJpgArray = ["/deleted.jpg"];
 
 	[TestMethod]
 	public async Task Preflight_Collections_Enabled()
 	{
 		var metaPreflight = new MetaPreflight(
-			new FakeIQuery(new List<FileIndexItem> { new("/test.jpg"), new("/test.dng") }),
+			new FakeIQuery([new("/test.jpg"), new("/test.dng")]),
 			new AppSettings(), new FakeSelectorStorage(
-				new FakeIStorage(new List<string>(),
-					new List<string> { "/test.jpg", "/test.dng" },
-					new[] { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() }))
+				new FakeIStorage([],
+					["/test.jpg", "/test.dng"],
+					[[.. CreateAnImage.Bytes], [.. CreateAnImage.Bytes]]))
 			, new FakeIWebLogger());
 
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("/test.jpg"),
-			TestJpgArray.ToList(), true, true, 0);
+			[.. TestJpgArray], true, true, 0);
 
 		Assert.HasCount(2, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
@@ -45,16 +45,16 @@ public sealed class MetaPreflightTest
 	public async Task Preflight_Collections_Disabled()
 	{
 		var metaPreflight = new MetaPreflight(
-			new FakeIQuery(new List<FileIndexItem> { new("/test.jpg"), new("/test.dng") }),
+			new FakeIQuery([new("/test.jpg"), new("/test.dng")]),
 			new AppSettings(), new FakeSelectorStorage(
-				new FakeIStorage(new List<string>(),
-					new List<string> { "/test.jpg", "/test.dng" },
-					new[] { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() }))
+				new FakeIStorage([],
+					["/test.jpg", "/test.dng"],
+					[[.. CreateAnImage.Bytes], [.. CreateAnImage.Bytes]]))
 			, new FakeIWebLogger());
 
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("/test.jpg"),
-			TestJpgArray.ToList(), true, false, 0);
+			[.. TestJpgArray], true, false, 0);
 
 		Assert.HasCount(1, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
@@ -65,19 +65,18 @@ public sealed class MetaPreflightTest
 	public async Task Preflight_InvalidLatLong()
 	{
 		var metaPreflight = new MetaPreflight(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test.jpg") { Latitude = 92043, Longitude = 38294923 }
-			}),
+			]),
 			new AppSettings(), new FakeSelectorStorage(
-				new FakeIStorage(new List<string>(),
-					new List<string> { "/test.jpg" },
-					new[] { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() }))
+				new FakeIStorage([],
+					["/test.jpg"],
+					[[.. CreateAnImage.Bytes], [.. CreateAnImage.Bytes]]))
 			, new FakeIWebLogger());
 
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("/test.jpg"),
-			TestJpgArray.ToList(), true, true, 0);
+			[.. TestJpgArray], true, true, 0);
 
 		Assert.HasCount(1, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.OperationNotSupported,
@@ -90,19 +89,18 @@ public sealed class MetaPreflightTest
 		// 51.34963/5.46038 = valkenswaard
 
 		var metaPreflight = new MetaPreflight(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test.jpg") { Latitude = 51.34963, Longitude = 5.46038 }
-			}),
+			]),
 			new AppSettings(), new FakeSelectorStorage(
-				new FakeIStorage(new List<string>(),
-					new List<string> { "/test.jpg" },
-					new[] { CreateAnImage.Bytes.ToArray(), CreateAnImage.Bytes.ToArray() }))
+				new FakeIStorage([],
+					["/test.jpg"],
+					[[.. CreateAnImage.Bytes], [.. CreateAnImage.Bytes]]))
 			, new FakeIWebLogger());
 
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("/test.jpg"),
-			TestJpgArray.ToList(), true, true, 0);
+			[.. TestJpgArray], true, true, 0);
 
 		Assert.HasCount(1, result.fileIndexResultsList);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok,
@@ -163,7 +161,7 @@ public sealed class MetaPreflightTest
 	{
 		var changedFileIndexItemName = new Dictionary<string, List<string>>
 		{
-			{ "/test.jpg", new List<string>() }
+			{ "/test.jpg", [] }
 		};
 
 		var collectionsDetailView = new DetailView
@@ -200,7 +198,7 @@ public sealed class MetaPreflightTest
 	{
 		var changedFileIndexItemName = new Dictionary<string, List<string>>
 		{
-			{ "/test.jpg", new List<string>() }
+			{ "/test.jpg", [] }
 		};
 
 		var collectionsDetailView = new DetailView
@@ -267,7 +265,7 @@ public sealed class MetaPreflightTest
 			new FakeSelectorStorage(), new FakeIWebLogger());
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("test"),
-			OnlyTestWordArray.ToList(), true, true, 0);
+			[.. OnlyTestWordArray], true, true, 0);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,
 			result.fileIndexResultsList.FirstOrDefault()?.Status);
@@ -277,16 +275,16 @@ public sealed class MetaPreflightTest
 	public async Task Preflight_ReadOnly()
 	{
 		var metaPreflight = new MetaPreflight(
-			new FakeIQuery(new List<FileIndexItem> { new("/readonly/test.jpg") }),
-			new AppSettings { ReadOnlyFolders = new List<string> { "readonly" } },
+			new FakeIQuery([new("/readonly/test.jpg")]),
+			new AppSettings { ReadOnlyFolders = ["readonly"] },
 			new FakeSelectorStorage(
-				new FakeIStorage(new List<string>(),
-					new List<string> { "/readonly/test.jpg" },
-					new[] { CreateAnImage.Bytes.ToArray() })), new FakeIWebLogger());
+				new FakeIStorage([],
+					["/readonly/test.jpg"],
+					[[.. CreateAnImage.Bytes]])), new FakeIWebLogger());
 
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("/readonly/test.jpg"),
-			ReadonlyFolderTestJpgArray.ToList(), true, true, 0);
+			[.. ReadonlyFolderTestJpgArray], true, true, 0);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.ReadOnly,
 			result.fileIndexResultsList.FirstOrDefault()?.Status);
@@ -297,18 +295,17 @@ public sealed class MetaPreflightTest
 	public async Task Preflight_Deleted()
 	{
 		var metaPreflight = new MetaPreflight(
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/deleted.jpg") { Tags = TrashKeyword.TrashKeywordString }
-			}),
+			]),
 			new AppSettings(), new FakeSelectorStorage(
-				new FakeIStorage(new List<string>(),
-					new List<string> { "/deleted.jpg" },
-					new[] { CreateAnImage.Bytes.ToArray() })), new FakeIWebLogger());
+				new FakeIStorage([],
+					["/deleted.jpg"],
+					[[.. CreateAnImage.Bytes]])), new FakeIWebLogger());
 
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("/deleted.jpg"),
-			DeletedJpgArray.ToList(),
+			[.. DeletedJpgArray],
 			true, true, 0);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.Deleted,
@@ -358,12 +355,12 @@ public sealed class MetaPreflightTest
 	public async Task Preflight_NotFoundSourceMissing()
 	{
 		var metaPreflight = new MetaPreflight(new FakeIQuery(
-				new List<FileIndexItem> { new("/test.jpg") }), new AppSettings(),
+				[new("/test.jpg")]), new AppSettings(),
 			new FakeSelectorStorage(), new FakeIWebLogger());
 
 		var result = await metaPreflight.PreflightAsync(
 			new FileIndexItem("/test.jpg"),
-			TestJpgArray.ToList(), true, true, 0);
+			[.. TestJpgArray], true, true, 0);
 
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
 			result.fileIndexResultsList.FirstOrDefault()?.Status);

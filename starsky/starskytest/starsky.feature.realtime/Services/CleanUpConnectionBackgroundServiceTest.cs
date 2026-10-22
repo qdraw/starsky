@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using starsky.feature.realtime.Interface;
 using starsky.feature.realtime.Services;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starskytest.ExtensionMethods;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.realtime.Services;
@@ -39,8 +41,11 @@ public sealed class CleanUpConnectionBackgroundServiceTest
 		service!.FakeSendToAllAsync = [new Tuple<string, DateTime>("1", DateTime.UnixEpoch)];
 		Assert.HasCount(1, service.FakeSendToAllAsync);
 
-		await new CleanUpConnectionBackgroundService(_serviceScopeFactory).StartAsync(
-			CancellationToken.None);
+		var backgroundService = new CleanUpConnectionBackgroundService(_serviceScopeFactory);
+		var dynMethod = backgroundService.GetType().GetMethod("ExecuteAsync",
+			BindingFlags.NonPublic | BindingFlags.Instance)!;
+		await dynMethod.InvokeAsync(backgroundService, CancellationToken.None);
+
 		Assert.IsEmpty(service.FakeSendToAllAsync);
 	}
 }

@@ -20,7 +20,7 @@ public sealed class MetaInfoTest
 	{
 		var metaInfo = new MetaInfo(new FakeIQuery(), new AppSettings(),
 			new FakeSelectorStorage(), null!, new FakeIWebLogger());
-		var test = await metaInfo.GetInfoAsync(new List<string> { "/test" }, false);
+		var test = await metaInfo.GetInfoAsync(["/test"], false);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundNotInIndex,
 			test.FirstOrDefault()?.Status);
 	}
@@ -29,10 +29,10 @@ public sealed class MetaInfoTest
 	public async Task NotFoundSourceMissing()
 	{
 		var metaInfo = new MetaInfo(
-			new FakeIQuery(new List<FileIndexItem> { new("/test") }),
+			new FakeIQuery([new("/test")]),
 			new AppSettings(),
 			new FakeSelectorStorage(), null!, new FakeIWebLogger());
-		var test = await metaInfo.GetInfoAsync(new List<string> { "/test" }, false);
+		var test = await metaInfo.GetInfoAsync(["/test"], false);
 		Assert.AreEqual(FileIndexItem.ExifStatus.NotFoundSourceMissing,
 			test.FirstOrDefault()?.Status);
 	}
@@ -41,11 +41,11 @@ public sealed class MetaInfoTest
 	public async Task ExtensionNotSupported_ExifWriteNotSupported()
 	{
 		var metaInfo = new MetaInfo(
-			new FakeIQuery(new List<FileIndexItem> { new("/test") }),
+			new FakeIQuery([new("/test")]),
 			new AppSettings(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string>(),
-				new List<string> { "/test" })), null!, new FakeIWebLogger());
-		var test = await metaInfo.GetInfoAsync(new List<string> { "/test" }, false);
+			new FakeSelectorStorage(new FakeIStorage([],
+				["/test"])), null!, new FakeIWebLogger());
+		var test = await metaInfo.GetInfoAsync(["/test"], false);
 		Assert.AreEqual(FileIndexItem.ExifStatus.ExifWriteNotSupported,
 			test.FirstOrDefault()?.Status);
 	}
@@ -54,13 +54,13 @@ public sealed class MetaInfoTest
 	public async Task GetInfo_XmpFile()
 	{
 		var metaInfo = new MetaInfo(
-			new FakeIQuery(new List<FileIndexItem> { new("/test.xmp") }),
+			new FakeIQuery([new("/test.xmp")]),
 			new AppSettings(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string>(),
-				new List<string> { "/test.xmp" },
+			new FakeSelectorStorage(new FakeIStorage([],
+				["/test.xmp"],
 				new List<byte[]> { CreateAnXmp.Bytes.ToArray() })), null!,
 			new FakeIWebLogger());
-		var test = await metaInfo.GetInfoAsync(new List<string> { "/test.xmp" }, false);
+		var test = await metaInfo.GetInfoAsync(["/test.xmp"], false);
 		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, test.FirstOrDefault()?.Status);
 	}
 
@@ -68,13 +68,13 @@ public sealed class MetaInfoTest
 	public async Task GetInfo_JpegFile_OkStatus()
 	{
 		var metaInfo = new MetaInfo(
-			new FakeIQuery(new List<FileIndexItem> { new("/test.jpg") }),
+			new FakeIQuery([new("/test.jpg")]),
 			new AppSettings(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string>(),
-				new List<string> { "/test.jpg" },
+			new FakeSelectorStorage(new FakeIStorage([],
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() })), null!,
 			new FakeIWebLogger());
-		var test = await metaInfo.GetInfoAsync(new List<string> { "/test.jpg" }, false);
+		var test = await metaInfo.GetInfoAsync(["/test.jpg"], false);
 
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.jpg,
 			test.FirstOrDefault()?.ImageFormat);
@@ -85,17 +85,17 @@ public sealed class MetaInfoTest
 	public async Task GetInfo_JpegFile_LastWriteDate()
 	{
 		var metaInfo = new MetaInfo(
-			new FakeIQuery(new List<FileIndexItem> { new("/test.jpg") }),
+			new FakeIQuery([new("/test.jpg")]),
 			new AppSettings(),
-			new FakeSelectorStorage(new FakeIStorage(new List<string>(),
-				new List<string> { "/test.jpg" },
+			new FakeSelectorStorage(new FakeIStorage([],
+				["/test.jpg"],
 				new List<byte[]> { CreateAnImage.Bytes.ToArray() },
 				new List<DateTime>
 				{
 					new(2000, 01, 01,
 						01, 01, 01, DateTimeKind.Local)
 				})), null!, new FakeIWebLogger());
-		var test = await metaInfo.GetInfoAsync(new List<string> { "/test.jpg" }, false);
+		var test = await metaInfo.GetInfoAsync(["/test.jpg"], false);
 
 		Assert.AreEqual(new DateTime(2000, 01, 01,
 			01, 01, 01, DateTimeKind.Local), test.FirstOrDefault()?.LastEdited);

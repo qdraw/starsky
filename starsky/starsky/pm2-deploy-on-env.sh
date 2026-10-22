@@ -8,7 +8,7 @@ cd "$(dirname "$0")"
 # for warnup check: ./pm2-warmup.sh --port 4823
 
 PM2NAME="starsky"
-RUNTIME="linux-arm"
+RUNTIME="linux-arm64"
 
 ARGUMENTS=("$@")
 
@@ -17,8 +17,7 @@ for ((i = 1; i <= $#; i++ )); do
   if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
   then
       echo "--name pm2name"
-      echo "--runtime linux-arm"
-      echo "     (or:) --runtime linux-arm64"
+      echo "--runtime linux-arm64"
       echo "     (or:) --runtime osx-x64"
       echo "     (or:) --runtime osx-arm64"
       echo "     (or:) --runtime win-x64"

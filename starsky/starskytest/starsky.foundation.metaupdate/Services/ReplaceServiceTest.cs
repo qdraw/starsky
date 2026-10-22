@@ -35,20 +35,19 @@ public sealed class ReplaceServiceTest
 		_query = new Query(dbContext, new AppSettings(), null!,
 			new FakeIWebLogger(), memoryCache);
 
-		var iStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				"/test.jpg",
-				"/test2.jpg",
-				"/readonly/test.jpg",
-				"/test.dng",
-				"/test34598.jpg",
-				"/test5.dng",
-				"/test5.xmp",
-				"/test_ok_and_same.jpg",
-				"/test_deleted_and_same.jpg",
-				"/test_default_status.jpg"
-			});
+		var iStorage = new FakeIStorage(["/"],
+		[
+			"/test.jpg",
+			"/test2.jpg",
+			"/readonly/test.jpg",
+			"/test.dng",
+			"/test34598.jpg",
+			"/test5.dng",
+			"/test5.xmp",
+			"/test_ok_and_same.jpg",
+			"/test_deleted_and_same.jpg",
+			"/test_default_status.jpg"
+		]);
 		_metaReplace = new MetaReplaceService(_query,
 			new AppSettings { ReadOnlyFolders = ["/readonly"] },
 			new FakeSelectorStorage(iStorage), new FakeIWebLogger());
@@ -191,7 +190,7 @@ public sealed class ReplaceServiceTest
 	public void SearchAndReplace_Nothing()
 	{
 		var result = MetaReplaceService.SearchAndReplace(
-			new List<FileIndexItem> { new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok } },
+			[new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }],
 			"tags", "test", string.Empty);
 
 		Assert.AreEqual(string.Empty, result[0].Tags);
@@ -201,10 +200,9 @@ public sealed class ReplaceServiceTest
 	public void SearchAndReplace_LocationCityNull()
 	{
 		var result = MetaReplaceService.SearchAndReplace(
-			new List<FileIndexItem>
-			{
+			[
 				new("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok, LocationCity = null }
-			},
+			],
 			"LocationCity", "test", string.Empty);
 
 		Assert.AreEqual(string.Empty, result[0].Tags);

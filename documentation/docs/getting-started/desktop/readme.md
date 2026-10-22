@@ -9,6 +9,11 @@ There is a desktop app available for Windows and macOS.
 It is based on the same code as the web app,
 so you can use it to manage your photos and videos on your local network or on a remote server.
 
+The desktop app supports two connection modes:
+
+- **Local** — bundles and starts the Starsky server automatically; no login required
+- **Remote** — connects to an existing Starsky server URL with full authentication
+
 ## 1. Download the app
 
 Go to the download page and download the latest version for your operating system.

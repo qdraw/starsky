@@ -74,11 +74,9 @@ export function AddContextMenu({
     contextMenu.style.top = `${containerPoint.y}px`;
 
     // Add loading message
-    contextMenu.innerHTML = `
-      <div class="leaflet-context-menu__loading">
-        ${language.key(localization.MessageLoadingAddress)}
-      </div>
-    `;
+    contextMenu.replaceChildren(
+      createDiv("leaflet-context-menu__loading", language.key(localization.MessageLoadingAddress))
+    );
 
     mapContainer.appendChild(contextMenu);
 
@@ -92,46 +90,59 @@ export function AddContextMenu({
     enclosingObjects = mapElementsData?.enclosingObjects || [];
 
     // Update menu with data
-    contextMenu.innerHTML = `
-      <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--bottom">
-        ${language.key(localization.MessageCoordinates)}
-      </div>
-      <div class="leaflet-context-menu__coords" data-action="copy-coordinates">
-        ${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}
-      </div>
-      <div class="context-menu-item" data-action="copy-coordinates" title="${language.key(localization.MessageClickToCopy)}">
-        📋 ${language.key(localization.MessageCopyCoordinates)}
-      </div>
-      ${
-        streetName
-          ? `
-        <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--top">
-          ${language.key(localization.MessageStreetName)}
-        </div>
-        <div class="leaflet-context-menu__street" data-action="copy-street">
-          ${streetName}
-        </div>
-        <div class="context-menu-item" data-action="copy-street" title="${language.key(localization.MessageClickToCopy)}">
-          📋 ${language.key(localization.MessageCopyStreetName)}
-        </div>
-      `
-          : `
-        <div class="leaflet-context-menu__no-street">
-          ${language.key(localization.MessageNoStreetFound)}
-        </div>
-      `
-      }
-      ${renderOsmSection(
+    // textContent/title are used because streetName comes from OpenStreetMap, which anyone can edit
+    const coordinatesText = `${currentLat.toFixed(6)}, ${currentLng.toFixed(6)}`;
+    const clickToCopy = language.key(localization.MessageClickToCopy);
+    const children: HTMLElement[] = [
+      createDiv(
+        "leaflet-context-menu__section-title leaflet-context-menu__section-title--bottom",
+        language.key(localization.MessageCoordinates)
+      ),
+      createDiv("leaflet-context-menu__coords", coordinatesText, "copy-coordinates"),
+      createDiv(
+        "context-menu-item",
+        `📋 ${language.key(localization.MessageCopyCoordinates)}`,
+        "copy-coordinates",
+        clickToCopy
+      )
+    ];
+
+    if (streetName) {
+      children.push(
+        createDiv(
+          "leaflet-context-menu__section-title leaflet-context-menu__section-title--top",
+          language.key(localization.MessageStreetName)
+        ),
+        createDiv("leaflet-context-menu__street", streetName, "copy-street"),
+        createDiv(
+          "context-menu-item",
+          `📋 ${language.key(localization.MessageCopyStreetName)}`,
+          "copy-street",
+          clickToCopy
+        )
+      );
+    } else {
+      children.push(
+        createDiv(
+          "leaflet-context-menu__no-street",
+          language.key(localization.MessageNoStreetFound)
+        )
+      );
+    }
+
+    children.push(
+      ...renderOsmSection(
         language.key(localization.MessageNearbyObjects),
         language.key(localization.MessageNoNearbyObjects),
         nearbyObjects
-      )}
-      ${renderOsmSection(
+      ),
+      ...renderOsmSection(
         language.key(localization.MessageEnclosingObjects),
         language.key(localization.MessageNoEnclosingObjects),
         enclosingObjects
-      )}
-    `;
+      )
+    );
+    contextMenu.replaceChildren(...children);
 
     // Add click handlers
     contextMenu.querySelectorAll('[data-action="copy-coordinates"]').forEach((el) => {
@@ -184,42 +195,52 @@ export function AddContextMenu({
   map.on("movestart", closeContextMenu);
 }
 
-function renderOsmSection(title: string, emptyMessage: string, items: IOsmMapElementItem[]): string {
-  const itemsMarkup = items
-    .filter((item) => !!item)
-    .map((item) => {
-      const label = escapeHtml(item.label || item.copyText || "");
-      const description = escapeHtml(item.description || "");
-      const copyText = escapeHtml(item.copyText || item.label || "");
-
-      return `
-        <div class="context-menu-item leaflet-context-menu__osm-item" data-action="copy-osm-item" data-copy-text="${copyText}">
-          <div class="leaflet-context-menu__osm-item-label">${label}</div>
-          ${description ? `<div class="leaflet-context-menu__osm-item-description">${description}</div>` : ""}
-        </div>
-      `;
-    })
-    .join("");
-
-  return `
-    <div class="leaflet-context-menu__section-title leaflet-context-menu__section-title--top">
-      ${escapeHtml(title)}
-    </div>
-    ${
-      itemsMarkup
-        ? `<div class="leaflet-context-menu__osm-items">${itemsMarkup}</div>`
-        : `<div class="leaflet-context-menu__no-osm-items">${escapeHtml(emptyMessage)}</div>`
-    }
-  `;
+function createDiv(
+  className: string,
+  text: string,
+  action?: string,
+  title?: string
+): HTMLDivElement {
+  const div = document.createElement("div");
+  div.className = className;
+  div.textContent = text;
+  if (action) div.dataset.action = action;
+  if (title) div.title = title;
+  return div;
 }
 
-function escapeHtml(input: string): string {
-  return input
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+function renderOsmSection(
+  title: string,
+  emptyMessage: string,
+  items: IOsmMapElementItem[]
+): HTMLElement[] {
+  const elements: HTMLElement[] = [
+    createDiv(
+      "leaflet-context-menu__section-title leaflet-context-menu__section-title--top",
+      title
+    )
+  ];
+
+  const validItems = items.filter((item) => !!item);
+  if (validItems.length === 0) {
+    elements.push(createDiv("leaflet-context-menu__no-osm-items", emptyMessage));
+    return elements;
+  }
+
+  const container = createDiv("leaflet-context-menu__osm-items", "");
+  for (const item of validItems) {
+    const row = createDiv("context-menu-item leaflet-context-menu__osm-item", "", "copy-osm-item");
+    row.dataset.copyText = item.copyText || item.label || "";
+    row.appendChild(
+      createDiv("leaflet-context-menu__osm-item-label", item.label || item.copyText || "")
+    );
+    if (item.description) {
+      row.appendChild(createDiv("leaflet-context-menu__osm-item-description", item.description));
+    }
+    container.appendChild(row);
+  }
+  elements.push(container);
+  return elements;
 }
 
 // Copy to clipboard helper

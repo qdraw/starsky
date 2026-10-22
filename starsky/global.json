@@ -1,8 +1,11 @@
 {
     "strictVersion": true,
     "sdk": {
-        "version": "8.0.423",
+        "version": "10.0.402",
         "rollForward": "disable",
         "allowPrerelease": false
+    },
+    "test": {
+        "runner": "Microsoft.Testing.Platform"
     }
 }

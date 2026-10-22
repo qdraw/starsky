@@ -24,16 +24,11 @@ public sealed class FtpServiceTest
 	{
 		PublishProfilesRemote = new AppSettingsPublishProfilesRemote
 		{
-			Default = new List<RemoteCredentialWrapper>
-			{
-				new()
-				{
-					Ftp = new FtpCredential
-					{
-						WebFtp = "ftp://test:test@testmedia.be"
-					}
-				}
-			}
+			Default =
+			[
+
+				new() { Ftp = new FtpCredential { WebFtp = "ftp://test:test@testmedia.be" } }
+			]
 		}
 	};
 
@@ -267,7 +262,7 @@ public sealed class FtpServiceTest
 	{
 		var factory = new FakeIFtpWebRequestFactory();
 		var fakeStorage = new FakeIStorage(["/"], ["/file.txt"],
-			["not a zip"u8.ToArray()]);
+			[[.. "not a zip"u8]]);
 		var ftpService = new FtpService(_appSettings, new FakeSelectorStorage(fakeStorage),
 			new FakeConsoleWrapper(),
 			factory, new FakeIWebLogger());

@@ -166,7 +166,19 @@ describe("url-query", () => {
     expect(result).toContain("/account/logout?ReturnUrl=/?f=/");
   });
 
+  it("UrlLogoutPage escapes characters that break out of the parameter", () => {
+    const result = urlQuery.UrlLogoutPage("/a?f=/b&x=1#h");
+    expect(result).toContain("/account/logout?ReturnUrl=/a?f=/b%26x=1%23h");
+  });
+
   describe("GetReturnUrl", () => {
+    it("falls back to default for off-site urls", () => {
+      for (const value of ["//evil.com", "https://evil.com", "javascript:alert(1)"]) {
+        const test = urlQuery.GetReturnUrl("?ReturnUrl=" + encodeURIComponent(value));
+        expect(test).toStrictEqual("/?f=/");
+      }
+    });
+
     it("default", () => {
       const test = urlQuery.GetReturnUrl("?");
       expect(test).toStrictEqual("/?f=/");
@@ -179,6 +191,11 @@ describe("url-query", () => {
     it("UrlHealthReleaseInfo default", () => {
       const result = urlQuery.UrlHealthReleaseInfo(null!);
       expect(result).toBe(urlQuery.prefix + "/api/health/release-info");
+    });
+
+    it("UrlHealthReleaseInfo encodes version", () => {
+      const result = urlQuery.UrlHealthReleaseInfo("1&x=<y>");
+      expect(result).toBe(urlQuery.prefix + "/api/health/release-info?v=1%26x%3D%3Cy%3E");
     });
 
     it("UrlHealthReleaseInfo version", () => {

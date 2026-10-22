@@ -8,6 +8,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,22 @@ public sealed class QueryUpdateItemError
 		var serviceProvider = services.BuildServiceProvider();
 		return serviceProvider.GetRequiredService<IServiceScopeFactory>();
 	}
+
+	/// <summary>
+	///     EF Core's PropertyValues constructor now dereferences the InternalEntityEntry
+	///     immediately, so FakePropertyValues needs a real tracked entry instead of null
+	/// </summary>
+#pragma warning disable EF1001
+	private static InternalEntityEntry CreateInternalEntityEntry()
+	{
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(Guid.NewGuid().ToString())
+			.Options;
+		using var context = new ApplicationDbContext(options);
+		var entry = context.Add(new FileIndexItem("/fake-property-values.jpg"));
+		return ( ( IInfrastructure<InternalEntityEntry> ) entry ).Instance;
+	}
+#pragma warning restore EF1001
 
 	[TestMethod]
 	public async Task Query_UpdateItem_DbUpdateConcurrencyException()
@@ -169,7 +186,7 @@ public sealed class QueryUpdateItemError
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options), null!, null!,
 			null!);
-		await fakeQuery.UpdateItemAsync(new List<FileIndexItem> { new("test") });
+		await fakeQuery.UpdateItemAsync([new("test")]);
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
@@ -229,7 +246,7 @@ public sealed class QueryUpdateItemError
 
 		var fakeQuery =
 			new Query(sqLiteFailContext, new AppSettings(), scope, new FakeIWebLogger());
-		await fakeQuery.RemoveItemAsync(new List<FileIndexItem> { item! });
+		await fakeQuery.RemoveItemAsync([item!]);
 
 		Assert.AreEqual(1, sqLiteFailContext.Count);
 	}
@@ -256,8 +273,11 @@ public sealed class QueryUpdateItemError
 	[TestMethod]
 	public void SolveConcurrencyException_should_callDelegate()
 	{
+#pragma warning disable EF1001
+		var internalEntry = CreateInternalEntityEntry();
+#pragma warning restore EF1001
 		SolveConcurrency.SolveConcurrencyException(new FileIndexItem(),
-			new FakePropertyValues(null!), new FakePropertyValues(null!),
+			new FakePropertyValues(internalEntry), new FakePropertyValues(internalEntry),
 			"", _ => IsWrittenConcurrencyException = true);
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
@@ -266,9 +286,12 @@ public sealed class QueryUpdateItemError
 	[TestMethod]
 	public void Query_UpdateItem_NotSupportedException()
 	{
+#pragma warning disable EF1001
+		var internalEntry = CreateInternalEntityEntry();
+#pragma warning restore EF1001
 		Assert.ThrowsExactly<NotSupportedException>(() =>
 			SolveConcurrency.SolveConcurrencyException(null!,
-				new FakePropertyValues(null!), new FakePropertyValues(null!),
+				new FakePropertyValues(internalEntry), new FakePropertyValues(internalEntry),
 				"", _ => IsWrittenConcurrencyException = true));
 	}
 
@@ -289,7 +312,7 @@ public sealed class QueryUpdateItemError
 		var fakeQuery = new Query(appDbInvalidOperationException, new AppSettings(), scope,
 			new FakeIWebLogger());
 
-		await fakeQuery.UpdateItemAsync(new List<FileIndexItem>());
+		await fakeQuery.UpdateItemAsync([]);
 
 		Assert.AreEqual(1, appDbInvalidOperationException.Count);
 	}
@@ -386,7 +409,7 @@ public sealed class QueryUpdateItemError
 		var query = new Query(appDbInvalidOperationException, new AppSettings(), scope,
 			new FakeIWebLogger());
 
-		await query.RemoveItemAsync(new List<FileIndexItem> { testItem1, testItem2 });
+		await query.RemoveItemAsync([testItem1, testItem2]);
 
 		var afterResult1 = await dbContext.FileIndex.FirstOrDefaultAsync(p => p.FilePath == path1, TestContext.CancellationTokenSource.Token);
 		Assert.IsNull(afterResult1);
@@ -405,7 +428,7 @@ public sealed class QueryUpdateItemError
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options), null!, null!,
 			new FakeIWebLogger());
-		await fakeQuery.RemoveItemAsync(new List<FileIndexItem> { new("test") });
+		await fakeQuery.RemoveItemAsync([new("test")]);
 
 		Assert.IsTrue(IsCalledDbUpdateConcurrency);
 	}
@@ -486,7 +509,7 @@ public sealed class QueryUpdateItemError
 			.Options;
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options) { MinCount = 2 },
-			new AppSettings { Verbose = false }, null!, null!);
+			new AppSettings { Verbose = false }, null!, new FakeIWebLogger());
 
 		var fileIndexItemList = new List<FileIndexItem>
 		{
@@ -507,7 +530,7 @@ public sealed class QueryUpdateItemError
 			.Options;
 
 		var fakeQuery = new Query(new AppDbContextConcurrencyException(options) { MinCount = 3 },
-			new AppSettings { Verbose = true }, null!, null!);
+			new AppSettings { Verbose = true }, null!, new FakeIWebLogger());
 
 		var fileIndexItemList = new List<FileIndexItem>
 		{
@@ -648,6 +671,11 @@ public sealed class QueryUpdateItemError
 		// ReSharper disable once UnassignedGetOnlyAutoProperty
 		public IUpdateEntry SharedIdentityEntry { get; }
 #pragma warning restore 8618
+
+		public bool IsModified(IComplexProperty property) => throw new NotImplementedException();
+		public bool HasExplicitValue(IProperty property) => throw new NotImplementedException();
+		public bool HasStoreGeneratedValue(IProperty property) => throw new NotImplementedException();
+		public bool CanHaveOriginalValue(IPropertyBase propertyBase) => throw new NotImplementedException();
 	}
 
 	private sealed class UpdateEntryEntityEntryProxy : IUpdateEntry
@@ -726,6 +754,26 @@ public sealed class QueryUpdateItemError
 		}
 
 		public bool IsConceptualNull(IProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool IsModified(IComplexProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasExplicitValue(IProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool HasStoreGeneratedValue(IProperty property)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool CanHaveOriginalValue(IPropertyBase propertyBase)
 		{
 			throw new NotImplementedException();
 		}
@@ -917,6 +965,12 @@ public sealed class QueryUpdateItemError
 			set => throw new NotImplementedException();
 		}
 
+		public override System.Collections.IList? this[IComplexProperty property]
+		{
+			get => throw new NotImplementedException();
+			set => throw new NotImplementedException();
+		}
+
 		public override object ToObject()
 		{
 			throw new NotImplementedException();
@@ -928,6 +982,11 @@ public sealed class QueryUpdateItemError
 		}
 
 		public override void SetValues(PropertyValues propertyValues)
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void SetValues<TProperty>(IDictionary<string, TProperty> propertyValues)
 		{
 			throw new NotImplementedException();
 		}
@@ -977,6 +1036,57 @@ public sealed class QueryUpdateItemError
 			Count++;
 			throw new InvalidOperationException("test");
 		}
+	}
+
+	[TestMethod]
+	public void SolveConcurrencyExceptionLoop_DeletedRow_DetachesEntry()
+	{
+		var dbName = nameof(SolveConcurrencyExceptionLoop_DeletedRow_DetachesEntry);
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(dbName)
+			.Options;
+
+		using var context1 = new ApplicationDbContext(options);
+		var item = new ThumbnailItem("hash_deleted_concurrency", null, null, null, null, null);
+		context1.Thumbnails.Add(item);
+		context1.SaveChanges();
+
+		// Delete the row via a second context so context1 still tracks it.
+		using var context2 = new ApplicationDbContext(options);
+		var toDelete = context2.Thumbnails.First(t => t.FileHash == "hash_deleted_concurrency");
+		context2.Thumbnails.Remove(toDelete);
+		context2.SaveChanges();
+
+		// Mark the tracked entry as Modified to simulate an in-flight update.
+		var entry = context1.Entry(item);
+		entry.State = EntityState.Modified;
+
+		SolveConcurrency.SolveConcurrencyExceptionLoop(new List<EntityEntry> { entry });
+
+		// Row is gone → entry must be detached so SaveChangesAsync won't send a ghost UPDATE.
+		Assert.AreEqual(EntityState.Detached, entry.State);
+	}
+
+	[TestMethod]
+	public void SolveConcurrencyExceptionLoop_ExistingRow_PreservesModifiedState()
+	{
+		var dbName = nameof(SolveConcurrencyExceptionLoop_ExistingRow_PreservesModifiedState);
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase(dbName)
+			.Options;
+
+		using var context = new ApplicationDbContext(options);
+		var item = new ThumbnailItem("hash_existing_concurrency", null, null, null, null, null);
+		context.Thumbnails.Add(item);
+		context.SaveChanges();
+
+		var entry = context.Entry(item);
+		entry.State = EntityState.Modified;
+
+		SolveConcurrency.SolveConcurrencyExceptionLoop(new List<EntityEntry> { entry });
+
+		// Row still exists → original values are refreshed but the entry is NOT detached.
+		Assert.AreNotEqual(EntityState.Detached, entry.State);
 	}
 
 	public TestContext TestContext { get; set; }

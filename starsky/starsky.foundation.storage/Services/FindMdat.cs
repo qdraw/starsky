@@ -198,15 +198,15 @@ public static class FindMdat
 			remaining -= r;
 		}
 
-		md5.TransformFinalBlock(Array.Empty<byte>(), 0, 0);
+		md5.TransformFinalBlock([], 0, 0);
 		var digest = md5.Hash;
 		if ( ForceNullHashForTests )
 		{
 			digest = null;
 		}
 
-		digest ??= Array.Empty<byte>();
-		return ( BitConverter.ToString(digest).Replace("-", string.Empty).ToLowerInvariant(),
+		digest ??= [];
+		return ( Convert.ToHexStringLower(digest),
 			Base32NoPadding(digest) );
 	}
 

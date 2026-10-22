@@ -191,11 +191,26 @@ public sealed class ImportControllerTest
 	}
 
 	[TestMethod]
+	[DataRow("not a url")]
+	[DataRow("")]
+	public async Task FromUrl_InvalidUrl_ShouldReturnBadRequest(string url)
+	{
+		var importController = new ImportController(_import, _appSettings,
+			_bgTaskQueue, new FakeIHttpClientHelper(new FakeIStorage(), new()),
+			new FakeSelectorStorage(new FakeIStorage()),
+			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+
+		var result = await importController.FromUrl(url, "example.tiff", null!);
+
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
+	}
+
+	[TestMethod]
 	public async Task FromUrl_RequestFromWhiteListedDomain_NotFound()
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();
@@ -219,7 +234,7 @@ public sealed class ImportControllerTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IStorage, FakeIStorage>();

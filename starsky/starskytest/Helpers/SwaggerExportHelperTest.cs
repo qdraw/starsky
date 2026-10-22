@@ -5,7 +5,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Models;
@@ -19,8 +19,7 @@ namespace starskytest.Helpers;
 
 public sealed class FakeISwaggerProvider : ISwaggerProvider
 {
-	public OpenApiDocument GetSwagger(string documentName, string? host = null,
-		string? basePath = null)
+	public OpenApiDocument GetSwagger(string documentName, string host, string basePath)
 	{
 		return new OpenApiDocument { Components = new OpenApiComponents { Links = null } };
 	}

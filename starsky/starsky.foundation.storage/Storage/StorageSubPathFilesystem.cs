@@ -216,8 +216,22 @@ public sealed class StorageSubPathFilesystem : IStorage
 		// OR:
 		//  .Where(ExtensionRolesHelper.IsExtensionSyncSupported)
 
-		// convert back to subPath style
-		return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
+		var result = _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
+
+		// Also include files inside mapped child folders
+		foreach ( var mappedSubPath in GetMappedChildSubPaths(path) )
+		{
+			var mappedFullPath = _appSettings.DatabasePathToFilePath(mappedSubPath);
+			if ( !storage.ExistFolder(mappedFullPath) )
+			{
+				continue;
+			}
+
+			var mappedFiles = storage.GetAllFilesInDirectoryRecursive(mappedFullPath);
+			result.AddRange(_appSettings.RenameListItemsToDbStyle(mappedFiles.ToList()));
+		}
+
+		return result;
 	}
 
 	/// <summary>
@@ -239,7 +253,12 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 		// Used For subfolders
 		// convert back to subPath style
-		return _appSettings.RenameListItemsToDbStyle(folders.ToList());
+		var result = _appSettings.RenameListItemsToDbStyle(folders.ToList());
+
+		// Inject mapped child folders whose parent is this path
+		result.AddRange(GetMappedChildSubPaths(path));
+
+		return result;
 	}
 
 	/// <summary>
@@ -258,7 +277,46 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 		// Used For subfolders
 		// convert back to subPath style
-		return _appSettings.RenameListItemsToDbStyle(folders.ToList());
+		var result = _appSettings.RenameListItemsToDbStyle(folders.ToList()).ToList();
+
+		// Inject mapped child folders and their recursive contents
+		foreach ( var mappedSubPath in GetMappedChildSubPaths(path) )
+		{
+			var mappedFullPath = _appSettings.DatabasePathToFilePath(mappedSubPath);
+			if ( !storage.ExistFolder(mappedFullPath) )
+			{
+				continue;
+			}
+
+			result.Add(new KeyValuePair<string, DateTime>(mappedSubPath,
+				Directory.GetLastWriteTimeUtc(mappedFullPath)));
+
+			var subFolders = storage.GetDirectoryRecursive(mappedFullPath,
+				maxInnerChildDirectoryLookups);
+			result.AddRange(_appSettings.RenameListItemsToDbStyle(subFolders.ToList()));
+		}
+
+		return result;
+	}
+
+	/// <summary>
+	///     Returns direct-child mapping keys whose parent subPath matches <paramref name="parentSubPath" />.
+	/// </summary>
+	private IEnumerable<string> GetMappedChildSubPaths(string parentSubPath)
+	{
+		if ( _appSettings.StorageFolderMappings.Count == 0 )
+		{
+			return [];
+		}
+
+		var normalized = parentSubPath == "/" ? "/" : parentSubPath.TrimEnd('/');
+		return _appSettings.StorageFolderMappings.Keys
+			.Where(key =>
+			{
+				var lastSlash = key.LastIndexOf('/');
+				var keyParent = lastSlash <= 0 ? "/" : key.Substring(0, lastSlash);
+				return keyParent == normalized;
+			});
 	}
 
 	/// <summary>

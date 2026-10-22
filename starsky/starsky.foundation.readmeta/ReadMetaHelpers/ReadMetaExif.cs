@@ -130,31 +130,42 @@ public sealed class ReadMetaExif
 	{
 		var xmpDirectory = allExifItems.OfType<XmpDirectory>().FirstOrDefault();
 
-		var suggestedTags = GetXmpDataList(xmpDirectory, "ai:SuggestedTags[");
+		var suggestedTags = GetXmpDataList(xmpDirectory, "qdraw:SuggestedTags[");
 		if ( !string.IsNullOrWhiteSpace(suggestedTags) )
 		{
 			item.SuggestedTags = suggestedTags;
 		}
 
-		var rejectedTags = GetXmpDataList(xmpDirectory, "ai:RejectedTags[");
+		var rejectedTags = GetXmpDataList(xmpDirectory, "qdraw:RejectedTags[");
 		if ( !string.IsNullOrWhiteSpace(rejectedTags) )
 		{
 			item.RejectedTags = rejectedTags;
 		}
 
-		var model = GetXmpData(xmpDirectory, "ai:ImageClassificationModel");
+		var model = GetXmpData(xmpDirectory, "qdraw:ImageClassificationModel");
 		if ( !string.IsNullOrWhiteSpace(model) )
 		{
 			item.ImageClassificationModel = model;
 		}
 
-		var generatedAt = GetXmpData(xmpDirectory, "ai:ImageClassificationGeneratedAt");
+		var generatedAt = GetXmpData(xmpDirectory, "qdraw:ImageClassificationGeneratedAt");
 		if ( !string.IsNullOrWhiteSpace(generatedAt) &&
 		     DateTime.TryParse(generatedAt, CultureInfo.InvariantCulture,
 			     DateTimeStyles.RoundtripKind, out var parsedGeneratedAt) &&
 		     parsedGeneratedAt.Year >= 2 )
 		{
 			item.ImageClassificationGeneratedAt = parsedGeneratedAt;
+		}
+
+		var imageStabilization = GetXmpData(xmpDirectory, "qdraw:ImageStabilization");
+		if ( !string.IsNullOrWhiteSpace(imageStabilization) )
+		{
+			item.ImageStabilisation = imageStabilization switch
+			{
+				"On" => ImageStabilisationType.On,
+				"Off" => ImageStabilisationType.Off,
+				_ => ImageStabilisationType.Unknown
+			};
 		}
 	}
 
@@ -1108,7 +1119,7 @@ public sealed class ReadMetaExif
 	}
 
 	private static int GetImageWidthHeightMaxCount(string dirName,
-		ICollection<Directory> allExifItems)
+		List<Directory> allExifItems)
 	{
 		var maxCount = 6;
 		if ( dirName == "Exif SubIFD" )
@@ -1263,7 +1274,7 @@ public sealed class ReadMetaExif
 		float.TryParse(focalLengthString, NumberStyles.Number,
 			CultureInfo.CurrentCulture, out var focalLength);
 
-		return Math.Round(focalLength, 5);
+		return float.IsFinite(focalLength) ? Math.Round(focalLength, 5) : 0d;
 	}
 
 
@@ -1300,7 +1311,7 @@ public sealed class ReadMetaExif
 		float.TryParse(apertureString, NumberStyles.Number, CultureInfo.CurrentCulture,
 			out var aperture);
 
-		return aperture;
+		return float.IsFinite(aperture) ? aperture : 0d;
 	}
 
 	/// <summary>
@@ -1397,5 +1408,11 @@ public sealed class ReadMetaExif
 		int.TryParse(isoSpeedString, NumberStyles.Number, CultureInfo.InvariantCulture,
 			out var isoSpeed);
 		return isoSpeed;
+	}
+
+	internal static void SetArrayBasedItemsAiClassificationTest(List<Directory> allExifItems,
+		FileIndexItem item)
+	{
+		SetArrayBasedItemsAiClassification(allExifItems, item);
 	}
 }

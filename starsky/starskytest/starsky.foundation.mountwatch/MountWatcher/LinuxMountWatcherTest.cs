@@ -180,7 +180,7 @@ public sealed class LinuxMountWatcherTest
 		var mounts = "/dev/sdb1 /media/usb ext4 rw 0 0";
 		var storage = new FakeIStorage(
 			null,
-			new List<string> { "/proc/mounts" },
+			["/proc/mounts"],
 			new List<byte[]?> { Encoding.UTF8.GetBytes(mounts) }
 		);
 
@@ -238,7 +238,7 @@ public sealed class LinuxMountWatcherTest
 		var mounts = "/dev/sdb2 /media/other ext4 rw 0 0";
 		var storage = new FakeIStorage(
 			null,
-			new List<string> { "/proc/mounts" },
+			["/proc/mounts"],
 			new List<byte[]?> { Encoding.UTF8.GetBytes(mounts) }
 		);
 

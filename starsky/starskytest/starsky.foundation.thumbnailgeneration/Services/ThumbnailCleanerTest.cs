@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -102,12 +103,11 @@ public sealed class ThumbnailCleanerTest
 	[TestMethod]
 	public async Task ThumbnailCleanerTestAsync_CatchException()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				// set hash
-				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large, _imageFormat)
-			});
+		var fakeStorage = new FakeIStorage(["/"],
+		[
+			// set hash
+			ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large, _imageFormat)
+		]);
 
 		var fakeQuery =
 			new FakeIQueryException(
@@ -126,24 +126,22 @@ public sealed class ThumbnailCleanerTest
 	[TestMethod]
 	public async Task ThumbnailCleanerTestAsync_Cleaner_WithDifferentSizes()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large, _imageFormat),
-				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.ExtraLarge, _imageFormat),
-				ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.TinyMeta, _imageFormat),
-				ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta, _imageFormat),
-				ThumbnailNameHelper.Combine("exist", ThumbnailSize.ExtraLarge, _imageFormat),
-				ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta, _imageFormat),
-				ThumbnailNameHelper.Combine("exist", ThumbnailSize.Large, _imageFormat),
-				ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge,
-					_imageFormat)
-			});
+		var fakeStorage = new FakeIStorage(["/"],
+		[
+			ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.Large, _imageFormat),
+			ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.ExtraLarge, _imageFormat),
+			ThumbnailNameHelper.Combine("hash1234", ThumbnailSize.TinyMeta, _imageFormat),
+			ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta, _imageFormat),
+			ThumbnailNameHelper.Combine("exist", ThumbnailSize.ExtraLarge, _imageFormat),
+			ThumbnailNameHelper.Combine("exist", ThumbnailSize.TinyMeta, _imageFormat),
+			ThumbnailNameHelper.Combine("exist", ThumbnailSize.Large, _imageFormat),
+			ThumbnailNameHelper.Combine("12234456677", ThumbnailSize.ExtraLarge,
+				_imageFormat)
+		]);
 
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/test.jpg") { FileHash = "exist" }
-		});
+		]);
 
 		var thumbnailCleaner = new ThumbnailCleaner(fakeStorage, fakeQuery,
 			new FakeIWebLogger(), new FakeIThumbnailQuery(), new AppSettings());
@@ -172,18 +170,16 @@ public sealed class ThumbnailCleanerTest
 	[TestMethod]
 	public async Task ThumbnailCleanerTestAsync_RemoveFromThumbnailTable()
 	{
-		var fakeStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string>
-			{
-				// set hash
-				ThumbnailNameHelper.Combine("35874453877", ThumbnailSize.Large, _imageFormat)
-			});
+		var fakeStorage = new FakeIStorage(["/"],
+		[
+			// set hash
+			ThumbnailNameHelper.Combine("35874453877", ThumbnailSize.Large, _imageFormat)
+		]);
 
 		var fakeQuery = new FakeIQuery();
-		var thumbnailQuery = new FakeIThumbnailQuery(new List<ThumbnailItem>
-		{
+		var thumbnailQuery = new FakeIThumbnailQuery([
 			new("35874453877", null, null, true, null)
-		});
+		]);
 
 		var preGetter = await thumbnailQuery.Get("35874453877");
 		Assert.HasCount(1, preGetter);
@@ -202,6 +198,7 @@ public sealed class ThumbnailCleanerTest
 	[DataRow("filehash.jpg", "anotherfile.png", "filehash", "anotherfile")]
 	[DataRow("filehash@.jpg", "anotherfile@.png", "filehash", "anotherfile")]
 	[DataRow("filehash@size.jpg", "filehash@size.png", "filehash", null)]
+	[SuppressMessage("Style", "IDE0306:Simplify collection initialization")]
 	public void GetFileNamesWithExtension_ReturnsExpectedResult(params string?[] parameters)
 	{
 		// Arrange

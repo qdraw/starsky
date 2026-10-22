@@ -17,15 +17,15 @@ internal class RunProcess(IWebLogger logger)
 	{
 		var (exitCode, output, error) = await StartAndReadAsync(fileName, arguments);
 
-		if ( exitCode != 0 )
+		var succeeded = exitCode == 0 ||
+		                ( allowedExitCodes != null &&
+		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
+
+		if ( !succeeded && exitCode != 0 )
 		{
 			logger.LogError(
 				$"Process {fileName} {arguments} failed with exit code {exitCode}\nOutput: {output}\nError: {error}");
 		}
-
-		var succeeded = exitCode == 0 ||
-		                ( allowedExitCodes != null &&
-		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
 
 		return succeeded;
 	}
@@ -35,15 +35,15 @@ internal class RunProcess(IWebLogger logger)
 	{
 		var (exitCode, output, error) = await StartAndReadAsync(fileName, arguments);
 
-		if ( exitCode != 0 )
+		var succeeded = exitCode == 0 ||
+		                ( allowedExitCodes != null &&
+		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
+
+		if ( !succeeded && exitCode != 0 )
 		{
 			logger.LogError(
 				$"Process {fileName} {arguments} failed with exit code {exitCode}\nOutput: {output}\nError: {error}");
 		}
-
-		var succeeded = exitCode == 0 ||
-		                ( allowedExitCodes != null &&
-		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
 
 		return ( succeeded, output, exitCode );
 	}

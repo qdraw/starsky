@@ -1,9 +1,8 @@
 using System;
 using System.Buffers;
 using System.IO;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
-namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 
 /// <summary>
 ///     High-performance utilities for scanning JPEG structure and detecting EOI markers.

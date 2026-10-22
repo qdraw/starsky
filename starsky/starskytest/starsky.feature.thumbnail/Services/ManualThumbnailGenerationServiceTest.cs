@@ -17,7 +17,7 @@ public class ManualThumbnailGenerationServiceTest
 	[TestMethod]
 	public async Task ThumbnailGenerationTest_CheckIfGenerated()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"], ["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var selectorStorage = new FakeSelectorStorage(storage);
@@ -40,7 +40,7 @@ public class ManualThumbnailGenerationServiceTest
 	[TestMethod]
 	public async Task ThumbnailGenerationTest_CheckIfGenerated_Socket_Success()
 	{
-		var storage = new FakeIStorage(new List<string> { "/" }, new List<string> { "/test.jpg" },
+		var storage = new FakeIStorage(["/"], ["/test.jpg"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray() });
 
 		var socket = new FakeIThumbnailSocketService();

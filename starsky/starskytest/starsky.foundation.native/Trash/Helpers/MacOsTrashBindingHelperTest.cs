@@ -21,7 +21,7 @@ public class MacOsTrashBindingHelperTest
 	public void MacOsTrashBindingHelper_Non_SupportOs()
 	{
 		var result =
-			MacOsTrashBindingHelper.Trash(new List<string> { "destPath" }, OSPlatform.Linux);
+			MacOsTrashBindingHelper.Trash(["destPath"], OSPlatform.Linux);
 
 		Assert.IsNull(result);
 	}
@@ -36,7 +36,7 @@ public class MacOsTrashBindingHelperTest
 		}
 
 		// the does not need to exist to be true
-		var result = MacOsTrashBindingHelper.Trash(new List<string> { "destPath" }, OSPlatform.OSX);
+		var result = MacOsTrashBindingHelper.Trash(["destPath"], OSPlatform.OSX);
 		Assert.IsTrue(result);
 	}
 
@@ -119,7 +119,7 @@ public class MacOsTrashBindingHelperTest
 		string? exception = null;
 		try
 		{
-			MacOsTrashBindingHelper.CreateCfArray(new List<IntPtr>().ToArray());
+			MacOsTrashBindingHelper.CreateCfArray([]);
 		}
 		catch ( DllNotFoundException e )
 		{
@@ -163,7 +163,7 @@ public class MacOsTrashBindingHelperTest
 
 		// Act & Assert
 		Assert.ThrowsExactly<DllNotFoundException>(() =>
-			MacOsTrashBindingHelper.TrashInternal(new List<string>()));
+			MacOsTrashBindingHelper.TrashInternal([]));
 	}
 
 	[TestMethod]
@@ -177,7 +177,7 @@ public class MacOsTrashBindingHelperTest
 
 		// Act & Assert
 		Assert.ThrowsExactly<DllNotFoundException>(() =>
-			MacOsTrashBindingHelper.GetUrls(new List<string> { "value" }));
+			MacOsTrashBindingHelper.GetUrls(["value"]));
 	}
 
 	[TestMethod]

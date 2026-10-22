@@ -75,7 +75,7 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 		}
 		catch ( UnauthorizedAccessException exception )
 		{
-			_logger.LogError($"[CreateDirectory] IOException caught, " +
+			_logger.LogError($"[CreateDirectory] UnauthorizedAccessException caught, " +
 			                 $"{path}", exception);
 			return false;
 		}
@@ -516,7 +516,15 @@ public sealed class StorageHostFullPathFilesystem : IStorage
 			catch ( DirectoryNotFoundException exception )
 			{
 				var dir = Path.GetDirectoryName(path)!;
-				CreateDirectory(dir);
+				var created = CreateDirectory(dir);
+				if ( !created )
+				{
+					_logger.LogError("[WriteStreamAsync] " +
+					                 "DirectoryNotFoundException and CreateDirectory failed for: " + dir,
+						exception);
+					return false;
+				}
+
 				_logger.LogInformation("[WriteStreamAsync] " +
 				                       "DirectoryNotFoundException " +
 				                       "Auto-created directory: " + dir, exception);

@@ -19,7 +19,8 @@ public class FakeIHttpProvider : IHttpProvider
 		_inputDictionary = inputDictionary;
 	}
 
-	public Task<HttpResponseMessage> GetAsync(string requestUri)
+	public Task<HttpResponseMessage> GetAsync(string requestUri, string? userAgent = null,
+		bool followRedirects = true)
 	{
 		UrlCalled.Add(requestUri);
 

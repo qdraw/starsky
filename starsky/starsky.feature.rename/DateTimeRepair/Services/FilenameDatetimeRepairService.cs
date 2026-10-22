@@ -7,7 +7,6 @@ using starsky.feature.rename.DateTimeRepair.Helpers;
 using starsky.feature.rename.DateTimeRepair.Models;
 using starsky.feature.rename.Helpers;
 using starsky.feature.rename.Models;
-using starsky.feature.rename.RelatedFilePaths;
 using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;

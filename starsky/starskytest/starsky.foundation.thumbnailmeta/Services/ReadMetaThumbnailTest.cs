@@ -22,13 +22,12 @@ public sealed class MetaExifThumbnailServiceTest
 	{
 		var imageFormat = new AppSettings().ThumbnailImageFormat;
 		_iStorageFake = new FakeIStorage(
-			new List<string> { "/" },
-			new List<string>
-			{
+			["/"],
+			[
 				"/no_thumbnail.jpg",
 				"/poppy.jpg",
 				ThumbnailNameHelper.Combine("test", ThumbnailSize.TinyMeta, imageFormat)
-			},
+			],
 			new List<byte[]>
 			{
 				CreateAnImage.Bytes.ToArray(),

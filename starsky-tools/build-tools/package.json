@@ -1,10 +1,11 @@
 {
   "name": "build-tools",
-  "version": "0.7.21",
+  "version": "0.9.7",
   "description": "",
   "main": "",
   "scripts": {
     "app-version-update": "node app-version-update.js",
+    "app-update-version": "node app-version-update.js",
     "update": "echo 'keep this without any npm dependencies'",
     "update:install": "echo 'keep this without any npm dependencies'",
     "clientapp-vite-update": "node clientapp-vite-update",
@@ -13,7 +14,8 @@
     "project-guid": "node project-guid.js",
     "nuget-package-list": "node nuget-package-list.js",
     "release-version-check": "node release-version-check.js",
-    "dotnet-sdk-version-update": "node dotnet-sdk-version-update.js"
+    "dotnet-sdk-version-update": "node dotnet-sdk-version-update.js",
+    "coverage-new-code": "node coverage-new-code.js"
   },
   "author": "",
   "license": "ISC"

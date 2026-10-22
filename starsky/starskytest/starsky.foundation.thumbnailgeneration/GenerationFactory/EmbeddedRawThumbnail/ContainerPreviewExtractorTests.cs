@@ -106,7 +106,7 @@ public class ContainerPreviewExtractorTests
 		var jpeg = CreateJpeg(5600, true);
 		var fujiHeader = "FUJI"u8.ToArray();
 		var padding = Enumerable.Repeat(( byte ) 0x00, 128).ToArray();
-		return fujiHeader.Concat(padding).Concat(jpeg).ToArray();
+		return [.. fujiHeader, .. padding, .. jpeg];
 	}
 
 	private static void WriteUInt16BigEndian(byte[] bytes, int offset, ushort value)

@@ -93,7 +93,7 @@ public sealed class ExifToolCmdHelper
 		var command = string.Empty;
 
 		// Update AI config needed first to be working
-		command = UpdateAiConfig(command, comparedNames);
+		command = UpdateAiConfig(command, comparedNames, updateModel);
 
 		const string initCommand = "-json -overwrite_original"; // to check if nothing
 		command += initCommand;
@@ -152,24 +152,37 @@ public sealed class ExifToolCmdHelper
 	internal string GetConfigPath()
 	{
 		var appSettingsDirectory = Path.GetDirectoryName(_appSettings.AppSettingsPath);
-		var configBaseDirectory = string.IsNullOrWhiteSpace(appSettingsDirectory)
-			? _appSettings.BaseDirectoryProject
-			: appSettingsDirectory;
-		var configPath = Path.Combine(configBaseDirectory, ExifToolConfigFileName);
-		return configPath;
+		if ( !string.IsNullOrWhiteSpace(appSettingsDirectory) )
+		{
+			var appSettingsConfigPath = Path.Combine(appSettingsDirectory, ExifToolConfigFileName);
+			if ( File.Exists(appSettingsConfigPath) )
+			{
+				return appSettingsConfigPath;
+			}
+		}
+
+		// Fall back to the binary directory where exiftool.config is deployed
+		return Path.Combine(_appSettings.BaseDirectoryProject, ExifToolConfigFileName);
 	}
 
-	private string UpdateAiConfig(string command, List<string> comparedNames)
+	private string UpdateAiConfig(string command, List<string> comparedNames,
+		FileIndexItem updateModel)
 	{
-		var required = new[]
+		var required = new List<string>
 			{
 				nameof(FileIndexItem.SuggestedTags), nameof(FileIndexItem.RejectedTags),
 				nameof(FileIndexItem.ImageClassificationModel),
 				nameof(FileIndexItem.ImageClassificationGeneratedAt)
-			}
-			.Select(x => x.ToLowerInvariant());
+			};
 
-		if ( !comparedNames.Intersect(required).Any() )
+		if ( updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
+		{
+			required.Add(nameof(FileIndexItem.ImageStabilisation));
+		}
+
+		var requiredLower = required.Select(x => x.ToLowerInvariant());
+
+		if ( !comparedNames.Intersect(requiredLower).Any() )
 		{
 			return command;
 		}
@@ -199,7 +212,7 @@ public sealed class ExifToolCmdHelper
 			// EXIF:Artist
 			// IPTC:By-line
 			command +=
-				$" -Artist=\"{updateModel.Artist}\" -XMP-dc:Creator=\"{updateModel.Artist}\" ";
+				$" -Artist=\"{updateModel.Artist.QuotesCommandLineEscape()}\" -XMP-dc:Creator=\"{updateModel.Artist.QuotesCommandLineEscape()}\" ";
 		}
 
 		return command;
@@ -215,7 +228,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.SuggestedTags.QuotesCommandLineEscape();
-		command += $" -sep \", \" -XMP-ai:SuggestedTags=\"{value}\" ";
+		command += $" -sep \", \" -XMP-qdraw:SuggestedTags=\"{value}\" ";
 
 		return command;
 	}
@@ -230,7 +243,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.RejectedTags.QuotesCommandLineEscape();
-		command += $" -sep \", \" -XMP-ai:RejectedTags=\"{value}\" ";
+		command += $" -sep \", \" -XMP-qdraw:RejectedTags=\"{value}\" ";
 
 		return command;
 	}
@@ -247,7 +260,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var value = updateModel.ImageClassificationModel.QuotesCommandLineEscape();
-		command += $" -XMP-ai:ImageClassificationModel=\"{value}\" ";
+		command += $" -XMP-qdraw:ImageClassificationModel=\"{value}\" ";
 
 		return command;
 	}
@@ -265,7 +278,7 @@ public sealed class ExifToolCmdHelper
 
 		var value = updateModel.ImageClassificationGeneratedAt.ToString("o",
 			CultureInfo.InvariantCulture);
-		command += $" -XMP-ai:ImageClassificationGeneratedAt=\"{value}\" ";
+		command += $" -XMP-qdraw:ImageClassificationGeneratedAt=\"{value}\" ";
 
 		return command;
 	}
@@ -371,7 +384,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		var fileHashService = new FileHash(_iStorage, _webLogger);
-		return ( await fileHashService.GetHashCodeAsync(path, updateModel.ImageFormat) ).Key;
+		return ( await fileHashService.GetHashCodeAsync(path, null) ).Key;
 	}
 
 	/// <summary>
@@ -462,8 +475,8 @@ public sealed class ExifToolCmdHelper
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationCity).ToLowerInvariant()) )
 		{
-			command += " -City=\"" + updateModel.LocationCity
-			                       + "\" -xmp:City=\"" + updateModel.LocationCity + "\"";
+			command += " -City=\"" + updateModel.LocationCity.QuotesCommandLineEscape()
+			                       + "\" -xmp:City=\"" + updateModel.LocationCity.QuotesCommandLineEscape() + "\"";
 		}
 
 		return command;
@@ -485,8 +498,8 @@ public sealed class ExifToolCmdHelper
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationState).ToLowerInvariant()) )
 		{
-			command += " -State=\"" + updateModel.LocationState
-			                        + "\" -Province-State=\"" + updateModel.LocationState +
+			command += " -State=\"" + updateModel.LocationState.QuotesCommandLineEscape()
+			                        + "\" -Province-State=\"" + updateModel.LocationState.QuotesCommandLineEscape() +
 			                        "\"";
 		}
 
@@ -498,9 +511,9 @@ public sealed class ExifToolCmdHelper
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationCountry).ToLowerInvariant()) )
 		{
-			command += " -Country=\"" + updateModel.LocationCountry
+			command += " -Country=\"" + updateModel.LocationCountry.QuotesCommandLineEscape()
 			                          + "\" -Country-PrimaryLocationName=\"" +
-			                          updateModel.LocationCountry + "\"";
+			                          updateModel.LocationCountry.QuotesCommandLineEscape() + "\"";
 		}
 
 		return command;
@@ -512,9 +525,9 @@ public sealed class ExifToolCmdHelper
 		if ( comparedNames.Contains(
 			    nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()) )
 		{
-			command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode
+			command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode.QuotesCommandLineEscape()
 			                                              + "\" -XMP:CountryCode=\"" +
-			                                              updateModel.LocationCountryCode +
+			                                              updateModel.LocationCountryCode.QuotesCommandLineEscape() +
 			                                              "\"";
 		}
 
@@ -559,8 +572,8 @@ public sealed class ExifToolCmdHelper
 		{
 			// add space before
 			command +=
-				$" -Software=\"{updateModel.Software}\" -CreatorTool=\"{updateModel.Software}\" " +
-				$"-HistorySoftwareAgent=\"{updateModel.Software}\" " +
+				$" -Software=\"{updateModel.Software.QuotesCommandLineEscape()}\" -CreatorTool=\"{updateModel.Software.QuotesCommandLineEscape()}\" " +
+				$"-HistorySoftwareAgent=\"{updateModel.Software.QuotesCommandLineEscape()}\" " +
 				"-HistoryParameters=\"\" -PMVersion=\"\" ";
 		}
 		else
@@ -719,7 +732,7 @@ public sealed class ExifToolCmdHelper
 		}
 
 		command +=
-			$" -ExposureTime=\"{updateModel.ShutterSpeed}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed}\" ";
+			$" -ExposureTime=\"{updateModel.ShutterSpeed.QuotesCommandLineEscape()}\" \"-xmp:ExposureTime={updateModel.ShutterSpeed.QuotesCommandLineEscape()}\" ";
 
 		return command;
 	}
@@ -733,22 +746,22 @@ public sealed class ExifToolCmdHelper
 			return command;
 		}
 
-		var make = updateModel.Make;
-		var model = updateModel.Model;
+		var make = updateModel.Make.QuotesCommandLineEscape();
+		var model = updateModel.Model.QuotesCommandLineEscape();
 		command += " -make=\"" + make + "\"" + " -model=\"" + model + "\"";
 
 		if ( !string.IsNullOrWhiteSpace(updateModel.LensModel) )
 		{
 			// add space before
 			command +=
-				$" -lensmodel=\"{updateModel.LensModel}\" -xmp:lensmodel=\"{updateModel.LensModel}\"";
+				$" -lensmodel=\"{updateModel.LensModel.QuotesCommandLineEscape()}\" -xmp:lensmodel=\"{updateModel.LensModel.QuotesCommandLineEscape()}\"";
 		}
 
 		if ( !string.IsNullOrWhiteSpace(updateModel.MakeCameraSerial) )
 		{
 			// add space before
 			command +=
-				$" -SerialNumber=\"{updateModel.MakeCameraSerial}\" -xmp:SerialNumber=\"{updateModel.MakeCameraSerial}\"";
+				$" -SerialNumber=\"{updateModel.MakeCameraSerial.QuotesCommandLineEscape()}\" -xmp:SerialNumber=\"{updateModel.MakeCameraSerial.QuotesCommandLineEscape()}\"";
 		}
 
 		return command;
@@ -776,8 +789,8 @@ public sealed class ExifToolCmdHelper
 			     .ToLowerInvariant()) &&
 		     updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
 		{
-			// there is no XMP version of the name
-			command += $" -ImageStabilization=\"{updateModel.ImageStabilisation}\" ";
+			command += $" -ImageStabilization=\"{updateModel.ImageStabilisation}\" " +
+			           $"-XMP-qdraw:ImageStabilization=\"{updateModel.ImageStabilisation}\" ";
 		}
 
 		return command;

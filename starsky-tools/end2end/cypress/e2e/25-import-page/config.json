@@ -1,0 +1,28 @@
+{
+  "starsky": {
+    "local": {
+      "isEnabled": true,
+      "importUrl": "/import",
+      "importApi": "/starsky/api/import",
+      "indexApi": "/api/index",
+      "deleteApi": "/starsky/api/delete",
+      "searchApi": "/starsky/api/search"
+    },
+    "heroku-demo": {
+      "isEnabled": true,
+      "importUrl": "/import",
+      "importApi": "/starsky/api/import",
+      "indexApi": "/api/index",
+      "deleteApi": "/starsky/api/delete",
+      "searchApi": "/starsky/api/search"
+    },
+    "no-create-account": {
+      "isEnabled": true,
+      "importUrl": "/import",
+      "importApi": "/starsky/api/import",
+      "indexApi": "/api/index",
+      "deleteApi": "/starsky/api/delete",
+      "searchApi": "/starsky/api/search"
+    }
+  }
+}

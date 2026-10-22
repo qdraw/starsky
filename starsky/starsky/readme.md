@@ -21,7 +21,7 @@
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
 * [starsky-tools](../../starsky-tools/readme.md) _nodejs tools to add-on tasks_
-* [Starsky Desktop](../../starskydesktop/readme.md) _Desktop Application_
+* [Starsky Desktop](../../readme-desktop.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 * [Changelog](../../history.md) _Release notes and history_
 
@@ -41,11 +41,11 @@ machinename with your computer name in lowercase)_
 
 1. You can use `appsettings.json` inside the application folder to set base settings.
    The order of this files is used to get the values from the appsettings
-    - `/bin/Debug/net8.0/appsettings.patch.json`
-    - `/bin/Debug/net8.0/appsettings.default.json`
-    - `/bin/Debug/net8.0/appsettings.computername.patch.json`
-    - `/bin/Debug/net8.0/appsettings.json`
-    - `/bin/Debug/net8.0/appsettings.computername.json`
+    - `/bin/Debug/net10.0/appsettings.patch.json`
+    - `/bin/Debug/net10.0/appsettings.default.json`
+    - `/bin/Debug/net10.0/appsettings.computername.patch.json`
+    - `/bin/Debug/net10.0/appsettings.json`
+    - `/bin/Debug/net10.0/appsettings.computername.json`
 
 2. Use Environment variables to overwrite those base settings
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`
@@ -61,11 +61,11 @@ machinename with your computer name in lowercase)_
 ### Recommend settings {#recommend-settings}
 
 1. `ThumbnailTempFolder` - For storing thumbnails (
-   default: `./bin/Debug/net8.0/thumbnailTempFolder`)
-2. `StorageFolder` - For the main photo directory (default: `./bin/Debug/net8.0/storageFolder`)
+   default: `./bin/Debug/net10.0/thumbnailTempFolder`)
+2. `StorageFolder` - For the main photo directory (default: `./bin/Debug/net10.0/storageFolder`)
 3. `DatabaseType` - `mysql`, `sqlite` or  `inmemorydatabase` are supported (default: `sqlite`)
 4. `DatabaseConnection` - The connection-string to the database (
-   default: `./bin/Debug/net8.0/data.db`)
+   default: `./bin/Debug/net10.0/data.db`)
 5. `CameraTimeZone` - The timezone of the Camera, for example `Europe/Amsterdam` (defaults to your
    local timezone)
 
@@ -141,6 +141,19 @@ machinename with your computer name in lowercase)_
 47. `Queue` - Configure background queues per queue name. Use `InMemory`, `Database` or `RabbitMq`.
     Existing queues stay `InMemory` by default. `Queue.Default` is the fallback,
     `Queue.Queues` contains per-queue overrides, and `Queue.RabbitMq` stores shared broker settings.
+48. `DataProtectionCertificatePath` - Optional path to a PKCS#12 (`.pfx`) certificate. When set, new
+    data protection keys (these sign the login cookie) are encrypted with it before they are stored in
+    the database, so reading the database alone is not enough to forge a login cookie. Existing keys
+    stay readable and are replaced by encrypted ones when the key rotates (every 90 days). The app
+    does not start when the file is missing or the password is wrong. This setting is never written
+    to the settings file by the settings API, set it with the environment variable
+    `app__DataProtectionCertificatePath` _(default empty, keys are stored unencrypted)_
+49. `DataProtectionCertificatePassword` - Password for the certificate above, can be empty. Use
+    the environment variable `app__DataProtectionCertificatePassword`
+50. `UseRateLimiting` - Limit the requests per client IP on the endpoints that work without a login
+    (login, register, health check for updates, geo lookup, search suggest). Turn off when a
+    reverse proxy already does this. Use the environment variable `app__UseRateLimiting`
+    _(default true)_
 
 ### Appsettings.json example
 

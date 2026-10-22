@@ -13,6 +13,8 @@ internal static class ServiceInstallerHelper
 	/// </summary>
 	internal static string GenerateMacOsPlist(string executablePath, string serviceName)
 	{
+		var appSupport = GetMacOsAppSupportPath();
+		var caches = GetMacOsCachesPath();
 		return $"""
 		        <?xml version="1.0" encoding="UTF-8"?>
 		        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -23,8 +25,10 @@ internal static class ServiceInstallerHelper
 		            <key>ProgramArguments</key>
 		            <array>
 		                <string>{executablePath}</string>
-		                <string></string>
+		                <string>-v</string>
 		            </array>
+		            <key>WorkingDirectory</key>
+		            <string>{appSupport}</string>
 		            <key>RunAtLoad</key>
 		            <true/>
 		            <key>KeepAlive</key>
@@ -33,13 +37,26 @@ internal static class ServiceInstallerHelper
 		            <string>{GetMacOsLogPath("log")}</string>
 		            <key>StandardErrorPath</key>
 		            <string>{GetMacOsLogPath("error.log")}</string>
+		            <key>EnvironmentVariables</key>
+		            <dict>
+		                <key>app__appsettingspath</key>
+		                <string>{appSupport}/appsettings.json</string>
+		                <key>app__appsettingslocalpath</key>
+		                <string>{appSupport}/appsettings.local.json</string>
+		                <key>app__databaseConnection</key>
+		                <string>Data Source={appSupport}/starsky.db</string>
+		                <key>app__tempFolder</key>
+		                <string>{caches}/tempFolder/</string>
+		                <key>app__thumbnailTempFolder</key>
+		                <string>{appSupport}/thumbnailTempFolder/</string>
+		            </dict>
 		        </dict>
 		        </plist>
 		        """;
 	}
 
 	/// <summary>
-	///     Generate Linux systemd unit file
+	///     Generate a Linux systemd unit file
 	/// </summary>
 	internal static string GenerateLinuxSystemdUnit(string executablePath)
 	{
@@ -66,5 +83,17 @@ internal static class ServiceInstallerHelper
 	{
 		var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
 		return Path.Combine(home, "Library", "Logs", "starsky", $"mountwatcher.{suffix}");
+	}
+
+	private static string GetMacOsAppSupportPath()
+	{
+		var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+		return Path.Combine(home, "Library", "Application Support", "starsky");
+	}
+
+	private static string GetMacOsCachesPath()
+	{
+		var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+		return Path.Combine(home, "Library", "Caches", "starsky");
 	}
 }

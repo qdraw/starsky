@@ -28,6 +28,6 @@ public class GeoReverseLookupControllerTest
 		var result = await controller.GeoReverseLookup(0, 0);
 
 		// Assert
-		Assert.IsInstanceOfType(result, typeof(BadRequestObjectResult));
+		Assert.IsInstanceOfType<BadRequestObjectResult>(result);
 	}
 }

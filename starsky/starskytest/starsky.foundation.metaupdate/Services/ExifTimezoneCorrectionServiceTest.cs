@@ -961,7 +961,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		var results = await service.CorrectTimezoneAsync(fileIndexItems, request);
 
 		// Assert
-		Assert.HasCount(0, results);
+		Assert.IsEmpty(results);
 	}
 
 	// ==================== Fractional Hour Offset Tests ====================
@@ -1013,7 +1013,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 		};
 		var results = await service.Validate([fileIndexItem.FilePath], false, request);
 		Assert.HasCount(1, results);
-		Assert.HasCount(0, results[0].Error);
+		Assert.IsEmpty(results[0].Error);
 		Assert.AreEqual(fileIndexItem.DateTime, results[0].OriginalDateTime);
 	}
 
@@ -1624,7 +1624,7 @@ public sealed class ExifTimezoneCorrectionServiceTest
 
 		// Assert
 		Assert.IsNotNull(result);
-		Assert.HasCount(0, result);
+		Assert.IsEmpty(result);
 	}
 
 	#endregion

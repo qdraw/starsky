@@ -9,7 +9,9 @@ namespace starsky.foundation.database.Interfaces;
 public interface INotificationQuery
 {
 	Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<T> content);
+	Task<NotificationItem> AddNotification<T>(ApiNotificationResponseModel<List<T>> content);
 	Task<List<NotificationItem>> GetNewerThan(DateTime parsedDateTime);
 	Task<List<NotificationItem>> GetOlderThan(DateTime parsedDateTime);
 	Task RemoveAsync(IEnumerable<NotificationItem> content);
+	Task<int> RemoveOlderThanAsync(DateTime olderThan);
 }

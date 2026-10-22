@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherServices;
 using starskytest.FakeMocks;
 
@@ -469,6 +470,26 @@ public sealed class BufferingFileSystemWatcherTest
 	}
 
 	[TestMethod]
+	public void BufferEvent_WhenQueueIsFull_RaisesError()
+	{
+		var watcher = new FileSystemWatcher(_tempFolder);
+		var wrapper = new BufferingFileSystemWatcher(watcher) { EventQueueCapacity = 1 };
+		ErrorEventArgs? error = null;
+		wrapper.Error += (_, eventArgs) => error = eventArgs;
+
+		wrapper.StopRaisingBufferedEvents();
+		var eventArgs = new FileSystemEventArgs(WatcherChangeTypes.Created, _tempFolder, "test.txt");
+		wrapper.BufferEvent(null!, eventArgs);
+		wrapper.BufferEvent(null!, eventArgs);
+
+		Assert.IsNotNull(error);
+		Assert.IsInstanceOfType<EventQueueOverflowException>(error.GetException());
+
+		wrapper.Dispose();
+		watcher.Dispose();
+	}
+
+	[TestMethod]
 	public void NotifyExistingFiles_Error_Remove()
 	{
 		var watcher = new FileSystemWatcher(_tempFolder);
@@ -542,6 +563,24 @@ public sealed class BufferingFileSystemWatcherTest
 		Assert.AreEqual(WatcherChangeTypes.Renamed, result);
 
 		wrapper.EnableRaisingEvents = false;
+		wrapper.Dispose();
+		watcher.Dispose();
+	}
+
+	[TestMethod]
+	public void RaiseBufferedEventsUntilCancelledInLoop_AllHandler_ReturnsNull()
+	{
+		var watcher = new FileSystemWatcher(_tempFolder);
+		var wrapper = new BufferingFileSystemWatcher(watcher);
+		FileSystemEventArgs? receivedEvent = null;
+		wrapper.All += (_, eventArgs) => receivedEvent = eventArgs;
+
+		var eventArgs = new FileSystemEventArgs(WatcherChangeTypes.Changed, _tempFolder, "test.txt");
+		var result = wrapper.RaiseBufferedEventsUntilCancelledInLoop(eventArgs);
+
+		Assert.IsNull(result);
+		Assert.AreSame(eventArgs, receivedEvent);
+
 		wrapper.Dispose();
 		watcher.Dispose();
 	}

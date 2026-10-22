@@ -15,7 +15,7 @@ public sealed class PublishPreflightTest
 	{
 		PublishProfiles = new Dictionary<string, List<AppSettingsPublishProfiles>>
 		{
-			{ "test", new List<AppSettingsPublishProfiles>() }
+			{ "test", [] }
 		}
 	};
 
@@ -85,7 +85,7 @@ public sealed class PublishPreflightTest
 	{
 		var consoleWrapper = new FakeConsoleWrapper
 		{
-			LinesToRead = new List<string> { string.Empty }
+			LinesToRead = [string.Empty]
 		};
 
 		var result = new PublishPreflight(_testAppSettings,
@@ -100,7 +100,7 @@ public sealed class PublishPreflightTest
 	{
 		var consoleWrapper = new FakeConsoleWrapper
 		{
-			LinesToRead = new List<string> { "updated" }
+			LinesToRead = ["updated"]
 		};
 
 		var result = new PublishPreflight(_testAppSettings,
@@ -154,7 +154,7 @@ public sealed class PublishPreflightTest
 			Path = string.Empty, ContentType = TemplateContentType.Jpeg
 		};
 		_testAppSettings.PublishProfiles![publishProfileName] =
-			new List<AppSettingsPublishProfiles> { publishProfile };
+			[publishProfile];
 
 		var publishPreflight = new PublishPreflight(_testAppSettings,
 			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
@@ -179,7 +179,7 @@ public sealed class PublishPreflightTest
 			Template = "non-existent-template.cshtml"
 		};
 		_testAppSettings.PublishProfiles![publishProfileName] =
-			new List<AppSettingsPublishProfiles> { publishProfile };
+			[publishProfile];
 
 		var publishPreflight = new PublishPreflight(_testAppSettings,
 			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
@@ -203,7 +203,7 @@ public sealed class PublishPreflightTest
 			Path = "test.jpg", ContentType = TemplateContentType.Jpeg
 		};
 		_testAppSettings.PublishProfiles![publishProfileName] =
-			new List<AppSettingsPublishProfiles> { publishProfile };
+			[publishProfile];
 
 		var publishPreflight = new PublishPreflight(_testAppSettings,
 			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());
@@ -228,7 +228,7 @@ public sealed class PublishPreflightTest
 			ContentType = TemplateContentType.OnlyFirstJpeg
 		};
 		_testAppSettings.PublishProfiles![publishProfileName] =
-			new List<AppSettingsPublishProfiles> { publishProfile };
+			[publishProfile];
 
 		var publishPreflight = new PublishPreflight(_testAppSettings,
 			new ConsoleWrapper(), new FakeSelectorStorage(), new FakeIWebLogger());

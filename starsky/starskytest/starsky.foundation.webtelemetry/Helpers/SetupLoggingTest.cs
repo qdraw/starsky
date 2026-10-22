@@ -29,6 +29,23 @@ public class SetupLoggingTest
 
 		var type = build.GetRequiredService<ILoggerProvider>();
 		Assert.AreEqual(typeof(OpenTelemetryLoggerProvider), type.GetType());
+
+		var logger = build.GetRequiredService<ILoggerFactory>()
+			.CreateLogger("System.Net.Http.HttpClient.OtlpMetricExporter.LogicalHandler");
+		Assert.IsFalse(logger.IsEnabled(LogLevel.Information));
+		Assert.IsTrue(logger.IsEnabled(LogLevel.Warning));
+	}
+
+	[TestMethod]
+	public void SentryBreadcrumbs_Registered()
+	{
+		IServiceCollection services = new ServiceCollection();
+		services.AddTelemetryLogging(new AppSettings());
+
+		var build = services.BuildServiceProvider();
+
+		var providers = build.GetServices<ILoggerProvider>();
+		Assert.Contains(p => p is SentryBreadcrumbLoggerProvider, providers);
 	}
 
 	[TestMethod]
@@ -45,7 +62,7 @@ public class SetupLoggingTest
 		var result = SetupLogging.GetTelemetryAttributes(appSettings);
 
 		// Assert
-		Assert.HasCount(5, result);
+		Assert.HasCount(6, result);
 		Assert.Contains(kvp =>
 				kvp.Key == SetupLogging.HostNameKey && kvp.Value.Equals(Environment.MachineName),
 			result);
@@ -61,6 +78,10 @@ public class SetupLoggingTest
 		Assert.Contains(kvp =>
 			kvp.Key == SetupLogging.FrameworkDescriptionName &&
 			kvp.Value.Equals(RuntimeInformation.FrameworkDescription), result);
+
+		Assert.Contains(kvp =>
+			kvp.Key == SetupLogging.AppVersionCommitHash && kvp.Value.Equals(
+				appSettings.AppVersionCommitHash), result);
 	}
 
 	[TestMethod]

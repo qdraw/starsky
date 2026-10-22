@@ -1,0 +1,24 @@
+{
+    "starsky": {
+      "local": {
+        "isEnabled": true,
+        "url": "/?f=/starsky-end2end-test",
+        "urlCollectionsFalse": "/?f=/starsky-end2end-test&collections=false",
+        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
+        "urlApiCollectionsFalse": "/api/index/?f=/starsky-end2end-test&collections=false",
+        "mkdirPath": "/starsky-end2end-test",
+        "mkdirApi": "/api/disk/mkdir"
+      },
+      "no-create-account": {
+        "isEnabled": true,
+        "url": "/?f=/starsky-end2end-test",
+        "urlCollectionsFalse": "/?f=/starsky-end2end-test&collections=false",
+        "checkIfDirExistApi": "/starsky/api/search?json=true&t=-isDirectory:true -filepath=/starsky-end2end-test&p=0",
+        "searchClearCache": "/api/search/remove-cache?t=-isDirectory:true -filepath=/starsky-end2end-test",
+        "urlApiCollectionsFalse": "/api/index/?f=/starsky-end2end-test&collections=false",
+        "mkdirPath": "/starsky-end2end-test",
+        "mkdirApi": "/api/disk/mkdir"
+      }
+    }
+  }

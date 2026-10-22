@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.packagetelemetry.Services;
-using starsky.foundation.database.Models;
 using starsky.foundation.http.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
@@ -17,6 +16,7 @@ using starskytest.FakeMocks;
 namespace starskytest.starsky.feature.packagetelemetry.Helpers;
 
 [TestClass]
+[DoNotParallelize]
 public sealed class PackageTelemetryTest
 {
 	private readonly IServiceScopeFactory? _nullServiceScopeFactory = null;
@@ -196,7 +196,7 @@ public sealed class PackageTelemetryTest
 			new FakeIWebLogger(), new FakeIQuery(), new FakeIDeviceIdService(),
 			new FakeLifetimeDiagnosticsService());
 		var result =
-			packageTelemetry.AddAppSettingsData(new List<KeyValuePair<string, string>>());
+			packageTelemetry.AddAppSettingsData([]);
 
 		Assert.IsTrue(result.Exists(p => p.Key == "AppSettingsName"));
 	}
@@ -263,13 +263,12 @@ public sealed class PackageTelemetryTest
 	{
 		var appSettings = new AppSettings { EnablePackageTelemetry = true };
 		var packageTelemetry = new PackageTelemetry(null!, appSettings, new FakeIWebLogger(),
-			new FakeIQuery(new List<FileIndexItem>
-			{
+			new FakeIQuery([
 				new("/test.jpg"), new("/test") { IsDirectory = true }
-			}), new FakeIDeviceIdService(), new FakeLifetimeDiagnosticsService());
+			]), new FakeIDeviceIdService(), new FakeLifetimeDiagnosticsService());
 
 		var result =
-			await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
+			await packageTelemetry.AddDatabaseData([]);
 
 		var res1 =
 			result.Find(p => p.Key == "FileIndexItemTotalCount");
@@ -293,7 +292,7 @@ public sealed class PackageTelemetryTest
 			new FakeIQueryException(new WebException("test")), new FakeIDeviceIdService(),
 			new FakeLifetimeDiagnosticsService());
 		var result =
-			await packageTelemetry.AddDatabaseData(new List<KeyValuePair<string, string>>());
+			await packageTelemetry.AddDatabaseData([]);
 
 		var res1 =
 			result.Find(p => p.Key == "FileIndexItemTotalCount");

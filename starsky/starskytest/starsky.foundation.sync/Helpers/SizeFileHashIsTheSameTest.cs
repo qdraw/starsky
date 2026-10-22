@@ -23,7 +23,7 @@ public class SizeFileHashIsTheSameTest
 			25, 02, DateTimeKind.Local);
 
 		var storage = new FakeIStorage(["/"],
-			new List<string> { "/test.jpg" }, new List<byte[]> { CreateAnImage.Bytes.ToArray() },
+			["/test.jpg"], new List<byte[]> { CreateAnImage.Bytes.ToArray() },
 			new List<DateTime> { lastEdited });
 		var (fileHash, _) =
 			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync("/test.jpg",
@@ -45,7 +45,7 @@ public class SizeFileHashIsTheSameTest
 	{
 		var sync = new SizeFileHashIsTheSameHelper(new FakeIStorage(), new FakeIWebLogger());
 		var theSame = await sync.SizeFileHashIsTheSame(
-			new List<FileIndexItem> { new("/not-found.jpg") { LastEdited = DateTime.Now } },
+			[new("/not-found.jpg") { LastEdited = DateTime.Now }],
 			"/not-found.jpg");
 
 		Assert.IsFalse(theSame.Item1);
@@ -57,8 +57,8 @@ public class SizeFileHashIsTheSameTest
 		var lastEdited = new DateTime(2020, 03, 07,
 			18, 25, 02, DateTimeKind.Local);
 		var dbItems = new List<FileIndexItem> { new("/test.jpg") { DateTime = lastEdited } };
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { CreateAnImage.Bytes.ToArray() },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { CreateAnImage.Bytes.ToArray() },
 			new List<DateTime> { lastEdited });
 
 		var result = await new SizeFileHashIsTheSameHelper(storage, new FakeIWebLogger())
@@ -75,8 +75,8 @@ public class SizeFileHashIsTheSameTest
 	{
 		var lastEdited = new DateTime(2020, 03, 07, 18,
 			25, 02, DateTimeKind.Local);
-		var storage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" }, new List<byte[]> { CreateAnImage.Bytes.ToArray() },
+		var storage = new FakeIStorage(["/"],
+			["/test.jpg"], new List<byte[]> { CreateAnImage.Bytes.ToArray() },
 			new List<DateTime> { lastEdited });
 		var (fileHash, _) =
 			await new FileHash(storage, new FakeIWebLogger()).GetHashCodeAsync(
@@ -121,8 +121,8 @@ public class SizeFileHashIsTheSameTest
 
 		var lastEdited = new DateTime(2020, 03, 07,
 			18, 25, 02, DateTimeKind.Local);
-		var storage = new FakeIStorage(new List<string> { "/", "/101NZ_50" },
-			new List<string> { "/101NZ_50/DSC_0045.NEF", "/101NZ_50/DSC_0045.xmp" },
+		var storage = new FakeIStorage(["/", "/101NZ_50"],
+			["/101NZ_50/DSC_0045.NEF", "/101NZ_50/DSC_0045.xmp"],
 			new List<byte[]> { CreateAnImage.Bytes.ToArray(), CreateAnGpx.Bytes.ToArray() },
 			new List<DateTime> { lastEdited, lastEdited });
 

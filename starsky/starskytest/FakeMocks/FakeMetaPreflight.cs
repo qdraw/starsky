@@ -54,7 +54,7 @@ public class FakeMetaPreflight : IMetaPreflight
 		     !changedFileIndexItemName.ContainsKey(detailView.FileIndexItem.FilePath) )
 		{
 			changedFileIndexItemName.Add(detailView.FileIndexItem!.FilePath,
-				new List<string> { "Tags" });
+				["Tags"]);
 		}
 	}
 }

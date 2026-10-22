@@ -11,21 +11,22 @@ namespace starsky.foundation.http.Services;
 [Service(typeof(IHttpProvider), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class HttpProvider : IHttpProvider
 {
-	private const string UserAgent =
-		"Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
+	internal const string HttpClientName = "starsky";
 
 	/// <summary>
-	///     HttpClient object
+	///     Same as <see cref="HttpClientName" /> but without automatic redirects
 	/// </summary>
-	private readonly HttpClient _httpClient;
+	internal const string NoRedirectHttpClientName = "starsky-no-redirect";
+
+	private readonly IHttpClientFactory _httpClientFactory;
 
 	/// <summary>
-	///     Inject http client
+	///     Inject http client factory
 	/// </summary>
-	/// <param name="httpClient">c# http client</param>
-	public HttpProvider(HttpClient httpClient)
+	/// <param name="httpClientFactory">IHttpClientFactory</param>
+	public HttpProvider(IHttpClientFactory httpClientFactory)
 	{
-		_httpClient = httpClient;
+		_httpClientFactory = httpClientFactory;
 	}
 
 	/// <summary>
@@ -33,10 +34,24 @@ public sealed class HttpProvider : IHttpProvider
 	/// </summary>
 	/// <param name="requestUri">https:// url</param>
 	/// <returns>Task with Response</returns>
-	public Task<HttpResponseMessage> GetAsync(string requestUri)
+	public Task<HttpResponseMessage> GetAsync(string requestUri, string? userAgent = null,
+		bool followRedirects = true)
 	{
-		_httpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", UserAgent);
-		return _httpClient.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
+		var clientName = followRedirects ? HttpClientName : NoRedirectHttpClientName;
+		if ( string.IsNullOrWhiteSpace(userAgent) )
+		{
+			return _httpClientFactory.CreateClient(clientName)
+				.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead);
+		}
+
+		var request = new HttpRequestMessage
+		{
+			Method = HttpMethod.Get, RequestUri = new Uri(requestUri)
+		};
+		request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+
+		return _httpClientFactory.CreateClient(clientName)
+			.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
 	}
 
 	/// <summary>
@@ -58,8 +73,6 @@ public sealed class HttpProvider : IHttpProvider
 			});
 		}
 
-		_httpClient.DefaultRequestHeaders.Add("User-Agent", UserAgent);
-
 		var request = new HttpRequestMessage
 		{
 			Method = HttpMethod.Post, Content = content, RequestUri = new Uri(requestUri)
@@ -76,6 +89,6 @@ public sealed class HttpProvider : IHttpProvider
 				"application/x-www-form-urlencoded");
 		}
 
-		return _httpClient.SendAsync(request);
+		return _httpClientFactory.CreateClient(HttpClientName).SendAsync(request);
 	}
 }

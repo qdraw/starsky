@@ -120,14 +120,14 @@ describe("Create Rename Dir (22)", () => {
   it("Rename new folder (22)", () => {
     if (!config.isEnabled) return;
 
+    cy.intercept(config.apiRename, (req) => {
+      req.headers["content-type"] = "application/x-www-form-urlencoded";
+    }).as("rename");
+
     cy.visit(config.url + "/z_test_auto_created");
 
     cy.get(".item.item--more").click();
     cy.get("[data-test=rename]").click();
-
-    cy.intercept(config.apiRename, (req) => {
-      req.headers["content-type"] = "application/x-www-form-urlencoded";
-    }).as("rename");
 
     cy.get("[data-name=foldername]").type("_update");
     cy.get(".btn.btn--default").click();

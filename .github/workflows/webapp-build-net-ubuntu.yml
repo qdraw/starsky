@@ -1,4 +1,4 @@
-name: Ubuntu .NET build
+name: WebApp Build .NET Ubuntu Linux
 permissions:
   contents: read
 
@@ -14,7 +14,7 @@ on:
     - '!starsky/starsky/clientapp/**'
     - '!starsky/Dockerfile'
     - '!starsky/docker_demo_setup.sh'
-    - '.github/workflows/**'
+    - '.github/workflows/webapp-build-net-ubuntu.yml'
   workflow_dispatch:
   push:
     branches: [release/*]
@@ -24,6 +24,8 @@ on:
     - '**.sln'
     - '**.json'
     - '**.csproj'
+  schedule:
+    - cron:  '45 6 * * 1'
 
 jobs:
   build:
@@ -35,15 +37,15 @@ jobs:
 
     steps:
     
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     
     - name: Setup .NET
-      uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2
+      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
       with:
-        dotnet-version: 8.0.423
+        dotnet-version: 10.0.402
 
     - name: Cache nuget packages (*nix)
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9
       with:
         # nuget cache files are stored in `~/.nuget/packages` on Linux/macOS
         path: ~/.nuget/packages
@@ -86,7 +88,7 @@ jobs:
     # needs nothing - no dependencies
 
     steps:
-      - name: trigger desktop-release-on-tag-net-electron.yml 
+      - name: Trigger native desktop release workflow
         shell: bash
         env:
           NOTE_READ_THIS_NOW: "Need a github token that has more rights otherwise it will be ignored"
@@ -95,5 +97,5 @@ jobs:
           -H"authorization: Bearer ${{ secrets.WORKFLOW_GITHUB }}" \
           -X POST \
           -H "Accept: application/vnd.github.v3+json" \
-          https://api.github.com/repos/${{ github.repository }}/actions/workflows/desktop-release-on-tag-net-electron.yml/dispatches \
+          https://api.github.com/repos/${{ github.repository }}/actions/workflows/desktop-release-on-tag-native.yml/dispatches \
           -d '{"ref":"master"}' -v

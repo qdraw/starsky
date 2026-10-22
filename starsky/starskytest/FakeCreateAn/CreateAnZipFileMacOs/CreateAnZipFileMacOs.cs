@@ -59,5 +59,5 @@ public class CreateAnZipFileMacOs
 	/// <summary>
 	///     Skip the __MACOSX/.ffmpeg file
 	/// </summary>
-	public static List<string> Content { get; set; } = new() { "ffmpeg", "__MACOSX/.ffmpeg" };
+	public static List<string> Content { get; set; } = ["ffmpeg", "__MACOSX/.ffmpeg"];
 }

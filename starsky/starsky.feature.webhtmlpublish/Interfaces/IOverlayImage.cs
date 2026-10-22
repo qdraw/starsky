@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Thumbnails;
 
 namespace starsky.feature.webhtmlpublish.Interfaces
 {
@@ -9,7 +10,7 @@ namespace starsky.feature.webhtmlpublish.Interfaces
 		string FilePathOverlayImage(string outputParentFullFilePathFolder,
 			string sourceFilePath, AppSettingsPublishProfiles profile);
 
-		Task<bool> ResizeOverlayImageThumbnails(string itemFileHash, string outputFullFilePath, AppSettingsPublishProfiles profile);
+		Task<bool> ResizeOverlayImageThumbnails(string itemFileHash, ThumbnailSize size, string outputFullFilePath, AppSettingsPublishProfiles profile);
 		Task<bool> ResizeOverlayImageLarge(string itemFilePath, string outputFullFilePath, AppSettingsPublishProfiles profile);
 	}
 }

@@ -1175,4 +1175,105 @@ public sealed class AppSettingsCompareHelperTest
 
 		Assert.IsEmpty(to.CloudImport.Providers);
 	}
+
+	[TestMethod]
+	public void StorageFolderMappings_NullOldValue_DoesNothing()
+	{
+		var source = new AppSettings { StorageFolderMappings = null! };
+
+		var transfer = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string> { { "/new", "/data/new" } }
+		};
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsNull(source.StorageFolderMappings);
+	}
+
+	[TestMethod]
+	public void StorageFolderMappings_NullNewValue_KeepsExistingMappings()
+	{
+		var source = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string> { { "/archive", "/data/archive" } }
+		};
+
+		var transfer = new AppSettingsTransferObject { StorageFolderMappings = null! };
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsTrue(source.StorageFolderMappings.ContainsKey("/archive"));
+	}
+
+	[TestMethod]
+	public void StorageFolderMappings_EmptyNewValue_KeepsExistingMappings()
+	{
+		var source = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/archive", "/data/archive" }
+			}
+		};
+
+		var transfer = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>()
+		};
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsTrue(source.StorageFolderMappings.ContainsKey("/archive"));
+	}
+
+	[TestMethod]
+	public void StorageFolderMappings_NewMappingMergesWithPrevious()
+	{
+		var source = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/old", "/data/old" }
+			}
+		};
+
+		var transfer = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/new", "/data/new" }
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.IsTrue(source.StorageFolderMappings.ContainsKey("/old"));
+		Assert.IsTrue(source.StorageFolderMappings.ContainsKey("/new"));
+	}
+
+	[TestMethod]
+	public void StorageFolderMappings_NewMappingOverridesExistingKey()
+	{
+		var source = new AppSettings
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/1999", "/mnt/old/1999" }
+			}
+		};
+
+		var transfer = new AppSettingsTransferObject
+		{
+			StorageFolderMappings = new Dictionary<string, string>
+			{
+				{ "/1999", "/mnt/data/storage/100canon/1999" }
+			}
+		};
+
+		AppSettingsCompareHelper.Compare(source, transfer);
+
+		Assert.AreEqual("/mnt/data/storage/100canon/1999",
+			source.StorageFolderMappings["/1999"]);
+	}
 }

@@ -19,7 +19,7 @@
     - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (.NET)_
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _Node.js tools to add-on tasks_
-- [Starsky Desktop](starskydesktop/readme.md) _Desktop Application_
+- [Starsky Desktop](readme-desktop.md) _Desktop Application_
     - [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 - **[Changelog](history.md) Release notes and history**
 
@@ -40,9 +40,177 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## List of versions
 
-## version 0.7.22 - _(Unreleased)_ - 2026-?-? {#v0.7.22}
+> Within a version block the top are item is the newest
 
+## version 0.9.8 - _(Unreleased)_ - 2026-?-? {#0.9.8}
+
+- [x] (Security) _Back-end_ Rate limiting per client IP on the endpoints that work without a login (login, register, check for updates, geo lookup and search suggest). Turn off with `app__UseRateLimiting=false` when a reverse proxy already does this, see [readme](starsky/starsky/readme.md) (PR #3375)
+- [x] (Security) _Back-end_ Optional encryption of the data protection keys (these sign the login cookie) with a certificate, set `app__DataProtectionCertificatePath` and `app__DataProtectionCertificatePassword`, see [readme](starsky/starsky/readme.md) (PR #3375)
+- [x] (Security) _Back-end_ Downloads from a user supplied url (import from url) check the allowed domain on every redirect and are limited in size (SSRF) (PR #3375)
+- [x] (Security) _Back-end_ Unzipping is limited in total size, size per file, number of files and compression ratio (zip bombs) (PR #3375)
+- [x] (Security) _Back-end_ Paths with `..` can not leave the storage folder (mkdir, rename, upload target and import structure), and a few more system folders can not be used as storage folder mapping (PR #3375)
+- [x] (Security) _Back-end_ The original image and the file path fallback of the thumbnail endpoint, and manual thumbnail jobs, need a login. Thumbnails stay public (PR #3375)
+- [x] (Security) _Back-end_ Accounts that are deleted can no longer use their login cookie on any api call, the password check takes the same time for unknown accounts and compares in constant time (PR #3375)
+- [x] (Security) _Back-end_ Upload of an xml sidecar file only accepts sidecar file names, so an existing photo can not be overwritten; the zip name of an export is validated (PR #3375)
+- [x] (Security) _Back-end_ Header injection via the `Host` header in the Content Security Policy, websocket connections without a configured origin list must come from the same host, and backslashes in front of a quote can no longer add ExifTool switches (PR #3375)
+- [x] (Security) _Front-end_ Release info from the update check is shown as text instead of html, and relative url checks reject `//host`, backslash and `javascript:` urls (PR #3375)
+- [x] (Fixed) _End2end_ The Cypress tests no longer depend on the order in which the specs run: missing test folder and images are created, counts are checked per file instead of per folder, and the changed date of the sample image is restored (PR #3375)
+- [x] (Fixed) _Back-end_ Publishing the same selection twice failed with `The process cannot access the file ... .zip` because a stale `.done` marker made the remote publish start while the new zip was still being written (PR #3412)
+- [x] (Fixed) _Back-end_ Import failed with `Unknown column 'Infinity'` when XMP/EXIF aperture or focal length had a zero denominator (PR #3409)
+
+## version 0.9.7 - 2026-10-17 {#0.9.7}
+
+- [x] (Added) Added crash reports (Sentry) for unhandled exceptions, without personal data. Only crashes are sent, log lines only travel along as breadcrumbs of a crash report. Opt-out with `app__EnableCrashReports=false`, see [telemetry](starsky/telemetry.md) (PR #3385)
+- [x] (Removed) _Back-end_ `linux-arm` (32 bits ARM, e.g. Raspberry Pi 32 bits and Docker `linux/arm/v7`) is no longer supported, use `linux-arm64`
+- [x] (Security) _Back-end_ Image resizing, thumbnails and the logo overlay of publish profiles use SkiaSharp; SixLabors.ImageSharp is removed (known vulnerabilities, paid licence)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.402 (Runtime: 10.0.13)
+- [x] (Fixed) _MountWatcher CLI_ macOS: the launchd agent starts in the app data folder instead of `/`, the default working directory made the appsettings file watcher scan the whole disk (high CPU and memory usage)
+
+## version 0.9.6 - 2026-09-29 {#0.9.6}
+
+- [x] (Fixed) _Back-end_ macOS CoreGraphics memory leak for thumbnail generation (PR #3370)
+- [x] (Fixed) _Back-end_ Improve WebSocketConnectionsMiddleware and DiskWatcher memory (PR #3369)
+- [x] (Fixed) _Back-end_ Notification splits oversized items chunks instead of dropping (PR #3367)
+- [x] (Added) _Front-end_ Drag’n’drop support for files in the archive (PR #3359)
+- [x] (Fixed) _Back-end_ `CommandTimeoutExpired` improvements (PR #3355)
+
+## version 0.9.5 - 2026-09-16 {#0.9.5}
+
+- [x] (Changed) _MountWatcher Help dialog_ Additional configuration details (PR #3340)
+- [x] (Fixed) _RenameService_ Handle file are not found preventing potential null issues (PR #3340)
+- [x] (Fixed) _MountWatcher CLI_ Shows help info when v mode is enabled without arguments (PR #3340)
+- [x] (Fixed) _App_ macOS/win: Mount watcher uses appsettings launchd / Windows Service (PR #3339)
+- [x] (Fixed) _Back-end_ Publish with SourceMaxWidth 2000 single extension ExtraLarge (PR #3339)
+- [x] (Fixed) _App_ macOS: `<a download>` and zip-export links now open a Save dialog (PR #3339)
+
+## version 0.9.4 - 2026-09-11 {#0.9.4}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
+
+- [x] (Fixed) _App_ macOS: logging in .log file about updates (PR #3338)
+- [x] (Fixed) _App_ macOS: Sparkle public ed key passing though (PR #3338)
+- [x] (Fixed) _App_ macOS: Update window localization (PR #3338)
+- [x] (Fixed) _App_ macOS: Write to "latest" log files starsky-latest.log (PR #3336)
+- [x] (Fixed) _App_ macOS: sign files with explicit entitlements (PR #3336)
+- [x] (Fixed) _Back-end_ Concurrency handling with deleted items (PR #3333)
+- [x] (Fixed) _Back-end_ DiskWatcher NotifyFilters (PR #3333)
+
+## version 0.9.3 - 2026-09-09 {#0.9.3}
+
+- [x] (Fixed) _Back-end_ Updated to Swashbuckle v10 (PR #3326)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.401 (Runtime: 10.0.12) (PR #3324)
+- [x] (Fixed) _App_ Windows: Manual closing a window no longer causes re-open next launch (PR #3318)
+
+## version 0.9.2 - 2026-09-08 {#0.9.2}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
+
+- [x] (Fixed) _App_ macOS: Show name of app in Splash screen (PR #3317)
+- [x] (Fixed) _App_ macOS: Manually closing a window no longer causes re-open next launch (PR #3317)
+- [x] (Changed) _App_ macOS: Allow Page Up, Page Down, Home, End keyboard shortcuts (PR #3315)
+- [x] (Changed) _App_ macOS: Only re-sign app when it exits unexpectedly on launch (PR #3315)
+- [x] (Added) _App_ macOS: Dynamic Dock menu open windows with active-window highlight (PR #3315)
+- [x] (Fixed) _Front-end_ Skip new lines in Preferences > ReadonlyFolders (PR #3313)
+- [x] (Fixed) _Front-end_ Wait for backend when rename (PR #3312)
+- [x] (Fixed) _Back-end_ Handle concurrency in `ThumbnailQuery.UpdateAsync` (PR #3312)
+- [x] (Fixed) _App_ macOS: A backend process not terminated on app quit (PR #3312)
+- [x] (Fixed) _App_ macOS: Avoid backend restart when shutdown initiated (PR #3312)
+
+## version 0.9.1 - 2026-09-07 {#0.9.1}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
+
+- [x] (Added) _App_ Windows: Add menu option to install MountWatcher (PR #3309)
+- [x] (Changed) _App_ macOS & Windows: Ctrl + W & Command + W Close window (PR #3308)
+- [x] (Added) _App_ macOS: Add menu option to install MountWatcher (PR #3308)
+- [x] (Fixed) _Back-end_ Retry logic in the QueryGetAllRecursiveAsync (PR #3305)
+- [x] (Changed) _App_ Windows: Use Microsoft Testing Platform instead of vstest (PR #3300)
+- [x] (Changed) _Back-end_ Use Microsoft Testing Platform instead of vstest (PR #3297)
+
+## version 0.9.0 - 2026-09-04 {#0.9.0}
+
+_Note: Windows Desktop: Uninstall versions below 0.8.2 before updating_
+
+- [x] (Breaking Change) _Back-end_ Exiftool namespace for AI features (PR #3296)
+- [x] (Fixed) _Back-end_ Restricting background service execution (PR #3292)
+- [x] (Fixed) _Back-end_ Reduce cache duration (PR #3292)
+- [x] (Breaking Change) _App_ Different way of using the Windows wrapper (PR #3234)
+
+## version 0.9.0-beta.4 - 2026-09-04 {#0.9.0-beta.4}
+
+- [x] (Fixed) _App_ Windows show update window (PR #3295)
+- [x] (Fixed) _App_ Windows use releases.win.json (PR #3291)
+- [x] (Fixed) _App_ Windows about menu / splash screen (PR #3291)
+- [x] (Fixed) _Back-end_ Read and Write XMP tag for ImageStabilization (PR #3290)
+
+## version 0.9.0-beta.3 - 2026-09-03 {#0.9.0-beta.3}
+
+- [x] (Added) _App_ Windows Detailed logging to UpdateService.CheckAsync (PR #3282)
+- [x] (Fixed) _App_ macOS AppCast add monotonically increasing build number (PR #3282)
+- [x] (Fixed) _Back-end_ Timeout GetAllRecursiveAsync recognize CommandTimeoutExpired (PR #3282)
+- [x] (Fixed) _Back-end_ SQLite unique constraint violations (error code 19) (PR #3282)
+- [x] (Fixed) _App_ macOS For updates add CFBundleVersion (PR #3281)
+
+## version 0.9.0-beta.2 - 2026-09-02 {#0.9.0-beta.2}
+
+- [x] (Added) _App_ Windows Pre-release as an option to check for updates (PR #3266)
+- [x] (Fixed) _App_ macOS Splash screen only shown when loading (PR #3275)
+- [x] (Added) _App_ macOS Pre-release as an option to check for updates (PR #3275)
+
+## version 0.9.0-beta.1 - 2026-09-01 {#0.9.0-beta.1}
+
+- [x] (Added) _App_ macOS Publish Sparkle app-cast (PR #3261)
+- [x] (Fixed) _Front-end_ Pipeline handling for ExifTool and closing (PR #3262)
+- [x] (Fixed) _Front-end_ Read-only path setting in preferences (PR #3259)
+- [x] (Fixed) _App_ Silence when pressing a key and no NSBeep in macOS client (PR #3259)
+- [x] (Fixed) _Back-end_ Improve CompareStringDictionary (PR #3259)
+- [x] (Fixed) _Front-end_ Moving file client side (PR #3245)
+- [x] (Added) _Front-end_ Next and Previous by keyboard in Archive (PR #3244)
+- [x] (Fixed) _App_ Use new macOS/windows client in an Azure Devops pipeline (PR #3250)
+- [x] (Removed) _App_ Remove StarskyDesktop Electron App (PR #3250)
+- [x] (Added) _App_ Align menu's in Windows with macOS (PR #3243)
+- [x] (Fixed) _App_ prevent accidental navigation when the backspace key (PR #3251)
+
+## version 0.9.0-beta.0 - 2026-08-31 {#0.9.0-beta.0}
+
+- [x] (Added) _App_ Swift-based macOS desktop app instead of Electron (PR #3238)
+- [x] (Added) _App_ WPF-based Windows desktop app instead of Electron (PR #3234)
+
+## version 0.8.2 - 2026-08-27 {#v0.8.2}
+
+- [x] (Fixed) _Back-end_ In Dockerfile user and group to UID/GID 1000 (PR #3236)
+- [x] (Fixed) _Back-end_ Docker simplifying user and group management and standardizing file
+  ownership (PR #3235)
+
+## version 0.8.1 - 2026-08-25 {#v0.8.1}
+
+- [x] (Fixed) _Back-end_ New telemetry attribute for the application commit hash (PR #3233)
+- [x] (Fixed) _Back-end_ QueryGetAllRecursive timeout (PR #3233)
+- [x] (Fixed) _Back-end_ Inflate SearchSuggestions batch 5k items to avoid timeouts (PR #3230)
+- [x] (Fixed) _Back-end_ Move item different folder does keep folder structure (PR #3229 I #2738)
+- [x] (Fixed) _Back-end_ Filter Unique keys in QueryAddRange (PR #3227)
+- [x] (Fixed) _Back-end_ ThumbnailQuery SaveChangesDuplicate (PR #3227)
+- [x] (Fixed) _Front-end_ PreferencesAppSettingsStorageFolderMappings not with env (PR #3227)
+- [x] (Changed) _Tools_ Improvements for mirroring dependencies (PR #3226)
+- [x] (Changed) _Back-end_ ExifTool SourceForge.net download (PR #3226)
+
+## version 0.8.0 - 2026-08-21 {#v0.8.0}
+
+- [x] (Changed) _Back-end_ Add guard around ExifTool to auto download (PR #3223)
+- [x] (Changed) _Back-end_ Add IOException AppSettings (PR #3222)
+- [x] (Added) _Back-end_ Add virtual symlink (PR #3224)
+
+## version 0.8.0-beta.0 - 2026-08-20 {#v0.8.0-beta.0}
+
+- [x] (Changed) _Back-end_ Code quality .NET 10 (PR #3205)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10 - SDK 8.0.400 (Runtime: 10.0.11) (PR #3204)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10 (PR #3201)
+
+## version 0.7.22 - 2026-08-12 {#v0.7.22}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 8 - SDK 8.0.424 (Runtime: 8.0.30) (PR #3200)
 - [x] (Changed) _Back-end_ Switch TinyIcon format from PNG to WebP for better compression (PR #3188)
+- [x] (Fixed) _Back-end_ StackCollections drops non-thumbnail collections (PR #3196)
 
 ## version 0.7.21 - 2026-07-22 {#v0.7.21}
 
@@ -1767,7 +1935,7 @@ _Should build before 2020-04-22, Import UnitTests have a date bug. For all versi
 
 ## version 0.1.15 - 2020-02-06
 
-- [x] (bugfix) _Front-end_ Drag'n drop is now only with files
+- [x] (bugfix) _Front-end_ Drag’n’drop is now only with files
 - [x] (version) _Back-end_ _Legacy starsky.netFramework_ 0.1.15 release included
 - [x] (version) _Back-end_ _dependencies_ Microsoft.EntityFrameworkCore,
   Microsoft.Extensions.Configuration to 3.1.1

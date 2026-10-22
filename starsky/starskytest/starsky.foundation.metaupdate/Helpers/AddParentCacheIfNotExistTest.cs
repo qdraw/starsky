@@ -7,7 +7,7 @@ using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Helpers;
 using starskytest.FakeMocks;
 
-namespace starskytest.starsky.feature.metaupdate.Helpers;
+namespace starskytest.starsky.foundation.metaupdate.Helpers;
 
 [TestClass]
 public sealed class AddParentCacheIfNotExistTest
@@ -16,7 +16,7 @@ public sealed class AddParentCacheIfNotExistTest
 	public async Task AddParentCacheIfNotExist_ignore_nothing()
 	{
 		var element = new AddParentCacheIfNotExist(new FakeIQuery(
-			new List<FileIndexItem> { new("/test.jpg") }), new FakeIWebLogger());
+			[new FileIndexItem("/test.jpg")]), new FakeIWebLogger());
 
 		var result = await element.AddParentCacheIfNotExistAsync(
 			new List<string>());

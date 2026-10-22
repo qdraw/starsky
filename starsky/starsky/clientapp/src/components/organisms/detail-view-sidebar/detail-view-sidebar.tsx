@@ -125,7 +125,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
       // this is needed for the server to update the field
       value ??= AsciiNull();
 
-      new UpdateChange(fileIndexItem, setFileIndexItem, dispatch, history, state).Update([
+      void new UpdateChange(fileIndexItem, setFileIndexItem, dispatch, history, state).Update([
         [name, value]
       ]);
     }
@@ -183,7 +183,7 @@ const DetailViewSidebar: React.FunctionComponent<IDetailViewSidebarProps> = memo
           state
         );
 
-        new ClipboardHelper().PasteAsync(updateChange.Update).then((paste) => {
+        void new ClipboardHelper().PasteAsync(updateChange.Update).then((paste) => {
           if (!paste) return;
           setCopyPasteAction(MessagePasteLabels);
         });

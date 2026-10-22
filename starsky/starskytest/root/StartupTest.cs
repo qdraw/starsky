@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.Hosting.Internal;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky;
+using starsky.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.realtime.Interfaces;
@@ -48,6 +50,9 @@ public sealed class StartupTest
 		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddRouting();
 		serviceCollection.AddSingleton<AppSettings, AppSettings>();
+		// the Swagger UI middleware asks for this service while configuring the pipeline
+		serviceCollection.AddSingleton<IWebHostEnvironment, FakeIWebHostEnvironment>();
+		serviceCollection.AddSwaggerGen();
 		serviceCollection.AddSingleton<IWebLogger, FakeIWebLogger>();
 		serviceCollection
 			.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
@@ -59,6 +64,9 @@ public sealed class StartupTest
 		serviceCollection.AddControllers();
 		serviceCollection.AddLogging();
 		serviceCollection.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
+
+		// the provider is built before ConfigureServices in this test, UseRateLimiter needs these at Configure
+		RateLimitPolicies.AddRateLimiting(serviceCollection);
 
 		var serviceProvider = serviceCollection.BuildServiceProvider();
 		var serviceProviderInterface = serviceProvider.GetRequiredService<IServiceProvider>();
@@ -77,6 +85,43 @@ public sealed class StartupTest
 		startup.Configure(applicationBuilder, env);
 
 		Assert.IsNotNull(applicationBuilder);
+	}
+
+	[TestMethod]
+	public void Startup_ConfigureServicesConfigure_RateLimitingDisabled()
+	{
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddRouting();
+		serviceCollection.AddSingleton<AppSettings, AppSettings>();
+		serviceCollection.AddSingleton<IWebHostEnvironment, FakeIWebHostEnvironment>();
+		serviceCollection.AddSwaggerGen();
+		serviceCollection.AddSingleton<IWebLogger, FakeIWebLogger>();
+		serviceCollection
+			.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
+		IConfiguration configuration =
+			new ConfigurationRoot(new List<IConfigurationProvider>());
+		serviceCollection.AddSingleton(configuration);
+		serviceCollection.AddSingleton<IHostApplicationLifetime, ApplicationLifetime>();
+		serviceCollection.AddAuthorization();
+		serviceCollection.AddControllers();
+		serviceCollection.AddLogging();
+		serviceCollection.AddMvcCore().AddApiExplorer().AddAuthorization().AddViews();
+
+		var serviceProvider = serviceCollection.BuildServiceProvider();
+		var applicationBuilder =
+			new ApplicationBuilder(serviceProvider.GetRequiredService<IServiceProvider>());
+		IHostEnvironment env =
+			new HostingEnvironment { EnvironmentName = Environments.Development };
+
+		var startup = new Startup(["--app:UseRateLimiting=false"]);
+		startup.ConfigureServices(serviceCollection);
+
+		// UseRateLimiter throws without the registered options, so this proves it is skipped
+		startup.Configure(applicationBuilder, env);
+
+		Assert.DoesNotContain(
+			descriptor => descriptor.ServiceType.FullName?.Contains("RateLimiterOptions") == true,
+			serviceCollection);
 	}
 
 	[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]

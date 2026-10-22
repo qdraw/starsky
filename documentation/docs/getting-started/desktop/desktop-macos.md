@@ -60,6 +60,16 @@ Click on Applications and open the App there
 See the [First Steps in the Getting Started Guide](../first-steps.md) for more info on how to setup
 the storage folder
 
+## MountWatcher (automatic SD card import)
+
+The macOS desktop app includes optional support for **MountWatcher** — a background service that automatically imports photos when a camera SD card is connected.
+
+To enable it, open the Starsky menu bar icon and choose **MountWatcher → Enable MountWatcher**. The menu shows the current service status each time it opens.
+
+The preference is saved and survives restarts and automatic updates.
+
+See the [MountWatcher CLI feature page](../../features/import/mountwatchercli.md) for full details on how MountWatcher works and its configuration options.
+
 [![Storage Folder Assets](../../assets/getting-started-first-steps-storage-folder.jpg)](https://docs.qdraw.nl/docs/getting-started/first-steps)
 
 _[Read more in the First Steps](../first-steps.md)_

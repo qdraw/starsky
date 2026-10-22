@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -14,11 +15,41 @@ namespace starskytest.starsky.foundation.http.Services;
 public sealed class HttpProviderTest
 {
 	[TestMethod]
+	public async Task GetAsync_WithUserAgent_ShouldSendUserAgentHeader()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
+
+		var result = await httpProvider.GetAsync("https://qdraw.nl/test", "Wget/1.21.1");
+
+		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+		var userAgent = string.Join(" ",
+			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
+		Assert.Contains("Wget", userAgent);
+	}
+
+	[TestMethod]
+	public async Task GetAsync_WithoutUserAgent_ShouldNotSendUserAgentHeader()
+	{
+		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
+		var httpClient = new HttpClient(fakeHttpMessageHandler);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
+
+		var result = await httpProvider.GetAsync("https://qdraw.nl/test");
+
+		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+		var userAgent = string.Join(" ",
+			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
+		Assert.IsFalse(userAgent.Contains("Wget", StringComparison.Ordinal));
+	}
+
+	[TestMethod]
 	public void PostAsync_Ok()
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = httpProvider.PostAsync("http://test",
 			new StringContent(string.Empty));
@@ -32,7 +63,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var request = new FormUrlEncodedContent(new List<KeyValuePair<string, string>>());
 		var result = httpProvider.PostAsync("http://test", request);
@@ -49,7 +80,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = await httpProvider.PostAsync("http://test", null);
 
@@ -61,7 +92,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = await httpProvider.PostAsync(
 			"https://download.geonames.org", new StringContent(string.Empty));
@@ -74,7 +105,7 @@ public sealed class HttpProviderTest
 	{
 		var fakeHttpMessageHandler = new FakeHttpMessageHandler();
 		var httpClient = new HttpClient(fakeHttpMessageHandler);
-		var httpProvider = new HttpProvider(httpClient);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
 
 		var result = await httpProvider.PostAsync(
 			"http://test", new StringContent(string.Empty),

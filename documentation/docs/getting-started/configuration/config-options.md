@@ -56,6 +56,30 @@ Notes:
 - Environment variables use the `app__` prefix and replace `:` with `__` and `.` with `_` (for example `app__databaseType`).
 - Environment variables and the `app__appsettings*` paths are a convenient way to override settings without editing files.
 
+### Storage Folder Mappings (example)
+
+`StorageFolderMappings` lets you point a virtual sub-path to a physical directory outside
+`StorageFolder` — useful for mounting cold-storage or archive drives without moving files.
+
+Environment variable example (one variable per mapping):
+
+```
+app__StorageFolderMappings__/archive/2020=/data/cold-storage/2020
+```
+
+Or `appsettings.json` section:
+
+```json
+"StorageFolderMappings": {
+  "/archive/2020": "/data/cold-storage/2020",
+  "/archive/2021": "/data/cold-storage/2021"
+}
+```
+
+The physical directory must exist before the application starts. After adding a mapping, run a
+recursive sync so the virtual folder is indexed.
+
+
 ### Import Backup (example)
 
 The Import Backup feature can be configured either via environment variables or in `appsettings.json`. This is an example, it can be used with all features in the appSettings

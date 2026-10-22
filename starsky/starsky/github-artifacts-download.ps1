@@ -15,7 +15,7 @@
 
 param(
     [Parameter(Mandatory=$false)][switch]$help,
-    [Parameter(Mandatory=$false)][string]$workFlowId="desktop-release-on-tag-net-electron.yml",
+    [Parameter(Mandatory=$false)][string]$workFlowId="desktop-release-on-tag-native.yml",
     [Parameter(Mandatory=$false)][string]$runTime='',
     [Parameter(Mandatory=$false)][string]$outPut='',
     [Parameter(Mandatory=$false)][string]$token=$env:STARSKY_GITHUB_PAT
@@ -48,9 +48,6 @@ if($runTime -eq '') {
         }
         if(($uNameM -eq 'aarch64')) {
             $runTime = "linux-arm64"
-        }
-        if(($uNameM -eq 'armv7l')) {
-            $runTime = "linux-arm"
         }
         if(($uNameM -eq 'arm64') -and ($IsMacOs -eq $true)) {
             $runTime = "osx-arm64" # got gatekeeper errors

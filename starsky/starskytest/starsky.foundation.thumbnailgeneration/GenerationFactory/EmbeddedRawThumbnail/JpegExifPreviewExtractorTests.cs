@@ -9,11 +9,11 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Helpers;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.TiffEmbedded;
-using starsky.foundation.thumbnailgeneration.GenerationFactory.ImageSharp;
 using starskytest.FakeCreateAn.CreateAnImageA6700PreviewRawJpeg;
 using starskytest.FakeMocks;
 
@@ -71,7 +71,7 @@ public class JpegExifPreviewExtractorTests
 			"preview.jpg",
 			SelectorStorage.StorageServices.Temporary,
 			1000, "output",
-			true, ThumbnailImageFormat.jpg);
+			ThumbnailImageFormat.jpg);
 
 		var stream = selector.Get(SelectorStorage.StorageServices.Thumbnail)
 			.ReadStream("output.jpg");

@@ -111,10 +111,12 @@ const DetailViewGpx: React.FC = () => {
   /** update only on initial load */
   useEffect(() => {
     setIsLoading(true);
-    FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false, true)).then((response) => {
-      updateMap(response);
-      setIsLoading(false);
-    });
+    void FetchXml(new UrlQuery().UrlDownloadPhotoApi(filePathEncoded, false, true)).then(
+      (response) => {
+        updateMap(response);
+        setIsLoading(false);
+      }
+    );
   }, [filePathEncoded]);
 
   function unLockLockToggle() {

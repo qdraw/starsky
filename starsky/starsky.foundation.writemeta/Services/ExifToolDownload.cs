@@ -30,13 +30,15 @@ namespace starsky.foundation.writemeta.Services;
 	Justification = "Source of files")]
 public sealed class ExifToolDownload : IExifToolDownload
 {
+	private const string WgetUserAgent = "Wget/1.21.1";
 	private const string CheckSumLocation = "https://exiftool.org/checksums.txt";
 
 	private const string CheckSumLocationMirror =
 		"https://qdraw.nl/special/mirror/exiftool/checksums.txt";
 
-	private const string
-		ExiftoolDownloadBasePath = "https://exiftool.org/"; // with slash at the end
+	private const string ExiftoolDownloadBasePathSourceforge =
+		"https://sourceforge.net/projects/exiftool/files/"; // with slash at the end
+	private const string ExiftoolDownloadBasePathSourceforgePostfix = "/download";
 
 	private const string ExiftoolDownloadBasePathMirror =
 		"https://qdraw.nl/special/mirror/exiftool/"; // with slash at the end
@@ -186,8 +188,9 @@ public sealed class ExifToolDownload : IExifToolDownload
 	internal async Task<bool> DownloadForUnix(string matchExifToolForUnixName,
 		string[] getChecksumsFromTextFile)
 	{
-		var result = await DownloadForUnix(ExiftoolDownloadBasePath, matchExifToolForUnixName,
-			getChecksumsFromTextFile);
+		var result = await DownloadForUnix(
+			$"{ExiftoolDownloadBasePathSourceforge}{matchExifToolForUnixName}{ExiftoolDownloadBasePathSourceforgePostfix}",
+			matchExifToolForUnixName, getChecksumsFromTextFile);
 
 		if ( result )
 		{
@@ -204,12 +207,12 @@ public sealed class ExifToolDownload : IExifToolDownload
 		matchExifToolForUnixName = GetUnixTarGzFromChecksum(checksums.Value.Value);
 		getChecksumsFromTextFile = GetChecksumsFromTextFile(checksums.Value.Value);
 
-		return await DownloadForUnix(ExiftoolDownloadBasePathMirror, matchExifToolForUnixName,
-			getChecksumsFromTextFile);
+		return await DownloadForUnix($"{ExiftoolDownloadBasePathMirror}{matchExifToolForUnixName}",
+			matchExifToolForUnixName, getChecksumsFromTextFile);
 	}
 
 
-	private async Task<bool> DownloadForUnix(string exiftoolDownloadBasePath,
+	private async Task<bool> DownloadForUnix(string downloadUrl,
 		string matchExifToolForUnixName,
 		string[] getChecksumsFromTextFile)
 	{
@@ -227,9 +230,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		var tarGzArchiveFullFilePath =
 			Path.Combine(_appSettings.DependenciesFolder, "exiftool.tar.gz");
 
-		var url = $"{exiftoolDownloadBasePath}{matchExifToolForUnixName}";
-
-		var unixDownloaded = await _httpClientHelper.Download(url, tarGzArchiveFullFilePath);
+		var unixDownloaded = await DownloadArchive(downloadUrl, tarGzArchiveFullFilePath);
 		if ( !unixDownloaded )
 		{
 			_logger.LogError($"file is not downloaded {matchExifToolForUnixName}");
@@ -369,7 +370,9 @@ public sealed class ExifToolDownload : IExifToolDownload
 	internal async Task<bool> DownloadForWindows(string matchExifToolForWindowsName,
 		string[] getChecksumsFromTextFile)
 	{
-		var result = await DownloadForWindows(ExiftoolDownloadBasePath, matchExifToolForWindowsName,
+		var result = await DownloadForWindows(
+			$"{ExiftoolDownloadBasePathSourceforge}{matchExifToolForWindowsName}{ExiftoolDownloadBasePathSourceforgePostfix}",
+			matchExifToolForWindowsName,
 			getChecksumsFromTextFile);
 
 		if ( result )
@@ -387,11 +390,13 @@ public sealed class ExifToolDownload : IExifToolDownload
 		matchExifToolForWindowsName = GetWindowsZipFromChecksum(checksums.Value.Value);
 		getChecksumsFromTextFile = GetChecksumsFromTextFile(checksums.Value.Value);
 
-		return await DownloadForWindows(ExiftoolDownloadBasePathMirror, matchExifToolForWindowsName,
+		return await DownloadForWindows(
+			$"{ExiftoolDownloadBasePathMirror}{matchExifToolForWindowsName}",
+			matchExifToolForWindowsName,
 			getChecksumsFromTextFile);
 	}
 
-	private async Task<bool> DownloadForWindows(string exiftoolDownloadBasePath,
+	private async Task<bool> DownloadForWindows(string downloadUrl,
 		string matchExifToolForWindowsName,
 		string[] getChecksumsFromTextFile)
 	{
@@ -411,8 +416,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		var windowsExifToolFolder =
 			Path.Combine(_appSettings.DependenciesFolder, "exiftool-windows");
 
-		var url = $"{exiftoolDownloadBasePath}{matchExifToolForWindowsName}";
-		var windowsDownloaded = await _httpClientHelper.Download(url, zipArchiveFullFilePath);
+		var windowsDownloaded = await DownloadArchive(downloadUrl, zipArchiveFullFilePath);
 		if ( !windowsDownloaded )
 		{
 			_logger.LogError($"file is not downloaded {matchExifToolForWindowsName}");
@@ -439,6 +443,12 @@ public sealed class ExifToolDownload : IExifToolDownload
 			$"[DownloadForWindows] ExifTool downloaded: {ExeExifToolWindowsFullFilePath()}");
 		return _hostFileSystemStorage.ExistFile(Path.Combine(windowsExifToolFolder,
 			"exiftool.exe"));
+	}
+
+	private async Task<bool> DownloadArchive(string downloadUrl, string fullLocalPath)
+	{
+		return await _httpClientHelper.Download(downloadUrl, fullLocalPath,
+			userAgent: downloadUrl.Contains("sourceforge.net") ? WgetUserAgent : null);
 	}
 
 	internal void MoveFileIfExist(string searchFolder, string searchForFileOrFolder,

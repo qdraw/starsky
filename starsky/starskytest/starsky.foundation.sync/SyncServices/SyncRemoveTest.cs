@@ -33,13 +33,13 @@ public sealed class SyncRemoveTest
 		// ReSharper disable once ConvertIfStatementToNullCoalescingAssignment
 		if ( content == null )
 		{
-			content = new List<FileIndexItem>
-			{
-				new FileIndexItem("/folder_no_content/") {IsDirectory = true},
-				new FileIndexItem("/folder_content") {IsDirectory = true},
+			content =
+			[
+				new FileIndexItem("/folder_no_content/") { IsDirectory = true },
+				new FileIndexItem("/folder_content") { IsDirectory = true },
 				new FileIndexItem("/folder_content/test.jpg"),
 				new FileIndexItem("/folder_content/test2.jpg")
-			};
+			];
 		}
 		var services = new ServiceCollection();
 		var serviceProvider = services.BuildServiceProvider();
@@ -148,10 +148,10 @@ public sealed class SyncRemoveTest
 		var query = new FakeIQuery(queryContent);
 		var remove = new SyncRemove(appSettings, query, null, null!, null);
 
-		var result= await remove.RemoveAsync(new List<string>{
+		var result= await remove.RemoveAsync([
 			"/sidecar_test__1/test.xmp",
 			"/sidecar_test__2/test.xmp"
-		});
+		]);
 
 		Assert.HasCount(2, result);
 			

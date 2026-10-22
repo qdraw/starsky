@@ -27,10 +27,9 @@ public class ThumbnailSocketServiceTests
 	public async Task NotificationSocketUpdate_ShouldSendResults_WhenFilesNeedUpdate()
 	{
 		// Arrange
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/test.jpg") { Tags = "tag1" }
-		});
+		]);
 
 		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
 		var fakeNotificationQuery = new FakeINotificationQuery();
@@ -54,10 +53,9 @@ public class ThumbnailSocketServiceTests
 	public async Task NotificationSocketUpdate_Folder_ShouldSendResults_WhenFilesNeedUpdate()
 	{
 		// Arrange
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/") { IsDirectory = true }, new("/test.jpg") { Tags = "tag1" }
-		});
+		]);
 
 		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
 		var fakeNotificationQuery = new FakeINotificationQuery();
@@ -94,10 +92,9 @@ public class ThumbnailSocketServiceTests
 	public async Task NotificationSocketUpdate_ShouldNotSendResults_WhenNoFilesNeedUpdate()
 	{
 		// Arrange
-		var fakeQuery = new FakeIQuery(new List<FileIndexItem>
-		{
+		var fakeQuery = new FakeIQuery([
 			new("/test.jpg") { Tags = TrashKeyword.TrashKeywordString }
-		});
+		]);
 
 		var fakeConnectionsService = new FakeIWebSocketConnectionsService();
 		var fakeNotificationQuery = new FakeINotificationQuery();
@@ -121,7 +118,7 @@ public class ThumbnailSocketServiceTests
 	public void WhichFilesNeedToBePushedForUpdate_NothingToUpdate()
 	{
 		var result = ThumbnailSocketService.WhichFilesNeedToBePushedForUpdates(
-			new List<GenerationResultModel>(), new List<FileIndexItem>());
+			[], new List<FileIndexItem>());
 		Assert.IsEmpty(result);
 	}
 
@@ -167,10 +164,9 @@ public class ThumbnailSocketServiceTests
 	public void WhichFilesNeedToBePushedForUpdate_ShouldMap()
 	{
 		var result = ThumbnailSocketService.WhichFilesNeedToBePushedForUpdates(
-			new List<GenerationResultModel>
-			{
+			[
 				new() { SubPath = "/test.jpg", Success = true, FileHash = "test" }
-			},
+			],
 			new List<FileIndexItem> { new("/test.jpg") });
 
 		Assert.HasCount(1, result);

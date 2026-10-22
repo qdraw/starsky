@@ -43,6 +43,11 @@ public class SearchSuggestionsInflateHostedService(
 
 	private async Task RunAsync(CancellationToken cancellationToken)
 	{
+		if ( appSettings.ApplicationType != AppSettings.StarskyAppType.WebController )
+		{
+			return;
+		}
+
 		try
 		{
 			await InflateOnceAsync().ConfigureAwait(false);

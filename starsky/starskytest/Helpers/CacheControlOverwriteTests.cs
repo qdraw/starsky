@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Helpers;
 
-namespace starskytest.starsky.Helpers;
+namespace starskytest.Helpers;
 
 [TestClass]
 public class CacheControlOverwriteTests

@@ -98,8 +98,8 @@ public sealed class GeoControllerTest
 	[TestMethod]
 	public async Task FolderExist()
 	{
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" });
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.jpg"]);
 
 		var controller = new GeoController(_bgTaskQueue,
 			new FakeSelectorStorage(fakeIStorage), null!)
@@ -113,8 +113,8 @@ public sealed class GeoControllerTest
 	[TestMethod]
 	public async Task FolderNotExist()
 	{
-		var fakeIStorage = new FakeIStorage(new List<string> { "/" },
-			new List<string> { "/test.jpg" });
+		var fakeIStorage = new FakeIStorage(["/"],
+			["/test.jpg"]);
 
 		var controller = new GeoController(_bgTaskQueue, new FakeSelectorStorage(fakeIStorage),
 			_memoryCache) { ControllerContext = { HttpContext = new DefaultHttpContext() } };

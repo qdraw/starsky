@@ -148,7 +148,7 @@ const DropArea: React.FunctionComponent<IDropAreaProps> = (props) => {
     document.body.classList.remove("drag");
   }, [dragActive]);
 
-  const dropAreaId = `droparea-file-r${Math.floor(Math.random() * 30) + 1}`;
+  const dropAreaId = `droparea-file-${crypto.randomUUID()}`;
 
   return (
     <>
