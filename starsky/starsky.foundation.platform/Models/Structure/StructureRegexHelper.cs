@@ -23,6 +23,6 @@ public static partial class StructureRegexHelper
 		return !string.IsNullOrEmpty(structure) &&
 		       StructureRegex().IsMatch(structure) &&
 		       // a structure is a relative sub path, it should not climb out of the storage folder
-		       !structure.Split('/', '\\').Any(segment => segment.Trim() == "..");
+		       !structure.Split(['/', '\\']).Any(segment => segment.Trim() == "..");
 	}
 }

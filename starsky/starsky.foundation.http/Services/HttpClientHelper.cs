@@ -47,6 +47,9 @@ public sealed class HttpClientHelper : IHttpClientHelper
 
 	internal const int MaxRedirectHops = 3;
 
+	private const string HttpsScheme = "https";
+	private const string DownloadLogPrefix = "[Download] HttpClientHelper > ";
+
 	private readonly long _maxRestrictedDownloadBytes = MaxRestrictedDownloadBytes;
 
 	/// <summary>
@@ -101,7 +104,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		_logger.LogInformation("[ReadString] HttpClientHelper > "
 		                       + sourceHttpUrl);
 		// allow whitelist and https only
-		if ( !_allowedDomains.Contains(sourceHttpUrl.Host) || sourceHttpUrl.Scheme != "https" )
+		if ( !IsAllowed(sourceHttpUrl) )
 		{
 			return
 				new KeyValuePair<bool, string>(false, string.Empty);
@@ -147,7 +150,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 
 		// // allow whitelist and https only
-		if ( !_allowedDomains.Contains(sourceUri.Host) || sourceUri.Scheme != "https" )
+		if ( !IsAllowed(sourceUri) )
 		{
 			return
 				new KeyValuePair<bool, string>(false, string.Empty);
@@ -179,7 +182,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	{
 		if ( !Uri.TryCreate(sourceHttpUrl, UriKind.Absolute, out var sourceUri) )
 		{
-			_logger.LogInformation("[Download] HttpClientHelper > skip: invalid url");
+			_logger.LogInformation(DownloadLogPrefix + "skip: invalid url");
 			return false;
 		}
 
@@ -204,14 +207,12 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			throw new EndOfStreamException("is null " + nameof(_storage));
 		}
 
-		_logger.LogInformation("[Download] HttpClientHelper > "
-		                       + " ~ " + sourceUri);
+		_logger.LogInformation(DownloadLogPrefix + " ~ " + sourceUri);
 
 		// allow whitelist and https only
-		if ( !_allowedDomains.Contains(sourceUri.Host) ||
-		     sourceUri.Scheme != "https" )
+		if ( !IsAllowed(sourceUri) )
 		{
-			_logger.LogInformation("[Download] HttpClientHelper > "
+			_logger.LogInformation(DownloadLogPrefix
 			                       + "skip: domain not whitelisted " + " ~ " + sourceUri);
 			return false;
 		}
@@ -229,7 +230,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			await using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
 			if ( response.StatusCode != HttpStatusCode.OK )
 			{
-				_logger.LogInformation("[Download] HttpClientHelper > " +
+				_logger.LogInformation(DownloadLogPrefix +
 				                       response.StatusCode + " ~ " + sourceUri);
 				return false;
 			}
@@ -240,29 +241,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 				return true;
 			}
 
-			// do not trust the header only, the stream is limited while copying
-			if ( response.Content.Headers.ContentLength > _maxRestrictedDownloadBytes )
-			{
-				_logger.LogInformation("[Download] HttpClientHelper > skip: " +
-				                       "content-length too large ~ " + sourceUri);
-				return false;
-			}
-
-			await using var limited =
-				new LimitedReadStream(streamToReadFrom, _maxRestrictedDownloadBytes);
-			try
-			{
-				await _storage.WriteStreamAsync(limited, fullLocalPath);
-			}
-			catch ( DownloadTooLargeException )
-			{
-				_logger.LogInformation("[Download] HttpClientHelper > skip: " +
-				                       "download too large ~ " + sourceUri);
-				_storage.FileDelete(fullLocalPath);
-				return false;
-			}
-
-			return true;
+			return await WriteRestrictedAsync(response, streamToReadFrom, sourceUri,
+				fullLocalPath);
 		}
 
 		try
@@ -281,6 +261,42 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			                            $"{exception.Message}");
 			return false;
 		}
+	}
+
+	private bool IsAllowed(Uri uri)
+	{
+		return _allowedDomains.Contains(uri.Host) && uri.Scheme == HttpsScheme;
+	}
+
+	/// <summary>
+	///     Copy with a size limit, the header can not be trusted alone so the stream is limited
+	///     while copying
+	/// </summary>
+	private async Task<bool> WriteRestrictedAsync(HttpResponseMessage response,
+		Stream streamToReadFrom, Uri sourceUri, string fullLocalPath)
+	{
+		if ( response.Content.Headers.ContentLength > _maxRestrictedDownloadBytes )
+		{
+			_logger.LogInformation(DownloadLogPrefix + "skip: " +
+			                       "content-length too large ~ " + sourceUri);
+			return false;
+		}
+
+		await using var limited =
+			new LimitedReadStream(streamToReadFrom, _maxRestrictedDownloadBytes);
+		try
+		{
+			await _storage!.WriteStreamAsync(limited, fullLocalPath);
+		}
+		catch ( DownloadTooLargeException )
+		{
+			_logger.LogInformation(DownloadLogPrefix + "skip: " +
+			                       "download too large ~ " + sourceUri);
+			_storage!.FileDelete(fullLocalPath);
+			return false;
+		}
+
+		return true;
 	}
 
 	/// <summary>
@@ -308,9 +324,9 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			}
 
 			var next = location.IsAbsoluteUri ? location : new Uri(current, location);
-			if ( !_allowedDomains.Contains(next.Host) || next.Scheme != "https" )
+			if ( !IsAllowed(next) )
 			{
-				_logger.LogInformation("[Download] HttpClientHelper > " +
+				_logger.LogInformation(DownloadLogPrefix +
 				                       "skip: redirect target not whitelisted ~ " + next.Host);
 				return null;
 			}
@@ -318,7 +334,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			current = next;
 		}
 
-		_logger.LogInformation("[Download] HttpClientHelper > skip: too many redirects");
+		_logger.LogInformation(DownloadLogPrefix + "skip: too many redirects");
 		return null;
 	}
 

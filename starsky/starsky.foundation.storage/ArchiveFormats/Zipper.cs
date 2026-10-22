@@ -106,6 +106,71 @@ public sealed class Zipper : IZipper
 	}
 
 	/// <summary>
+	///     Extract one entry, entries outside the extraction folder are skipped
+	/// </summary>
+	/// <returns>false when extraction must stop (limit exceeded or IO error)</returns>
+	private bool TryExtractEntry(ZipArchiveEntry entry, string storeZipFolderFullPath,
+		string zipInputFullPath, ref long totalBytes)
+	{
+		// Gets the full path to ensure that relative segments are removed.
+		var destinationPath =
+			Path.GetFullPath(Path.Combine(storeZipFolderFullPath, entry.FullName));
+
+		// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
+		// are case-insensitive.
+		if ( !destinationPath.StartsWith(storeZipFolderFullPath, StringComparison.Ordinal) )
+		{
+			return true;
+		}
+
+		// Folders inside zips give sometimes issues
+		if ( entry.FullName.EndsWith('/') )
+		{
+			if ( !_hostStorage.ExistFolder(destinationPath) )
+			{
+				_hostStorage.CreateDirectory(destinationPath);
+			}
+
+			return true;
+		}
+
+		if ( HeaderExceedsLimits(entry, totalBytes) )
+		{
+			_logger.LogError($"[Zipper] Size limit exceeded: {zipInputFullPath}");
+			return false;
+		}
+
+		try
+		{
+			long? written;
+			try
+			{
+				written = CopyEntryWithLimits(entry, destinationPath, totalBytes);
+			}
+			catch ( DirectoryNotFoundException )
+			{
+				Directory.GetParent(destinationPath)!.Create();
+				written = CopyEntryWithLimits(entry, destinationPath, totalBytes);
+			}
+
+			if ( written == null )
+			{
+				_logger.LogError(
+					$"[Zipper] Size limit exceeded while extracting: {zipInputFullPath}");
+				return false;
+			}
+
+			totalBytes += written.Value;
+			return true;
+		}
+		catch ( IOException exception )
+		{
+			_logger.LogError($"[Zipper] IOException: {zipInputFullPath}", exception);
+			return false;
+		}
+	}
+
+	/// <summary>
 	///     Extract zip file to a folder
 	/// </summary>
 	/// <param name="zipInputFullPath">input e.g: /path/file.zip</param>
@@ -144,60 +209,9 @@ public sealed class Zipper : IZipper
 			long totalBytes = 0;
 			foreach ( var entry in archive.Entries )
 			{
-				// Gets the full path to ensure that relative segments are removed.
-				var destinationPath =
-					Path.GetFullPath(Path.Combine(storeZipFolderFullPath, entry.FullName));
-
-				// Ordinal match is safest, case-sensitive volumes can be mounted within volumes that
-				// are case-insensitive.
-				if ( !destinationPath.StartsWith(storeZipFolderFullPath,
-					    StringComparison.Ordinal) )
+				if ( !TryExtractEntry(entry, storeZipFolderFullPath, zipInputFullPath,
+					    ref totalBytes) )
 				{
-					continue;
-				}
-
-				// Folders inside zips give sometimes issues
-				if ( entry.FullName.EndsWith('/') )
-				{
-					if ( !_hostStorage.ExistFolder(destinationPath) )
-					{
-						_hostStorage.CreateDirectory(destinationPath);
-					}
-
-					continue;
-				}
-
-				if ( HeaderExceedsLimits(entry, totalBytes) )
-				{
-					_logger.LogError($"[Zipper] Size limit exceeded: {zipInputFullPath}");
-					return false;
-				}
-
-				try
-				{
-					long? written;
-					try
-					{
-						written = CopyEntryWithLimits(entry, destinationPath, totalBytes);
-					}
-					catch ( DirectoryNotFoundException )
-					{
-						Directory.GetParent(destinationPath)!.Create();
-						written = CopyEntryWithLimits(entry, destinationPath, totalBytes);
-					}
-
-					if ( written == null )
-					{
-						_logger.LogError(
-							$"[Zipper] Size limit exceeded while extracting: {zipInputFullPath}");
-						return false;
-					}
-
-					totalBytes += written.Value;
-				}
-				catch ( IOException exception )
-				{
-					_logger.LogError($"[Zipper] IOException: {zipInputFullPath}", exception);
 					return false;
 				}
 			}
