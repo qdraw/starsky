@@ -120,6 +120,13 @@ public sealed class ContentSecurityPolicyMiddlewareTest
 	}
 
 	[TestMethod]
+	public void IsSafeCspHost_LengthLimit()
+	{
+		Assert.IsTrue(ContentSecurityPolicyMiddleware.IsSafeCspHost(new string('a', 255)));
+		Assert.IsFalse(ContentSecurityPolicyMiddleware.IsSafeCspHost(new string('a', 256)));
+	}
+
+	[TestMethod]
 	public async Task invoke_httpsTest_websockets_localhostWithNoPort()
 	{
 		// Arrange

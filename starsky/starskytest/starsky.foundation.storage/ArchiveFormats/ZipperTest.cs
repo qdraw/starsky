@@ -575,7 +575,7 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
-	public void CopyEntryWithLimits_TotalAlreadyAlmostUsed_DeletesPartialFileAndReturnsNull()
+	public void CopyEntryWithLimits_TotalAlreadyAlmostUsed_DeletesPartialFileAndThrows()
 	{
 		// the runtime never reads more than the declared length, so the limit is exercised
 		// by claiming that most of the total budget is already used
@@ -586,10 +586,10 @@ public sealed class ZipperTest
 			var destination = Path.Combine(outFolder, "a.bin");
 			using var archive = ZipFile.OpenRead(zipPath);
 
-			var result = CreateLimited(total: 1000).CopyEntryWithLimits(archive.Entries[0],
-				destination, 950);
+			var zipper = CreateLimited(total: 1000);
 
-			Assert.IsNull(result);
+			Assert.ThrowsExactly<InvalidDataException>(() =>
+				zipper.CopyEntryWithLimits(archive.Entries[0], destination, 950));
 			Assert.IsFalse(File.Exists(destination));
 		}
 		finally

@@ -207,13 +207,13 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			throw new EndOfStreamException("is null " + nameof(_storage));
 		}
 
-		_logger.LogInformation(DownloadLogPrefix + " ~ " + sourceUri);
+		_logger.LogInformation(DownloadLogPrefix + " ~ " + sourceUri.ToString());
 
 		// allow whitelist and https only
 		if ( !IsAllowed(sourceUri) )
 		{
 			_logger.LogInformation(DownloadLogPrefix
-			                       + "skip: domain not whitelisted " + " ~ " + sourceUri);
+			                       + "skip: domain not whitelisted " + " ~ " + sourceUri.ToString());
 			return false;
 		}
 
@@ -231,7 +231,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			if ( response.StatusCode != HttpStatusCode.OK )
 			{
 				_logger.LogInformation(DownloadLogPrefix +
-				                       response.StatusCode + " ~ " + sourceUri);
+				                       response.StatusCode + " ~ " + sourceUri.ToString());
 				return false;
 			}
 
@@ -278,7 +278,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		if ( response.Content.Headers.ContentLength > _maxRestrictedDownloadBytes )
 		{
 			_logger.LogInformation(DownloadLogPrefix + "skip: " +
-			                       "content-length too large ~ " + sourceUri);
+			                       "content-length too large ~ " + sourceUri.ToString());
 			return false;
 		}
 
@@ -291,7 +291,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		catch ( DownloadTooLargeException )
 		{
 			_logger.LogInformation(DownloadLogPrefix + "skip: " +
-			                       "download too large ~ " + sourceUri);
+			                       "download too large ~ " + sourceUri.ToString());
 			_storage!.FileDelete(fullLocalPath);
 			return false;
 		}

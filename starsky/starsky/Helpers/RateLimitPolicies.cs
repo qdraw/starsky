@@ -41,7 +41,7 @@ public static class RateLimitPolicies
 
 	private static string ClientKey(HttpContext context)
 	{
-		return context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+		return context.Connection.RemoteIpAddress is { } address ? address.ToString() : "unknown";
 	}
 
 	private static FixedWindowRateLimiterOptions FixedWindow(int permitLimit)
