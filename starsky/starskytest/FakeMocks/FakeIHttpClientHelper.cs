@@ -69,7 +69,7 @@ public class FakeIHttpClientHelper : IHttpClientHelper
 	public async Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
 		HttpContent? httpContent,
 		AuthenticationHeaderValue? authenticationHeaderValue = null,
-		bool verbose = true)
+		bool verbose = true, string? userAgent = null)
 	{
 		var lookupKey = sourceHttpUrl;
 		if ( httpContent != null )

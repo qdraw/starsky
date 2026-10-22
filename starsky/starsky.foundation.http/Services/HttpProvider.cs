@@ -62,7 +62,7 @@ public sealed class HttpProvider : IHttpProvider
 	/// <param name="authenticationHeaderValue"></param>
 	/// <returns>Task with Response</returns>
 	public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
-		AuthenticationHeaderValue? authenticationHeaderValue = null)
+		AuthenticationHeaderValue? authenticationHeaderValue = null, string? userAgent = null)
 	{
 		if ( content == null )
 		{
@@ -81,6 +81,11 @@ public sealed class HttpProvider : IHttpProvider
 		if ( authenticationHeaderValue != null )
 		{
 			request.Headers.Authorization = authenticationHeaderValue;
+		}
+
+		if ( !string.IsNullOrWhiteSpace(userAgent) )
+		{
+			request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
 		}
 
 		if ( typeof(FormUrlEncodedContent) == content.GetType() )

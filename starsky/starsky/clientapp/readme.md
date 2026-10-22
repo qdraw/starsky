@@ -44,6 +44,12 @@ You will also see any lint errors in the console.
 Make sure you run the Starsky API on http://localhost:4000 or us a local tunnel proxy (which you can
 find in `./starsky-tools/localtunnel`)
 
+To skip the login screen during local development, start the API with the environment
+variable `app__NoAccountLocalhost=true` (for example in `launchSettings.json`). Requests from
+localhost are then signed in automatically as `mail@localhost`. The sign-in happens when a page is
+loaded (not on a direct `/api` call), so open http://localhost:3000 in the browser first.
+Only use this on a machine that is not reachable from outside.
+
 ### `npm test`
 
 Launches the test runner in the interactive watch mode.

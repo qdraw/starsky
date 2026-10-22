@@ -143,7 +143,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 
 	public async Task<KeyValuePair<bool, string>> PostString(string sourceHttpUrl,
 		HttpContent? httpContent, AuthenticationHeaderValue? authenticationHeaderValue = null,
-		bool verbose = true)
+		bool verbose = true, string? userAgent = null)
 	{
 		var sourceUri = new Uri(sourceHttpUrl);
 
@@ -164,7 +164,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		{
 			using ( var response = await _httpProvider.PostAsync(sourceHttpUrl,
 				       httpContent,
-				       authenticationHeaderValue) )
+				       authenticationHeaderValue, userAgent) )
 			using ( var streamToReadFrom = await response.Content.ReadAsStreamAsync() )
 			{
 				var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
@@ -175,8 +175,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		}
 		catch ( Exception exception )
 		{
-			_logger.LogError($"[PostString] HttpClientHelper {sourceHttpUrl} > Exception ",
-				exception);
+			_logger.LogError(exception,
+				$"[PostString] HttpClientHelper {sourceHttpUrl} > Exception ");
 			return new KeyValuePair<bool, string>(false, exception.Message);
 		}
 	}

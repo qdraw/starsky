@@ -237,7 +237,7 @@ public sealed class HttpClientHelperTest
 		}
 
 		public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
-			AuthenticationHeaderValue? authenticationHeaderValue)
+			AuthenticationHeaderValue? authenticationHeaderValue, string? userAgent = null)
 		{
 			return Task.FromResult<HttpResponseMessage>(null!);
 		}

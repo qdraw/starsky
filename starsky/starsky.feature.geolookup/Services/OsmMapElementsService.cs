@@ -24,6 +24,12 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 		"z.overpass-api.de/api/interpreter",
 		"lz4.overpass-api.de/api/interpreter"
 	];
+
+	/// <summary>
+	///     Overpass answers 406 to browser-like or empty User-Agents
+	/// </summary>
+	private const string OverpassUserAgent = "Starsky-App";
+
 	private const double NearbyRadiusInMeters = 20.0;
 	private const int MaxItemsPerSection = 8;
 	private const string ErrorMessage = "Failed to parse OSM map elements response";
@@ -125,7 +131,7 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 			$"data={Uri.EscapeDataString(query)}",
 			Encoding.UTF8,
 			"application/x-www-form-urlencoded");
-		var response = await httpClientHelper.PostString(url, content);
+		var response = await httpClientHelper.PostString(url, content, userAgent: OverpassUserAgent);
 		if ( !response.Key || string.IsNullOrWhiteSpace(response.Value) )
 		{
 			return new ParsedOverpassResponse([], ErrorMessage);

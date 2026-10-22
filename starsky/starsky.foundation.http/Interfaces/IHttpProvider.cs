@@ -11,5 +11,6 @@ public interface IHttpProvider
 		bool followRedirects = true);
 
 	Task<HttpResponseMessage> PostAsync(string requestUri,
-		HttpContent? content, AuthenticationHeaderValue? authenticationHeaderValue = null);
+		HttpContent? content, AuthenticationHeaderValue? authenticationHeaderValue = null,
+		string? userAgent = null);
 }
