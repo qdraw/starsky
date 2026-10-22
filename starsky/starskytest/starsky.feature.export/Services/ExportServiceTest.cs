@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -184,8 +185,9 @@ public class ExportServiceTest
 	[TestMethod]
 	public void StatusIsReady_GeneratedName_ShouldWork()
 	{
+		// the service builds the path with Path.Combine, so the separator is platform specific
 		var storage = new FakeIStorage(["/tmp", "/tmp/export-temp"],
-			["/tmp/export-temp/TNA995920129.zip"]);
+			[Path.Combine("/tmp/export-temp", "TNA995920129") + ".zip"]);
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { TempFolder = "/tmp/export-temp" },
 			new FakeSelectorStorage(storage), new FakeIWebLogger(),
