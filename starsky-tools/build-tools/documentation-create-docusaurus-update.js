@@ -13,18 +13,16 @@ if (!fs.existsSync(documentationAppFolderPath)) {
 }
 
 const deleteFolderRecursive = function (path) {
-	let files = [];
-	if (fs.existsSync(path)) {
-		files = fs.readdirSync(path);
-		files.forEach(function (file, index) {
-			const curPath = path + "/" + file;
-			if (fs.lstatSync(curPath).isDirectory()) { // recurse
-				deleteFolderRecursive(curPath);
-			} else { // delete file
-				fs.unlinkSync(curPath);
-			}
-		});
-		fs.rmdirSync(path);
+	// macOS (Finder/IDE) can recreate .DS_Store while deleting, which causes ENOTEMPTY; so retry
+	try {
+		fs.rmSync(path, {recursive: true, force: true, maxRetries: 10, retryDelay: 200});
+	} catch (error) {
+		console.log('rmSync failed, trying rm -rf: ' + error.code);
+		spawnSync('rm', ['-rf', path]);
+		if (fs.existsSync(path)) {
+			// only temp/clean-install folders are deleted here, so do not abort the update
+			console.log('WARN: could not fully remove ' + path);
+		}
 	}
 };
 
@@ -144,7 +142,7 @@ function npmInstall(packageName, force, dev) {
 		saveText = "--save-dev";
 	}
 	console.log('npm' + " " + 'install --no-audit' + " " + packageName + " " + saveText + " " + forceText);
-	const npmInstallSpawn = spawnSync('npm', ['install', '--no-audit', packageName, saveText, forceText], {
+	const npmInstallSpawn = spawnSync('npm', ['install', '--no-audit', packageName, saveText, forceText].filter(Boolean), {
 		cwd: documentationAppFolderPath,
 		env: process.env,
 		encoding: 'utf-8'
@@ -160,6 +158,10 @@ function npmInstall(packageName, force, dev) {
 
 // install other packages here
 // for example: docusaurus-plugin-openapi (which is not used at the moment)
+
+// not part of the create-docusaurus template, so it is not updated by the merge above
+npmInstall("@cmfcmf/docusaurus-search-local@latest", false, false);
+npmInstall("@docusaurus/types@latest", false, true);
 
 npmBasicInstall();
 
