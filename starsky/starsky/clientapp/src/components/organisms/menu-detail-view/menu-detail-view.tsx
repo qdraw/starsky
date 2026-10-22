@@ -206,7 +206,7 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
   useKeyboardEvent(/(Delete)/, (event: KeyboardEvent) => {
     if (new Keyboard().isInForm(event)) return;
     event.preventDefault();
-    TrashFile();
+    void TrashFile();
   });
 
   const [isModalDownloadOpen, setIsModalDownloadOpen] = React.useState(false);

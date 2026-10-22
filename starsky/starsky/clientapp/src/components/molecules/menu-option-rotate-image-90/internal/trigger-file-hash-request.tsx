@@ -14,7 +14,7 @@ export function TriggerFileHashRequest(
 
   const attemptRequest = (currentRetry: number) => {
     setTimeout(() => {
-      RequestNewFileHash(state, setIsLoading, dispatch).then((result) => {
+      void RequestNewFileHash(state, setIsLoading, dispatch).then((result) => {
         if (result === false && currentRetry < maxRetries) {
           attemptRequest(currentRetry + 1);
         } else {

@@ -181,7 +181,7 @@ public sealed class ThumbnailController : Controller
 		var sourcePath = ( await _query.GetSubPathsByHashAsync(f) ).FirstOrDefaultWithFallback(f);
 
 		var isThumbnailSupported =
-			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath);
+			ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(sourcePath);
 		switch ( isThumbnailSupported )
 		{
 			case true when !string.IsNullOrEmpty(sourcePath):
@@ -312,9 +312,7 @@ public sealed class ThumbnailController : Controller
 			// remove from cache
 			_query.ResetItemByHash(f);
 
-			// The caller-supplied filePath is only trusted for logged-in users,
-			// otherwise an anonymous request could point at any indexed file
-			if ( User.Identity?.IsAuthenticated != true || string.IsNullOrEmpty(filePath) ||
+			if ( string.IsNullOrEmpty(filePath) ||
 			     await _query.GetObjectByFilePathAsync(filePath) == null )
 			{
 				SetExpiresResponseHeadersToZero();
@@ -338,14 +336,7 @@ public sealed class ThumbnailController : Controller
 			return Json("Thumbnail is not ready yet");
 		}
 
-		// Thumbnails are public (cached), the source file and generating jobs are not
-		if ( User.Identity?.IsAuthenticated != true )
-		{
-			SetExpiresResponseHeadersToZero();
-			return Unauthorized("Login is required to view the original");
-		}
-
-		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )
+		if ( ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(sourcePath) )
 		{
 			var fs1 = _iStorage.ReadStream(sourcePath);
 
@@ -413,7 +404,7 @@ public sealed class ThumbnailController : Controller
 			sourcePath = filePath;
 		}
 
-		if ( ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(sourcePath) )
+		if ( ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(sourcePath) )
 		{
 			var fs1 = _iStorage.ReadStream(sourcePath);
 

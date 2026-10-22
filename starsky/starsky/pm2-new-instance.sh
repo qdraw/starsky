@@ -7,7 +7,7 @@
 
 PM2NAME="starsky"
 PORT="4823"
-RUNTIME="linux-arm" # defaults to your current os
+RUNTIME="linux-arm64" # defaults to your current os
 case $(uname -m) in
   "aarch64")
     RUNTIME="linux-arm64"
@@ -17,10 +17,6 @@ case $(uname -m) in
     if [[ $(uname) = "Darwin" ]]; then
         RUNTIME="osx-arm64"
     fi
-    ;;
-
-  "armv7l")
-    RUNTIME="linux-arm"
     ;;
 
   "x86_64")
@@ -52,8 +48,7 @@ for ((i = 1; i <= $#; i++ )); do
     if [[ ${ARGUMENTS[CURRENT]} == "--help" ]];
     then
         echo "--name pm2name"
-        echo "--runtime linux-arm"
-        echo "     (or:) --runtime linux-arm64"
+        echo "--runtime linux-arm64"
         echo "     (or:) --runtime osx-x64"
         echo "     (or:) --runtime win-x64"
         echo "(optional) --port 4823"

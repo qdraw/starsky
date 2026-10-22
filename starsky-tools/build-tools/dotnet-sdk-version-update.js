@@ -513,14 +513,10 @@ async function updateGithubYmlFile(filePathList, sdkVersion) {
 				"uses: actions\/setup-dotnet@([v]?[0-9.]+|[a-f0-9]{40})\\n\\s+with:\\n\\s+dotnet-version: [0-9.]+",
 				"g"
 			);
-			const actionsSetupDotNetMatch =
-				fileContent.match(actionsSetupDotNet);
-			if (actionsSetupDotNetMatch) {
-				const actionsSetupDotNetReplaced =
-					actionsSetupDotNetMatch[0].replace(/[0-9.]+$/, sdkVersion);
-				fileContent = fileContent.replace(
-					actionsSetupDotNetMatch[0],
-					actionsSetupDotNetReplaced
+			if (fileContent.match(actionsSetupDotNet)) {
+				// a workflow can contain multiple setup-dotnet steps (e.g. one per job)
+				fileContent = fileContent.replace(actionsSetupDotNet, (match) =>
+					match.replace(/[0-9.]+$/, sdkVersion)
 				);
 
 				await writeFile(filePath, fileContent);

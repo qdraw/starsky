@@ -57,14 +57,16 @@ const ModalForceDelete: React.FunctionComponent<IModalForceDeleteProps> = ({
 
     undoSelection();
 
-    FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), "delete").then((result) => {
-      if (result.statusCode === 200 || result.statusCode === 404) {
-        dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
-      }
+    void FetchPost(new UrlQuery().UrlDeleteApi(), bodyParams.toString(), "delete").then(
+      (result) => {
+        if (result.statusCode === 200 || result.statusCode === 404) {
+          dispatch({ type: "remove", toRemoveFileList: toUndoTrashList });
+        }
 
-      ClearSearchCache(history.location.search);
-      setIsLoading(false);
-    });
+        ClearSearchCache(history.location.search);
+        setIsLoading(false);
+      }
+    );
   }
 
   return (

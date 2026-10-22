@@ -44,7 +44,11 @@ WORKDIR /app
 # Copy everything else and build
 COPY . ./
 
-RUN /bin/bash -c "\
+# The DSN comes from a BuildKit secret so it does not end up in the image history.
+# Optional: without the secret no crash reports are baked in.
+RUN --mount=type=secret,id=crash_report_dsn \
+    /bin/bash -c "\
+        export STARSKY_CRASH_REPORT_DSN=$(cat /run/secrets/crash_report_dsn 2>/dev/null || true) ; \
         echo "TARGETPLATFORM=\"$TARGETPLATFORM\"" ; \
         rm /app/global.json ; \
         chmod +x ./build.sh ; \

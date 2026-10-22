@@ -88,7 +88,7 @@ const PreferencesAppSettingsReadonlyFolders: React.FunctionComponent = () => {
     const trimmed = value.replace(/[\r\n]+/g, "").trim();
     const updated = rows.map((r) => (r.id === id ? { ...r, folder: trimmed } : r));
     setRows(updated);
-    saveAll(updated);
+    void saveAll(updated);
   }
 
   function addRow() {
@@ -98,7 +98,7 @@ const PreferencesAppSettingsReadonlyFolders: React.FunctionComponent = () => {
   function removeRow(id: number) {
     const updated = rows.filter((r) => r.id !== id);
     setRows(updated);
-    saveAll(updated);
+    void saveAll(updated);
   }
 
   return (

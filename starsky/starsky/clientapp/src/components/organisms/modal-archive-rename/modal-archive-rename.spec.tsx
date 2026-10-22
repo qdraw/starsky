@@ -65,7 +65,9 @@ describe("ModalArchiveRename", () => {
       const fetchPostSpy = jest
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => mockIConnectionDefault);
-      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
+      jest
+        .spyOn(FetchGet, "default")
+        .mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const handleExitSpy = jest.fn();
       const modal = render(
@@ -115,7 +117,9 @@ describe("ModalArchiveRename", () => {
         statusCode: 200
       } as IConnectionDefault);
       jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
-      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
+      jest
+        .spyOn(FetchGet, "default")
+        .mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const dispatch = jest.fn();
       const handleExitSpy = jest.fn();
@@ -214,7 +218,9 @@ describe("ModalArchiveRename", () => {
         statusCode: 200
       } as IConnectionDefault);
       jest.spyOn(FetchPost, "default").mockImplementationOnce(() => mockIConnectionDefault);
-      jest.spyOn(FetchGet, "default").mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
+      jest
+        .spyOn(FetchGet, "default")
+        .mockResolvedValueOnce({ statusCode: 200 } as IConnectionDefault);
 
       const locationObject = {
         location: globalThis.location,
@@ -369,9 +375,7 @@ describe("ModalArchiveRename", () => {
         .spyOn(FetchPost, "default")
         .mockImplementationOnce(() => new Promise<IConnectionDefault>(() => {}));
 
-      render(
-        <ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />
-      );
+      render(<ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />);
 
       const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
       const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;
@@ -395,9 +399,7 @@ describe("ModalArchiveRename", () => {
     });
 
     it("ignores input when textContent is empty", () => {
-      render(
-        <ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />
-      );
+      render(<ModalArchiveRename isOpen={true} subPath="/test" handleExit={() => {}} />);
 
       const button = screen.queryByTestId("modal-archive-rename-btn-default") as HTMLButtonElement;
       const directoryName = screen.queryByTestId("form-control") as HTMLInputElement;

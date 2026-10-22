@@ -68,7 +68,7 @@ describe("Breadcrumb", () => {
       return Object.assign(new Event(type, { bubbles: true, cancelable: true }), {
         dataTransfer: {
           types: data ? [MIME] : [],
-          getData: (_mime: string) => data ?? "",
+          getData: () => data ?? "",
           setData: jest.fn(),
           dropEffect: "none",
           effectAllowed: "none"
@@ -142,7 +142,7 @@ describe("Breadcrumb", () => {
       const badEvent = Object.assign(new Event("drop", { bubbles: true, cancelable: true }), {
         dataTransfer: {
           types: [MIME],
-          getData: (_: string) => "not-valid-json",
+          getData: () => "not-valid-json",
           setData: jest.fn(),
           dropEffect: "none",
           effectAllowed: "none"

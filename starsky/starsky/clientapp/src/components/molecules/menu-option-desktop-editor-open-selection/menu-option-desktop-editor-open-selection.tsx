@@ -98,7 +98,7 @@ const MenuOptionDesktopEditorOpenSelection: React.FunctionComponent<IMenuOptionD
       const isReadOnlyOrDisabled = !dataFeatures?.openEditorEnabled || isReadOnly;
       console.log(`is ReadOnly/ or disabled: ${isReadOnlyOrDisabled}`);
 
-      StartMenuOptionDesktopEditorOpenSelection(
+      void StartMenuOptionDesktopEditorOpenSelection(
         select,
         isCollections,
         state,

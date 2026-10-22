@@ -19,10 +19,10 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_TiffMp4MovXMPCheck()
 	{
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.tiff"));
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.mp4"));
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.mov"));
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.xmp"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.tiff"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.mp4"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.mov"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.xmp"));
 	}
 
 	[TestMethod]
@@ -33,7 +33,7 @@ public sealed class ExtensionRolesHelperTest
 	{
 		// Check if Video is supported and NOT Image
 		Assert.IsTrue(ExtensionRolesHelper.IsExtensionVideoSupported(filePath));
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(filePath));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(filePath));
 	}
 
 	[TestMethod]
@@ -47,16 +47,16 @@ public sealed class ExtensionRolesHelperTest
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_JpgCheck()
 	{
-		Assert.IsTrue(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.jpg"));
-		Assert.IsTrue(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("file.bmp"));
+		Assert.IsTrue(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.jpg"));
+		Assert.IsTrue(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.bmp"));
 	}
 
 	[TestMethod]
 	public void Files_ExtensionThumbSupportedList_null()
 	{
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported(null));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(null));
 		// equal or less then three chars
-		Assert.IsFalse(ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("nul"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("nul"));
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionNativeSupported(null));
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionVideoSupported(null));
 	}
@@ -65,7 +65,7 @@ public sealed class ExtensionRolesHelperTest
 	public void Files_ExtensionThumbSupportedList_FolderName()
 	{
 		Assert.IsFalse(
-			ExtensionRolesHelper.IsExtensionImageSharpThumbnailSupported("Some Foldername"));
+			ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("Some Foldername"));
 	}
 
 	[TestMethod]
@@ -576,6 +576,26 @@ public sealed class ExtensionRolesHelperTest
 				.ToArray();
 		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_gpx_LongXmlHeader_Test()
+	{
+		var bmBytes =
+			("\uFEFF<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\r\n" +
+			 "<!-- exported by a tracker app, with a long comment before the root tag -->\r\n" +
+			 "<gpx creator=\"x\">")
+			.Select(c => ( byte ) c).Where(c => c < 128).ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_xmlWithoutGpx_Test()
+	{
+		var bmBytes = "<?xml version=\"1.0\"?>\n<note>hi</note>"u8.ToArray();
+		var fileType = ExtensionRolesHelper.GetImageFormat(bmBytes);
+		Assert.AreNotEqual(ExtensionRolesHelper.ImageFormat.gpx, fileType);
 	}
 
 	[TestMethod]

@@ -42,9 +42,18 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 > Within a version block the top are item is the newest
 
-## version 0.9.7 - _(Unreleased)_ - 2026-?-? {#0.9.7}
+## version 0.9.8 - _(Unreleased)_ - 2026-?-? {#0.9.8}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ Publishing the same selection twice failed with `The process cannot access the file ... .zip` because a stale `.done` marker made the remote publish start while the new zip was still being written (PR #3412)
+- [x] (Fixed) _Back-end_ Import failed with `Unknown column 'Infinity'` when XMP/EXIF aperture or focal length had a zero denominator (PR #3409)
+
+## version 0.9.7 - 2026-10-17 {#0.9.7}
+
+- [x] (Added) Added crash reports (Sentry) for unhandled exceptions, without personal data. Only crashes are sent, log lines only travel along as breadcrumbs of a crash report. Opt-out with `app__EnableCrashReports=false`, see [telemetry](starsky/telemetry.md) (PR #3385)
+- [x] (Removed) _Back-end_ `linux-arm` (32 bits ARM, e.g. Raspberry Pi 32 bits and Docker `linux/arm/v7`) is no longer supported, use `linux-arm64`
+- [x] (Security) _Back-end_ Image resizing, thumbnails and the logo overlay of publish profiles use SkiaSharp; SixLabors.ImageSharp is removed (known vulnerabilities, paid licence)
+- [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.402 (Runtime: 10.0.13)
+- [x] (Fixed) _MountWatcher CLI_ macOS: the launchd agent starts in the app data folder instead of `/`, the default working directory made the appsettings file watcher scan the whole disk (high CPU and memory usage)
 
 ## version 0.9.6 - 2026-09-29 {#0.9.6}
 

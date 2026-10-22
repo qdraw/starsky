@@ -78,7 +78,7 @@ export class PrevNext {
     if (!this.relativeObjects?.prevFilePath) return;
     if (this.relativeObjects.prevFilePath === this.state.subPath) {
       // when changing prev very fast it might skip a check
-      new UpdateRelativeObject()
+      void new UpdateRelativeObject()
         .Update(
           this.state,
           this.isSearchQuery,

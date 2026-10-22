@@ -99,7 +99,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
           <button
             type="button"
             onClick={() => {
-              OpenDesktop(
+              void OpenDesktop(
                 select ?? [],
                 isCollections,
                 state,
@@ -113,7 +113,7 @@ const ModalDesktopEditorOpenSelectionConfirmation: React.FunctionComponent<
             }}
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                OpenDesktop(
+                void OpenDesktop(
                   select ?? [],
                   isCollections,
                   state,

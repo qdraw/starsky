@@ -2,7 +2,7 @@ parameters:
   sonarqube: true
   vstest: true
   readyToRunEnabled: true
-  runtimeArg: '--runtime "linux-arm,linux-arm64"'
+  runtimeArg: '--runtime "linux-arm64"'
   nugetPackages: $(Pipeline.Workspace)/.nuget/packages
 
 steps:

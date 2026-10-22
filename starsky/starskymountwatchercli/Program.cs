@@ -33,7 +33,10 @@ public static class Program
 		// Use args in the application
 		new ArgsHelper().SetEnvironmentByArgs(args);
 
-		var hostBuilder = Host.CreateDefaultBuilder(args);
+		// launchd starts the process in "/", which would make the default appsettings
+		// reloadOnChange file watcher recursively watch the entire disk (high CPU/RAM).
+		var hostBuilder = Host.CreateDefaultBuilder(args)
+			.UseContentRoot(AppContext.BaseDirectory);
 
 		if ( RuntimeInformation.IsOSPlatform(OSPlatform.Windows) )
 		{
@@ -60,6 +63,7 @@ public static class Program
 
 			services.AddOpenTelemetryMonitoring(appSettings);
 			services.AddTelemetryLogging(appSettings);
+			using var crashReports = SetupSentry.Init(appSettings);
 
 			new SetupDatabaseTypes(appSettings, services).BuilderDb();
 		});

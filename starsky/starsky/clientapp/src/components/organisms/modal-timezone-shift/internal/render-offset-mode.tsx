@@ -79,7 +79,7 @@ export function OffsetMode({ ...props }: Readonly<IRenderOffsetModeProps>) {
       second: field === "second" ? value : offsetSeconds
     };
 
-    generateOffsetPreview({
+    void generateOffsetPreview({
       select,
       state,
       offset: offsetData,

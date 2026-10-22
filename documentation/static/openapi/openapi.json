@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "Starsky",
-    "version": "0.9.6.0"
+    "version": "0.9.7.0"
   },
   "servers": [
     {
@@ -4888,6 +4888,13 @@
           },
           "openTelemetry": {
             "$ref": "#/components/schemas/OpenTelemetrySettings"
+          },
+          "enableCrashReports": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "sentry": {
+            "$ref": "#/components/schemas/SentrySettings"
           }
         },
         "additionalProperties": false
@@ -6238,6 +6245,20 @@
             },
             "nullable": true,
             "readOnly": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SentrySettings": {
+        "type": "object",
+        "properties": {
+          "dsn": {
+            "type": "string",
+            "nullable": true
+          },
+          "environment": {
+            "type": "string",
+            "nullable": true
           }
         },
         "additionalProperties": false

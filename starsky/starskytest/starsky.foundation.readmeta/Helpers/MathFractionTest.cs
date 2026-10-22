@@ -26,4 +26,13 @@ public sealed class MathFractionTest
 		var fraction = MathFraction.Fraction("7/8/0");
 		Assert.AreEqual(0, fraction, 0.00001);
 	}
+
+	[TestMethod]
+	[DataRow("9/0")]
+	[DataRow("0/0")]
+	[DataRow("-9/0")]
+	public void MathFraction_DivideByZero_ReturnsZero(string input)
+	{
+		Assert.AreEqual(0, MathFraction.Fraction(input), 0.00001);
+	}
 }

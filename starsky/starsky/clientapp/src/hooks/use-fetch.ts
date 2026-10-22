@@ -13,7 +13,7 @@ const useFetch = (url: string, method: "get" | "post"): IConnectionDefault => {
     let mounted = true;
     const abortController = new AbortController();
 
-    fetchContent(url, method, mounted, abortController, setData);
+    void fetchContent(url, method, mounted, abortController, setData);
 
     return () => {
       mounted = false;
