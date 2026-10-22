@@ -575,6 +575,30 @@ public sealed class ZipperTest
 	}
 
 	[TestMethod]
+	public void CopyEntryWithLimits_TotalAlreadyAlmostUsed_DeletesPartialFileAndReturnsNull()
+	{
+		// the runtime never reads more than the declared length, so the limit is exercised
+		// by claiming that most of the total budget is already used
+		var (zipPath, outFolder) = CreateZipOnDisk(("a.bin", 100));
+		try
+		{
+			Directory.CreateDirectory(outFolder);
+			var destination = Path.Combine(outFolder, "a.bin");
+			using var archive = ZipFile.OpenRead(zipPath);
+
+			var result = CreateLimited(total: 1000).CopyEntryWithLimits(archive.Entries[0],
+				destination, 950);
+
+			Assert.IsNull(result);
+			Assert.IsFalse(File.Exists(destination));
+		}
+		finally
+		{
+			Directory.Delete(Path.GetDirectoryName(zipPath)!, true);
+		}
+	}
+
+	[TestMethod]
 	public void ExtractZip_EntryOutsideExtractionFolder_IsSkipped()
 	{
 		var (zipPath, outFolder) = CreateZipOnDisk(("../outside.bin", 10), ("inside.bin", 10));

@@ -95,7 +95,7 @@ public sealed class Zipper : IZipper
 	///     Copy with limits, does not trust the header length
 	/// </summary>
 	/// <returns>bytes written or null when a limit is exceeded</returns>
-	private long? CopyEntryWithLimits(ZipArchiveEntry entry, string destinationPath,
+	internal long? CopyEntryWithLimits(ZipArchiveEntry entry, string destinationPath,
 		long totalSoFar)
 	{
 		var maxForThisEntry = Math.Min(_maxEntryBytes, _maxTotalBytes - totalSoFar);
@@ -116,6 +116,12 @@ public sealed class Zipper : IZipper
 
 		File.Delete(destinationPath);
 		return null;
+	}
+
+	private bool LimitExceeded(string zipInputFullPath)
+	{
+		_logger.LogError($"[Zipper] Size limit exceeded: {zipInputFullPath}");
+		return false;
 	}
 
 	/// <summary>
@@ -149,8 +155,7 @@ public sealed class Zipper : IZipper
 
 		if ( HeaderExceedsLimits(entry, totalBytes) )
 		{
-			_logger.LogError($"[Zipper] Size limit exceeded: {zipInputFullPath}");
-			return false;
+			return LimitExceeded(zipInputFullPath);
 		}
 
 		try
@@ -168,9 +173,7 @@ public sealed class Zipper : IZipper
 
 			if ( written == null )
 			{
-				_logger.LogError(
-					$"[Zipper] Size limit exceeded while extracting: {zipInputFullPath}");
-				return false;
+				return LimitExceeded(zipInputFullPath);
 			}
 
 			totalBytes += written.Value;
