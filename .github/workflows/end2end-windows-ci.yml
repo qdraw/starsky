@@ -68,7 +68,7 @@ jobs:
         run: .\pm2-warmup.ps1 -port 4000
 
       - name: Run Cypress tests
-        uses: cypress-io/github-action@01e3b659a495b41649cdd0aa82e1d1624e26520b
+        uses: cypress-io/github-action@c541a95ea92d9239347a2355f2e895cd4b3f8060
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
