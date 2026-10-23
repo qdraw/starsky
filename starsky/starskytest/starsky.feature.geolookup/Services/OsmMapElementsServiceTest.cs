@@ -249,12 +249,13 @@ public class OsmMapElementsServiceTest
 	}
 
 	[TestMethod]
-	public async Task LookupAsync_ElementsWithoutNameOrCoordinates_UseFallbackLabelsAndNoDistance()
+	public async Task LookupAsync_ElementsWithoutName_UseTypeAsLabelAndSkipGenericOnes()
 	{
 		const string nearbyJson = "{\"elements\":[" +
 		                          "{\"type\":\"way\",\"id\":5,\"tags\":{\"foo\":\"bar\"}}," +
 		                          "{\"type\":\"node\",\"id\":6,\"lat\":52.52,\"lon\":13.405,\"tags\":{\"highway\":\"residential\"}}," +
 		                          "{\"type\":\"way\",\"id\":7,\"tags\":{\"name\":\"Way\"}}," +
+		                          "{\"type\":\"way\",\"id\":9,\"tags\":{\"building\":\"yes\"}}," +
 		                          "{\"type\":\"node\",\"id\":8,\"tags\":{}}]}";
 		var nearbyUrl = BuildNearbyUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
 		var enclosingUrl = BuildEnclosingUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
@@ -267,22 +268,48 @@ public class OsmMapElementsServiceTest
 		var result = await new OsmMapElementsService(fakeHttp).LookupAsync(52.52, 13.405);
 
 		Assert.IsNull(result.Error);
-		Assert.HasCount(3, result.NearbyObjects);
+		// no tags, unknown tags and building=yes without a name are skipped
+		Assert.HasCount(2, result.NearbyObjects);
 
-		var noName = result.NearbyObjects.Single(p => p.Id == "way/5");
-		Assert.AreEqual("OSM way 5", noName.Label);
-		Assert.AreEqual("Way", noName.Description);
-		Assert.AreEqual("OSM way 5 (Way)", noName.CopyText);
-		Assert.IsNull(noName.DistanceMeters);
+		var sameAsDescription = result.NearbyObjects[0];
+		Assert.AreEqual("way/7", sameAsDescription.Id);
+		Assert.AreEqual("Way", sameAsDescription.CopyText);
+		Assert.IsNull(sameAsDescription.DistanceMeters);
 
-		var typeLabel = result.NearbyObjects.Single(p => p.Id == "node/6");
+		var typeLabel = result.NearbyObjects[1];
+		Assert.AreEqual("node/6", typeLabel.Id);
 		Assert.AreEqual("Residential", typeLabel.Label);
 		Assert.AreEqual("Highway: Residential", typeLabel.Description);
 		Assert.AreEqual("Residential (Highway: Residential)", typeLabel.CopyText);
 		Assert.AreEqual(0, typeLabel.DistanceMeters);
+	}
 
-		var sameAsDescription = result.NearbyObjects.Single(p => p.Id == "way/7");
-		Assert.AreEqual("Way", sameAsDescription.CopyText);
+	[TestMethod]
+	public async Task LookupAsync_NamedObjectsRankBeforeCloserUnnamedObjects()
+	{
+		// the footway is closer and has a higher priority, but the station has a name
+		const string nearbyJson = "{\"elements\":[" +
+		                          "{\"type\":\"way\",\"id\":1,\"lat\":52.52,\"lon\":13.405,\"tags\":{\"highway\":\"footway\"}}," +
+		                          "{\"type\":\"node\",\"id\":2,\"lat\":52.5201,\"lon\":13.4051,\"tags\":{\"name\":\"Hauptbahnhof\",\"railway\":\"station\"}}]}";
+		const string enclosingJson = "{\"elements\":[" +
+		                             "{\"type\":\"way\",\"id\":3,\"center\":{\"lat\":52.52,\"lon\":13.405},\"tags\":{\"landuse\":\"grass\"}}," +
+		                             "{\"type\":\"way\",\"id\":4,\"center\":{\"lat\":52.53,\"lon\":13.415},\"tags\":{\"name\":\"Zoo Berlin\",\"tourism\":\"zoo\"}}]}";
+		var nearbyUrl = BuildNearbyUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
+		var enclosingUrl = BuildEnclosingUrl("overpass-api.de/api/interpreter", 52.52, 13.405);
+		var fakeHttp = new FakeIHttpClientHelper(null!, new Dictionary<string, KeyValuePair<bool, string>>
+		{
+			{ nearbyUrl, new KeyValuePair<bool, string>(true, nearbyJson) },
+			{ enclosingUrl, new KeyValuePair<bool, string>(true, enclosingJson) }
+		});
+
+		var result = await new OsmMapElementsService(fakeHttp).LookupAsync(52.52, 13.405);
+
+		Assert.HasCount(2, result.NearbyObjects);
+		Assert.AreEqual("Hauptbahnhof", result.NearbyObjects[0].Label);
+		Assert.AreEqual("Footway", result.NearbyObjects[1].Label);
+		Assert.HasCount(2, result.EnclosingObjects);
+		Assert.AreEqual("Zoo Berlin", result.EnclosingObjects[0].Label);
+		Assert.AreEqual("Grass", result.EnclosingObjects[1].Label);
 	}
 
 	[TestMethod]

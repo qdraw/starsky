@@ -89,7 +89,8 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 				.Select(element => ToMapElementItem(element, latitude, longitude))
 				.Where(item => item != null)
 				.Cast<OsmMapElementItem>()
-				.OrderBy(item => GetNearbyPriority(item.Category))
+				.OrderBy(item => item.IsNamed ? 0 : 1)
+				.ThenBy(item => GetNearbyPriority(item.Category))
 				.ThenBy(item => item.DistanceMeters ?? double.MaxValue)
 				.GroupBy(item => item.CopyText)
 				.Select(group => group.First())
@@ -100,7 +101,8 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 				.Select(element => ToMapElementItem(element, latitude, longitude))
 				.Where(item => item != null)
 				.Cast<OsmMapElementItem>()
-				.OrderBy(item => item.DistanceMeters ?? double.MaxValue)
+				.OrderBy(item => item.IsNamed ? 0 : 1)
+				.ThenBy(item => item.DistanceMeters ?? double.MaxValue)
 				.GroupBy(item => item.CopyText)
 				.Select(group => group.First())
 				.Take(MaxItemsPerSection)
@@ -206,9 +208,16 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 			.Select(key => tags.TryGetValue(key, out var value) ? value : null)
 			.FirstOrDefault(value => !string.IsNullOrWhiteSpace(value));
 
-		label ??= !string.IsNullOrWhiteSpace(type)
-			? Beautify(type)
-			: $"OSM {element.Type} {element.Id}";
+		var isNamed = label != null;
+
+		// unnamed objects without a meaningful type (e.g. building=yes) are noise
+		if ( !isNamed && ( string.IsNullOrWhiteSpace(type) ||
+		                   type.Equals("yes", StringComparison.OrdinalIgnoreCase) ) )
+		{
+			return null;
+		}
+
+		label ??= Beautify(type!);
 
 		var description = !string.IsNullOrWhiteSpace(category)
 			? $"{Beautify(category)}: {Beautify(type ?? string.Empty)}".TrimEnd(':', ' ')
@@ -223,6 +232,7 @@ public class OsmMapElementsService(IHttpClientHelper httpClientHelper) : IOsmMap
 			Id = $"{element.Type}/{element.Id}",
 			ElementType = element.Type,
 			Label = label,
+			IsNamed = isNamed,
 			Category = category,
 			Type = type,
 			Description = description,

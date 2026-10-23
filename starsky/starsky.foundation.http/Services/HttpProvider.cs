@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.injection;
@@ -18,15 +19,19 @@ public sealed class HttpProvider : IHttpProvider
 	/// </summary>
 	internal const string NoRedirectHttpClientName = "starsky-no-redirect";
 
+	private readonly ICurlPostHelper? _curlPostHelper;
 	private readonly IHttpClientFactory _httpClientFactory;
 
 	/// <summary>
 	///     Inject http client factory
 	/// </summary>
 	/// <param name="httpClientFactory">IHttpClientFactory</param>
-	public HttpProvider(IHttpClientFactory httpClientFactory)
+	/// <param name="curlPostHelper">used when the TLS handshake of .NET fails</param>
+	public HttpProvider(IHttpClientFactory httpClientFactory,
+		ICurlPostHelper? curlPostHelper = null)
 	{
 		_httpClientFactory = httpClientFactory;
+		_curlPostHelper = curlPostHelper;
 	}
 
 	/// <summary>
@@ -61,16 +66,16 @@ public sealed class HttpProvider : IHttpProvider
 	/// <param name="content">http content</param>
 	/// <param name="authenticationHeaderValue"></param>
 	/// <returns>Task with Response</returns>
-	public Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
+	public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
 		AuthenticationHeaderValue? authenticationHeaderValue = null, string? userAgent = null)
 	{
 		if ( content == null )
 		{
-			return Task.FromResult(new HttpResponseMessage
+			return new HttpResponseMessage
 			{
 				StatusCode = HttpStatusCode.LoopDetected,
 				Content = new StringContent("http content is null")
-			});
+			};
 		}
 
 		var request = new HttpRequestMessage
@@ -94,6 +99,26 @@ public sealed class HttpProvider : IHttpProvider
 				"application/x-www-form-urlencoded");
 		}
 
-		return _httpClientFactory.CreateClient(HttpClientName).SendAsync(request);
+		try
+		{
+			return await _httpClientFactory.CreateClient(HttpClientName).SendAsync(request);
+		}
+		catch ( HttpRequestException exception ) when ( exception.InnerException is
+			                                              AuthenticationException &&
+		                                              _curlPostHelper != null &&
+		                                              authenticationHeaderValue == null )
+		{
+			// .NET on macOS has no TLS 1.3, curl has. Not used with credentials,
+			// as arguments of a process are visible to other users
+			var curlResponse = await _curlPostHelper.PostAsync(requestUri,
+				await content.ReadAsStringAsync(),
+				content.Headers.ContentType?.ToString() ?? "text/plain", userAgent);
+			if ( curlResponse == null )
+			{
+				throw;
+			}
+
+			return curlResponse;
+		}
 	}
 }

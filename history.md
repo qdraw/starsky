@@ -45,6 +45,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 ## version 0.9.8 - _(Unreleased)_ - 2026-?-? {#0.9.8}
 
 - [x] (Added) _Front-end_ The right-click menu on the map in the location dialog shows nearby and enclosing OpenStreetMap objects (e.g. a cafe, park or street); click an item to copy it. Data comes from Overpass via the new `api/geo-map-elements` endpoint (PR #3191)
+- [x] (Changed) _Back-end_ Nearby and enclosing map objects: named objects are listed before unnamed ones and unnamed generic objects (like `building=yes`) are skipped (PR #3191)
+- [x] (Fixed) _Back-end_ Nearby and enclosing map objects did not load on macOS: Overpass only accepts TLS 1.3 and .NET on macOS does not support it (`handshake failure`). A POST that fails on the TLS handshake is retried with `curl` (when installed, not used with credentials) (PR #3191)
 - [x] (Changed) _Back-end_ `HttpClientHelper.PostString` accepts an optional user agent, Overpass answers `406 Not Acceptable` to the default one, and the exception is now logged with its message (PR #3191)
 - [x] (Changed) _Docs_ Described how to skip the login on localhost with `app__NoAccountLocalhost=true` in the [client app readme](starsky/starsky/clientapp/readme.md) (PR #3191)
 - [x] (Security) _Back-end_ Rate limiting per client IP on the endpoints that work without a login (login, register, check for updates, geo lookup and search suggest). Turn off with `app__UseRateLimiting=false` when a reverse proxy already does this, see [readme](starsky/starsky/readme.md) (PR #3375)

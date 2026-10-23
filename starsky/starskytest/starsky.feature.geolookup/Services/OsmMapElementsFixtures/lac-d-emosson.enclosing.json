@@ -1,0 +1,153 @@
+{
+ "elements": [
+  {
+   "type": "way",
+   "id": 23852674,
+   "center": {
+    "lat": 46.0835716,
+    "lon": 6.9193171
+   },
+   "tags": {
+    "name": "Lac d'Emosson",
+    "natural": "water"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16819467,
+   "center": {
+    "lat": 10.5140088,
+    "lon": 8.6849438
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "UTC+01:00 standard time"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 51701,
+   "center": {
+    "lat": 46.8132064,
+    "lon": 8.2240367
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Schweiz/Suisse/Svizzera/Svizra"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2698607,
+   "center": {
+    "lat": 45.9085115,
+    "lon": 10.8257046
+   },
+   "tags": {
+    "boundary": "region",
+    "name": "Alps",
+    "natural": "mountain_range"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 17537206,
+   "center": {
+    "lat": 46.4225471,
+    "lon": 7.2172104
+   },
+   "tags": {
+    "boundary": "statistical",
+    "name": "Région lémanique"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 7465999,
+   "center": {
+    "lat": 46.0838234,
+    "lon": 6.8155163
+   },
+   "tags": {
+    "boundary": "natural",
+    "name": "Massif du Giffre",
+    "place": "region"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1686699,
+   "center": {
+    "lat": 46.2561161,
+    "lon": 7.624549
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Valais/Wallis",
+    "ref": "VS"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 20172352,
+   "center": {
+    "lat": 46.6610723,
+    "lon": 8.6313753
+   },
+   "tags": {
+    "boundary": "place",
+    "name": "Swiss Alps",
+    "place": "region"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 20665725,
+   "center": {
+    "lat": 46.1426709,
+    "lon": 7.1293388
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Bas-Valais"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1685371,
+   "center": {
+    "lat": 46.1117974,
+    "lon": 6.9603724
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Salvan"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1686708,
+   "center": {
+    "lat": 46.1499126,
+    "lon": 6.9648712
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Saint-Maurice"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 17036144,
+   "center": {
+    "lat": 46.1030526,
+    "lon": 6.9586999
+   },
+   "tags": {
+    "boundary": "protected_area",
+    "leisure": "nature_reserve",
+    "name": "Parc naturel régional de la Vallée du Trient"
+   }
+  }
+ ]
+}

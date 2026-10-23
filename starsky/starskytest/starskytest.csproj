@@ -79,6 +79,9 @@
         <Compile Remove="TestResults\**"/>
     </ItemGroup>
     <ItemGroup>
+        <EmbeddedResource Include="starsky.feature.geolookup\Services\OsmMapElementsFixtures\*.json"/>
+    </ItemGroup>
+    <ItemGroup>
         <EmbeddedResource Remove="coverage-report.zip"/>
         <EmbeddedResource Remove="coverage-report\**"/>
         <EmbeddedResource Remove="TestResults\**"/>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.http.Services;
@@ -148,5 +149,84 @@ public sealed class HttpProviderTest
 		var userAgent = string.Join(" ",
 			fakeHttpMessageHandler.LastRequestMessage[0].Headers.UserAgent.Select(p => p.ToString()));
 		Assert.IsFalse(userAgent.Contains("Starsky-App", StringComparison.Ordinal));
+	}
+
+	private static HttpRequestException TlsHandshakeException()
+	{
+		return new HttpRequestException("The SSL connection could not be established",
+			new AuthenticationException("handshake failure"));
+	}
+
+	[TestMethod]
+	public async Task PostAsync_TlsHandshakeFails_UsesCurlFallback()
+	{
+		var httpClient = new HttpClient(new FakeHttpMessageHandler(TlsHandshakeException()));
+		var curl = new FakeICurlPostHelper(HttpStatusCode.OK, "from curl");
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient), curl);
+
+		var result = await httpProvider.PostAsync("https://overpass-api.de/api/interpreter",
+			new StringContent("data=test", System.Text.Encoding.UTF8,
+				"application/x-www-form-urlencoded"), null, "Starsky-App");
+
+		Assert.AreEqual(HttpStatusCode.OK, result.StatusCode);
+		Assert.AreEqual("from curl", await result.Content.ReadAsStringAsync());
+		Assert.HasCount(1, curl.Calls);
+		Assert.AreEqual("https://overpass-api.de/api/interpreter", curl.Calls[0].RequestUri);
+		Assert.AreEqual("data=test", curl.Calls[0].Body);
+		Assert.Contains("application/x-www-form-urlencoded", curl.Calls[0].ContentType);
+		Assert.AreEqual("Starsky-App", curl.Calls[0].UserAgent);
+	}
+
+	[TestMethod]
+	public async Task PostAsync_TlsHandshakeFails_CurlNotAvailable_ThrowsOriginalException()
+	{
+		var httpClient = new HttpClient(new FakeHttpMessageHandler(TlsHandshakeException()));
+		var curl = new FakeICurlPostHelper(null);
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient), curl);
+
+		var exception = await Assert.ThrowsExactlyAsync<HttpRequestException>(() =>
+			httpProvider.PostAsync("https://overpass-api.de/api/interpreter",
+				new StringContent("data=test")));
+
+		Assert.IsInstanceOfType<AuthenticationException>(exception.InnerException);
+		Assert.HasCount(1, curl.Calls);
+	}
+
+	[TestMethod]
+	public async Task PostAsync_TlsHandshakeFails_WithAuthentication_DoesNotUseCurl()
+	{
+		var httpClient = new HttpClient(new FakeHttpMessageHandler(TlsHandshakeException()));
+		var curl = new FakeICurlPostHelper();
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient), curl);
+
+		await Assert.ThrowsExactlyAsync<HttpRequestException>(() =>
+			httpProvider.PostAsync("https://qdraw.nl", new StringContent("data=test"),
+				new AuthenticationHeaderValue("Bearer", "test-token")));
+
+		Assert.IsEmpty(curl.Calls);
+	}
+
+	[TestMethod]
+	public async Task PostAsync_OtherHttpRequestException_DoesNotUseCurl()
+	{
+		var httpClient = new HttpClient(
+			new FakeHttpMessageHandler(new HttpRequestException("no route to host")));
+		var curl = new FakeICurlPostHelper();
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient), curl);
+
+		await Assert.ThrowsExactlyAsync<HttpRequestException>(() =>
+			httpProvider.PostAsync("https://qdraw.nl", new StringContent("data=test")));
+
+		Assert.IsEmpty(curl.Calls);
+	}
+
+	[TestMethod]
+	public async Task PostAsync_TlsHandshakeFails_WithoutCurlHelper_Throws()
+	{
+		var httpClient = new HttpClient(new FakeHttpMessageHandler(TlsHandshakeException()));
+		var httpProvider = new HttpProvider(new FakeIHttpClientFactory(httpClient));
+
+		await Assert.ThrowsExactlyAsync<HttpRequestException>(() =>
+			httpProvider.PostAsync("https://qdraw.nl", new StringContent("data=test")));
 	}
 }

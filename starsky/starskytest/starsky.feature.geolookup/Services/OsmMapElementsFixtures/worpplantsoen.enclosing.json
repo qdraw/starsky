@@ -1,0 +1,260 @@
+{
+ "elements": [
+  {
+   "type": "way",
+   "id": 1110029726,
+   "center": {
+    "lat": 52.2504529,
+    "lon": 6.147684
+   },
+   "tags": {
+    "leisure": "park",
+    "name": "Worpplantsoen"
+   }
+  },
+  {
+   "type": "way",
+   "id": 1075528249,
+   "center": {
+    "lat": 52.2501783,
+    "lon": 6.147624
+   },
+   "tags": {
+    "landuse": "grass"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 47796,
+   "center": {
+    "lat": 32.7869075,
+    "lon": -30.6990167
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Nederland",
+    "operator": "Staat der Nederlanden"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2323309,
+   "center": {
+    "lat": 32.7629075,
+    "lon": -31.5210445
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Nederland",
+    "official_name": "Koninkrijk der Nederlanden",
+    "operator": "Koninkrijk der Nederlanden"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 12728392,
+   "center": {
+    "lat": 32.7869075,
+    "lon": -30.6990167
+   },
+   "tags": {
+    "boundary": "administrative_cooperation",
+    "name": "Benelux",
+    "official_name": "Benelux Unie / Union Benelux"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 13325281,
+   "center": {
+    "lat": 32.7869075,
+    "lon": -30.6990167
+   },
+   "tags": {
+    "boundary": "administrative_cooperation",
+    "name": "Nederlandse Taalunie"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16819467,
+   "center": {
+    "lat": 10.5140088,
+    "lon": 8.6849438
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "UTC+01:00 standard time"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 12728888,
+   "center": {
+    "lat": 52.2495904,
+    "lon": 5.1541456
+   },
+   "tags": {
+    "boundary": "legal",
+    "name": "Europees Nederland",
+    "official_name": "Europese deel van Nederland",
+    "operator": "Staat der Nederlanden",
+    "place": "region"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19102125,
+   "center": {
+    "lat": 52.1633945,
+    "lon": 5.267717
+   },
+   "tags": {
+    "boundary": "religious_administration",
+    "name": "Kerkprovincie Utrecht"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 47608,
+   "center": {
+    "lat": 52.4861422,
+    "lon": 6.4252568
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Overijssel",
+    "official_name": "Overijssel",
+    "operator": "Provincie Overijssel",
+    "ref": "OV"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11961348,
+   "center": {
+    "lat": 52.5358266,
+    "lon": 6.272222
+   },
+   "tags": {
+    "boundary": "safety_region",
+    "name": "IJsselland",
+    "operator": "Veiligheidsregio IJsselland"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 13237705,
+   "center": {
+    "lat": 52.2938978,
+    "lon": 6.033309
+   },
+   "tags": {
+    "boundary": "statistical",
+    "name": "Oost-Nederland"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 13305433,
+   "center": {
+    "lat": 52.4861422,
+    "lon": 6.4252568
+   },
+   "tags": {
+    "boundary": "judicial",
+    "name": "Arrondissement Overijssel",
+    "operator": "Rechtbank Overijssel",
+    "ref": "RBOVE"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 13305609,
+   "center": {
+    "lat": 52.655002,
+    "lon": 6.0097695
+   },
+   "tags": {
+    "boundary": "judicial",
+    "name": "Ressort Arnhem-Leeuwarden",
+    "operator": "Gerechtshof Arnhem-Leeuwarden",
+    "ref": "GHARL"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 13315721,
+   "center": {
+    "lat": 52.4861422,
+    "lon": 6.4252568
+   },
+   "tags": {
+    "boundary": "political",
+    "name": "Kieskring 4 (Zwolle)",
+    "ref": "4"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 14207997,
+   "center": {
+    "lat": 52.8472464,
+    "lon": 5.852574
+   },
+   "tags": {
+    "boundary": "holiday_region",
+    "name": "Noord"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19104211,
+   "center": {
+    "lat": 52.3290887,
+    "lon": 5.9335913
+   },
+   "tags": {
+    "boundary": "religious_administration",
+    "name": "Aartsbisdom Utrecht"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11968965,
+   "center": {
+    "lat": 52.2316722,
+    "lon": 5.7135036
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Waterschap Vallei en Veluwe",
+    "ref": "WSVV"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1002142,
+   "center": {
+    "lat": 52.2692801,
+    "lon": 6.2416161
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Deventer"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1002146,
+   "center": {
+    "lat": 52.2492738,
+    "lon": 6.1985164
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Deventer"
+   }
+  }
+ ]
+}

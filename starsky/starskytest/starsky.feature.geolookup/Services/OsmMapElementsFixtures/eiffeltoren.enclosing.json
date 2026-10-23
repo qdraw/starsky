@@ -1,0 +1,386 @@
+{
+ "elements": [
+  {
+   "type": "way",
+   "id": 719439421,
+   "center": {
+    "lat": 48.8585702,
+    "lon": 2.3337579
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 958588265,
+   "center": {
+    "lat": 48.8600538,
+    "lon": 2.3244484
+   },
+   "tags": {
+    "boundary": "protected_area",
+    "name": "Paris, rives de la Seine"
+   }
+  },
+  {
+   "type": "way",
+   "id": 4208595,
+   "center": {
+    "lat": 48.856163,
+    "lon": 2.2978311
+   },
+   "tags": {
+    "leisure": "park",
+    "name": "Champ de Mars",
+    "tourism": "attraction"
+   }
+  },
+  {
+   "type": "way",
+   "id": 5013364,
+   "center": {
+    "lat": 48.8582603,
+    "lon": 2.2945008
+   },
+   "tags": {
+    "building": "tower",
+    "historic": "monument",
+    "man_made": "tower",
+    "name": "Tour Eiffel",
+    "operator": "Société d’Exploitation de la Tour Eiffel",
+    "tourism": "attraction"
+   }
+  },
+  {
+   "type": "way",
+   "id": 308077768,
+   "center": {
+    "lat": 48.8582323,
+    "lon": 2.2944927
+   },
+   "tags": {
+    "place": "square"
+   }
+  },
+  {
+   "type": "way",
+   "id": 308021390,
+   "center": {
+    "lat": 48.8582607,
+    "lon": 2.2944978
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 308021391,
+   "center": {
+    "lat": 48.8582605,
+    "lon": 2.2944981
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 308145238,
+   "center": {
+    "lat": 48.8582622,
+    "lon": 2.2944927
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 308145252,
+   "center": {
+    "lat": 48.8583981,
+    "lon": 2.2944933
+   },
+   "tags": {
+    "highway": "elevator"
+   }
+  },
+  {
+   "type": "way",
+   "id": 308687741,
+   "center": {
+    "lat": 48.8584103,
+    "lon": 2.2944942
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 308687745,
+   "center": {
+    "lat": 48.8583663,
+    "lon": 2.2943336
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 997725855,
+   "center": {
+    "lat": 48.8582605,
+    "lon": 2.2944988
+   },
+   "tags": {}
+  },
+  {
+   "type": "relation",
+   "id": 2202162,
+   "center": {
+    "lat": 0.5434276,
+    "lon": -0.0005052
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "France",
+    "official_name": "République française"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16819467,
+   "center": {
+    "lat": 10.5140088,
+    "lon": 8.6849438
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "UTC+01:00 standard time"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1403916,
+   "center": {
+    "lat": 46.2833438,
+    "lon": 2.1882246
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "France métropolitaine"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16467322,
+   "center": {
+    "lat": 46.2110904,
+    "lon": 2.2079898
+   },
+   "tags": {
+    "boundary": "land_area",
+    "name": "France métropolitaine (terres)"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 8649,
+   "center": {
+    "lat": 48.6807883,
+    "lon": 2.5027327
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Île-de-France"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11274817,
+   "center": {
+    "lat": 48.6807883,
+    "lon": 2.5027327
+   },
+   "tags": {
+    "boundary": "civil_defense",
+    "name": "Zone de défense et de sécurité de Paris",
+    "operator": "Sécurité civile"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19133267,
+   "center": {
+    "lat": 48.6807883,
+    "lon": 2.5027327
+   },
+   "tags": {
+    "boundary": "religious_administration",
+    "name": "Province ecclésiastique de Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5814660,
+   "center": {
+    "lat": 48.8292469,
+    "lon": 2.3807377
+   },
+   "tags": {
+    "boundary": "local_authority",
+    "name": "Métropole du Grand Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5833187,
+   "center": {
+    "lat": 48.8499743,
+    "lon": 2.3807377
+   },
+   "tags": {
+    "boundary": "police",
+    "name": "Préfecture de police de Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 9979634,
+   "center": {
+    "lat": 48.8407185,
+    "lon": 2.355614
+   },
+   "tags": {
+    "boundary": "low_emission_zone",
+    "name": "Zone Environnementale Grand Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11205889,
+   "center": {
+    "lat": 48.8507711,
+    "lon": 2.3674115
+   },
+   "tags": {
+    "boundary": "historic",
+    "name": "Seine"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 7444,
+   "center": {
+    "lat": 48.8588657,
+    "lon": 2.3469411
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 71525,
+   "center": {
+    "lat": 48.8588657,
+    "lon": 2.3469411
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Paris",
+    "ref": "75"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1641193,
+   "center": {
+    "lat": 48.8588657,
+    "lon": 2.3469411
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2193681,
+   "center": {
+    "lat": 48.8502776,
+    "lon": 2.3279263
+   },
+   "tags": {
+    "boundary": "political",
+    "name": "Deuxième circonscription de Paris",
+    "ref": "075-02"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5962792,
+   "center": {
+    "lat": 48.8588657,
+    "lon": 2.3469411
+   },
+   "tags": {
+    "boundary": "educational",
+    "name": "Académie de Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 9975922,
+   "center": {
+    "lat": 48.8585702,
+    "lon": 2.3337579
+   },
+   "tags": {
+    "boundary": "low_emission_zone",
+    "name": "Zone à Circulation Restreinte de la Ville de Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19135233,
+   "center": {
+    "lat": 48.8588657,
+    "lon": 2.3469411
+   },
+   "tags": {
+    "boundary": "religious_administration",
+    "name": "Archidiocèse de Paris"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 9521,
+   "center": {
+    "lat": 48.8548564,
+    "lon": 2.3115559
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Paris 7e Arrondissement",
+    "official_name": "Arrondissement du Palais-Bourbon"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2188569,
+   "center": {
+    "lat": 48.8573999,
+    "lon": 2.3001213
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Quartier du Gros-Caillou"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 10776960,
+   "center": {
+    "lat": 48.8548564,
+    "lon": 2.3115559
+   },
+   "tags": {
+    "boundary": "postal_code"
+   }
+  }
+ ]
+}

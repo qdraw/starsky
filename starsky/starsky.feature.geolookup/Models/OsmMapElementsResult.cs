@@ -31,6 +31,12 @@ public class OsmMapElementItem
 	[JsonPropertyName("copyText")] public string? CopyText { get; set; }
 
 	[JsonPropertyName("distanceMeters")] public double? DistanceMeters { get; set; }
+
+	/// <summary>
+	///     Label comes from a name tag instead of the type, used for ranking only
+	/// </summary>
+	[JsonIgnore]
+	public bool IsNamed { get; set; }
 }
 
 internal class OverpassResponse
