@@ -1,0 +1,269 @@
+{
+ "elements": [
+  {
+   "type": "way",
+   "id": 42219902,
+   "center": {
+    "lat": 46.0453703,
+    "lon": 6.7524987
+   },
+   "tags": {}
+  },
+  {
+   "type": "relation",
+   "id": 2202162,
+   "center": {
+    "lat": 0.5434276,
+    "lon": -0.0005052
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "France",
+    "official_name": "République française"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16819467,
+   "center": {
+    "lat": 10.5140088,
+    "lon": 8.6849438
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "UTC+01:00 standard time"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1403916,
+   "center": {
+    "lat": 46.2833438,
+    "lon": 2.1882246
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "France métropolitaine"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16467322,
+   "center": {
+    "lat": 46.2110904,
+    "lon": 2.2079898
+   },
+   "tags": {
+    "boundary": "land_area",
+    "name": "France métropolitaine (terres)"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2698607,
+   "center": {
+    "lat": 45.9085115,
+    "lon": 10.8257046
+   },
+   "tags": {
+    "boundary": "region",
+    "name": "Alps",
+    "natural": "mountain_range"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3792877,
+   "center": {
+    "lat": 45.4596677,
+    "lon": 4.6244351
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Auvergne-Rhône-Alpes"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11278207,
+   "center": {
+    "lat": 45.4596677,
+    "lon": 4.6244351
+   },
+   "tags": {
+    "boundary": "civil_defense",
+    "name": "Zone de défense et de sécurité Sud-Est",
+    "operator": "Sécurité civile"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 7407,
+   "center": {
+    "lat": 46.0690379,
+    "lon": 6.4248018
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Haute-Savoie",
+    "ref": "74"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 8655,
+   "center": {
+    "lat": 45.3175448,
+    "lon": 5.4371887
+   },
+   "tags": {
+    "boundary": "historic",
+    "name": "Rhône-Alpes"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5962782,
+   "center": {
+    "lat": 45.2857743,
+    "lon": 5.5235151
+   },
+   "tags": {
+    "boundary": "educational",
+    "name": "Académie de Grenoble"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 14059755,
+   "center": {
+    "lat": 46.044972,
+    "lon": 6.3826319
+   },
+   "tags": {
+    "boundary": "religious_administration",
+    "name": "Diocèse d'Annecy"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 14059783,
+   "center": {
+    "lat": 45.3175448,
+    "lon": 5.4371887
+   },
+   "tags": {
+    "boundary": "religious_administration",
+    "name": "Province ecclésiastique de Lyon"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1668743,
+   "center": {
+    "lat": 45.9799283,
+    "lon": 6.6311962
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Bonneville"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2187146,
+   "center": {
+    "lat": 45.9612578,
+    "lon": 6.752315
+   },
+   "tags": {
+    "boundary": "political",
+    "name": "Sixième circonscription de la Haute-Savoie",
+    "ref": "074-06"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2513791,
+   "center": {
+    "lat": 46.0630101,
+    "lon": 6.773023
+   },
+   "tags": {
+    "name": "Samoëns"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3418748,
+   "center": {
+    "lat": 46.0824414,
+    "lon": 6.6878836
+   },
+   "tags": {
+    "boundary": "local_authority",
+    "name": "Communauté de communes des Montagnes du Giffre"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3616826,
+   "center": {
+    "lat": 46.0776846,
+    "lon": 6.6739749
+   },
+   "tags": {
+    "boundary": "political",
+    "name": "Cluses"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 7465999,
+   "center": {
+    "lat": 46.0838234,
+    "lon": 6.8155163
+   },
+   "tags": {
+    "boundary": "natural",
+    "name": "Massif du Giffre",
+    "place": "region"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 15880596,
+   "center": {
+    "lat": 46.0824414,
+    "lon": 6.6878836
+   },
+   "tags": {
+    "boundary": "religious_administration",
+    "name": "Paroisse du Bienheureux-Ponce-en-Haut-Giffre"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 104871,
+   "center": {
+    "lat": 46.0491074,
+    "lon": 6.811228
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Sixt-Fer-à-Cheval"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 10553393,
+   "center": {
+    "lat": 46.0491074,
+    "lon": 6.811228
+   },
+   "tags": {
+    "boundary": "postal_code"
+   }
+  }
+ ]
+}

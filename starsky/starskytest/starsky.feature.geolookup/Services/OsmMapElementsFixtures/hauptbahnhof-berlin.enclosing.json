@@ -1,0 +1,218 @@
+{
+ "elements": [
+  {
+   "type": "way",
+   "id": 199533131,
+   "center": {
+    "lat": 52.5250007,
+    "lon": 13.3694504
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 60203000,
+   "center": {
+    "lat": 52.525291,
+    "lon": 13.3700423
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 60203002,
+   "center": {
+    "lat": 52.5250717,
+    "lon": 13.3700564
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 86379623,
+   "center": {
+    "lat": 52.5252892,
+    "lon": 13.3701315
+   },
+   "tags": {
+    "name": "Hauptbahnhof",
+    "operator": "Berliner Verkehrsbetriebe",
+    "railway": "platform"
+   }
+  },
+  {
+   "type": "way",
+   "id": 226048334,
+   "center": {
+    "lat": 52.5250738,
+    "lon": 13.3704359
+   },
+   "tags": {
+    "building": "roof"
+   }
+  },
+  {
+   "type": "way",
+   "id": 402792863,
+   "center": {
+    "lat": 52.525132,
+    "lon": 13.3699575
+   },
+   "tags": {
+    "brand": "Douglas",
+    "name": "Douglas",
+    "shop": "perfumery"
+   }
+  },
+  {
+   "type": "way",
+   "id": 548190062,
+   "center": {
+    "lat": 52.525291,
+    "lon": 13.3700423
+   },
+   "tags": {
+    "amenity": "restaurant",
+    "brand": "Hans im Glück",
+    "name": "Hans im Glück"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16819467,
+   "center": {
+    "lat": 10.5140088,
+    "lon": 8.6849438
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "UTC+01:00 standard time"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 51477,
+   "center": {
+    "lat": 51.1846362,
+    "lon": 10.4541231
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Deutschland",
+    "official_name": "Bundesrepublik Deutschland"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2218270,
+   "center": {
+    "lat": 52.424778,
+    "lon": 13.6486948
+   },
+   "tags": {
+    "boundary": "physiogeographical",
+    "name": "Berliner Urstromtal"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 62422,
+   "center": {
+    "lat": 52.5068768,
+    "lon": 13.424753
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Berlin",
+    "official_name": "Berlin",
+    "ref": "BE"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 14980,
+   "center": {
+    "lat": 52.5073191,
+    "lon": 13.3790197
+   },
+   "tags": {
+    "boundary": "low_emission_zone",
+    "name": "Umweltzone Berlin"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16347,
+   "center": {
+    "lat": 52.5331946,
+    "lon": 13.3654696
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Mitte"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 28339,
+   "center": {
+    "lat": 52.529049,
+    "lon": 13.3426424
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Moabit"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3133637,
+   "center": {
+    "lat": 52.5331946,
+    "lon": 13.3654696
+   },
+   "tags": {
+    "boundary": "political",
+    "name": "Berlin-Mitte",
+    "ref": "75"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11905744,
+   "center": {
+    "lat": 52.5073191,
+    "lon": 13.3790197
+   },
+   "tags": {
+    "boundary": "traditional",
+    "name": "Berliner Innenstadt"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1403053,
+   "center": {
+    "lat": 52.525641,
+    "lon": 13.3568311
+   },
+   "tags": {
+    "boundary": "postal_code"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 930922,
+   "center": {
+    "lat": 52.5251586,
+    "lon": 13.3693891
+   },
+   "tags": {
+    "name": "Hauptbahnhof",
+    "operator": "DB InfraGO AG",
+    "railway": "platform",
+    "ref": "15;16"
+   }
+  }
+ ]
+}

@@ -3,6 +3,7 @@ import React from "react";
 import { ILanguageLocalization } from "../../../../interfaces/ILanguageLocalization";
 import { Language } from "../../../../shared/language";
 import { FetchAddressFromNominatim, GetStreetName } from "./fetch-address-from-nominatim";
+import { FetchMapElementsFromOsm, IOsmMapElementItem } from "./fetch-osm-map-elements";
 
 export interface ILocalization {
   MessageCoordinates: ILanguageLocalization;
@@ -14,6 +15,11 @@ export interface ILocalization {
   MessageStreetNameCopied: ILanguageLocalization;
   MessageNoStreetFound: ILanguageLocalization;
   MessageLoadingAddress: ILanguageLocalization;
+  MessageNearbyObjects: ILanguageLocalization;
+  MessageNoNearbyObjects: ILanguageLocalization;
+  MessageEnclosingObjects: ILanguageLocalization;
+  MessageNoEnclosingObjects: ILanguageLocalization;
+  MessageMapElementCopied: ILanguageLocalization;
   [key: string]: ILanguageLocalization;
 }
 
@@ -45,6 +51,8 @@ export function AddContextMenu({
   let currentLat = 0;
   let currentLng = 0;
   let streetName = "";
+  let nearbyObjects: IOsmMapElementItem[] = [];
+  let enclosingObjects: IOsmMapElementItem[] = [];
 
   // Create context menu on right-click
   map.on("contextmenu", async function (event: L.LeafletMouseEvent) {
@@ -72,9 +80,14 @@ export function AddContextMenu({
 
     mapContainer.appendChild(contextMenu);
 
-    // Fetch address from Nominatim
-    const addressData = await FetchAddressFromNominatim(currentLat, currentLng);
+    // Fetch address and OSM map elements in parallel.
+    const [addressData, mapElementsData] = await Promise.all([
+      FetchAddressFromNominatim(currentLat, currentLng),
+      FetchMapElementsFromOsm(currentLat, currentLng)
+    ]);
     streetName = addressData ? GetStreetName(addressData.address) : "";
+    nearbyObjects = mapElementsData?.nearbyObjects || [];
+    enclosingObjects = mapElementsData?.enclosingObjects || [];
 
     // Update menu with data
     // textContent/title are used because streetName comes from OpenStreetMap, which anyone can edit
@@ -116,6 +129,19 @@ export function AddContextMenu({
         )
       );
     }
+
+    children.push(
+      ...renderOsmSection(
+        language.key(localization.MessageNearbyObjects),
+        language.key(localization.MessageNoNearbyObjects),
+        nearbyObjects
+      ),
+      ...renderOsmSection(
+        language.key(localization.MessageEnclosingObjects),
+        language.key(localization.MessageNoEnclosingObjects),
+        enclosingObjects
+      )
+    );
     contextMenu.replaceChildren(...children);
 
     // Add click handlers
@@ -136,6 +162,22 @@ export function AddContextMenu({
         event.stopPropagation();
         await copyToClipboard(streetName);
         setNotificationStatus(language.key(localization.MessageStreetNameCopied));
+        closeContextMenu();
+      });
+    });
+
+    contextMenu.querySelectorAll('[data-action="copy-osm-item"]').forEach((el) => {
+      el.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const target = event.currentTarget as HTMLElement;
+        const copyText = target.dataset.copyText || "";
+        if (!copyText) {
+          return;
+        }
+
+        await copyToClipboard(copyText);
+        setNotificationStatus(language.key(localization.MessageMapElementCopied));
         closeContextMenu();
       });
     });
@@ -165,6 +207,40 @@ function createDiv(
   if (action) div.dataset.action = action;
   if (title) div.title = title;
   return div;
+}
+
+function renderOsmSection(
+  title: string,
+  emptyMessage: string,
+  items: IOsmMapElementItem[]
+): HTMLElement[] {
+  const elements: HTMLElement[] = [
+    createDiv(
+      "leaflet-context-menu__section-title leaflet-context-menu__section-title--top",
+      title
+    )
+  ];
+
+  const validItems = items.filter((item) => !!item);
+  if (validItems.length === 0) {
+    elements.push(createDiv("leaflet-context-menu__no-osm-items", emptyMessage));
+    return elements;
+  }
+
+  const container = createDiv("leaflet-context-menu__osm-items", "");
+  for (const item of validItems) {
+    const row = createDiv("context-menu-item leaflet-context-menu__osm-item", "", "copy-osm-item");
+    row.dataset.copyText = item.copyText || item.label || "";
+    row.appendChild(
+      createDiv("leaflet-context-menu__osm-item-label", item.label || item.copyText || "")
+    );
+    if (item.description) {
+      row.appendChild(createDiv("leaflet-context-menu__osm-item-description", item.description));
+    }
+    container.appendChild(row);
+  }
+  elements.push(container);
+  return elements;
 }
 
 // Copy to clipboard helper

@@ -1,0 +1,153 @@
+{
+ "elements": [
+  {
+   "type": "way",
+   "id": 9393789,
+   "center": {
+    "lat": 52.5084381,
+    "lon": 13.3394275
+   },
+   "tags": {
+    "name": "Zoo Berlin",
+    "operator": "Zoologischer Garten Berlin AG",
+    "tourism": "zoo"
+   }
+  },
+  {
+   "type": "way",
+   "id": 18112329,
+   "center": {
+    "lat": 52.5083554,
+    "lon": 13.3389771
+   },
+   "tags": {
+    "building": "yes"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16819467,
+   "center": {
+    "lat": 10.5140088,
+    "lon": 8.6849438
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "UTC+01:00 standard time"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 51477,
+   "center": {
+    "lat": 51.1846362,
+    "lon": 10.4541231
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Deutschland",
+    "official_name": "Bundesrepublik Deutschland"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 62422,
+   "center": {
+    "lat": 52.5068768,
+    "lon": 13.424753
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Berlin",
+    "official_name": "Berlin",
+    "ref": "BE"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2218275,
+   "center": {
+    "lat": 52.394351,
+    "lon": 13.3693234
+   },
+   "tags": {
+    "boundary": "geomorphological-unit",
+    "name": "Teltow (Grundmoränenhochfläche)",
+    "natural": "plateau",
+    "place": "natural_region"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 14980,
+   "center": {
+    "lat": 52.5073191,
+    "lon": 13.3790197
+   },
+   "tags": {
+    "boundary": "low_emission_zone",
+    "name": "Umweltzone Berlin"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 16347,
+   "center": {
+    "lat": 52.5331946,
+    "lon": 13.3654696
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Mitte"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3133637,
+   "center": {
+    "lat": 52.5331946,
+    "lon": 13.3654696
+   },
+   "tags": {
+    "boundary": "political",
+    "name": "Berlin-Mitte",
+    "ref": "75"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11905744,
+   "center": {
+    "lat": 52.5073191,
+    "lon": 13.3790197
+   },
+   "tags": {
+    "boundary": "traditional",
+    "name": "Berliner Innenstadt"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 55750,
+   "center": {
+    "lat": 52.510763,
+    "lon": 13.3538468
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Tiergarten"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1403303,
+   "center": {
+    "lat": 52.5069111,
+    "lon": 13.3431928
+   },
+   "tags": {
+    "boundary": "postal_code"
+   }
+  }
+ ]
+}

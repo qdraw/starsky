@@ -1,0 +1,373 @@
+{
+ "elements": [
+  {
+   "type": "node",
+   "id": 26863664,
+   "lat": 45.9764263,
+   "lon": 7.6586024,
+   "tags": {
+    "name": "Matterhorn",
+    "natural": "peak"
+   }
+  },
+  {
+   "type": "node",
+   "id": 9526965416,
+   "lat": 45.9764473,
+   "lon": 7.6587508,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9526991974,
+   "lat": 45.9764892,
+   "lon": 7.6582921,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9526991975,
+   "lat": 45.976472,
+   "lon": 7.6583491,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9526991976,
+   "lat": 45.9764538,
+   "lon": 7.658439,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9526991977,
+   "lat": 45.9764235,
+   "lon": 7.6585389,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9526992017,
+   "lat": 45.9764478,
+   "lon": 7.658665,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9526992018,
+   "lat": 45.9764245,
+   "lon": 7.6585684,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 11601806132,
+   "lat": 45.976434,
+   "lon": 7.6587385,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 11602218519,
+   "lat": 45.9764216,
+   "lon": 7.6585204,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 12447075047,
+   "lat": 45.976437,
+   "lon": 7.6586926,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 12447075048,
+   "lat": 45.9764258,
+   "lon": 7.6586461,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 12447075049,
+   "lat": 45.9764456,
+   "lon": 7.6585406,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 12447075050,
+   "lat": 45.9764794,
+   "lon": 7.6583821,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 13183515273,
+   "lat": 45.976442,
+   "lon": 7.6587431,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 13183515274,
+   "lat": 45.9764233,
+   "lon": 7.6586,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 13951822956,
+   "lat": 45.9764828,
+   "lon": 7.658293,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 13951833450,
+   "lat": 45.9764204,
+   "lon": 7.6585223,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 13951834298,
+   "lat": 45.9764326,
+   "lon": 7.6587375,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 13951835619,
+   "lat": 45.9764203,
+   "lon": 7.6585946,
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 1248126041,
+   "center": {
+    "lat": 45.9500818,
+    "lon": 7.6718906
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Italia - Schweiz / Suisse / Svizzera"
+   }
+  },
+  {
+   "type": "way",
+   "id": 1434331088,
+   "center": {
+    "lat": 45.9765516,
+    "lon": 7.657887
+   },
+   "tags": {
+    "highway": "path"
+   }
+  },
+  {
+   "type": "way",
+   "id": 548355563,
+   "center": {
+    "lat": 45.9789666,
+    "lon": 7.6658515
+   },
+   "tags": {
+    "name": "Hörnligrat",
+    "natural": "arete"
+   }
+  },
+  {
+   "type": "way",
+   "id": 1034143309,
+   "center": {
+    "lat": 45.9766698,
+    "lon": 7.658678
+   },
+   "tags": {
+    "natural": "cliff"
+   }
+  },
+  {
+   "type": "way",
+   "id": 1434312454,
+   "center": {
+    "lat": 45.977038,
+    "lon": 7.6593571
+   },
+   "tags": {
+    "highway": "path"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 365331,
+   "center": {
+    "lat": 41.1905551,
+    "lon": 12.7058702
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Italia",
+    "official_name": "Repubblica Italiana"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19344493,
+   "center": {
+    "lat": 41.1905551,
+    "lon": 12.7058702
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "Fuso orario Europe/Rome"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 51701,
+   "center": {
+    "lat": 46.8132064,
+    "lon": 8.2240367
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Schweiz/Suisse/Svizzera/Svizra"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 14461262,
+   "center": {
+    "lat": 45.4381712,
+    "lon": 10.2787174
+   },
+   "tags": {
+    "name": "Alpine Divide"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 17518295,
+   "center": {
+    "lat": 45.2055219,
+    "lon": 9.0274567
+   },
+   "tags": {
+    "boundary": "statistical",
+    "name": "Italia nord-occidentale"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 17537206,
+   "center": {
+    "lat": 46.4225471,
+    "lon": 7.2172104
+   },
+   "tags": {
+    "boundary": "statistical",
+    "name": "Région lémanique"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1686699,
+   "center": {
+    "lat": 46.2561161,
+    "lon": 7.624549
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Valais/Wallis",
+    "ref": "VS"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 20172352,
+   "center": {
+    "lat": 46.6610723,
+    "lon": 8.6313753
+   },
+   "tags": {
+    "boundary": "place",
+    "name": "Swiss Alps",
+    "place": "region"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 20666624,
+   "center": {
+    "lat": 46.2853986,
+    "lon": 8.0035631
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Oberwallis"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 45155,
+   "center": {
+    "lat": 45.7273317,
+    "lon": 7.3705181
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Valle d'Aosta / Vallée d'Aoste"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2202531,
+   "center": {
+    "lat": 45.9115745,
+    "lon": 7.6419705
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Valtournenche"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1685406,
+   "center": {
+    "lat": 45.9905396,
+    "lon": 7.741836
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Zermatt"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 1686711,
+   "center": {
+    "lat": 46.167845,
+    "lon": 7.8052036
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Visp"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19663627,
+   "center": {
+    "lat": 45.9789223,
+    "lon": 7.6663986
+   },
+   "tags": {
+    "name": "Hörnligrat"
+   }
+  }
+ ]
+}

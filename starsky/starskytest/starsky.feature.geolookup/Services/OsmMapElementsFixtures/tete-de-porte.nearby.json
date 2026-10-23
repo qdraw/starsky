@@ -1,0 +1,74 @@
+{
+ "elements": [
+  {
+   "type": "node",
+   "id": 8531888972,
+   "lat": 46.0464945,
+   "lon": 6.7525122,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 8531888973,
+   "lat": 46.0466228,
+   "lon": 6.7523811,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9981558572,
+   "lat": 46.046572,
+   "lon": 6.7524572,
+   "tags": {
+    "man_made": "cross",
+    "name": "Croix de Porte"
+   }
+  },
+  {
+   "type": "node",
+   "id": 9981558573,
+   "lat": 46.0466152,
+   "lon": 6.7526402,
+   "tags": {
+    "name": "Tête de Porte",
+    "natural": "peak"
+   }
+  },
+  {
+   "type": "node",
+   "id": 9981558583,
+   "lat": 46.0465845,
+   "lon": 6.7524793,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 11081432978,
+   "lat": 46.0466055,
+   "lon": 6.7524419,
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 920974189,
+   "center": {
+    "lat": 46.0448715,
+    "lon": 6.7485814
+   },
+   "tags": {
+    "natural": "grassland"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 12478385,
+   "center": {
+    "lat": 46.045819,
+    "lon": 6.7524987
+   },
+   "tags": {
+    "landuse": "forest"
+   }
+  }
+ ]
+}

@@ -1,0 +1,265 @@
+{
+ "elements": [
+  {
+   "type": "node",
+   "id": 736302304,
+   "lat": 52.2486308,
+   "lon": 6.1572648,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 736308870,
+   "lat": 52.2488777,
+   "lon": 6.156974,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 736308956,
+   "lat": 52.2487669,
+   "lon": 6.1573312,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 736317859,
+   "lat": 52.2488805,
+   "lon": 6.1569679,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 736321434,
+   "lat": 52.2486389,
+   "lon": 6.1572752,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1503004861,
+   "lat": 52.2486903,
+   "lon": 6.1573182,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1503004943,
+   "lat": 52.2487885,
+   "lon": 6.1572594,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1503004957,
+   "lat": 52.248835,
+   "lon": 6.1570922,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1503004972,
+   "lat": 52.2489051,
+   "lon": 6.1569884,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1503250540,
+   "lat": 52.2487228,
+   "lon": 6.1573277,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 6285628377,
+   "lat": 52.2487773,
+   "lon": 6.1573458,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 6285628391,
+   "lat": 52.2489078,
+   "lon": 6.1571642,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 7045841987,
+   "lat": 52.2487586,
+   "lon": 6.1573257,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 11328862428,
+   "lat": 52.248639,
+   "lon": 6.1570105,
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 754173510,
+   "center": {
+    "lat": 52.2394482,
+    "lon": 6.1594064
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 613078315,
+   "center": {
+    "lat": 52.2530323,
+    "lon": 6.1452267
+   },
+   "tags": {
+    "natural": "water"
+   }
+  },
+  {
+   "type": "way",
+   "id": 60299444,
+   "center": {
+    "lat": 52.2491332,
+    "lon": 6.1552151
+   },
+   "tags": {
+    "landuse": "grass"
+   }
+  },
+  {
+   "type": "way",
+   "id": 671212545,
+   "center": {
+    "lat": 52.2488075,
+    "lon": 6.1573024
+   },
+   "tags": {
+    "man_made": "bridge",
+    "name": "Wilhelminabrug"
+   }
+  },
+  {
+   "type": "way",
+   "id": 693821607,
+   "center": {
+    "lat": 52.2484191,
+    "lon": 6.1562393
+   },
+   "tags": {
+    "highway": "primary",
+    "name": "Rijksstraatweg",
+    "operator": "Gemeente Deventer",
+    "ref": "N344"
+   }
+  },
+  {
+   "type": "way",
+   "id": 693821608,
+   "center": {
+    "lat": 52.248387,
+    "lon": 6.1563475
+   },
+   "tags": {
+    "highway": "cycleway",
+    "name": "Rijksstraatweg"
+   }
+  },
+  {
+   "type": "way",
+   "id": 693821609,
+   "center": {
+    "lat": 52.248486,
+    "lon": 6.1562195
+   },
+   "tags": {
+    "highway": "cycleway",
+    "name": "Rijksstraatweg"
+   }
+  },
+  {
+   "type": "way",
+   "id": 848560301,
+   "center": {
+    "lat": 52.2436345,
+    "lon": 6.1587992
+   },
+   "tags": {
+    "landuse": "grass"
+   }
+  },
+  {
+   "type": "way",
+   "id": 60298407,
+   "center": {
+    "lat": 52.2488885,
+    "lon": 6.1568638
+   },
+   "tags": {
+    "man_made": "groyne"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 10393067,
+   "center": {
+    "lat": 52.2744976,
+    "lon": 5.9993213
+   },
+   "tags": {
+    "boundary": "protected_area",
+    "leisure": "nature_reserve",
+    "name": "Uiterwaarden IJssel"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 13328646,
+   "center": {
+    "lat": 52.2362543,
+    "lon": 6.0123226
+   },
+   "tags": {
+    "name": "N344",
+    "operator": "Provincie Gelderland;Provincie Overijssel;Gemeente Barneveld;Gemeente Apeldoorn;Gemeente Deventer",
+    "ref": "N344"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 9323397,
+   "center": {
+    "lat": 52.2307806,
+    "lon": 6.1095997
+   },
+   "tags": {
+    "ref": "U25"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 9323398,
+   "center": {
+    "lat": 52.2303285,
+    "lon": 6.1099523
+   },
+   "tags": {
+    "ref": "U24"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 10291132,
+   "center": {
+    "lat": 52.231161,
+    "lon": 6.0757956
+   },
+   "tags": {
+    "name": "F344",
+    "ref": "F344"
+   }
+  }
+ ]
+}

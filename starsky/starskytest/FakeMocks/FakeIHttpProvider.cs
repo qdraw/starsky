@@ -39,7 +39,7 @@ public class FakeIHttpProvider : IHttpProvider
 	}
 
 	public async Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent? content,
-		AuthenticationHeaderValue? authenticationHeaderValue)
+		AuthenticationHeaderValue? authenticationHeaderValue, string? userAgent = null)
 	{
 		return await GetAsync(requestUri);
 	}

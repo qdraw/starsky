@@ -1,0 +1,122 @@
+{
+ "elements": [
+  {
+   "type": "way",
+   "id": 442288589,
+   "center": {
+    "lat": 45.9769629,
+    "lon": 7.6643702
+   },
+   "tags": {}
+  },
+  {
+   "type": "relation",
+   "id": 16819467,
+   "center": {
+    "lat": 10.5140088,
+    "lon": 8.6849438
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "UTC+01:00 standard time"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 365331,
+   "center": {
+    "lat": 41.1905551,
+    "lon": 12.7058702
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Italia",
+    "official_name": "Repubblica Italiana"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19344493,
+   "center": {
+    "lat": 41.1905551,
+    "lon": 12.7058702
+   },
+   "tags": {
+    "boundary": "timezone",
+    "name": "Fuso orario Europe/Rome"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2698607,
+   "center": {
+    "lat": 45.9085115,
+    "lon": 10.8257046
+   },
+   "tags": {
+    "boundary": "region",
+    "name": "Alps",
+    "natural": "mountain_range"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 17518295,
+   "center": {
+    "lat": 45.2055219,
+    "lon": 9.0274567
+   },
+   "tags": {
+    "boundary": "statistical",
+    "name": "Italia nord-occidentale"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 10617220,
+   "center": {
+    "lat": 45.8646905,
+    "lon": 7.7824341
+   },
+   "tags": {
+    "boundary": "natural",
+    "name": "Walliser Alpen"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 45155,
+   "center": {
+    "lat": 45.7273317,
+    "lon": 7.3705181
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Valle d'Aosta / Vallée d'Aoste"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 18510802,
+   "center": {
+    "lat": 46.0233666,
+    "lon": 7.59389
+   },
+   "tags": {
+    "name": "Weisshorn-Matterhorn-Alpen (SOIUSA)"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2202531,
+   "center": {
+    "lat": 45.9115745,
+    "lon": 7.6419705
+   },
+   "tags": {
+    "boundary": "administrative",
+    "name": "Valtournenche"
+   }
+  }
+ ]
+}

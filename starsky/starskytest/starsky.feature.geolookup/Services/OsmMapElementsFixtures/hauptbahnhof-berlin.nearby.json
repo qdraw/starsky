@@ -1,0 +1,1563 @@
+{
+ "elements": [
+  {
+   "type": "node",
+   "id": 27412648,
+   "lat": 52.5251819,
+   "lon": 13.37003,
+   "tags": {
+    "name": "Hauptbahnhof",
+    "operator": "DB InfraGO AG",
+    "railway": "stop",
+    "ref": "15"
+   }
+  },
+  {
+   "type": "node",
+   "id": 100923741,
+   "lat": 52.5253867,
+   "lon": 13.3700385,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 276689614,
+   "lat": 52.5253309,
+   "lon": 13.3701144,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 285864876,
+   "lat": 52.5251618,
+   "lon": 13.3702272,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 446289301,
+   "lat": 52.5252589,
+   "lon": 13.3702857,
+   "tags": {
+    "name": "Hauptbahnhof",
+    "railway": "stop"
+   }
+  },
+  {
+   "type": "node",
+   "id": 738234511,
+   "lat": 52.525183,
+   "lon": 13.3698848,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 738234520,
+   "lat": 52.5250994,
+   "lon": 13.3701583,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 738234545,
+   "lat": 52.525091,
+   "lon": 13.3700569,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 742237970,
+   "lat": 52.5251721,
+   "lon": 13.3700613,
+   "tags": {
+    "amenity": "vending_machine"
+   }
+  },
+  {
+   "type": "node",
+   "id": 742237978,
+   "lat": 52.5252725,
+   "lon": 13.3699287,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 742238052,
+   "lat": 52.5252112,
+   "lon": 13.3699723,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 742238059,
+   "lat": 52.5252485,
+   "lon": 13.369915,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 742238085,
+   "lat": 52.5251596,
+   "lon": 13.3698514,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 742238086,
+   "lat": 52.5252243,
+   "lon": 13.3699629,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764171,
+   "lat": 52.5253018,
+   "lon": 13.3703389,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764174,
+   "lat": 52.5251617,
+   "lon": 13.370007,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764176,
+   "lat": 52.5251755,
+   "lon": 13.3702177,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764184,
+   "lat": 52.5252042,
+   "lon": 13.3703455,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764187,
+   "lat": 52.525181,
+   "lon": 13.370346,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764188,
+   "lat": 52.5251534,
+   "lon": 13.3698748,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764189,
+   "lat": 52.5251073,
+   "lon": 13.3702638,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764195,
+   "lat": 52.5252443,
+   "lon": 13.3698841,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764201,
+   "lat": 52.5251812,
+   "lon": 13.3699321,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 747764207,
+   "lat": 52.5251849,
+   "lon": 13.3699911,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 748364712,
+   "lat": 52.5251337,
+   "lon": 13.3700544,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 762650958,
+   "lat": 52.525262,
+   "lon": 13.370164,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1003555468,
+   "lat": 52.5253026,
+   "lon": 13.3701152,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1232835458,
+   "lat": 52.525147,
+   "lon": 13.3702332,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 1489358327,
+   "lat": 52.525274,
+   "lon": 13.3699297,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2089375099,
+   "lat": 52.5253694,
+   "lon": 13.3700497,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2182805388,
+   "lat": 52.5251705,
+   "lon": 13.3703657,
+   "tags": {
+    "operator": "DB Netz AG",
+    "railway": "signal"
+   }
+  },
+  {
+   "type": "node",
+   "id": 2744353917,
+   "lat": 52.5251405,
+   "lon": 13.3701384,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268260,
+   "lat": 52.5250561,
+   "lon": 13.3700187,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268263,
+   "lat": 52.5250664,
+   "lon": 13.3700168,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268267,
+   "lat": 52.5250673,
+   "lon": 13.3700311,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268268,
+   "lat": 52.5250775,
+   "lon": 13.3701512,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268270,
+   "lat": 52.5250764,
+   "lon": 13.3700149,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268284,
+   "lat": 52.5251964,
+   "lon": 13.3700585,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268287,
+   "lat": 52.525237,
+   "lon": 13.369917,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268291,
+   "lat": 52.5252498,
+   "lon": 13.3699334,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268294,
+   "lat": 52.5252596,
+   "lon": 13.3699131,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268295,
+   "lat": 52.5252571,
+   "lon": 13.3700481,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2746268297,
+   "lat": 52.5253167,
+   "lon": 13.3700379,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2821132973,
+   "lat": 52.5250876,
+   "lon": 13.3700128,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2821132981,
+   "lat": 52.5252301,
+   "lon": 13.369918,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 2821132983,
+   "lat": 52.5252684,
+   "lon": 13.3699114,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 3628638751,
+   "lat": 52.5251954,
+   "lon": 13.3702372,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 3629040428,
+   "lat": 52.5252075,
+   "lon": 13.370237,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 3674101633,
+   "lat": 52.5252488,
+   "lon": 13.3701219,
+   "tags": {
+    "brand": "Deutsche Bahn",
+    "name": "Deutsche Bahn",
+    "official_name": "Deutsche Bahn AG",
+    "operator": "Deutsche Bahn",
+    "ref": "B89698"
+   }
+  },
+  {
+   "type": "node",
+   "id": 3674101634,
+   "lat": 52.5252819,
+   "lon": 13.3701117,
+   "tags": {
+    "brand": "Deutsche Bahn",
+    "name": "Deutsche Bahn",
+    "official_name": "Deutsche Bahn AG",
+    "operator": "Deutsche Bahn"
+   }
+  },
+  {
+   "type": "node",
+   "id": 3856100107,
+   "lat": 52.5251423,
+   "lon": 13.3700843,
+   "tags": {
+    "name": "Hauptbahnhof",
+    "railway": "stop"
+   }
+  },
+  {
+   "type": "node",
+   "id": 3856100108,
+   "lat": 52.5252819,
+   "lon": 13.3701242,
+   "tags": {
+    "name": "Hauptbahnhof",
+    "operator": "Berliner Verkehrsbetriebe",
+    "railway": "station"
+   }
+  },
+  {
+   "type": "node",
+   "id": 4052079795,
+   "lat": 52.5251111,
+   "lon": 13.3701543,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4052079799,
+   "lat": 52.5252357,
+   "lon": 13.3701535,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4070598672,
+   "lat": 52.5250675,
+   "lon": 13.3699926,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4097100256,
+   "lat": 52.5251591,
+   "lon": 13.3700203,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4282073089,
+   "lat": 52.5252839,
+   "lon": 13.370042,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4282073090,
+   "lat": 52.5253237,
+   "lon": 13.3702002,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4283844697,
+   "lat": 52.5251696,
+   "lon": 13.3702153,
+   "tags": {
+    "amenity": "bench"
+   }
+  },
+  {
+   "type": "node",
+   "id": 4283844698,
+   "lat": 52.5252339,
+   "lon": 13.3701672,
+   "tags": {
+    "amenity": "vending_machine"
+   }
+  },
+  {
+   "type": "node",
+   "id": 4283844699,
+   "lat": 52.5252972,
+   "lon": 13.3700941,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4283844700,
+   "lat": 52.525308,
+   "lon": 13.3701363,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 4294834721,
+   "lat": 52.5251736,
+   "lon": 13.3699986,
+   "tags": {}
+  },
+  {
+   "type": "node",
+   "id": 9203034155,
+   "lat": 52.5252293,
+   "lon": 13.3699334,
+   "tags": {
+    "amenity": "clock"
+   }
+  },
+  {
+   "type": "node",
+   "id": 9203034156,
+   "lat": 52.5252694,
+   "lon": 13.3699258,
+   "tags": {
+    "amenity": "clock"
+   }
+  },
+  {
+   "type": "node",
+   "id": 11423629540,
+   "lat": 52.5251758,
+   "lon": 13.3699455,
+   "tags": {
+    "railway": "signal"
+   }
+  },
+  {
+   "type": "node",
+   "id": 11445871117,
+   "lat": 52.5253514,
+   "lon": 13.3702189,
+   "tags": {
+    "railway": "signal",
+    "ref": "HBF K1"
+   }
+  },
+  {
+   "type": "node",
+   "id": 11445871118,
+   "lat": 52.5252979,
+   "lon": 13.3699753,
+   "tags": {
+    "railway": "signal",
+    "ref": "HBF K2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 202719944,
+   "center": {
+    "lat": 52.5254107,
+    "lon": 13.3697033
+   },
+   "tags": {
+    "railway": "platform_edge",
+    "ref": "8"
+   }
+  },
+  {
+   "type": "way",
+   "id": 240526030,
+   "center": {
+    "lat": 52.5254282,
+    "lon": 13.3697106
+   },
+   "tags": {
+    "operator": "DB Netz AG",
+    "railway": "rail",
+    "ref": "6134"
+   }
+  },
+  {
+   "type": "way",
+   "id": 268633063,
+   "center": {
+    "lat": 52.5250169,
+    "lon": 13.3694511
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 11348390,
+   "center": {
+    "lat": 52.5250076,
+    "lon": 13.3699708
+   },
+   "tags": {
+    "building": "roof"
+   }
+  },
+  {
+   "type": "way",
+   "id": 85001284,
+   "center": {
+    "lat": 52.5249036,
+    "lon": 13.3696163
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 85258728,
+   "center": {
+    "lat": 52.5248042,
+    "lon": 13.3681001
+   },
+   "tags": {
+    "name": "Berliner Stadtbahn",
+    "operator": "DB InfraGO AG",
+    "railway": "light_rail",
+    "ref": "6024"
+   }
+  },
+  {
+   "type": "way",
+   "id": 85258730,
+   "center": {
+    "lat": 52.5246766,
+    "lon": 13.3687476
+   },
+   "tags": {
+    "name": "Berliner Stadtbahn",
+    "operator": "DB InfraGO AG",
+    "railway": "rail",
+    "ref": "6109"
+   }
+  },
+  {
+   "type": "way",
+   "id": 114919150,
+   "center": {
+    "lat": 52.5247092,
+    "lon": 13.3682057
+   },
+   "tags": {
+    "name": "Berliner Stadtbahn",
+    "operator": "DB InfraGO AG",
+    "railway": "light_rail",
+    "ref": "6024"
+   }
+  },
+  {
+   "type": "way",
+   "id": 268633059,
+   "center": {
+    "lat": 52.5250144,
+    "lon": 13.3694501
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 860219795,
+   "center": {
+    "lat": 52.5252136,
+    "lon": 13.3693835
+   },
+   "tags": {
+    "railway": "platform_edge",
+    "ref": "16"
+   }
+  },
+  {
+   "type": "way",
+   "id": 860219797,
+   "center": {
+    "lat": 52.5251033,
+    "lon": 13.3694152
+   },
+   "tags": {
+    "railway": "platform_edge",
+    "ref": "15"
+   }
+  },
+  {
+   "type": "way",
+   "id": 998011590,
+   "center": {
+    "lat": 52.524648,
+    "lon": 13.3687305
+   },
+   "tags": {
+    "railway": "platform_edge",
+    "ref": "14"
+   }
+  },
+  {
+   "type": "way",
+   "id": 59529944,
+   "center": {
+    "lat": 52.5250588,
+    "lon": 13.3698819
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 59804706,
+   "center": {
+    "lat": 52.5252408,
+    "lon": 13.3697818
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 59804714,
+   "center": {
+    "lat": 52.5252428,
+    "lon": 13.3698264
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 59806045,
+   "center": {
+    "lat": 52.5255343,
+    "lon": 13.3701539
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 60202996,
+   "center": {
+    "lat": 52.525254,
+    "lon": 13.3698305
+   },
+   "tags": {
+    "brand": "Ditsch",
+    "name": "Ditsch",
+    "shop": "bakery"
+   }
+  },
+  {
+   "type": "way",
+   "id": 60202998,
+   "center": {
+    "lat": 52.5251285,
+    "lon": 13.3700693
+   },
+   "tags": {
+    "amenity": "bank",
+    "brand": "Reisebank",
+    "name": "Reisebank"
+   }
+  },
+  {
+   "type": "way",
+   "id": 60202999,
+   "center": {
+    "lat": 52.5251274,
+    "lon": 13.3702517
+   },
+   "tags": {
+    "amenity": "luggage_locker",
+    "name": "DB Gepäck Center"
+   }
+  },
+  {
+   "type": "way",
+   "id": 60203000,
+   "center": {
+    "lat": 52.525291,
+    "lon": 13.3700423
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 60203002,
+   "center": {
+    "lat": 52.5250717,
+    "lon": 13.3700564
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 60203003,
+   "center": {
+    "lat": 52.5251984,
+    "lon": 13.3698786
+   },
+   "tags": {
+    "name": "discover Berlin",
+    "operator": "Michael Szikkus",
+    "shop": "gift"
+   }
+  },
+  {
+   "type": "way",
+   "id": 60921067,
+   "center": {
+    "lat": 52.5252665,
+    "lon": 13.3702914
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 70270903,
+   "center": {
+    "lat": 52.5254969,
+    "lon": 13.370114
+   },
+   "tags": {
+    "operator": "Berliner Verkehrsbetriebe",
+    "railway": "subway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 83809037,
+   "center": {
+    "lat": 52.5250139,
+    "lon": 13.3701134
+   },
+   "tags": {
+    "brand": "Wiener Feinbäcker Heberer",
+    "name": "Wiener Feinbäcker Heberer",
+    "operator": "SSP Deutschland GmbH",
+    "shop": "bakery"
+   }
+  },
+  {
+   "type": "way",
+   "id": 86379623,
+   "center": {
+    "lat": 52.5252892,
+    "lon": 13.3701315
+   },
+   "tags": {
+    "name": "Hauptbahnhof",
+    "operator": "Berliner Verkehrsbetriebe",
+    "railway": "platform"
+   }
+  },
+  {
+   "type": "way",
+   "id": 86380100,
+   "center": {
+    "lat": 52.5253038,
+    "lon": 13.3701211
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 86380102,
+   "center": {
+    "lat": 52.5253606,
+    "lon": 13.3700751
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 128280629,
+   "center": {
+    "lat": 52.5250144,
+    "lon": 13.3699316
+   },
+   "tags": {
+    "building": "roof"
+   }
+  },
+  {
+   "type": "way",
+   "id": 226048334,
+   "center": {
+    "lat": 52.5250738,
+    "lon": 13.3704359
+   },
+   "tags": {
+    "building": "roof"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400471,
+   "center": {
+    "lat": 52.525254,
+    "lon": 13.369825
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400473,
+   "center": {
+    "lat": 52.5252315,
+    "lon": 13.3698293
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400486,
+   "center": {
+    "lat": 52.52507,
+    "lon": 13.3699226
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400500,
+   "center": {
+    "lat": 52.5252547,
+    "lon": 13.3699232
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400514,
+   "center": {
+    "lat": 52.5252535,
+    "lon": 13.3699907
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400531,
+   "center": {
+    "lat": 52.5250668,
+    "lon": 13.370024
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400536,
+   "center": {
+    "lat": 52.5250497,
+    "lon": 13.3699263
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400547,
+   "center": {
+    "lat": 52.5250724,
+    "lon": 13.3700912
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400548,
+   "center": {
+    "lat": 52.5250599,
+    "lon": 13.3699241
+   },
+   "tags": {
+    "highway": "steps"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400555,
+   "center": {
+    "lat": 52.5252434,
+    "lon": 13.3699242
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400560,
+   "center": {
+    "lat": 52.5250755,
+    "lon": 13.3701514
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400563,
+   "center": {
+    "lat": 52.5250662,
+    "lon": 13.370023
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 269400573,
+   "center": {
+    "lat": 52.5252565,
+    "lon": 13.3700482
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 402792863,
+   "center": {
+    "lat": 52.525132,
+    "lon": 13.3699575
+   },
+   "tags": {
+    "brand": "Douglas",
+    "name": "Douglas",
+    "shop": "perfumery"
+   }
+  },
+  {
+   "type": "way",
+   "id": 402792867,
+   "center": {
+    "lat": 52.5252738,
+    "lon": 13.3699238
+   },
+   "tags": {
+    "brand": "Decathlon",
+    "name": "Decathlon",
+    "shop": "sports"
+   }
+  },
+  {
+   "type": "way",
+   "id": 402792868,
+   "center": {
+    "lat": 52.5254685,
+    "lon": 13.3698421
+   },
+   "tags": {
+    "brand": "Denns BioMarkt",
+    "name": "Denns BioMarkt",
+    "operator": "Dennree GmbH",
+    "shop": "supermarket"
+   }
+  },
+  {
+   "type": "way",
+   "id": 402793516,
+   "center": {
+    "lat": 52.5250116,
+    "lon": 13.3699398
+   },
+   "tags": {
+    "brand": "Rituals",
+    "name": "Rituals",
+    "shop": "cosmetics"
+   }
+  },
+  {
+   "type": "way",
+   "id": 407684440,
+   "center": {
+    "lat": 52.525071,
+    "lon": 13.3699591
+   },
+   "tags": {
+    "brand": "McPaper",
+    "name": "McPaper",
+    "shop": "stationery"
+   }
+  },
+  {
+   "type": "way",
+   "id": 407684446,
+   "center": {
+    "lat": 52.5252407,
+    "lon": 13.3698404
+   },
+   "tags": {
+    "name": "Rewe To Go",
+    "shop": "supermarket"
+   }
+  },
+  {
+   "type": "way",
+   "id": 421618231,
+   "center": {
+    "lat": 52.525029,
+    "lon": 13.3704473
+   },
+   "tags": {
+    "operator": "Berliner Verkehrsbetriebe",
+    "railway": "subway",
+    "ref": "C"
+   }
+  },
+  {
+   "type": "way",
+   "id": 421618233,
+   "center": {
+    "lat": 52.525488,
+    "lon": 13.3698422
+   },
+   "tags": {
+    "operator": "Berliner Verkehrsbetriebe",
+    "railway": "subway",
+    "ref": "C"
+   }
+  },
+  {
+   "type": "way",
+   "id": 429261373,
+   "center": {
+    "lat": 52.5253606,
+    "lon": 13.3700751
+   },
+   "tags": {}
+  },
+  {
+   "type": "way",
+   "id": 430212135,
+   "center": {
+    "lat": 52.5251622,
+    "lon": 13.3698387
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 438143595,
+   "center": {
+    "lat": 52.5252596,
+    "lon": 13.3701061
+   },
+   "tags": {
+    "highway": "footway"
+   }
+  },
+  {
+   "type": "way",
+   "id": 548190062,
+   "center": {
+    "lat": 52.525291,
+    "lon": 13.3700423
+   },
+   "tags": {
+    "amenity": "restaurant",
+    "brand": "Hans im Glück",
+    "name": "Hans im Glück"
+   }
+  },
+  {
+   "type": "way",
+   "id": 871673626,
+   "center": {
+    "lat": 52.5249405,
+    "lon": 13.3702323
+   },
+   "tags": {
+    "operator": "Berliner Verkehrsbetriebe",
+    "railway": "subway",
+    "ref": "C"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3779841,
+   "center": {
+    "lat": 50.007746,
+    "lon": 16.2587863
+   },
+   "tags": {
+    "name": "EC 172: Budapest => Berlin",
+    "operator": "ČD;DB;START;ZSSK",
+    "ref": "EC 172"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5454292,
+   "center": {
+    "lat": 52.167504,
+    "lon": 12.0839532
+   },
+   "tags": {
+    "name": "RJ 27: Decin => Dresden => Hamburg",
+    "operator": "DB Fernverkehr",
+    "ref": "RJ 27"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 8885541,
+   "center": {
+    "lat": 52.1982019,
+    "lon": 12.061559
+   },
+   "tags": {
+    "name": "EC 378: Praha => Kiel",
+    "operator": "ČD;DB",
+    "ref": "EC 378"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 19920116,
+   "center": {
+    "lat": 52.1386622,
+    "lon": 13.841
+   },
+   "tags": {
+    "name": "RE20: Cottbus Hauptbahnhof => Berlin Hauptbahnhof",
+    "operator": "DB Regio Nordost",
+    "ref": "RE20"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2017023,
+   "center": {
+    "lat": 52.4807382,
+    "lon": 13.3161025
+   },
+   "tags": {
+    "name": "S7: S Ahrensfelde => S Potsdam Hauptbahnhof",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S7"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2017024,
+   "center": {
+    "lat": 52.481243,
+    "lon": 13.3165749
+   },
+   "tags": {
+    "name": "S7: S Potsdam Hauptbahnhof => S Ahrensfelde",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S7"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2343465,
+   "center": {
+    "lat": 52.4824634,
+    "lon": 13.4736871
+   },
+   "tags": {
+    "name": "S3: S Erkner => S Spandau",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S3"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2343466,
+   "center": {
+    "lat": 52.4817561,
+    "lon": 13.4746823
+   },
+   "tags": {
+    "name": "S3: S Spandau => S Erkner",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S3"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2389945,
+   "center": {
+    "lat": 52.4474941,
+    "lon": 13.3817919
+   },
+   "tags": {
+    "name": "S9: S Flughafen BER => S Spandau",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S9"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2389946,
+   "center": {
+    "lat": 52.4473186,
+    "lon": 13.3822319
+   },
+   "tags": {
+    "name": "S9: S Spandau => S Flughafen BER",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S9"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 7381338,
+   "center": {
+    "lat": 52.4580181,
+    "lon": 13.2504619
+   },
+   "tags": {
+    "name": "6024 Berlin Ostbahnhof - Potsdam Hbf",
+    "operator": "DB InfraGO AG",
+    "ref": "6024"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 11799594,
+   "center": {
+    "lat": 52.4396618,
+    "lon": 13.4354111
+   },
+   "tags": {
+    "name": "FEX: Flughafen BER => Berlin Hauptbahnhof",
+    "operator": "DB Regio AG",
+    "ref": "FEX"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2015944,
+   "center": {
+    "lat": 52.5455941,
+    "lon": 13.5959718
+   },
+   "tags": {
+    "name": "S5: S Strausberg Nord => S Westkreuz",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S5"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2015959,
+   "center": {
+    "lat": 52.5455007,
+    "lon": 13.59641
+   },
+   "tags": {
+    "name": "S5: S Westkreuz => S Strausberg Nord",
+    "operator": "S-Bahn Berlin GmbH",
+    "ref": "S5"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2227743,
+   "center": {
+    "lat": 52.5171234,
+    "lon": 13.5018409
+   },
+   "tags": {
+    "name": "U5: U Hauptbahnhof => U Hönow",
+    "operator": "Berliner Verkehrsbetriebe",
+    "ref": "U5"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 2227744,
+   "center": {
+    "lat": 52.5171955,
+    "lon": 13.5018409
+   },
+   "tags": {
+    "name": "U5: U Hönow => U Hauptbahnhof",
+    "operator": "Berliner Verkehrsbetriebe",
+    "ref": "U5"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 6639446,
+   "center": {
+    "lat": 52.5162606,
+    "lon": 13.3153437
+   },
+   "tags": {
+    "name": "6109 Berlin Ostbahnhopf - Berlin-Spandau",
+    "operator": "DB InfraGO AG",
+    "ref": "6109"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5424274,
+   "center": {
+    "lat": 52.5130085,
+    "lon": 13.3486493
+   },
+   "tags": {
+    "name": "Stadtbahn Berlin",
+    "operator": "DB Netz AG"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 7099119,
+   "center": {
+    "lat": 52.5003844,
+    "lon": 13.3682764
+   },
+   "tags": {
+    "name": "6134 Berlin Hbf (tief) - Berlin Südkreuz Süd",
+    "operator": "DB InfraGO",
+    "ref": "6134"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3600566,
+   "center": {
+    "lat": 52.5250169,
+    "lon": 13.3694511
+   },
+   "tags": {}
+  },
+  {
+   "type": "relation",
+   "id": 21387967,
+   "center": {
+    "lat": 52.5137321,
+    "lon": 13.3711581
+   },
+   "tags": {
+    "name": "Tunnel Nord-Süd-Fernbahn"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 13392161,
+   "center": {
+    "lat": 52.5253968,
+    "lon": 13.3696382
+   },
+   "tags": {
+    "name": "Berlin Hauptbahnhof (Tief)",
+    "operator": "DB InfraGO AG",
+    "railway": "platform",
+    "ref": "7;8"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 904497,
+   "center": {
+    "lat": 52.5250225,
+    "lon": 13.3696452
+   },
+   "tags": {
+    "name": "Berlin Hauptbahnhof-Hoch"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 910651,
+   "center": {
+    "lat": 52.5250116,
+    "lon": 13.3689485
+   },
+   "tags": {
+    "name": "Berlin Hauptbahnhof",
+    "operator": "DB InfraGO",
+    "tourism": "attraction"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 910655,
+   "center": {
+    "lat": 52.525033,
+    "lon": 13.3694515
+   },
+   "tags": {
+    "name": "Berlin Hauptbahnhof 1.OG"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 918697,
+   "center": {
+    "lat": 52.524616,
+    "lon": 13.3687311
+   },
+   "tags": {
+    "name": "Berlin Hauptbahnhof",
+    "operator": "DB InfraGO AG",
+    "railway": "platform",
+    "ref": "13;14"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 921636,
+   "center": {
+    "lat": 52.5249036,
+    "lon": 13.3696163
+   },
+   "tags": {}
+  },
+  {
+   "type": "relation",
+   "id": 930922,
+   "center": {
+    "lat": 52.5251586,
+    "lon": 13.3693891
+   },
+   "tags": {
+    "name": "Hauptbahnhof",
+    "operator": "DB InfraGO AG",
+    "railway": "platform",
+    "ref": "15;16"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 3600565,
+   "center": {
+    "lat": 52.5250144,
+    "lon": 13.3694501
+   },
+   "tags": {
+    "building": "train_station",
+    "name": "Berlin Hauptbahnhof"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5688520,
+   "center": {
+    "lat": 52.5252285,
+    "lon": 13.3696154
+   },
+   "tags": {
+    "name": "Berlin, S Hauptbahnhof",
+    "operator": "DB InfraGO AG"
+   }
+  },
+  {
+   "type": "relation",
+   "id": 5688522,
+   "center": {
+    "lat": 52.5254525,
+    "lon": 13.3701842
+   },
+   "tags": {
+    "name": "Berlin, U Hauptbahnhof",
+    "operator": "Berliner Verkehrsbetriebe"
+   }
+  }
+ ]
+}
