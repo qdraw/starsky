@@ -510,6 +510,7 @@ public sealed class AppSettings
 	///     (login, register, health check for updates, geo lookup, search suggest).
 	///     Turn off when a reverse proxy already does this.
 	///     use env variable: app__UseRateLimiting
+	///     Can be switched at runtime when the limiter was enabled at startup (end-to-end tests)
 	/// </summary>
 	public bool? UseRateLimiting { get; set; } = true;
 

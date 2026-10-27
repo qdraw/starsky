@@ -3,6 +3,7 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using starsky.foundation.platform.Models;
 
 namespace starsky.Helpers;
 
@@ -30,13 +31,24 @@ public static class RateLimitPolicies
 		services.AddRateLimiter(options =>
 		{
 			options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-			options.AddPolicy(Anonymous, context =>
-				RateLimitPartition.GetFixedWindowLimiter(ClientKey(context),
-					_ => FixedWindow(60)));
-			options.AddPolicy(Login, context =>
-				RateLimitPartition.GetFixedWindowLimiter(ClientKey(context),
-					_ => FixedWindow(30)));
+			options.AddPolicy(Anonymous, context => Partition(context, 60));
+			options.AddPolicy(Login, context => Partition(context, 30));
 		});
+	}
+
+	/// <summary>
+	///     The setting is read per request, so it can be switched at runtime (/api/env),
+	///     for example by the end-to-end tests that log in before every test
+	/// </summary>
+	private static RateLimitPartition<string> Partition(HttpContext context, int permitLimit)
+	{
+		if ( context.RequestServices.GetService<AppSettings>()?.UseRateLimiting == false )
+		{
+			return RateLimitPartition.GetNoLimiter("disabled");
+		}
+
+		return RateLimitPartition.GetFixedWindowLimiter(ClientKey(context),
+			_ => FixedWindow(permitLimit));
 	}
 
 	private static string ClientKey(HttpContext context)

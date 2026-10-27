@@ -15,6 +15,8 @@ namespace starsky.foundation.platform.Models
 
 		public bool? UseLocalDesktop { get; set; }
 
+		public bool? UseRateLimiting { get; set; }
+
 		public List<AppSettingsDefaultEditorApplication> DefaultDesktopEditor { get; set; } = [];
 
 		public CollectionsOpenType.RawJpegMode DesktopCollectionsOpen { get; set; } =

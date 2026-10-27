@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
+using starsky.foundation.platform.Models;
 using starsky.Helpers;
 
 namespace starskytest.Helpers;
@@ -139,6 +141,37 @@ public sealed class RateLimitPoliciesTest
 
 			Assert.AreEqual(StatusCodes.Status429TooManyRequests, ( int ) blockedResponse.StatusCode);
 			Assert.AreEqual(StatusCodes.Status200OK, ( int ) otherResponse.StatusCode);
+		}
+		finally
+		{
+			await app.StopAsync(TestContext.CancellationToken);
+		}
+	}
+
+	[TestMethod]
+	public async Task LoginPolicy_UseRateLimitingFalse_DoesNotLimit()
+	{
+		var builder = WebApplication.CreateBuilder();
+		builder.WebHost.UseTestServer();
+		builder.Services.AddSingleton(new AppSettings { UseRateLimiting = false });
+		RateLimitPolicies.AddRateLimiting(builder.Services);
+		await using var app = builder.Build();
+		app.UseRouting();
+		app.UseRateLimiter();
+		app.MapGet("/limited", () => "ok").RequireRateLimiting(RateLimitPolicies.Login);
+		await app.StartAsync(TestContext.CancellationToken);
+
+		try
+		{
+			using var client = app.GetTestClient();
+			var statusCodes = new List<int>();
+			for ( var i = 0; i < 31; i++ )
+			{
+				var response = await client.GetAsync("/limited", TestContext.CancellationToken);
+				statusCodes.Add(( int ) response.StatusCode);
+			}
+
+			Assert.IsTrue(statusCodes.All(p => p == StatusCodes.Status200OK));
 		}
 		finally
 		{
