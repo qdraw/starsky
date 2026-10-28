@@ -23,7 +23,7 @@ This document is auto generated
 | __/api/allowed-types/thumb__                      | GET   | Check if IsExtensionThumbnailSupported                                          |
 | __/api/env__                                      | GET   | Show the runtime settings (dont allow AllowAnonymous)                           |
 | __/api/env__                                      | POST  | Show the runtime settings (dont allow AllowAnonymous)                           |
-| _Parameters: Verbose, StorageFolder, UseSystemTrash, UseLocalDesktop, DefaultDesktopEditor, DesktopCollectionsOpen,                       _ |
+| _Parameters: Verbose, StorageFolder, UseSystemTrash, UseLocalDesktop, UseRateLimiting, DefaultDesktopEditor, DesktopCollectionsOpen,      _ |
 | _ StorageFolderMappings, ReadOnlyFolders                                                                                                  _ |
 | __/api/env/features__                             | GET   | Show features that used in the frontend app / menu                              |
 | __/api/batch-rename/preview__                     | POST  | Preview batch rename mappings for a list of file paths and a rename pattern.    |
