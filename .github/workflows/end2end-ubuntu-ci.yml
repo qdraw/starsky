@@ -72,7 +72,7 @@ jobs:
           systemctl --user -l status starsky
 
       - name: Run Cypress tests
-        uses: cypress-io/github-action@01e3b659a495b41649cdd0aa82e1d1624e26520b
+        uses: cypress-io/github-action@bc982daf1fc26474fa0cf2c355d6c910616ce411
         env:
           CYPRESS_BASE_URL: http://localhost:4000
           cypress_name: local
