@@ -653,6 +653,13 @@
             }
           },
           {
+            "name": "UseRateLimiting",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "DefaultDesktopEditor",
             "in": "query",
             "schema": {
