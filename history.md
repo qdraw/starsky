@@ -44,6 +44,8 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.8 - _(Unreleased)_ - 2026-?-? {#0.9.8}
 
+- [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.403 (Runtime: 10.0.14)
+
 - [x] (Fixed) _End2end_ The Cypress tests failed on CI with the login rate limit of PR #3375, because every test logs in again. The limiter is now switched off when Cypress starts and restored after the run via `/api/env` (`UseRateLimiting`, not saved to the settings file) (PR #3428)
 - [x] (Security) _Back-end_ Rate limiting per client IP on the endpoints that work without a login (login, register, check for updates, geo lookup and search suggest). Turn off with `app__UseRateLimiting=false` when a reverse proxy already does this, see [readme](starsky/starsky/readme.md) (PR #3375)
 - [x] (Security) _Back-end_ Optional encryption of the data protection keys (these sign the login cookie) with a certificate, set `app__DataProtectionCertificatePath` and `app__DataProtectionCertificatePassword`, see [readme](starsky/starsky/readme.md) (PR #3375)
