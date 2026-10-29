@@ -45,7 +45,7 @@ describe("Delete file from upload (50)", () => {
       method: "DELETE",
       url: "/starsky/api/delete",
       qs: {
-        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4}`,
+        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4};/starsky-end2end-test/20200822_134151.xmp`,
       },
     });
     cy.wait(500);
@@ -107,6 +107,20 @@ describe("Delete file from upload (50)", () => {
     });
   }
 
+  // Check the files of this suite by path: other suites can leave files in this folder
+  // and on Windows the list is filled a bit later, so a count of all items is not reliable
+  function expectOnlyFile1IsGone() {
+    cy.get(`.folder > div[data-filepath="/starsky-end2end-test/${fileName2}"]`, {
+      timeout: 15000,
+    }).should("exist");
+    cy.get(`.folder > div[data-filepath="/starsky-end2end-test/${fileName3}"]`, {
+      timeout: 15000,
+    }).should("exist");
+    cy.get(`.folder > div[data-filepath="/starsky-end2end-test/${fileName1}"]`).should(
+      "not.exist",
+    );
+  }
+
   function waitFileInTrash(index: number, filePath: string, max: number = 15) {
     cy.request({
       url: "/api/search/trash",
@@ -148,9 +162,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=trash]").click();
     cy.wait("@trash1");
 
-    cy.get('.folder > div[data-filepath$=".jpg"]', { timeout: 10000 }).should(($lis) => {
-      expect($lis).to.have.length(2);
-    });
+    expectOnlyFile1IsGone();
 
     waitFileInTrash(0, `/starsky-end2end-test/${fileName1}`);
     cy.visit(config.trash);
@@ -234,9 +246,7 @@ describe("Delete file from upload (50)", () => {
     cy.get("[data-test=trash]").click();
     cy.wait("@trash2");
 
-    cy.get('.folder > div[data-filepath$=".jpg"]', { timeout: 10000 }).should(($lis) => {
-      expect($lis).to.have.length(2);
-    });
+    expectOnlyFile1IsGone();
 
     waitFileInTrash(0, `/starsky-end2end-test/${fileName1}`);
     cy.visit(config.trash);
@@ -259,9 +269,7 @@ describe("Delete file from upload (50)", () => {
 
     cy.visit(config.url);
 
-    cy.get('.folder > div[data-filepath$=".jpg"]').should(($lis) => {
-      expect($lis).to.have.length(2);
-    });
+    expectOnlyFile1IsGone();
   });
 
   it("z cleanup trash settings (50)", () => {
