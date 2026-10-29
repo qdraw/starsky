@@ -78,7 +78,7 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
         with:
           install-command: npm ci --legacy-peer-deps --no-fund --no-audit
-          command: npm run e2e:env:record -- --tag "windows-ci"
+          command: ${{ secrets.CYPRESS_RECORD_KEY != '' && 'npm run e2e:env:record' || 'npm run e2e:env' }} -- --tag "windows-ci"
           working-directory: starsky-tools/end2end  
 
       - name: Upload screenshots (always)
