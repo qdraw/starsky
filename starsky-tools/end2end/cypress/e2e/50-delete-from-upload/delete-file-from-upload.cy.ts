@@ -45,8 +45,15 @@ describe("Delete file from upload (50)", () => {
       method: "DELETE",
       url: "/starsky/api/delete",
       qs: {
-        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4};/starsky-end2end-test/20200822_134151.xmp`,
+        f: `/starsky-end2end-test/${fileName1};/starsky-end2end-test/${fileName2};/starsky-end2end-test/${fileName3};/starsky-end2end-test/${fileName4}`,
       },
+    });
+    // sidecar of the video that other suites can leave behind, may not exist
+    cy.request({
+      failOnStatusCode: false,
+      method: "DELETE",
+      url: "/starsky/api/delete",
+      qs: { f: "/starsky-end2end-test/20200822_134151.xmp" },
     });
     cy.wait(500);
 
@@ -109,7 +116,24 @@ describe("Delete file from upload (50)", () => {
 
   // Check the files of this suite by path: other suites can leave files in this folder
   // and on Windows the list is filled a bit later, so a count of all items is not reliable
-  function expectOnlyFile1IsGone() {
+  function expectOnlyFile1IsGone(index: number = 0, max: number = 10) {
+    cy.request(config.urlApiCollectionsFalse).then((res) => {
+      const paths: string[] = (res.body.fileIndexItems ?? []).map(
+        (i: { filePath: string }) => i.filePath,
+      );
+      const ready =
+        paths.includes(`/starsky-end2end-test/${fileName2}`) &&
+        paths.includes(`/starsky-end2end-test/${fileName3}`) &&
+        !paths.includes(`/starsky-end2end-test/${fileName1}`);
+      if (!ready && index + 1 < max) {
+        cy.wait(1500);
+        expectOnlyFile1IsGone(index + 1, max);
+        return;
+      }
+      // the list of paths is in the message to see what is in the index when it fails
+      expect(ready, `index of the folder: ${paths.join(", ")}`).to.be.true;
+    });
+
     cy.get(`.folder > div[data-filepath="/starsky-end2end-test/${fileName2}"]`, {
       timeout: 15000,
     }).should("exist");
