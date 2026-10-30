@@ -100,6 +100,10 @@ export default defineConfig({
   reporterOptions: {
     mochaFile: 'results/test-output-[hash].xml'
   },
+  // The default of 4 seconds is too tight for the Windows CI runner, each run failed in another spec
+  // on a first element that appeared a bit later. A real failure still fails, after the retries.
+  defaultCommandTimeout: 10000,
+  retries: { runMode: 2, openMode: 0 },
   viewportHeight: 900,
   viewportWidth: 1280,
   screenshotsFolder: 'cypress/screenshots/build',
