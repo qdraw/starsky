@@ -1,0 +1,122 @@
+---
+sidebar_position: 30
+title: Frequently asked questions
+description: Answers to common questions about Starsky, the open-source photo-management app, covering metadata, deleting photos, databases, Docker and where your data is stored.
+---
+
+import Head from "@docusaurus/Head";
+
+export const faq = [
+  {
+    q: "What is Starsky?",
+    a: "Starsky is a free, open-source photo-management platform. It helps you find, organize and edit a photo collection, either as a desktop app or as a self-hosted web server.",
+  },
+  {
+    q: "Where are my photos and metadata stored?",
+    a: "Your photos stay in your own folders. Metadata such as tags, title, description and GPS location is written inside the image files using XMP and IPTC. The database is only an index, so it can be rebuilt with a rescan.",
+  },
+  {
+    q: "What happens if I delete the database?",
+    a: "Nothing is lost. Because metadata is stored inside the images, a single synchronization of the folder restores the index.",
+  },
+  {
+    q: "Can I use Starsky together with other photo tools?",
+    a: "Yes. Starsky reads and writes standard XMP and IPTC metadata, so changes made with tools such as ExifTool are picked up and shown in the application.",
+  },
+  {
+    q: "Does Starsky permanently delete my photos?",
+    a: "No. On macOS and Windows deleted files go to the system trash or recycle bin. On other platforms, or when useSystemTrash is disabled, Starsky uses its own internal trash and tags files with !delete! so they can be restored from within the app.",
+  },
+  {
+    q: "Do I need to run a server?",
+    a: "No. You can use the desktop app, which starts the backend for you. A server setup with Docker, systemd or another process manager is only needed if you want to reach your library from several devices.",
+  },
+  {
+    q: "How do I run Starsky with Docker?",
+    a: "Follow the Docker guide, which includes a docker-compose example. Mount your photo folder as a volume so the files stay outside the container.",
+  },
+  {
+    q: "How do I change settings?",
+    a: "Settings can be set in appsettings.json or with environment variables that use the app__ prefix, for example app__databaseType.",
+  },
+  {
+    q: "Which database does Starsky use?",
+    a: "SQLite by default. MariaDB/MySQL can be used instead through the databaseType setting.",
+  },
+  {
+    q: "Can I import photos from my camera or the cloud?",
+    a: "Yes. Starsky can import files from a folder, automatically when a camera or card is mounted, or from a cloud source.",
+  },
+  {
+    q: "Can I publish photos to a website?",
+    a: "Yes. You can publish photos as a web page, with optional watermarks and optimizers, to a local folder or an FTP target.",
+  },
+  {
+    q: "Where can I get help or report a bug?",
+    a: "Check the troubleshooting section first, then ask in GitHub Discussions or open an issue on the GitHub repository.",
+  },
+];
+
+<Head>
+  <script type="application/ld+json">
+    {JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faq.map(({ q, a }) => ({
+        "@type": "Question",
+        name: q,
+        acceptedAnswer: { "@type": "Answer", text: a },
+      })),
+    })}
+  </script>
+</Head>
+
+# Frequently asked questions
+
+## What is Starsky?
+
+Starsky is a free, open-source photo-management platform. It helps you find, organize and edit a photo collection, either as a desktop app or as a self-hosted web server.
+
+## Where are my photos and metadata stored?
+
+Your photos stay in your own folders. Metadata such as tags, title, description and GPS location is written inside the image files using XMP and IPTC. The database is only an index, so it can be rebuilt with a rescan. See [metadata](../features/metadata.md).
+
+## What happens if I delete the database?
+
+Nothing is lost. Because metadata is stored inside the images, a single [synchronization](../features/synchronization.md) of the folder restores the index.
+
+## Can I use Starsky together with other photo tools?
+
+Yes. Starsky reads and writes standard XMP and IPTC metadata, so changes made with tools such as ExifTool are picked up and shown in the application.
+
+## Does Starsky permanently delete my photos?
+
+No. On macOS and Windows deleted files go to the system trash or recycle bin. On other platforms, or when `useSystemTrash` is disabled, Starsky uses its own internal trash and tags files with `!delete!` so they can be restored from within the app. See [trash](../features/trash.md).
+
+## Do I need to run a server?
+
+No. You can use the desktop app, which starts the backend for you. A server setup with Docker, systemd or another process manager is only needed if you want to reach your library from several devices. See [setup](setup.md).
+
+## How do I run Starsky with Docker?
+
+Follow the [Docker guide](docker/docker.md), which includes a [docker-compose example](docker/docker-compose.md). Mount your photo folder as a volume so the files stay outside the container.
+
+## How do I change settings?
+
+Settings can be set in `appsettings.json` or with environment variables that use the `app__` prefix, for example `app__databaseType`. See the [configuration options](configuration/config-options.md).
+
+## Which database does Starsky use?
+
+SQLite by default. MariaDB/MySQL can be used instead through the `databaseType` setting. See [MariaDB](troubleshooting/mariadb.md).
+
+## Can I import photos from my camera or the cloud?
+
+Yes. Starsky can [import](../features/import/import.md) files from a folder, automatically when a camera or card is mounted ([Mount Watcher](../features/import/mountwatchercli.md)), or from a [cloud source](../features/import/cloudimport.md).
+
+## Can I publish photos to a website?
+
+Yes. You can [publish photos](../features/webhtmlpublish.md) as a web page, with optional watermarks and optimizers, to a local folder or an [FTP target](../features/publish-remote.md).
+
+## Where can I get help or report a bug?
+
+Check the [troubleshooting](troubleshooting/index.md) section first, then ask in [GitHub Discussions](https://github.com/qdraw/starsky/discussions) or open an issue on the [GitHub repository](https://github.com/qdraw/starsky).

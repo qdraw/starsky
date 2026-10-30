@@ -155,6 +155,16 @@ public sealed class McpWriteGuard
 		return path;
 	}
 
+	/// <summary>
+	///     Same checks as for the input paths, for a path that is not part of the confirmation
+	///     paths (the new name when renaming). Null when not allowed
+	/// </summary>
+	public string? ValidateTarget(string? input)
+	{
+		var path = NormalizePath(input);
+		return path == null || _appSettings.IsReadOnly(path) ? null : path;
+	}
+
 	private McpGateResult Reject(string tool, IReadOnlyList<string> paths, string message)
 	{
 		_logger.LogInformation(

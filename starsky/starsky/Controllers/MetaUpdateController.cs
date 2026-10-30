@@ -81,55 +81,16 @@ public sealed class MetaUpdateController : Controller
 			return BadRequest("No input files");
 		}
 
-		var stopwatch = StopWatchLogger.StartUpdateReplaceStopWatch();
+		var runner = new MetaUpdateRunner(_metaPreflight, _metaUpdateService, _bgTaskQueue,
+			_logger, _connectionService);
+		var result = await runner.UpdateAsync(inputModel, inputFilePaths, append, collections,
+			rotateClock);
 
-		var (fileIndexResultsList, changedFileIndexItemName) =
-			await _metaPreflight.PreflightAsync(inputModel,
-				[.. inputFilePaths], append, collections, rotateClock);
-
-		// Update >
-		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
+		if ( result.AllNotFound )
 		{
-			MetaData = "MetaUpdate",
-			TraceParentId = Activity.Current?.Id,
-			PriorityLane = ProcessTaskQueue.PriorityLaneUpdate,
-			JobType = MetaUpdateBackgroundJobHandler.MetaUpdate,
-			PayloadJson = JsonSerializer.Serialize(
-				new MetaUpdateBackgroundPayload
-				{
-					ChangedFileIndexItemName = changedFileIndexItemName,
-					FileIndexResultsList = fileIndexResultsList,
-					Collections = collections,
-					Append = append,
-					RotateClock = rotateClock
-				}, DefaultJsonFileIndexJsonSerializer.WithIdConverter)
-		});
-
-		// before sending not founds
-		new StopWatchLogger(_logger).StopUpdateReplaceStopWatch("update", f, collections,
-			stopwatch);
-
-		// When all items are not found
-		if ( fileIndexResultsList.TrueForAll(p =>
-			    p.Status != FileIndexItem.ExifStatus.Ok
-			    && p.Status != FileIndexItem.ExifStatus.Deleted) )
-		{
-			return NotFound(fileIndexResultsList);
+			return NotFound(result.Results);
 		}
 
-		// Clone a new item in the list to display
-		var returnNewResultList = fileIndexResultsList.Select(item => item.Clone()).ToList();
-
-		// when switching very fast between images the background task has not run yet
-		_metaUpdateService.UpdateReadMetaCache(returnNewResultList);
-
-		// Push direct to socket when update or replace to avoid undo after a second
-		_logger.LogInformation(
-			$"[UpdateController] send to socket {inputFilePaths[0]}");
-
-		await Task.Run(async () =>
-			await _connectionService.UpdateWebSocketTaskRun(fileIndexResultsList));
-
-		return Json(returnNewResultList);
+		return Json(result.Updated);
 	}
 }

@@ -2,8 +2,8 @@
 
 Starsky can expose your photo library to AI agents (for example Claude Desktop or Claude Code)
 through the [Model Context Protocol](https://modelcontextprotocol.io) (MCP). An agent can search
-your photos, list folders and read metadata. Optionally it can move files to the trash, but only
-with an explicit confirmation step.
+your photos, list folders and read metadata. Optionally it can edit metadata, rename and move
+files to the trash, but only with an explicit confirmation step.
 
 The business logic is the same as in the web app: the MCP tools call the same services as the
 REST API. Nothing is sent to an external service by Starsky.
@@ -59,6 +59,8 @@ app__McpAllowWrite=true
 | Tool            | What it does                                                           |
 |-----------------|------------------------------------------------------------------------|
 | `move_to_trash` | Move files to the trash. There is no tool that deletes permanently.    |
+| `update_metadata` | Change tags, title, description or color class (optionally append). Empty fields are not changed |
+| `rename`        | Rename or move one file or folder, it never overwrites an existing one |
 
 Every tool that changes files goes through the same guard rails:
 

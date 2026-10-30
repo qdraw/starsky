@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using starsky.feature.rename.Helpers;
 using starsky.feature.rename.Services;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
@@ -168,12 +169,7 @@ public sealed class DiskController : Controller
 			return NotFound(rename);
 		}
 
-		var webSocketResponse =
-			new ApiNotificationResponseModel<List<FileIndexItem>>(rename,
-				ApiNotificationType.Rename);
-
-		await _notificationQuery.AddNotification(webSocketResponse);
-		await _connectionsService.SendToAllAsync(webSocketResponse, CancellationToken.None);
+		await RenameNotification.SendAsync(rename, _notificationQuery, _connectionsService);
 
 		return Json(currentStatus
 			? rename.Where(p => p.Status

@@ -19,11 +19,15 @@
 
     <ItemGroup>
         <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj"/>
+        <ProjectReference Include="..\starsky.feature.rename\starsky.feature.rename.csproj"/>
         <ProjectReference Include="..\starsky.feature.search\starsky.feature.search.csproj"/>
         <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj"/>
         <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
         <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.metaupdate\starsky.foundation.metaupdate.csproj"/>
         <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.realtime\starsky.foundation.realtime.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.storage\starsky.foundation.storage.csproj"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
