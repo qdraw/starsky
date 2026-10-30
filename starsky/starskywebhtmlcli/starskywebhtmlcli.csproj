@@ -7,7 +7,7 @@
         <LangVersion>latest</LangVersion>
         <PreserveCompilationContext>true</PreserveCompilationContext>
         <DebugType>Full</DebugType>
-        <Version>0.9.7</Version>
+        <Version>0.9.8</Version>
         <Nullable>enable</Nullable>
         <ImplicitUsings>disable</ImplicitUsings>
     </PropertyGroup>
