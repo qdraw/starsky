@@ -136,7 +136,7 @@ button {
   font-family: "Gloriola Std";
   font-style: normal;
   font-weight: 100;
-  font-display: auto;
+  font-display: swap;
   src:
     local("Gloriola Std Light"),
     local("Gloriola-Std-Light"),
@@ -151,7 +151,7 @@ button {
   font-family: "Gloriola Std";
   font-style: normal;
   font-weight: 300;
-  font-display: auto;
+  font-display: swap;
   src:
     local("Gloriola Std Medium"),
     local("Gloriola-Std-Medium"),
@@ -166,7 +166,7 @@ button {
   font-family: "Gloriola Std";
   font-style: normal;
   font-weight: 800;
-  font-display: auto;
+  font-display: swap;
   src:
     local("Gloriola Std Bold"),
     local("Gloriola-Std-Bold"),
@@ -178,11 +178,16 @@ button {
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   font-family: "Gloriola Std", sans-serif;
   /* only for firefox*/
   scrollbar-color: #263238 #eceff1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* for Chrome + Safari */
