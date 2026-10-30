@@ -29,8 +29,9 @@ public sealed class MetaUpdateRunnerTest
 			new FileIndexItem("/a.jpg") { Tags = "x" }, ["/a.jpg"], false, true, 0);
 
 		Assert.IsFalse(result.AllNotFound);
-		Assert.HasCount(1, result.Updated!);
-		Assert.AreNotSame(result.Results[0], result.Updated[0]);
+		var updated = result.Updated!;
+		Assert.HasCount(1, updated);
+		Assert.AreNotSame(result.Results[0], updated[0]);
 		Assert.IsTrue(queue.QueueBackgroundWorkItemCalled);
 		Assert.HasCount(1, connection.Sent);
 	}

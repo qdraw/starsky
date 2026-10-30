@@ -1,4 +1,3 @@
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.project.mcp.Services;
 using starsky.foundation.platform.Models;
