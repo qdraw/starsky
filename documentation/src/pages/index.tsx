@@ -30,7 +30,7 @@ function HomepageHeader() {
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
   return (
-    <Layout title={`${siteConfig.title}`} description="Photo editor">
+    <Layout title={`${siteConfig.title}`} description="Starsky is a free, open-source photo-management app to find, organize and edit your photo collection on macOS, Windows, Linux and Docker.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

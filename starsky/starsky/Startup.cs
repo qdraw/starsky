@@ -33,6 +33,7 @@ using starsky.foundation.realtime.Model;
 using starsky.foundation.video.GetDependencies;
 using starsky.foundation.webtelemetry.Extensions;
 using starsky.foundation.webtelemetry.Helpers;
+using starsky.project.mcp;
 using starsky.Helpers;
 
 namespace starsky;
@@ -143,6 +144,9 @@ public sealed class Startup
 
 		// to add support for swagger
 		new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
+
+		// Model Context Protocol for AI agents (only when McpEnabled)
+		services.AddStarskyMcp(_appSettings);
 
 		// Now only for dev
 		services.AddCors(options =>
@@ -285,6 +289,8 @@ public sealed class Startup
 			{
 				endpoints.MapControllerRoute("default",
 					"{controller=Home}/{action=Index}/{id?}");
+				endpoints.MapStarskyMcp(_appSettings,
+					_appSettings?.UseRateLimiting != false ? RateLimitPolicies.Mcp : null);
 			});
 		}
 		catch ( InvalidOperationException )

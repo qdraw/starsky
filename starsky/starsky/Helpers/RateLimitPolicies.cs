@@ -23,6 +23,11 @@ public static class RateLimitPolicies
 	public const string Login = "login";
 
 	/// <summary>
+	///     The MCP endpoint for AI agents: needs a login, but one agent call can fan out into many
+	/// </summary>
+	public const string Mcp = "mcp";
+
+	/// <summary>
 	///     Per client IP limits for the endpoints that work without a login, the policies are used
 	///     with [EnableRateLimiting]. Client IP is the forwarded one when behind a trusted proxy.
 	/// </summary>
@@ -33,6 +38,7 @@ public static class RateLimitPolicies
 			options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 			options.AddPolicy(Anonymous, context => Partition(context, 60));
 			options.AddPolicy(Login, context => Partition(context, 30));
+			options.AddPolicy(Mcp, context => Partition(context, 120));
 		});
 	}
 

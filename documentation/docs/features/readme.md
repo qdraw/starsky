@@ -25,6 +25,7 @@ Here below there is a list of key features:
     - [Cloud Import](import/cloudimport.md)
 - [Meta Data and super compatible photo management](metadata.md)
 - [Realtime](realtime.md)
+- [MCP for AI agents](mcp.md)
 - [Queue backends (RabbitMQ and Database)](rabbitmq-queue-backend.md)
 - [Rename by DateTime](rename-by-datetime.md)
 - [Rename files and folders](rename-single.md)

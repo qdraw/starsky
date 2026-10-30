@@ -161,6 +161,7 @@
         <ProjectReference Include="..\starsky.feature.settings\starsky.feature.settings.csproj"/>
         <ProjectReference Include="..\starsky.feature.syncbackground\starsky.feature.syncbackground.csproj"/>
         <ProjectReference Include="..\starsky.feature.thumbnail\starsky.feature.thumbnail.csproj"/>
+        <ProjectReference Include="..\starsky.project.mcp\starsky.project.mcp.csproj"/>
         <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj"/>
         <ProjectReference Include="..\starsky.feature.webftppublish\starsky.feature.webftppublish.csproj"/>
         <ProjectReference Include="..\starsky.feature.webhtmlpublish\starsky.feature.webhtmlpublish.csproj"/>

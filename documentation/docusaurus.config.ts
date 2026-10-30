@@ -29,6 +29,25 @@ const config: Config = {
   tagline: "Photo-management done right",
   favicon: "img/favicon.ico",
 
+  headTags: [
+    {
+      tagName: "script",
+      attributes: { type: "application/ld+json" },
+      innerHTML: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Starsky",
+        description:
+          "Starsky is a free, open-source photo-management platform to find, organize and edit your photo collection. Available for macOS, Windows, Linux and Docker.",
+        applicationCategory: "MultimediaApplication",
+        operatingSystem: "macOS, Windows, Linux",
+        url,
+        codeRepository: "https://github.com/qdraw/starsky",
+        offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
+      }),
+    },
+  ],
+
   // Set the production url of your site here
   url,
   // Set the /<baseUrl>/ pathname under which your site is served
@@ -62,6 +81,12 @@ const config: Config = {
           //   editUrl:
           //     'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
         },
+        sitemap: {
+          changefreq: "weekly",
+          priority: 0.5,
+          ignorePatterns: ["/tags/**", "/starsky"],
+          filename: "sitemap.xml",
+        },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
@@ -90,6 +115,15 @@ const config: Config = {
   ],
 
   themeConfig: {
+    image: "img/header_00206.jpg",
+    metadata: [
+      {
+        name: "keywords",
+        content:
+          "photo management, photo organizer, photo library, exif, geo tagging, open source, self-hosted, starsky",
+      },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
     navbar: {
       title: "Starsky",
       logo: {
