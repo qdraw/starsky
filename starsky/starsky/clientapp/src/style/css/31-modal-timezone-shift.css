@@ -8,7 +8,7 @@
   border: 2px solid #ddd;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 .modal-timezone-shift .mode-selection .radio-option:hover {
   border-color: #0078d4;

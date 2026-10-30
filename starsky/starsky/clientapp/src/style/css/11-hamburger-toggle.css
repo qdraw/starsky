@@ -18,7 +18,7 @@
   width: 1.2rem;
   height: 0.9375rem;
   position: relative;
-  transition: all 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: transform 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
   transform: rotate(0deg);
 }
 
@@ -31,7 +31,7 @@
   opacity: 1;
   left: 0;
   transform: rotate(0deg);
-  transition: all 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
+  transition: transform 0.25s, top 0.25s, opacity 0.25s, width 0.25s, left 0.25s cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
 .hamburger-menu-toggle .hamburger i:nth-of-type(1) {
