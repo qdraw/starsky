@@ -82,6 +82,8 @@ machinename with your computer name in lowercase)_
 6. `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(
    default false)_
 7. `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
+   `McpEnabled`, `McpAllowWrite` and `McpMaxItemsPerCall` configure the MCP endpoint for AI agents,
+   see [MCP for AI agents](/docs/features/mcp)
 8. `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
 9. `Verbose` - show more console logging  _(default false)_
 10. `WebFtp` - ftp path, this is used by starskyWebFtpCli

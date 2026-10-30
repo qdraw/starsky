@@ -403,6 +403,25 @@ public sealed class AppSettings
 	public bool? AddSwagger { get; set; } = false;
 
 	/// <summary>
+	///     Expose the Model Context Protocol (MCP) endpoint for AI agents at `/starsky/mcp`
+	///     Only read-only tools unless McpAllowWrite is true
+	/// </summary>
+	[PackageTelemetry]
+	public bool? McpEnabled { get; set; } = false;
+
+	/// <summary>
+	///     Register the tools that change files (move to trash) in the MCP endpoint
+	///     Each call needs a confirmation step. Requires McpEnabled
+	/// </summary>
+	[PackageTelemetry]
+	public bool? McpAllowWrite { get; set; } = false;
+
+	/// <summary>
+	///     Maximum number of files that a single MCP write call may touch
+	/// </summary>
+	public int McpMaxItemsPerCall { get; set; } = 25;
+
+	/// <summary>
 	///     Export swagger pages (use AddSwagger and AddSwaggerExport to export)
 	/// </summary>
 	[PackageTelemetry]

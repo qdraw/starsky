@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <RootNamespace>starsky.project.mcp</RootNamespace>
+        <ProjectGuid>{ae5a48ae-dea2-4fb1-bb76-b7ba49d826ea}</ProjectGuid>
+        <Version>0.9.8</Version>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ModelContextProtocol.AspNetCore" Version="2.3.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\starsky.feature.metaupdate\starsky.feature.metaupdate.csproj"/>
+        <ProjectReference Include="..\starsky.feature.search\starsky.feature.search.csproj"/>
+        <ProjectReference Include="..\starsky.feature.trash\starsky.feature.trash.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.database\starsky.foundation.database.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.injection\starsky.foundation.injection.csproj"/>
+        <ProjectReference Include="..\starsky.foundation.platform\starsky.foundation.platform.csproj"/>
+    </ItemGroup>
+
+    <PropertyGroup Condition=" '$(noSonar)' == 'true' ">
+        <SonarQubeExclude>true</SonarQubeExclude>
+    </PropertyGroup>
+</Project>
