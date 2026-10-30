@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.26");
+                .HasAnnotation("ProductVersion", "10.0.12");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -205,6 +205,150 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRoles", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.ConnectBlockInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+
+                    b.Property<string>("Folder")
+                        .IsRequired()
+                        .HasMaxLength(190)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Hash")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(380)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Offset")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Size")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Folder", "Name", "Offset")
+                        .IsUnique()
+                        .HasDatabaseName("IX_ConnectBlockInfos_Folder_Name_Offset");
+
+                    b.ToTable("ConnectBlockInfos", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.ConnectDeviceIndex", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+
+                    b.Property<byte[]>("DeviceId")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("BLOB");
+
+                    b.Property<string>("Folder")
+                        .IsRequired()
+                        .HasMaxLength(190)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("IndexId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("MaxSequence")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Folder", "DeviceId")
+                        .HasDatabaseName("IX_ConnectDeviceIndexes_Folder_DeviceId");
+
+                    b.ToTable("ConnectDeviceIndexes", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.ConnectFileMeta", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER")
+                        .HasAnnotation("MySql:ValueGeneratedOnAdd", true);
+
+                    b.Property<int>("BlockSize")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Folder")
+                        .IsRequired()
+                        .HasMaxLength(190)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("Invalid")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("ModifiedBy")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(380)
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("NoPermissions")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Sequence")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("SymlinkTarget")
+                        .IsRequired()
+                        .HasMaxLength(380)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte[]>("Version")
+                        .IsRequired()
+                        .HasColumnType("BLOB");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Folder", "Name")
+                        .HasDatabaseName("IX_ConnectFileMetas_Folder_Name");
+
+                    b.ToTable("ConnectFileMetas", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
+            modelBuilder.Entity("starsky.foundation.database.Models.ConnectFolderMeta", b =>
+                {
+                    b.Property<string>("Folder")
+                        .HasMaxLength(190)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("IndexId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<long>("Sequence")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Folder");
+
+                    b.ToTable("ConnectFolderMetas", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });

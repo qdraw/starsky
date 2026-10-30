@@ -39,6 +39,11 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 
 	public DbSet<GeoNameCity> GeoNameCities { get; set; }
 
+	public DbSet<ConnectFileMeta> ConnectFileMetas { get; set; }
+	public DbSet<ConnectBlockInfo> ConnectBlockInfos { get; set; }
+	public DbSet<ConnectFolderMeta> ConnectFolderMetas { get; set; }
+	public DbSet<ConnectDeviceIndex> ConnectDeviceIndexes { get; set; }
+
 	protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
 		// Do nothing because of that in debug mode this only triggered
@@ -305,5 +310,49 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 						MySqlValueGenerationStrategy.IdentityColumn);
 			}
 		);
+
+		modelBuilder.Entity<ConnectFileMeta>(etb =>
+		{
+			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+			etb.HasKey(e => e.Id);
+			etb.Property(e => e.Id)
+				.ValueGeneratedOnAdd()
+				.HasAnnotation(mySqlValueGeneratedOnAdd, true);
+			etb.HasIndex(e => new { e.Folder, e.Name })
+				.HasDatabaseName("IX_ConnectFileMetas_Folder_Name");
+			etb.ToTable("ConnectFileMetas");
+		});
+
+		modelBuilder.Entity<ConnectBlockInfo>(etb =>
+		{
+			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+			etb.HasKey(e => e.Id);
+			etb.Property(e => e.Id)
+				.ValueGeneratedOnAdd()
+				.HasAnnotation(mySqlValueGeneratedOnAdd, true);
+			etb.HasIndex(e => new { e.Folder, e.Name, e.Offset })
+				.HasDatabaseName("IX_ConnectBlockInfos_Folder_Name_Offset")
+				.IsUnique();
+			etb.ToTable("ConnectBlockInfos");
+		});
+
+		modelBuilder.Entity<ConnectFolderMeta>(etb =>
+		{
+			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+			etb.HasKey(e => e.Folder);
+			etb.ToTable("ConnectFolderMetas");
+		});
+
+		modelBuilder.Entity<ConnectDeviceIndex>(etb =>
+		{
+			etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+			etb.HasKey(e => e.Id);
+			etb.Property(e => e.Id)
+				.ValueGeneratedOnAdd()
+				.HasAnnotation(mySqlValueGeneratedOnAdd, true);
+			etb.HasIndex(e => new { e.Folder, e.DeviceId })
+				.HasDatabaseName("IX_ConnectDeviceIndexes_Folder_DeviceId");
+			etb.ToTable("ConnectDeviceIndexes");
+		});
 	}
 }
