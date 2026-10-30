@@ -15,6 +15,8 @@ public class FakeISearch : ISearch
 
 	private List<FileIndexItem> Items { get; }
 
+	public bool ReturnNullItems { get; set; }
+
 	public string? LastQuery { get; private set; }
 	public int LastPage { get; private set; }
 
@@ -25,7 +27,7 @@ public class FakeISearch : ISearch
 		LastPage = pageNumber;
 		return Task.FromResult(new SearchViewModel
 		{
-			FileIndexItems = Items,
+			FileIndexItems = ReturnNullItems ? null : Items,
 			SearchQuery = query,
 			PageNumber = pageNumber,
 			SearchCount = Items.Count

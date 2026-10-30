@@ -29,4 +29,20 @@ public sealed record McpPhoto(
 			hasLocation ? item.Latitude : null, hasLocation ? item.Longitude : null,
 			item.LocationCity, item.LocationCountry);
 	}
+
+	public static List<McpPhoto> FromItems(IEnumerable<FileIndexItem> items, int max = int.MaxValue)
+	{
+		var result = new List<McpPhoto>();
+		foreach ( var item in items )
+		{
+			if ( result.Count >= max )
+			{
+				break;
+			}
+
+			result.Add(FromItem(item));
+		}
+
+		return result;
+	}
 }

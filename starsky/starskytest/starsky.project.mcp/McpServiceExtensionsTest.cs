@@ -18,7 +18,7 @@ public sealed class McpServiceExtensionsTest
 
 		services.AddStarskyMcp(new AppSettings { McpEnabled = false });
 
-		Assert.AreEqual(0, services.Count);
+		Assert.IsEmpty(services);
 	}
 
 	[TestMethod]
@@ -28,7 +28,7 @@ public sealed class McpServiceExtensionsTest
 
 		services.AddStarskyMcp(new AppSettings { McpEnabled = true });
 
-		Assert.IsTrue(services.Count > 0);
+		Assert.IsGreaterThan(0, services.Count);
 	}
 
 	[TestMethod]
@@ -40,7 +40,7 @@ public sealed class McpServiceExtensionsTest
 		write.AddStarskyMcp(new AppSettings { McpEnabled = true, McpAllowWrite = true });
 
 		// the write tools add registrations on top of the read tools
-		Assert.IsTrue(write.Count > readOnly.Count);
+		Assert.IsGreaterThan(readOnly.Count, write.Count);
 	}
 
 	[TestMethod]

@@ -12,6 +12,8 @@ namespace starskytest.starsky.project.mcp;
 [TestClass]
 public sealed class StarskyReadToolsTest
 {
+	private static readonly string[] HolidayAndHome = ["holiday", "home"];
+
 	private static StarskyReadTools Create(List<FileIndexItem>? items = null,
 		FakeISearch? search = null, AppSettings? appSettings = null,
 		List<string>? suggestions = null)
@@ -79,7 +81,7 @@ public sealed class StarskyReadToolsTest
 
 		Assert.AreEqual(120, result.TotalCount);
 		Assert.IsTrue(result.Truncated);
-		Assert.AreEqual(100, result.Items.Count);
+		Assert.HasCount(100, result.Items);
 	}
 
 	[TestMethod]
@@ -98,7 +100,7 @@ public sealed class StarskyReadToolsTest
 
 		var result = await tools.GetPhotoInfo(["a.jpg", "/missing.jpg"]);
 
-		Assert.AreEqual(1, result.Count);
+		Assert.HasCount(1, result);
 		Assert.AreEqual("x", result[0].Tags);
 	}
 
@@ -110,7 +112,7 @@ public sealed class StarskyReadToolsTest
 
 		var result = await tools.GetPhotoInfo(items.Select(p => p.FilePath!).ToArray());
 
-		Assert.AreEqual(2, result.Count);
+		Assert.HasCount(2, result);
 	}
 
 	[TestMethod]
@@ -118,9 +120,9 @@ public sealed class StarskyReadToolsTest
 	{
 		var tools = Create([Item("/a.jpg")]);
 
-		Assert.AreEqual(0, ( await tools.GetPhotoInfo([]) ).Count);
-		Assert.AreEqual(0, ( await tools.GetPhotoInfo(["/", ""]) ).Count);
-		Assert.AreEqual(0, ( await tools.GetPhotoInfo(null!) ).Count);
+		Assert.IsEmpty(await tools.GetPhotoInfo([]));
+		Assert.IsEmpty(await tools.GetPhotoInfo(["/", ""]));
+		Assert.IsEmpty(await tools.GetPhotoInfo(null!));
 	}
 
 	[TestMethod]
@@ -130,7 +132,28 @@ public sealed class StarskyReadToolsTest
 
 		var result = await tools.SuggestTags("ho");
 
-		CollectionAssert.AreEqual(new[] { "holiday", "home" }, result.ToArray());
-		Assert.AreEqual(0, ( await tools.SuggestTags(" ") ).Count);
+		Assert.AreSequenceEqual(HolidayAndHome, result);
+		Assert.IsEmpty(await tools.SuggestTags(" "));
+	}
+
+	[TestMethod]
+	public async Task SearchPhotos_NoItemsInResult_ReturnsEmptyList()
+	{
+		var search = new FakeISearch { ReturnNullItems = true };
+		var tools = Create(search: search);
+
+		var result = await tools.SearchPhotos("x");
+
+		Assert.IsEmpty(result.Items);
+	}
+
+	[TestMethod]
+	public void ListFolder_NullOrRoot_UsesRoot()
+	{
+		var tools = Create([Item("/a.jpg")]);
+
+		Assert.AreEqual("/", tools.ListFolder(null!).Path);
+		Assert.AreEqual("/", tools.ListFolder("/").Path);
+		Assert.AreEqual("/", tools.ListFolder("").Path);
 	}
 }

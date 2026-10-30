@@ -17,6 +17,8 @@ namespace starskytest.starsky.project.mcp;
 [TestClass]
 public sealed class StarskyWriteToolsTest
 {
+	private static readonly string[] AandBPaths = ["/a.jpg", "/b.jpg"];
+
 	private sealed class Setup
 	{
 		public required StarskyWriteTools Tools { get; init; }
@@ -40,10 +42,11 @@ public sealed class StarskyWriteToolsTest
 		var runner = new FakeIMetaUpdateRunner(items);
 		var storage = new FakeIStorage(["/"], ["/a.jpg", "/b.jpg"]);
 		var notifications = new FakeINotificationQuery();
-		var tools = new StarskyWriteTools(guard, new FakeIMetaInfo(items),
-			new FakeIMoveToTrashService(items), runner,
-			new FakeIQuery(items), new FakeSelectorStorage(storage), notifications,
+		var renameService = new McpRenameService(new FakeIQuery(items),
+			new FakeSelectorStorage(storage), notifications,
 			new FakeIWebSocketConnectionsService(), logger);
+		var tools = new StarskyWriteTools(guard, new FakeIMetaInfo(items),
+			new FakeIMoveToTrashService(items), runner, renameService);
 		return new Setup
 		{
 			Tools = tools,
@@ -70,7 +73,7 @@ public sealed class StarskyWriteToolsTest
 
 		Assert.AreEqual(McpWriteOutcome.Preview, result.Status);
 		Assert.IsNotNull(result.ConfirmToken);
-		Assert.AreEqual(1, result.Items.Count);
+		Assert.HasCount(1, result.Items);
 		Assert.IsFalse(logger.TrackedInformation.Exists(p => p.Item2!.Contains("phase=done")));
 	}
 
@@ -83,7 +86,7 @@ public sealed class StarskyWriteToolsTest
 		var result = await tools.MoveToTrash(["/a.jpg", "/b.jpg"], true, preview.ConfirmToken);
 
 		Assert.AreEqual(McpWriteOutcome.Executed, result.Status);
-		Assert.AreEqual(2, result.Items.Count);
+		Assert.HasCount(2, result.Items);
 		Assert.Contains("2 existing", result.Message);
 		Assert.IsNull(result.ConfirmToken);
 		Assert.IsTrue(logger.TrackedInformation.Exists(p => p.Item2!.Contains("phase=done")));
@@ -155,7 +158,7 @@ public sealed class StarskyWriteToolsTest
 		Assert.IsNotNull(result.ConfirmToken);
 		Assert.Contains("holiday", result.Message);
 		Assert.Contains("colorClass 2", result.Message);
-		Assert.AreEqual(0, setup.Runner.Calls.Count);
+		Assert.IsEmpty(setup.Runner.Calls);
 	}
 
 	[TestMethod]
@@ -170,14 +173,14 @@ public sealed class StarskyWriteToolsTest
 			confirmToken: preview.ConfirmToken);
 
 		Assert.AreEqual(McpWriteOutcome.Executed, result.Status);
-		Assert.AreEqual(2, result.Items.Count);
+		Assert.HasCount(2, result.Items);
 		var call = setup.Runner.Calls.Single();
 		Assert.AreEqual("holiday", call.Model.Tags);
 		Assert.AreEqual("Title", call.Model.Title);
 		Assert.AreEqual("Desc", call.Model.Description);
 		Assert.AreEqual(ColorClassParser.Color.Superior, call.Model.ColorClass);
 		Assert.IsTrue(call.Append);
-		CollectionAssert.AreEqual(new[] { "/a.jpg", "/b.jpg" }, call.Paths);
+		Assert.AreSequenceEqual(AandBPaths, call.Paths);
 	}
 
 	[TestMethod]
@@ -202,7 +205,7 @@ public sealed class StarskyWriteToolsTest
 			confirmToken: preview.ConfirmToken);
 
 		Assert.AreEqual(McpWriteOutcome.Rejected, result.Status);
-		Assert.AreEqual(0, setup.Runner.Calls.Count);
+		Assert.IsEmpty(setup.Runner.Calls);
 	}
 
 	[TestMethod]
@@ -253,7 +256,7 @@ public sealed class StarskyWriteToolsTest
 		Assert.Contains("/a.jpg will be renamed to /c.jpg", result.Message);
 		Assert.IsTrue(setup.Storage.ExistFile("/a.jpg"));
 		Assert.IsFalse(setup.Storage.ExistFile("/c.jpg"));
-		Assert.AreEqual(0, setup.Notifications.FakeContent.Count);
+		Assert.IsEmpty(setup.Notifications.FakeContent);
 	}
 
 	[TestMethod]
@@ -268,7 +271,7 @@ public sealed class StarskyWriteToolsTest
 		Assert.AreEqual(McpWriteOutcome.Executed, result.Status);
 		Assert.IsFalse(setup.Storage.ExistFile("/a.jpg"));
 		Assert.IsTrue(setup.Storage.ExistFile("/c.jpg"));
-		Assert.AreEqual(true, setup.Notifications.Added);
+		Assert.IsTrue(setup.Notifications.Added);
 	}
 
 	[TestMethod]

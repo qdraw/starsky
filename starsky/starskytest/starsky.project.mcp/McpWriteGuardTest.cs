@@ -9,6 +9,8 @@ namespace starskytest.starsky.project.mcp;
 [TestClass]
 public sealed class McpWriteGuardTest
 {
+	private static readonly string[] SingleAPath = ["/a.jpg"];
+
 	private static (McpWriteGuard guard, FakeIWebLogger logger) Create(
 		AppSettings? appSettings = null, McpConfirmationStore? store = null,
 		string user = "alice")
@@ -90,7 +92,7 @@ public sealed class McpWriteGuardTest
 		var result = guard.Gate("tool", ["/a.jpg", "a.jpg/"], "", null);
 
 		Assert.AreEqual(McpGateDecision.NeedsConfirmation, result.Decision);
-		CollectionAssert.AreEqual(new[] { "/a.jpg" }, result.Paths.ToArray());
+		Assert.AreSequenceEqual(SingleAPath, result.Paths);
 	}
 
 	[TestMethod]
@@ -181,5 +183,66 @@ public sealed class McpWriteGuardTest
 		guard.Gate("tool", ["/a.jpg"], "", null);
 
 		Assert.IsTrue(logger.TrackedInformation.Exists(p => p.Item2!.Contains("user=42")));
+	}
+
+	[TestMethod]
+	public void Gate_NoHttpContext_CallerIsUnknown()
+	{
+		var logger = new FakeIWebLogger();
+		var guard = new McpWriteGuard(new AppSettings { McpAllowWrite = true },
+			new McpConfirmationStore(),
+			new FakeIHttpContextAccessor { HttpContext = null }, logger);
+
+		guard.Gate("tool", ["/a.jpg"], "", null);
+
+		Assert.IsTrue(logger.TrackedInformation.Exists(p => p.Item2!.Contains("user=unknown")));
+	}
+
+	[TestMethod]
+	public void Gate_NameIdentifierWinsOverName()
+	{
+		var logger = new FakeIWebLogger();
+		var accessor = new FakeIHttpContextAccessor("alice");
+		accessor.HttpContext!.User = new System.Security.Claims.ClaimsPrincipal(
+			new System.Security.Claims.ClaimsIdentity([
+				new System.Security.Claims.Claim(System.Security.Claims.ClaimTypes.Name,
+					"alice"),
+				new System.Security.Claims.Claim(
+					System.Security.Claims.ClaimTypes.NameIdentifier, "7")
+			], "test"));
+		var guard = new McpWriteGuard(new AppSettings { McpAllowWrite = true },
+			new McpConfirmationStore(), accessor, logger);
+
+		guard.Gate("tool", ["/a.jpg"], "", null);
+
+		Assert.IsTrue(logger.TrackedInformation.Exists(p => p.Item2!.Contains("user=7")));
+	}
+
+	[TestMethod]
+	public void ValidateTarget_AllowedAndNotAllowed()
+	{
+		var (guard, _) = Create(new AppSettings
+		{
+			McpAllowWrite = true, ReadOnlyFolders = ["/readonly"]
+		});
+
+		Assert.AreEqual("/new/a.jpg", guard.ValidateTarget("new/a.jpg/"));
+		Assert.IsNull(guard.ValidateTarget("/readonly/a.jpg"));
+		Assert.IsNull(guard.ValidateTarget("/../a.jpg"));
+		Assert.IsNull(guard.ValidateTarget(null));
+	}
+
+	[TestMethod]
+	public void Gate_PrincipalWithoutIdentity_CallerIsUnknown()
+	{
+		var logger = new FakeIWebLogger();
+		var accessor = new FakeIHttpContextAccessor(null);
+		accessor.HttpContext!.User = new System.Security.Claims.ClaimsPrincipal();
+		var guard = new McpWriteGuard(new AppSettings { McpAllowWrite = true },
+			new McpConfirmationStore(), accessor, logger);
+
+		guard.Gate("tool", ["/a.jpg"], "", null);
+
+		Assert.IsTrue(logger.TrackedInformation.Exists(p => p.Item2!.Contains("user=unknown")));
 	}
 }

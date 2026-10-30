@@ -23,7 +23,7 @@ public sealed record McpGateResult(
 	McpGateDecision Decision,
 	IReadOnlyList<string> Paths,
 	string? ConfirmToken = null,
-	string? Message = null);
+	string Message = "");
 
 /// <summary>
 ///     Guard rails in front of every MCP tool that changes files, so a tool can't skip them

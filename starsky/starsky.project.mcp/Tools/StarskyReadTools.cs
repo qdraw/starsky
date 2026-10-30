@@ -34,7 +34,7 @@ public sealed class StarskyReadTools(
 	{
 		var result = await search.Search(query, Math.Max(0, page), true, collections);
 		return new McpSearchResult(result.SearchCount, result.PageNumber, result.LastPageNumber,
-			( result.FileIndexItems ?? [] ).Select(McpPhoto.FromItem).ToList());
+			McpPhoto.FromItems(result.FileIndexItems ?? []));
 	}
 
 	[McpServerTool(Name = "list_folder", ReadOnly = true, Idempotent = true, OpenWorld = false)]
@@ -48,7 +48,7 @@ public sealed class StarskyReadTools(
 		var items = indexQuery.DisplayFileFolders(subPath).ToList();
 		return new McpFolderResult(subPath, items.Count,
 			items.Count > MaxFolderItems,
-			items.Take(MaxFolderItems).Select(McpPhoto.FromItem).ToList(),
+			McpPhoto.FromItems(items, MaxFolderItems),
 			appSettings.IsReadOnly(subPath));
 	}
 
@@ -70,7 +70,7 @@ public sealed class StarskyReadTools(
 		}
 
 		var items = await metaInfo.GetInfoAsync(subPaths, collections);
-		return items.Select(McpPhoto.FromItem).ToList();
+		return McpPhoto.FromItems(items);
 	}
 
 	[McpServerTool(Name = "suggest_tags", ReadOnly = true, Idempotent = true, OpenWorld = false)]

@@ -1,19 +1,13 @@
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using ModelContextProtocol.Server;
 using starsky.project.mcp.Models;
 using starsky.project.mcp.Services;
 using starsky.feature.metaupdate.Interfaces;
-using starsky.feature.rename.Helpers;
-using starsky.feature.rename.Services;
 using starsky.feature.trash.Interfaces;
-using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.platform.Helpers;
-using starsky.foundation.platform.Interfaces;
-using starsky.foundation.realtime.Interfaces;
-using starsky.foundation.storage.Interfaces;
-using starsky.foundation.storage.Storage;
 
 namespace starsky.project.mcp.Tools;
 
@@ -27,11 +21,7 @@ public sealed class StarskyWriteTools(
 	IMetaInfo metaInfo,
 	IMoveToTrashService moveToTrashService,
 	IMetaUpdateRunner metaUpdateRunner,
-	IQuery query,
-	ISelectorStorage selectorStorage,
-	INotificationQuery notificationQuery,
-	IWebSocketConnectionsService connectionsService,
-	IWebLogger logger)
+	McpRenameService renameService)
 {
 	public const string MoveToTrashTool = "move_to_trash";
 	public const string UpdateMetadataTool = "update_metadata";
@@ -57,13 +47,13 @@ public sealed class StarskyWriteTools(
 		switch ( gate.Decision )
 		{
 			case McpGateDecision.Rejected:
-				return McpWriteOutcome.Reject(gate.Message ?? "Rejected");
+				return McpWriteOutcome.Reject(gate.Message);
 			case McpGateDecision.NeedsConfirmation:
 				var current = await metaInfo.GetInfoAsync(gate.Paths.ToList(), collections);
 				return new McpWriteOutcome(McpWriteOutcome.Preview,
 					$"{current.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)} file(s) " +
 					"will be moved to the trash. Nothing is changed yet.",
-					gate.ConfirmToken, current.Select(McpPhoto.FromItem).ToList());
+					gate.ConfirmToken, McpPhoto.FromItems(current));
 		}
 
 		// the system trash removes the file from the source, so the status after the move
@@ -74,9 +64,12 @@ public sealed class StarskyWriteTools(
 		guard.Audit(MoveToTrashTool, gate.Paths, $"existed={existing}");
 		return new McpWriteOutcome(McpWriteOutcome.Executed,
 			$"{existing} existing file(s) moved to the trash.",
-			null, moved.Select(McpPhoto.FromItem).ToList());
+			null, McpPhoto.FromItems(moved));
 	}
 
+	[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters",
+		Justification = "Every parameter is an argument of the MCP tool, " +
+		                "the agent sees them as the tool's input schema")]
 	[McpServerTool(Name = UpdateMetadataTool, ReadOnly = false, Destructive = true,
 		Idempotent = true, OpenWorld = false)]
 	[Description("Change tags, title, description or color class of files (written to the " +
@@ -118,7 +111,7 @@ public sealed class StarskyWriteTools(
 		var gate = guard.Gate(UpdateMetadataTool, paths, args, confirmToken);
 		if ( gate.Decision == McpGateDecision.Rejected )
 		{
-			return McpWriteOutcome.Reject(gate.Message ?? "Rejected");
+			return McpWriteOutcome.Reject(gate.Message);
 		}
 
 		if ( gate.Decision == McpGateDecision.NeedsConfirmation )
@@ -129,7 +122,7 @@ public sealed class StarskyWriteTools(
 				$"be changed ({( append ? "append" : "replace" )}): " +
 				$"{DescribeChange(tags, title, description, colorClass)}. " +
 				"The items show the current values. Nothing is changed yet.",
-				gate.ConfirmToken, current.Select(McpPhoto.FromItem).ToList());
+				gate.ConfirmToken, McpPhoto.FromItems(current));
 		}
 
 		var model = new FileIndexItem
@@ -149,13 +142,13 @@ public sealed class StarskyWriteTools(
 		{
 			return new McpWriteOutcome(McpWriteOutcome.Rejected,
 				"None of the files was found, nothing is changed.", null,
-				result.Results.Select(McpPhoto.FromItem).ToList());
+				McpPhoto.FromItems(result.Results));
 		}
 
 		return new McpWriteOutcome(McpWriteOutcome.Executed,
 			$"{result.Updated!.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)} " +
 			"file(s) updated. The change is written to disk in the background.",
-			null, result.Updated!.Select(McpPhoto.FromItem).ToList());
+			null, McpPhoto.FromItems(result.Updated!));
 	}
 
 	[McpServerTool(Name = RenameTool, ReadOnly = false, Destructive = true,
@@ -184,7 +177,7 @@ public sealed class StarskyWriteTools(
 			confirmToken);
 		if ( gate.Decision == McpGateDecision.Rejected )
 		{
-			return McpWriteOutcome.Reject(gate.Message ?? "Rejected");
+			return McpWriteOutcome.Reject(gate.Message);
 		}
 
 		var source = gate.Paths[0];
@@ -193,12 +186,10 @@ public sealed class StarskyWriteTools(
 			var current = await metaInfo.GetInfoAsync([source], collections);
 			return new McpWriteOutcome(McpWriteOutcome.Preview,
 				$"{source} will be renamed to {target}. Nothing is changed yet.",
-				gate.ConfirmToken, current.Select(McpPhoto.FromItem).ToList());
+				gate.ConfirmToken, McpPhoto.FromItems(current));
 		}
 
-		var renameService = new RenameService(query,
-			selectorStorage.Get(SelectorStorage.StorageServices.SubPath), logger);
-		var renamed = await renameService.Rename(source, target, collections);
+		var renamed = await renameService.RenameAsync(source, target, collections);
 		var success = renamed.Exists(p => p.Status == FileIndexItem.ExifStatus.Ok);
 		guard.Audit(RenameTool, gate.Paths,
 			$"to={target} {string.Join(',', renamed.Select(p => p.Status))}");
@@ -207,13 +198,12 @@ public sealed class StarskyWriteTools(
 			return new McpWriteOutcome(McpWriteOutcome.Rejected,
 				"Nothing is renamed, see the status of the items " +
 				"(for example the source is missing or the target exists).", null,
-				renamed.Select(McpPhoto.FromItem).ToList());
+				McpPhoto.FromItems(renamed));
 		}
 
-		await RenameNotification.SendAsync(renamed, notificationQuery, connectionsService);
 		return new McpWriteOutcome(McpWriteOutcome.Executed, $"Renamed to {target}.", null,
-			renamed.Where(p => p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing)
-				.Select(McpPhoto.FromItem).ToList());
+			McpPhoto.FromItems(renamed.Where(p =>
+				p.Status != FileIndexItem.ExifStatus.NotFoundSourceMissing)));
 	}
 
 	private static string DescribeChange(string? tags, string? title, string? description,
