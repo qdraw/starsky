@@ -149,10 +149,8 @@ public sealed class TenantEdgeCasesTest
 		await Seed(setup);
 		await setup.AddActiveTenant("beta");
 		var interceptor = new FailOnce();
-		await using var context = setup.ContextFor("default", builder => builder
-			.UseSqlite(builder.Options.FindExtension<
-					Microsoft.EntityFrameworkCore.Sqlite.Infrastructure.Internal.SqliteOptionsExtension>()!
-				.Connection!, o => o.ExecutionStrategy(d => new RetryTestExceptions(d)))
+		await using var context = setup.ContextFor("default", (builder, connection) => builder
+			.UseSqlite(connection, o => o.ExecutionStrategy(d => new RetryTestExceptions(d)))
 			.AddInterceptors(interceptor));
 
 		var result = await new TenantMembershipService(context)

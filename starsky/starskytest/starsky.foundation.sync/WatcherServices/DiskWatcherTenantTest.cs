@@ -229,7 +229,7 @@ public sealed class DiskWatcherTenantTest
 		new DiskWatcherBackgroundService(fakeWatcher, appSettings, new FakeIWebLogger(), registry,
 			provider).StartWatchers();
 
-		Assert.AreEqual(2, fakeWatcher.AddedByTenant.Count);
+		Assert.HasCount(2, fakeWatcher.AddedByTenant);
 		Assert.AreEqual(Path.Combine(_root, "mapped"), fakeWatcher.AddedByTenant[1].Path);
 	}
 

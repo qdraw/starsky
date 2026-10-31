@@ -16,6 +16,8 @@ namespace starskytest.starsky.foundation.platform.Tenancy;
 [TestClass]
 public sealed class TenantPlatformCoverageTest
 {
+	public TestContext TestContext { get; set; } = null!;
+
 	private readonly string _root =
 		Path.Combine(Path.GetTempPath(), "starsky-tenant-cov-" + Guid.NewGuid().ToString("N"));
 
@@ -64,13 +66,13 @@ public sealed class TenantPlatformCoverageTest
 		Assert.AreEqual("/a.jpg",
 			settings.FullPathStorageFolderToDatabaseStyle(
 				Path.Combine(_root, "storage", "a.jpg")));
-		CollectionAssert.AreEqual(new List<string> { "/a.jpg" },
+		Assert.AreSequenceEqual(new List<string> { "/a.jpg" },
 			settings.RenameListItemsToDbStyle([Path.Combine(_root, "storage", "a.jpg")]));
 		var withDate = settings.RenameListItemsToDbStyle(
 			[new KeyValuePair<string, DateTime>(Path.Combine(_root, "storage", "a.jpg"),
 				DateTime.UnixEpoch)]).ToList();
 		Assert.AreEqual("/a.jpg", withDate.Single().Key);
-		CollectionAssert.AreEqual(new List<string> { "/a.jpg" },
+		Assert.AreSequenceEqual(new List<string> { "/a.jpg" },
 			settings.RenameTempListItemsToDbStyle([Path.Combine(_root, "temp", "a.jpg")]));
 	}
 
@@ -129,7 +131,8 @@ public sealed class TenantPlatformCoverageTest
 
 		var failures = await TenantJobs.ForTenantsAsync(
 			provider.GetRequiredService<IServiceScopeFactory>(), ["default"],
-			(_, _) => throw new InvalidOperationException("boom"));
+			(_, _) => throw new InvalidOperationException("boom"),
+			cancellationToken: TestContext.CancellationToken);
 
 		Assert.HasCount(1, failures);
 		Assert.AreEqual("default", failures[0].TenantId);

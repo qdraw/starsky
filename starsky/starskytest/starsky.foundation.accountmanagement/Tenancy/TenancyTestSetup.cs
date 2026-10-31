@@ -61,12 +61,12 @@ internal sealed class TenancyTestSetup : IAsyncDisposable
 	}
 
 	public ApplicationDbContext ContextFor(string tenantId,
-		Action<DbContextOptionsBuilder<ApplicationDbContext>>? configure = null)
+		Action<DbContextOptionsBuilder<ApplicationDbContext>, SqliteConnection>? configure = null)
 	{
 		var tenant = new TenantContext();
 		tenant.SetTenant(tenantId);
 		var builder = new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlite(_connection);
-		configure?.Invoke(builder);
+		configure?.Invoke(builder, _connection);
 		return new ApplicationDbContext(builder.Options, tenant);
 	}
 

@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +14,8 @@ namespace starskytest.starsky.foundation.database.QueryTest;
 [TestClass]
 public sealed class QueryAddParentItemsFallbackTest
 {
+	public TestContext TestContext { get; set; } = null!;
+
 	[TestMethod]
 	public async Task AddParentItemsAsync_PrimaryContextFails_UsesScopedFallback()
 	{
@@ -27,7 +28,7 @@ public sealed class QueryAddParentItemsFallbackTest
 		{
 			IsDirectory = true, ParentDirectory = "/", FileName = "/"
 		});
-		await dbContext.SaveChangesAsync();
+		await dbContext.SaveChangesAsync(TestContext.CancellationToken);
 
 		var query = new Query(primary, new AppSettings { AddMemoryCache = false }, scopeFactory,
 			new FakeIWebLogger());
