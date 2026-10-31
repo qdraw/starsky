@@ -266,6 +266,7 @@ public class ApplicationDbContext : DbContext
 				// a membership: the same user can have a role in every tenant
 				etb.HasKey(e => new { e.UserId, e.TenantId, e.RoleId });
 				etb.Property(e => e.TenantId).IsRequired().HasMaxLength(63)
+					.HasColumnType("varchar(63)")
 					.HasDefaultValue(TenantIdHelper.DefaultTenantId);
 				etb.HasIndex(e => e.TenantId);
 				// one role per user per tenant: two requests can not both add a membership
@@ -279,7 +280,7 @@ public class ApplicationDbContext : DbContext
 			{
 				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
 				etb.HasKey(e => e.Id);
-				etb.Property(e => e.Id).IsRequired().HasMaxLength(63);
+				etb.Property(e => e.Id).IsRequired().HasMaxLength(63).HasColumnType("varchar(63)");
 				etb.Property(e => e.DisplayName).IsRequired().HasMaxLength(150);
 				etb.Property(e => e.StorageFolder).HasMaxLength(1024);
 				etb.Property(e => e.ThumbnailTempFolder).HasMaxLength(1024);
@@ -441,6 +442,8 @@ public class ApplicationDbContext : DbContext
 		{
 			modelBuilder.Entity(clrType)
 				.Property<string>(ITenantEntity.TenantPropertyName)
+				// a key column: TEXT can not be (part of) a key in MySQL
+				.HasColumnType("varchar(63)")
 				.HasMaxLength(63)
 				.IsRequired()
 				// existing rows become the default tenant

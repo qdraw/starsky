@@ -207,7 +207,7 @@ namespace starsky.foundation.database.Migrations
                     b.Property<string>("TenantId")
                         .ValueGeneratedOnAdd()
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(63)")
                         .HasDefaultValue("default");
 
                     b.Property<int>("RoleId")
@@ -406,7 +406,7 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(63)")
                         .HasDefaultValue("default");
 
                     b.Property<string>("Title")
@@ -595,7 +595,7 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(63)")
                         .HasDefaultValue("default");
 
                     b.HasKey("Id");
@@ -629,7 +629,7 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(63)")
                         .HasDefaultValue("default");
 
                     b.HasKey("Id");
@@ -693,7 +693,7 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .IsRequired()
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(63)")
                         .HasDefaultValue("default");
 
                     b.Property<string>("TraceParentId")
@@ -716,7 +716,7 @@ namespace starsky.foundation.database.Migrations
                     b.Property<string>("TenantId")
                         .IsConcurrencyToken()
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(63)")
                         .HasDefaultValue("default");
 
                     b.Property<string>("Key")
@@ -745,7 +745,7 @@ namespace starsky.foundation.database.Migrations
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT");
+                        .HasColumnType("varchar(63)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
@@ -782,7 +782,7 @@ namespace starsky.foundation.database.Migrations
                     b.Property<string>("TenantId")
                         .IsConcurrencyToken()
                         .HasMaxLength(63)
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(63)")
                         .HasDefaultValue("default");
 
                     b.Property<string>("FileHash")

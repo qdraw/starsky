@@ -178,16 +178,28 @@ public sealed class TenantMembershipService(
 			return await work();
 		}
 
-		await using var transaction =
-			await dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
-		var result = await work();
-		if ( result == MembershipResult.Ok )
+		// MySQL has a retrying execution strategy: a transaction must be run through it (as one unit
+		// that can be repeated), otherwise it refuses to start. The work reads its state again
+		var attempt = 0;
+		return await dbContext.Database.CreateExecutionStrategy().ExecuteAsync(async () =>
 		{
-			await transaction.CommitAsync();
-		}
+			if ( attempt++ > 0 )
+			{
+				// a repeat: what the failed attempt tracked is not valid anymore
+				dbContext.ChangeTracker.Clear();
+			}
 
-		// everything else is rolled back (nothing was written) when the transaction is disposed
-		return result;
+			await using var transaction =
+				await dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+			var result = await work();
+			if ( result == MembershipResult.Ok )
+			{
+				await transaction.CommitAsync();
+			}
+
+			// everything else is rolled back (nothing was written) when the transaction is disposed
+			return result;
+		});
 	}
 
 	private async Task<MembershipResult> AddMemberCore(string tenantId, string identifier,
