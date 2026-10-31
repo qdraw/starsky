@@ -75,7 +75,7 @@ public partial class Query // For folder displays only
 		}
 
 		// Return values from IMemoryCache
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			subPath);
 
 		if ( !_cache.TryGetValue(queryCacheName,
@@ -165,12 +165,12 @@ public partial class Query // For folder displays only
 		catch ( NotSupportedException )
 		{
 			// System.NotSupportedException:  The ReadAsync method cannot be called when another read operation is pending.
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return scope.Execute(QueryItems);
 		}
 		catch ( InvalidOperationException ) // or ObjectDisposedException
 		{
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return scope.Execute(QueryItems);
 		}
 	}

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -20,12 +21,29 @@ public sealed class StorageThumbnailFilesystem : IStorage
 {
 	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
+	private readonly Func<ITenantSettings> _tenantSettings;
 
+	/// <summary>
+	///     Without a request (CLI, tests): the default tenant
+	/// </summary>
 	public StorageThumbnailFilesystem(AppSettings appSettings, IWebLogger logger)
 	{
 		_appSettings = appSettings;
 		_logger = logger;
+		var defaultTenant = new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = () => defaultTenant;
 	}
+
+	public StorageThumbnailFilesystem(AppSettings appSettings, IWebLogger logger,
+		ITenantContext tenantContext, ITenantSettingsProvider tenantSettingsProvider)
+	{
+		_appSettings = appSettings;
+		_logger = logger;
+		// resolved per call: the tenant is set by the middleware, after the scope is created
+		_tenantSettings = () => tenantSettingsProvider.GetSettings(tenantContext.TenantId);
+	}
+
+	private ITenantSettings Settings => _tenantSettings();
 
 	public bool IsFileReady(string path)
 	{
@@ -55,7 +73,7 @@ public sealed class StorageThumbnailFilesystem : IStorage
 	public bool ExistFolder(string path)
 	{
 		// only for the root folder
-		return new StorageHostFullPathFilesystem(_logger).ExistFolder(_appSettings
+		return new StorageHostFullPathFilesystem(_logger).ExistFolder(Settings
 			.ThumbnailTempFolder);
 	}
 
@@ -140,7 +158,7 @@ public sealed class StorageThumbnailFilesystem : IStorage
 
 	public IEnumerable<string> GetAllFilesInDirectory(string path)
 	{
-		var dirInfo = new DirectoryInfo(_appSettings.ThumbnailTempFolder);
+		var dirInfo = new DirectoryInfo(Settings.ThumbnailTempFolder);
 		return dirInfo.EnumerateFiles($"*.{_appSettings.ThumbnailImageFormat}",
 				SearchOption.TopDirectoryOnly)
 			.Select(p => p.Name).ToList();
@@ -209,6 +227,6 @@ public sealed class StorageThumbnailFilesystem : IStorage
 
 	internal string CombinePath(string fileHash)
 	{
-		return Path.Combine(_appSettings.ThumbnailTempFolder, fileHash);
+		return Path.Combine(Settings.ThumbnailTempFolder, fileHash);
 	}
 }

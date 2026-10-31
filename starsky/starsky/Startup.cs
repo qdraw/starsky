@@ -21,6 +21,7 @@ using starsky.feature.health.HealthCheck;
 using starsky.feature.packagetelemetry.Services;
 using starsky.feature.syncbackground.Services;
 using starsky.foundation.accountmanagement.Extensions;
+using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.database.Data;
 using starsky.foundation.database.DataProtection;
 using starsky.foundation.database.Helpers;
@@ -28,6 +29,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.realtime.Extentions;
 using starsky.foundation.realtime.Model;
 using starsky.foundation.video.GetDependencies;
@@ -261,6 +263,15 @@ public sealed class Startup
 		// Use the name of the application to use behind a reverse proxy
 		app.UsePathBase(PathHelper.PrefixDbSlash("starsky"));
 
+		// /t/{tenant}/ after the base path; no prefix is the default tenant
+		app.UseTenantResolution();
+		if ( _appSettings != null )
+		{
+			// fail at startup, not on the first request, when tenant folders overlap
+			// (null: tests build the application builder without the scanned services)
+			app.ApplicationServices.GetService<ITenantSettingsProvider>()?.ValidateRoots();
+		}
+
 		app.UseRouting();
 
 		// after routing: the policies are attached to endpoints with [EnableRateLimiting]
@@ -280,6 +291,8 @@ public sealed class Startup
 		app.UseNoAccount(_appSettings?.NoAccountLocalhost == true ||
 		                 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
 		app.UseCheckIfAccountExist();
+		// roles are per tenant: after authentication, so also for Basic authentication
+		app.UseTenantMembership();
 
 		app.UseAuthorization();
 

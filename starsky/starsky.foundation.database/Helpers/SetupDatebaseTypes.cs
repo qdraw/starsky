@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MySqlConnector;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.platform.Interfaces;
 
 namespace starsky.foundation.database.Helpers;
@@ -113,7 +114,8 @@ public sealed class SetupDatabaseTypes
 			_logger.LogInformation($"Database connection: {_appSettings.DatabaseConnection}");
 		}
 
-		_services.AddScoped(_ =>
-			new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName)));
+		_services.AddScoped(serviceProvider =>
+			new ApplicationDbContext(BuilderDbFactorySwitch(foundationDatabaseName),
+				serviceProvider.GetService<ITenantContext>()));
 	}
 }

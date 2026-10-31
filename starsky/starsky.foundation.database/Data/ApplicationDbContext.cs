@@ -1,17 +1,75 @@
 using System;
 using System.Globalization;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Models.Account;
+using starsky.foundation.platform.Tenancy;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 
 namespace starsky.foundation.database.Data;
 
-public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+/// <param name="options">options</param>
+/// <param name="tenantContext">
+///     the tenant of the current request; null (CLI, tests, design time) is the default tenant
+/// </param>
+public class ApplicationDbContext : DbContext
 {
+	private readonly ITenantContext? _tenantContext;
+
+	public ApplicationDbContext(DbContextOptions options, ITenantContext? tenantContext = null) :
+		base(options)
+	{
+		_tenantContext = tenantContext;
+		try
+		{
+			HookTenantTracking();
+		}
+		catch ( InvalidOperationException )
+		{
+			// no database provider configured (design time or a test double): nothing can be
+			// tracked, so there is nothing to hook
+		}
+	}
+
+	/// <summary>
+	///     Read by the query filters on every query (EF parameterizes it per context instance)
+	/// </summary>
+	public string TenantId => _tenantContext?.TenantId ?? TenantIdHelper.DefaultTenantId;
+
+	private bool _tenantTrackingHooked;
+
+	private void HookTenantTracking()
+	{
+		if ( _tenantTrackingHooked )
+		{
+			return;
+		}
+
+		_tenantTrackingHooked = true;
+		// the tenant is (part of) a key: it must be there when EF starts tracking, not at save
+		ChangeTracker.Tracking += (_, args) =>
+		{
+			if ( args.Entry.Entity is not ITenantEntity )
+			{
+				return;
+			}
+
+			var tenant = args.Entry.Property(ITenantEntity.TenantPropertyName);
+			if ( tenant.CurrentValue == null )
+			{
+				tenant.CurrentValue = TenantId;
+			}
+		};
+	}
+
 	public virtual DbSet<FileIndexItem> FileIndex { get; set; }
 	public DbSet<ImportIndexItem> ImportIndex { get; set; }
 
@@ -22,6 +80,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	public DbSet<UserRole> UserRoles { get; set; }
 	public DbSet<Permission> Permissions { get; set; }
 	public DbSet<RolePermission> RolePermissions { get; set; }
+
+	public DbSet<TenantItem> Tenants { get; set; }
 
 	public DbSet<NotificationItem> Notifications { get; set; }
 
@@ -51,6 +111,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 	{
 		base.OnModelCreating(modelBuilder);
 
+		ConfigureTenantEntities(modelBuilder);
+
 		const string utf8Mb4 = "utf8mb4";
 		const string mySqlCharSetAnnotation = "MySql:CharSet";
 		const string mySqlValueGeneratedOnAdd = "MySql:ValueGeneratedOnAdd";
@@ -71,6 +133,11 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 			etb.HasIndex(x => new { x.FileName, x.ParentDirectory });
 			etb.HasIndex(x => new { x.ParentDirectory, x.FileName });
 			etb.HasIndex(x => new { x.FilePath });
+
+			// every query is filtered by tenant first
+			etb.HasIndex(ITenantEntity.TenantPropertyName, nameof(FileIndexItem.FilePath));
+			etb.HasIndex(ITenantEntity.TenantPropertyName,
+				nameof(FileIndexItem.ParentDirectory), nameof(FileIndexItem.FileName));
 			// The Tags Index is truncated to fit within the index size limit
 			etb.HasIndex(x => new { x.Tags });
 			etb.HasIndex(x => new { x.ImageFormat });
@@ -162,8 +229,25 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 		modelBuilder.Entity<UserRole>(etb =>
 			{
 				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
-				etb.HasKey(e => new { e.UserId, e.RoleId });
+				// a membership: the same user can have a role in every tenant
+				etb.HasKey(e => new { e.UserId, e.TenantId, e.RoleId });
+				etb.Property(e => e.TenantId).IsRequired().HasMaxLength(63)
+					.HasDefaultValue(TenantIdHelper.DefaultTenantId);
+				etb.HasIndex(e => e.TenantId);
 				etb.ToTable("UserRoles");
+			}
+		);
+
+		modelBuilder.Entity<TenantItem>(etb =>
+			{
+				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
+				etb.HasKey(e => e.Id);
+				etb.Property(e => e.Id).IsRequired().HasMaxLength(63);
+				etb.Property(e => e.DisplayName).IsRequired().HasMaxLength(150);
+				etb.Property(e => e.StorageFolder).HasMaxLength(1024);
+				etb.Property(e => e.ThumbnailTempFolder).HasMaxLength(1024);
+				etb.Property(e => e.TempFolder).HasMaxLength(1024);
+				etb.ToTable("Tenants");
 			}
 		);
 
@@ -220,7 +304,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 		modelBuilder.Entity<SettingsItem>(etb =>
 			{
 				etb.Property(e => e.Key).IsRequired().HasMaxLength(150);
-				etb.HasKey(e => e.Key);
+				// the same key can exist in every tenant
+				etb.HasKey(ITenantEntity.TenantPropertyName, nameof(SettingsItem.Key));
 
 				etb.ToTable("Settings");
 				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
@@ -279,7 +364,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 		modelBuilder.Entity<ThumbnailItem>(etb =>
 			{
 				etb.Property(e => e.FileHash).IsRequired().HasMaxLength(190);
-				etb.HasKey(e => e.FileHash);
+				// the same file content (hash) can exist in every tenant
+				etb.HasKey(ITenantEntity.TenantPropertyName, nameof(ThumbnailItem.FileHash));
 
 				etb.ToTable("Thumbnails");
 				etb.HasAnnotation(mySqlCharSetAnnotation, utf8Mb4);
@@ -305,5 +391,93 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 						MySqlValueGenerationStrategy.IdentityColumn);
 			}
 		);
+	}
+
+	private void ConfigureTenantEntities(ModelBuilder modelBuilder)
+	{
+		var applyFilter = typeof(ApplicationDbContext).GetMethod(nameof(ApplyTenantFilter),
+			BindingFlags.NonPublic | BindingFlags.Instance)!;
+
+		foreach ( var clrType in modelBuilder.Model.GetEntityTypes()
+			         .Select(e => e.ClrType)
+			         .Where(t => typeof(ITenantEntity).IsAssignableFrom(t)).ToList() )
+		{
+			modelBuilder.Entity(clrType)
+				.Property<string>(ITenantEntity.TenantPropertyName)
+				.HasMaxLength(63)
+				.IsRequired()
+				// existing rows become the default tenant
+				.HasDefaultValue(TenantIdHelper.DefaultTenantId)
+				// as part of a string key EF would generate a guid: the value comes from the context
+				.ValueGeneratedNever()
+				// an update or delete that targets a row of another tenant matches 0 rows and fails
+				.IsConcurrencyToken();
+
+			applyFilter.MakeGenericMethod(clrType).Invoke(this, [modelBuilder]);
+		}
+	}
+
+	private void ApplyTenantFilter<T>(ModelBuilder modelBuilder) where T : class
+	{
+		// references the TenantId property of this context instance
+		Expression<Func<T, bool>> filter = entity =>
+			EF.Property<string>(entity, ITenantEntity.TenantPropertyName) == TenantId;
+		modelBuilder.Entity<T>().HasQueryFilter(filter);
+	}
+
+	public override int SaveChanges(bool acceptAllChangesOnSuccess)
+	{
+		EnforceTenant();
+		return base.SaveChanges(acceptAllChangesOnSuccess);
+	}
+
+	public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess,
+		CancellationToken cancellationToken = default)
+	{
+		EnforceTenant();
+		return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+	}
+
+	/// <summary>
+	///     New rows get the tenant of this context. Existing rows must already belong to it and
+	///     can never change tenant. Entities that were not loaded (Update/Attach with a key) have
+	///     no tenant yet: they get the context's tenant as the original value, so the update only
+	///     matches a row of this tenant
+	/// </summary>
+	private void EnforceTenant()
+	{
+		foreach ( var entry in ChangeTracker.Entries().Where(e => e.Entity is ITenantEntity) )
+		{
+			var tenant = entry.Property(ITenantEntity.TenantPropertyName);
+			switch ( entry.State )
+			{
+				case EntityState.Added:
+					if ( tenant.CurrentValue is string added && added != TenantId )
+					{
+						throw new InvalidOperationException(
+							"An entity of another tenant can not be added");
+					}
+
+					tenant.CurrentValue = TenantId;
+					break;
+				case EntityState.Modified or EntityState.Deleted or EntityState.Unchanged:
+					if ( tenant.CurrentValue == null )
+					{
+						tenant.CurrentValue = TenantId;
+						tenant.OriginalValue = TenantId;
+						tenant.IsModified = false;
+						break;
+					}
+
+					if ( !TenantId.Equals(tenant.CurrentValue) ||
+					     !TenantId.Equals(tenant.OriginalValue) )
+					{
+						throw new InvalidOperationException(
+							"An entity of another tenant can not be changed or deleted");
+					}
+
+					break;
+			}
+		}
 	}
 }

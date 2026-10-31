@@ -19,7 +19,7 @@ namespace starsky.foundation.database.Migrations
             modelBuilder
                 .HasAnnotation("MySql:CharSet", "utf8mb4")
                 .HasAnnotation("MySql:CharSetDelegation", DelegationModes.ApplyToAll)
-                .HasAnnotation("ProductVersion", "8.0.26");
+                .HasAnnotation("ProductVersion", "10.0.14");
 
             modelBuilder.Entity("starsky.foundation.database.Models.Account.Credential", b =>
                 {
@@ -173,6 +173,9 @@ namespace starsky.foundation.database.Migrations
                     b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsPlatformAdmin")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
@@ -197,12 +200,20 @@ namespace starsky.foundation.database.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("TenantId")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("default");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("UserId", "RoleId");
+                    b.HasKey("UserId", "TenantId", "RoleId");
 
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("UserRoles", (string)null);
 
@@ -383,6 +394,13 @@ namespace starsky.foundation.database.Migrations
                         .HasMaxLength(1024)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("default");
+
                     b.Property<string>("Title")
                         .HasColumnType("TEXT");
 
@@ -405,6 +423,10 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("FileName", "ParentDirectory");
 
                     b.HasIndex("ParentDirectory", "FileName");
+
+                    b.HasIndex("TenantId", "FilePath");
+
+                    b.HasIndex("TenantId", "ParentDirectory", "FileName");
 
                     b.ToTable("FileIndex");
 
@@ -561,6 +583,13 @@ namespace starsky.foundation.database.Migrations
                     b.Property<long>("Size")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("TenantId")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("default");
+
                     b.HasKey("Id");
 
                     b.HasIndex("FileHash")
@@ -587,6 +616,13 @@ namespace starsky.foundation.database.Migrations
 
                     b.Property<long>("DateTimeEpoch")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("TenantId")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("default");
 
                     b.HasKey("Id");
 
@@ -645,6 +681,13 @@ namespace starsky.foundation.database.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("TenantId")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("default");
+
                     b.Property<string>("TraceParentId")
                         .HasMaxLength(512)
                         .HasColumnType("TEXT");
@@ -662,6 +705,12 @@ namespace starsky.foundation.database.Migrations
 
             modelBuilder.Entity("starsky.foundation.database.Models.SettingsItem", b =>
                 {
+                    b.Property<string>("TenantId")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("default");
+
                     b.Property<string>("Key")
                         .HasMaxLength(150)
                         .HasColumnType("varchar(150)");
@@ -677,15 +726,57 @@ namespace starsky.foundation.database.Migrations
                         .HasMaxLength(4096)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Key");
+                    b.HasKey("TenantId", "Key");
 
                     b.ToTable("Settings", (string)null);
 
                     b.HasAnnotation("MySql:CharSet", "utf8mb4");
                 });
 
+            modelBuilder.Entity("starsky.foundation.database.Models.TenantItem", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("StorageFolder")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TempFolder")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ThumbnailTempFolder")
+                        .HasMaxLength(1024)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenants", (string)null);
+
+                    b.HasAnnotation("MySql:CharSet", "utf8mb4");
+                });
+
             modelBuilder.Entity("starsky.foundation.database.Models.ThumbnailItem", b =>
                 {
+                    b.Property<string>("TenantId")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("default");
+
                     b.Property<string>("FileHash")
                         .HasMaxLength(190)
                         .HasColumnType("varchar(190)");
@@ -705,7 +796,7 @@ namespace starsky.foundation.database.Migrations
                     b.Property<bool?>("TinyMeta")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("FileHash");
+                    b.HasKey("TenantId", "FileHash");
 
                     b.HasIndex("ExtraLarge", "Large", "Small")
                         .HasDatabaseName("IX_Thumbnails_Missing");

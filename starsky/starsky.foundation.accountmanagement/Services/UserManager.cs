@@ -22,6 +22,7 @@ using starsky.foundation.database.Models.Account;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using AuthenticationProperties = Microsoft.AspNetCore.Authentication.AuthenticationProperties;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -49,14 +50,22 @@ public sealed class UserManager : IUserManager
 	private readonly ApplicationDbContext _dbContext;
 	private readonly IWebLogger _logger;
 
+	private readonly ITenantContext? _tenantContext;
+
 	public UserManager(ApplicationDbContext dbContext, AppSettings appSettings, IWebLogger logger,
-		IMemoryCache? memoryCache = null)
+		IMemoryCache? memoryCache = null, ITenantContext? tenantContext = null)
 	{
+		_tenantContext = tenantContext;
 		_dbContext = dbContext;
 		_cache = memoryCache;
 		_appSettings = appSettings;
 		_logger = logger;
 	}
+
+	/// <summary>
+	///     Roles are per tenant: the role of a user is the role in the tenant of this request
+	/// </summary>
+	private string TenantId => _tenantContext?.TenantId ?? TenantIdHelper.DefaultTenantId;
 
 	/// <summary>
 	///     Return the number of users in the database
@@ -145,7 +154,13 @@ public sealed class UserManager : IUserManager
 		{
 			// Check if user not already exist
 			var createdDate = DateTime.UtcNow;
-			user = new User { Name = name, Created = createdDate };
+			// the first user of the installation owns the platform (may create tenants)
+			user = new User
+			{
+				Name = name,
+				Created = createdDate,
+				IsPlatformAdmin = !await _dbContext.Users.AnyAsync()
+			};
 
 			await _dbContext.Users.AddAsync(user);
 			await _dbContext.SaveChangesAsync();
@@ -160,9 +175,14 @@ public sealed class UserManager : IUserManager
 			}
 		}
 
-		// Add a user role based on a user id
-		var roleToAdd = roles.Find(p => p.Code == GetRoleAddToUser(identifier, user));
-		AddToRole(user, roleToAdd);
+		// Add a user role based on a user id. An existing user only gets a role when it has no
+		// membership at all: joining a tenant is done by a tenant administrator, otherwise
+		// registering with an existing e-mail address would add that user to this tenant
+		if ( !_dbContext.UserRoles.Any(p => p.UserId == user.Id) )
+		{
+			var roleToAdd = roles.Find(p => p.Code == GetRoleAddToUser(identifier, user));
+			AddToRole(user, roleToAdd);
+		}
 
 		if ( credentialType == null )
 		{
@@ -221,7 +241,8 @@ public sealed class UserManager : IUserManager
 	public void AddToRole(User user, Role? role)
 	{
 		var userRole =
-			_dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
+			_dbContext.UserRoles.FirstOrDefault(p =>
+				p.User != null && p.User.Id == user.Id && p.TenantId == TenantId);
 
 		if ( userRole != null || role == null )
 		{
@@ -229,7 +250,7 @@ public sealed class UserManager : IUserManager
 		}
 
 		// Add a user role based on a user id
-		userRole = new UserRole { UserId = user.Id, RoleId = role.Id };
+		userRole = new UserRole { UserId = user.Id, RoleId = role.Id, TenantId = TenantId };
 		_dbContext.UserRoles.Add(userRole);
 		_dbContext.SaveChanges();
 	}
@@ -249,7 +270,7 @@ public sealed class UserManager : IUserManager
 
 	public void RemoveFromRole(User user, Role role)
 	{
-		var userRole = _dbContext.UserRoles.Find(user.Id, role.Id);
+		var userRole = _dbContext.UserRoles.Find(user.Id, TenantId, role.Id);
 
 		if ( userRole == null )
 		{
@@ -489,10 +510,11 @@ public sealed class UserManager : IUserManager
 
 		var user = await _dbContext.Users.FirstOrDefaultAsync(p => p.Id == credential.UserId);
 
-		var userRole =
-			await _dbContext.UserRoles.FirstOrDefaultAsync(p => p.UserId == credential.UserId);
+		// the user is global: all memberships go with it
+		var userRoles = await _dbContext.UserRoles
+			.Where(p => p.UserId == credential.UserId).ToListAsync();
 
-		if ( userRole == null || user == null )
+		if ( userRoles.Count == 0 || user == null )
 		{
 			return new ValidateResult
 			{
@@ -502,7 +524,7 @@ public sealed class UserManager : IUserManager
 
 		_dbContext.Credentials.Remove(credential);
 		_dbContext.Users.Remove(user);
-		_dbContext.UserRoles.Remove(userRole);
+		_dbContext.UserRoles.RemoveRange(userRoles);
 		await _dbContext.SaveChangesAsync();
 
 		await RemoveUserFromCacheAsync(user);
@@ -571,7 +593,8 @@ public sealed class UserManager : IUserManager
 			return null;
 		}
 
-		var role = _dbContext.UserRoles.FirstOrDefault(p => p.User != null && p.User.Id == user.Id);
+		var role = _dbContext.UserRoles.FirstOrDefault(p =>
+			p.User != null && p.User.Id == user.Id && p.TenantId == TenantId);
 		if ( role == null )
 		{
 			return new Role();
@@ -585,7 +608,7 @@ public sealed class UserManager : IUserManager
 	{
 		var role =
 			await _dbContext.UserRoles.FirstOrDefaultAsync(p =>
-				p.User != null && p.User.Id == userId);
+				p.User != null && p.User.Id == userId && p.TenantId == TenantId);
 		if ( role == null )
 		{
 			return null;
@@ -900,7 +923,7 @@ public sealed class UserManager : IUserManager
 	{
 		var claims = new List<Claim>();
 		IEnumerable<int> roleIds = _dbContext.UserRoles.TagWith("GetUserRoleClaims")
-			.Where(ur => ur.UserId == user.Id).Select(ur => ur.RoleId).ToList();
+			.Where(ur => ur.UserId == user.Id && ur.TenantId == TenantId).Select(ur => ur.RoleId).ToList();
 
 		foreach ( var roleId in roleIds )
 		{

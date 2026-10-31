@@ -3,10 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.feature.settings.Interfaces;
+using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.Controllers;
 
@@ -64,6 +67,14 @@ public sealed class AppSettingsController : Controller
 		if ( !ModelState.IsValid )
 		{
 			return BadRequest("ModelState is not valid");
+		}
+
+		// these settings (and the file they are written to) are shared by all tenants
+		var registry = HttpContext?.RequestServices?.GetService<ITenantRegistry>();
+		if ( registry?.ActiveTenantIds.Count > 1 &&
+		     !User.Claims.Any(c => c.Type == TenantMembershipMiddleware.PlatformAdminClaim) )
+		{
+			return StatusCode(403, "Process wide settings: platform administrator only");
 		}
 
 		var result = await _updateAppSettingsByPath.UpdateAppSettingsAsync(

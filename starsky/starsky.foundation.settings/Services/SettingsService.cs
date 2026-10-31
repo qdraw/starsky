@@ -7,6 +7,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.database.Query;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Interfaces;
@@ -18,11 +19,14 @@ public sealed class SettingsService : ISettingsService
 {
 	private readonly ApplicationDbContext _context;
 	private readonly IServiceScopeFactory _scopeFactory;
+	private readonly ITenantContext? _tenantContext;
 
-	public SettingsService(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory)
+	public SettingsService(ApplicationDbContext dbContext, IServiceScopeFactory scopeFactory,
+		ITenantContext? tenantContext = null)
 	{
 		_context = dbContext;
 		_scopeFactory = scopeFactory;
+		_tenantContext = tenantContext;
 	}
 
 	public async Task<SettingsItem?> GetSetting(SettingsType key)
@@ -39,7 +43,7 @@ public sealed class SettingsService : ISettingsService
 		}
 		catch ( ObjectDisposedException )
 		{
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return await scope.ExecuteAsync(GetSettingLocal);
 		}
 	}
@@ -74,7 +78,7 @@ public sealed class SettingsService : ISettingsService
 			}
 			catch ( ObjectDisposedException )
 			{
-				var scope = new InjectServiceScope(_scopeFactory);
+				var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 				return await scope.ExecuteAsync(context => AddItem(context, item));
 			}
 		}
@@ -85,7 +89,7 @@ public sealed class SettingsService : ISettingsService
 		}
 		catch ( ObjectDisposedException )
 		{
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return await scope.ExecuteAsync(context => UpdateItem(context, item));
 		}
 	}

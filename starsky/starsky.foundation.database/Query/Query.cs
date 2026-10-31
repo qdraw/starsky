@@ -17,6 +17,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.database.Query;
 
@@ -29,13 +30,16 @@ public partial class Query : IQuery
 	private readonly IMemoryCache? _cache;
 	private readonly IWebLogger _logger;
 	private readonly IServiceScopeFactory _scopeFactory;
+	private readonly ITenantContext? _tenantContext;
 	private ApplicationDbContext _context;
 
 	public Query(ApplicationDbContext context,
 		AppSettings appSettings,
 		IServiceScopeFactory scopeFactory,
-		IWebLogger logger, IMemoryCache? memoryCache = null)
+		IWebLogger logger, IMemoryCache? memoryCache = null,
+		ITenantContext? tenantContext = null)
 	{
+		_tenantContext = tenantContext;
 		_context = context;
 		_cache = memoryCache;
 		_appSettings = appSettings;
@@ -73,7 +77,7 @@ public partial class Query : IQuery
 		catch ( ObjectDisposedException e )
 		{
 			_logger.LogInformation("[GetObjectByFilePath] catch-ed ObjectDisposedException", e);
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return scope.Execute(LocalQuery);
 		}
 	}
@@ -92,7 +96,7 @@ public partial class Query : IQuery
 		     _appSettings.AddMemoryCache == true &&
 		     _cache != null &&
 		     _cache.TryGetValue(
-			     GetObjectByFilePathAsyncCacheName(filePath), out var data) )
+			     TenantObjectCacheName(filePath), out var data) )
 		{
 			if ( data is not FileIndexItem fileIndexItem )
 			{
@@ -128,7 +132,7 @@ public partial class Query : IQuery
 			return;
 		}
 
-		_cache.Set(GetObjectByFilePathAsyncCacheName(filePath),
+		_cache.Set(TenantObjectCacheName(filePath),
 			result, cacheTime.Value);
 	}
 
@@ -146,7 +150,7 @@ public partial class Query : IQuery
 		}
 
 		// Return values from IMemoryCache
-		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+		var queryHashListCacheName = TenantCachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 
 		// if the result is not null return cached value
 		if ( _cache!.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
@@ -173,7 +177,7 @@ public partial class Query : IQuery
 			return;
 		}
 
-		var queryHashListCacheName = CachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
+		var queryHashListCacheName = TenantCachingDbName(GetSubPathsByHashAsyncCacheKey, fileHash);
 		if ( _cache.TryGetValue(queryHashListCacheName, out _) )
 		{
 			_cache.Remove(queryHashListCacheName);
@@ -297,7 +301,7 @@ public partial class Query : IQuery
 		}
 		catch ( ObjectDisposedException )
 		{
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return await scope.ExecuteAsync(async context =>
 			{
 				try
@@ -351,7 +355,7 @@ public partial class Query : IQuery
 			}
 
 			// ToList() > Collection was modified; enumeration operation may not execute.
-			var queryCacheName = CachingDbName(nameof(FileIndexItem),
+			var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 				item.ParentDirectory!);
 
 			if ( !_cache.TryGetValue(queryCacheName,
@@ -429,7 +433,7 @@ public partial class Query : IQuery
 			return false;
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
 		if ( !_cache.TryGetValue(queryCacheName, out _) )
 		{
@@ -453,7 +457,7 @@ public partial class Query : IQuery
 			return false;
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			PathHelper.RemoveLatestSlash(directoryName.Clone().ToString()!));
 
 		_cache.Set(queryCacheName, items,
@@ -471,7 +475,7 @@ public partial class Query : IQuery
 	{
 		async Task<FileIndexItem> LocalDefaultQuery()
 		{
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return await scope.ExecuteAsync(LocalQuery);
 		}
 
@@ -610,7 +614,7 @@ public partial class Query : IQuery
 		}
 		catch ( ObjectDisposedException )
 		{
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return await scope.ExecuteAsync(LocalQueryGetItemsByHashAsync);
 		}
 	}
@@ -621,6 +625,26 @@ public partial class Query : IQuery
 	/// <param name="functionName">how is the function called</param>
 	/// <param name="singleItemDbPath">the path</param>
 	/// <returns>a unique key</returns>
+	/// <summary>
+	///     The cache is shared by all tenants: the key of another tenant than the default one
+	///     starts with its id (the default tenant keeps the original keys)
+	/// </summary>
+	private string TenantCachingDbName(string functionName, string? singleItemDbPath)
+	{
+		return TenantPrefix(CachingDbName(functionName, singleItemDbPath));
+	}
+
+	private string TenantObjectCacheName(string subPath)
+	{
+		return TenantPrefix(GetObjectByFilePathAsyncCacheName(subPath));
+	}
+
+	private string TenantPrefix(string key)
+	{
+		var tenantId = _tenantContext?.TenantId ?? TenantIdHelper.DefaultTenantId;
+		return tenantId == TenantIdHelper.DefaultTenantId ? key : $"tenant-{tenantId}:{key}";
+	}
+
 	internal static string CachingDbName(string functionName, string? singleItemDbPath)
 	{
 		// when is nothing assume its the home item
@@ -664,7 +688,7 @@ public partial class Query : IQuery
 				throw new AggregateException("Query Context is null");
 			}
 
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			await scope.ExecuteAsync(async context =>
 			{
 				context.Attach(updateStatusContent).State = EntityState.Modified;
@@ -700,7 +724,7 @@ public partial class Query : IQuery
 			{
 				_logger.LogInformation(
 					"[RetrySaveChangesAsync] SolveConcurrencyExceptionLoop disposed item");
-				var scope = new InjectServiceScope(_scopeFactory);
+				var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 				await scope.ExecuteAsync(async context1 =>
 					await context1.SaveChangesAsync()
 				);
@@ -761,7 +785,7 @@ public partial class Query : IQuery
 				return;
 			}
 
-			var queryCacheName = CachingDbName(nameof(FileIndexItem),
+			var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 				updateStatusContent.ParentDirectory!);
 			if ( !cache.TryGetValue(queryCacheName, out var objectFileFolders) )
 			{
@@ -798,7 +822,7 @@ public partial class Query : IQuery
 			return;
 		}
 
-		var queryCacheName = CachingDbName(nameof(FileIndexItem),
+		var queryCacheName = TenantCachingDbName(nameof(FileIndexItem),
 			updateStatusContent.ParentDirectory!);
 
 		if ( !_cache.TryGetValue(queryCacheName, out var objectFileFolders) )
@@ -834,7 +858,7 @@ public partial class Query : IQuery
 		// InvalidOperationException can also be disposed (ObjectDisposedException)
 		catch ( InvalidOperationException )
 		{
-			var scope = new InjectServiceScope(_scopeFactory);
+			var scope = new InjectServiceScope(_scopeFactory, _tenantContext);
 			return await scope.ExecuteAsync(LocalQuery);
 		}
 	}

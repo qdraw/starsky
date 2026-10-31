@@ -5,7 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace starsky.foundation.database.Models;
 
 [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
-public sealed class SettingsItem
+public sealed class SettingsItem : ITenantEntity
 {
 	[Key]
 	[Column(TypeName = "varchar(150)")]

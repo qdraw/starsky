@@ -8,6 +8,7 @@ using starsky.foundation.accountmanagement.Helpers;
 using starsky.foundation.accountmanagement.Interfaces;
 using starsky.foundation.database.Models.Account;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 // ReSharper disable once IdentifierTypo
 [assembly: InternalsVisibleTo("starskytest")]
@@ -43,8 +44,12 @@ public sealed class NoAccountMiddleware(RequestDelegate next, AppSettings? appSe
 		var isFromLogoutCall = context.Request.QueryString.HasValue &&
 		                       context.Request.QueryString.Value.Contains("fromLogout");
 
-		if ( isHostAllowed && context.User.Identity?.IsAuthenticated == false && !isApiCall &&
-		     !isFromLogoutCall )
+		// only the default tenant: this signs in a user that gets a role in the current tenant
+		var isDefaultTenant = context.RequestServices.GetService<ITenantContext>()?.TenantId
+			is null or TenantIdHelper.DefaultTenantId;
+
+		if ( isHostAllowed && isDefaultTenant && context.User.Identity?.IsAuthenticated == false &&
+		     !isApiCall && !isFromLogoutCall )
 		{
 			var userManager =
 				( IUserManager ) context.RequestServices.GetRequiredService(typeof(IUserManager));
