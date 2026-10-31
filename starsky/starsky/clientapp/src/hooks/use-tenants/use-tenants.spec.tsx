@@ -1,6 +1,12 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
 import { ITenantsResponse } from "../../interfaces/ITenants";
-import { FetchLandingTenant, ResetTenants, useTenantLastUsed, useTenants } from "./use-tenants";
+import {
+  FetchLandingTenant,
+  GoToTenant,
+  ResetTenants,
+  useTenantLastUsed,
+  useTenants
+} from "./use-tenants";
 
 const mine = (overrides: Partial<ITenantsResponse> = {}): ITenantsResponse => ({
   current: "default",
@@ -154,6 +160,27 @@ describe("use-tenants", () => {
       ResetTenants();
 
       expect(await FetchLandingTenant()).toBe("acme");
+    });
+  });
+
+  describe("GoToTenant", () => {
+    it("opens the home page of the tenant with a full page load", () => {
+      const original = globalThis.location;
+      const assign = jest.fn();
+      // jsdom does not allow to spy on location.assign
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete globalThis.location;
+      globalThis.location = { ...original, assign } as unknown as Location;
+
+      try {
+        GoToTenant("acme");
+      } finally {
+        globalThis.location = original;
+      }
+
+      expect(assign).toHaveBeenCalledTimes(1);
+      expect(String(assign.mock.calls[0][0])).toContain("/t/acme");
     });
   });
 

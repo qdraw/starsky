@@ -119,7 +119,7 @@ public class FakeIUserManger : IUserManager
 
 	public int GetCurrentUserId(HttpContext httpContext)
 	{
-		throw new NotImplementedException();
+		return 1;
 	}
 
 	public User GetCurrentUser(HttpContext httpContext)

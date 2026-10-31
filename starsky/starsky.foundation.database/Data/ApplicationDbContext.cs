@@ -77,16 +77,8 @@ public class ApplicationDbContext : DbContext
 		}
 	}
 
-	private bool _tenantTrackingHooked;
-
 	private void HookTenantTracking()
 	{
-		if ( _tenantTrackingHooked )
-		{
-			return;
-		}
-
-		_tenantTrackingHooked = true;
 		// the tenant is (part of) a key: it must be there when EF starts tracking, not at save
 		ChangeTracker.Tracking += (_, args) =>
 		{

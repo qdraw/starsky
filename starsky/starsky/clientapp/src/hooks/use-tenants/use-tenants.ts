@@ -82,14 +82,10 @@ export const useTenantLastUsed = (): void => {
  * @returns the tenant id, or null to stay where the user is
  */
 export const FetchLandingTenant = async (): Promise<string | null> => {
-  try {
-    const tenants = await loadTenants();
-    const landing = tenants?.landing;
-    return landing && landing !== TenantFromLocation() ? landing : null;
-  } catch {
-    // a failing call may never keep the user from the login redirect
-    return null;
-  }
+  // loadTenants never rejects: a failing call may never keep the user from the login redirect
+  const tenants = await loadTenants();
+  const landing = tenants?.landing;
+  return landing && landing !== TenantFromLocation() ? landing : null;
 };
 
 /**

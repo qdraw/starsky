@@ -825,4 +825,19 @@ public sealed class ArgsHelperTest
 			false);
 		Assert.AreEqual("/some/folder", result);
 	}
+
+	[TestMethod]
+	public void GetPathListFormArgs_WithTenant_Throws()
+	{
+		TenantAmbient.Set("acme");
+		try
+		{
+			Assert.ThrowsExactly<ArgumentException>(() =>
+				new ArgsHelper(new AppSettings()).GetPathListFormArgs(["--path", "/some/folder"]));
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
+	}
 }

@@ -184,6 +184,103 @@ public sealed class DiskWatcherTenantTest
 		Assert.AreEqual("acme", fakeWatcher.AddedByTenant.FirstOrDefault().TenantId);
 	}
 
+	[TestMethod]
+	public void SecondFolder_IsWatchedByAnAdditionalWatcher()
+	{
+		var wrapper = new FakeIFileSystemWatcherWrapper();
+		var logger = new FakeIWebLogger();
+		var watcher = new DiskWatcher(wrapper, logger, new RecordingQueueProcessor());
+
+		watcher.Watcher(Folder("primary"));
+		watcher.Watcher(Folder("acme"), "acme");
+
+		Assert.IsTrue(logger.TrackedInformation.Exists(p =>
+			p.Item2?.Contains("started mapped path") == true));
+	}
+
+	[TestMethod]
+	public void BackgroundService_WithoutTenantServices_WatchesTheDefaultTenantOnly()
+	{
+		var appSettings = new AppSettings { StorageFolder = Folder("default-storage") };
+		var fakeWatcher = new FakeDiskWatcher();
+
+		new DiskWatcherBackgroundService(fakeWatcher, appSettings, new FakeIWebLogger())
+			.StartWatchers();
+		new DiskWatcherBackgroundService(fakeWatcher, appSettings, new FakeIWebLogger(),
+			new FakeTenantRegistry("default", "acme")).StartWatchers();
+
+		Assert.IsEmpty(fakeWatcher.AddedByTenant);
+		Assert.HasCount(2, fakeWatcher.AddedItems);
+	}
+
+	[TestMethod]
+	public void BackgroundService_TenantWithFolderMappings_WatchesEachMapping()
+	{
+		var appSettings = new AppSettings
+		{
+			StorageFolder = Folder("default-storage"),
+			ThumbnailTempFolder = Folder("default-thumbs"),
+			TempFolder = Folder("default-temp")
+		};
+		var registry = new FakeTenantRegistry("default", "acme");
+		var provider = new FakeTenantSettingsProvider(appSettings, Folder("mapped"));
+		var fakeWatcher = new FakeDiskWatcher();
+
+		new DiskWatcherBackgroundService(fakeWatcher, appSettings, new FakeIWebLogger(), registry,
+			provider).StartWatchers();
+
+		Assert.AreEqual(2, fakeWatcher.AddedByTenant.Count);
+		Assert.AreEqual(Path.Combine(_root, "mapped"), fakeWatcher.AddedByTenant[1].Path);
+	}
+
+	private sealed class FakeTenantSettingsProvider(AppSettings appSettings, string mapped)
+		: ITenantSettingsProvider
+	{
+		public ITenantSettings GetSettings(string tenantId)
+		{
+			return new MappedTenantSettings(new TenantSettings(tenantId, appSettings), mapped);
+		}
+
+		public ITenantSettings Build(string tenantId, TenantRoots? roots)
+		{
+			return GetSettings(tenantId);
+		}
+
+		public void ValidateRoots()
+		{
+		}
+	}
+
+	private sealed class MappedTenantSettings(ITenantSettings inner, string mapped)
+		: ITenantSettings
+	{
+		public string TenantId => inner.TenantId;
+		public string StorageFolder => inner.StorageFolder;
+		public string ThumbnailTempFolder => inner.ThumbnailTempFolder;
+		public string TempFolder => inner.TempFolder;
+
+		public IReadOnlyDictionary<string, string> StorageFolderMappings =>
+			new Dictionary<string, string> { ["/mapped"] = mapped };
+
+		public bool IsReadOnly(string path) => inner.IsReadOnly(path);
+		public string DatabasePathToFilePath(string p) => inner.DatabasePathToFilePath(p);
+
+		public string DatabasePathToTempFolderFilePath(string p) =>
+			inner.DatabasePathToTempFolderFilePath(p);
+
+		public string FullPathStorageFolderToDatabaseStyle(string p) =>
+			inner.FullPathStorageFolderToDatabaseStyle(p);
+
+		public List<string> RenameListItemsToDbStyle(IEnumerable<string> l) =>
+			inner.RenameListItemsToDbStyle(l);
+
+		public IEnumerable<KeyValuePair<string, DateTime>> RenameListItemsToDbStyle(
+			IEnumerable<KeyValuePair<string, DateTime>> l) => inner.RenameListItemsToDbStyle(l);
+
+		public List<string> RenameTempListItemsToDbStyle(IEnumerable<string> l) =>
+			inner.RenameTempListItemsToDbStyle(l);
+	}
+
 	private sealed class MutableRegistry : ITenantRegistry
 	{
 		private readonly List<string> _active = ["default"];

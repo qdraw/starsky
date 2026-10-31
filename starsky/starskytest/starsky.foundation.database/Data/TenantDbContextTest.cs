@@ -223,6 +223,70 @@ public sealed class TenantDbContextTest
 	}
 
 	[TestMethod]
+	public async Task CrossTenantAdd_WithExplicitTenant_IsStoredForThatTenant()
+	{
+		await using var connection = await CreateDatabase();
+		await using var system = ContextFor(connection, "default");
+		system.EnableCrossTenantAccess();
+		var entry = system.FileIndex.Add(File("/a.jpg", "a"));
+		entry.Property(ITenantEntity.TenantPropertyName).CurrentValue = "acme";
+
+		await system.SaveChangesAsync(TestContext.CancellationToken);
+
+		await using var acme = ContextFor(connection, "acme");
+		await using var other = ContextFor(connection, "default");
+		Assert.AreEqual(1, await acme.FileIndex.CountAsync(TestContext.CancellationToken));
+		Assert.AreEqual(0, await other.FileIndex.CountAsync(TestContext.CancellationToken));
+	}
+
+	[TestMethod]
+	public async Task CrossTenantAdd_WithInvalidTenant_Throws()
+	{
+		await using var connection = await CreateDatabase();
+		await using var system = ContextFor(connection, "default");
+		system.EnableCrossTenantAccess();
+		var entry = system.FileIndex.Add(File("/a.jpg", "a"));
+		entry.Property(ITenantEntity.TenantPropertyName).CurrentValue = "../x";
+
+		await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
+			system.SaveChangesAsync(TestContext.CancellationToken));
+	}
+
+	[TestMethod]
+	public async Task ExistingEntity_WithoutTenant_IsUpdatedAsTheTenantOfTheContext()
+	{
+		await using var connection = await CreateDatabase();
+		await using var context = ContextFor(connection, "default");
+		var item = File("/a.jpg", "a");
+		context.FileIndex.Add(item);
+		await context.SaveChangesAsync(TestContext.CancellationToken);
+
+		item.Tags = "b";
+		context.Entry(item).Property(ITenantEntity.TenantPropertyName).CurrentValue = null;
+		await context.SaveChangesAsync(TestContext.CancellationToken);
+
+		await using var verify = ContextFor(connection, "default");
+		Assert.AreEqual("b",
+			( await verify.FileIndex.SingleAsync(TestContext.CancellationToken) ).Tags);
+	}
+
+	[TestMethod]
+	public async Task ExistingEntity_WithoutTenant_CrossTenantAccess_Throws()
+	{
+		await using var connection = await CreateDatabase();
+		await using var context = ContextFor(connection, "default");
+		var item = File("/a.jpg", "a");
+		context.FileIndex.Add(item);
+		await context.SaveChangesAsync(TestContext.CancellationToken);
+
+		context.EnableCrossTenantAccess();
+		context.Entry(item).Property(ITenantEntity.TenantPropertyName).CurrentValue = null;
+
+		await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
+			context.SaveChangesAsync(TestContext.CancellationToken));
+	}
+
+	[TestMethod]
 	public async Task ExecuteDelete_OnlyAffectsOwnTenant()
 	{
 		await using var connection = await CreateDatabase();

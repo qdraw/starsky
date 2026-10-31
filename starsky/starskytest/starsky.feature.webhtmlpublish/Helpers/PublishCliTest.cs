@@ -1,3 +1,4 @@
+using starsky.foundation.platform.Tenancy;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -162,5 +163,25 @@ public sealed class PublishCliTest
 		Assert.IsTrue(console.WrittenLines.Exists(p =>
 			p.Contains("Profile not found, uses default test1 use --profile to select one")));
 		Assert.IsTrue(console.WrittenLines.LastOrDefault()?.Contains("done"));
+	}
+
+	[TestMethod]
+	public async Task Publisher_WithTenant_IsRefused()
+	{
+		TenantAmbient.Set("acme");
+		try
+		{
+			var console = new FakeConsoleWrapper();
+			await new PublishCli(new FakeSelectorStorage(), new FakeIPublishPreflight(),
+				new FakeIWebHtmlPublishService(),
+				new AppSettings(), console, new FakeIWebLogger()).Publisher(["-p"]);
+
+			Assert.AreEqual("--tenant is not supported by this tool",
+				console.WrittenLines.LastOrDefault());
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
 	}
 }

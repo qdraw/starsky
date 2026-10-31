@@ -49,7 +49,7 @@ public sealed class NoAccountTenantTest
 		}
 	}
 
-	private static async Task<int> SignIns(string tenantId)
+	private static async Task<int> SignIns(string tenantId, bool withTenantContext = true)
 	{
 		await using var setup = await TenancyTestSetup.Create();
 		await using var dbContext = setup.ContextFor(tenantId);
@@ -59,7 +59,11 @@ public sealed class NoAccountTenantTest
 
 		var services = new ServiceCollection();
 		services.AddSingleton<IUserManager>(setup.UserManagerFor(dbContext, tenantId));
-		services.AddSingleton<ITenantContext>(tenantContext);
+		if ( withTenantContext )
+		{
+			services.AddSingleton<ITenantContext>(tenantContext);
+		}
+
 		services.AddSingleton<IAuthenticationService>(authentication);
 		await using var provider = services.BuildServiceProvider();
 
@@ -83,5 +87,11 @@ public sealed class NoAccountTenantTest
 	{
 		// the no-account user would get a role in a tenant it was never added to
 		Assert.AreEqual(0, await SignIns("acme"));
+	}
+
+	[TestMethod]
+	public async Task Localhost_WithoutTenantContext_SignsInTheNoAccountUser()
+	{
+		Assert.AreEqual(1, await SignIns("default", false));
 	}
 }

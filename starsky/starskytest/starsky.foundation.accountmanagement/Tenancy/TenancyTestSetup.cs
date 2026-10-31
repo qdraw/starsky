@@ -60,13 +60,23 @@ internal sealed class TenancyTestSetup : IAsyncDisposable
 		return setup;
 	}
 
-	public ApplicationDbContext ContextFor(string tenantId)
+	public ApplicationDbContext ContextFor(string tenantId,
+		Action<DbContextOptionsBuilder<ApplicationDbContext>>? configure = null)
 	{
 		var tenant = new TenantContext();
 		tenant.SetTenant(tenantId);
-		return new ApplicationDbContext(
-			new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlite(_connection).Options,
-			tenant);
+		var builder = new DbContextOptionsBuilder<ApplicationDbContext>().UseSqlite(_connection);
+		configure?.Invoke(builder);
+		return new ApplicationDbContext(builder.Options, tenant);
+	}
+
+	/// <summary>
+	///     To create rows that point to a missing user or role (data that was cleaned by hand)
+	/// </summary>
+	public async Task DisableForeignKeys()
+	{
+		await using var context = ContextFor("default");
+		await context.Database.ExecuteSqlRawAsync("PRAGMA foreign_keys=OFF");
 	}
 
 	public UserManager UserManagerFor(ApplicationDbContext context, string tenantId)
