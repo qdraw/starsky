@@ -24,6 +24,16 @@ public sealed class TenantJobsTest
 {
 	public TestContext TestContext { get; set; } = null!;
 
+	private static readonly string[] DefaultAndBeta = ["default", "beta"];
+	private static readonly string[] DefaultAndAcme = ["default", "acme"];
+	private static readonly string[] AllThree = ["default", "acme", "beta"];
+	private static readonly string[] AcmeOnly = ["acme"];
+
+	private static readonly (string, string, string)[] ExpectedSeen =
+	[
+		("default", "default", "default"), ("acme", "acme", "acme"), ("beta", "beta", "beta")
+	];
+
 	[TestCleanup]
 	public void Cleanup()
 	{
@@ -96,11 +106,9 @@ public sealed class TenantJobsTest
 				seen.Add(( tenantId, sp.GetRequiredService<ITenantContext>().TenantId,
 					TenantAmbient.Current ));
 				return Task.CompletedTask;
-			});
+			}, cancellationToken: TestContext.CancellationToken);
 
-		CollectionAssert.AreEqual(
-			new[] { ( "default", "default", "default" ), ( "acme", "acme", "acme" ),
-				( "beta", "beta", "beta" ) }, seen);
+		Assert.AreSequenceEqual(ExpectedSeen, seen);
 		Assert.AreEqual("default", TenantAmbient.Current, "the caller must not inherit a tenant");
 	}
 
@@ -123,10 +131,10 @@ public sealed class TenantJobsTest
 
 				done.Add(tenantId);
 				return Task.CompletedTask;
-			}, (tenantId, _) => errors.Add(tenantId));
+			}, (tenantId, _) => errors.Add(tenantId), TestContext.CancellationToken);
 
-		CollectionAssert.AreEqual(new[] { "default", "beta" }, done);
-		CollectionAssert.AreEqual(new[] { "acme" }, errors);
+		Assert.AreSequenceEqual(DefaultAndBeta, done);
+		Assert.AreSequenceEqual(AcmeOnly, errors);
 	}
 
 	[TestMethod]
@@ -138,7 +146,7 @@ public sealed class TenantJobsTest
 		await new TestableCleanUp(provider.GetRequiredService<IServiceScopeFactory>(),
 			new FakeTenantRegistry("default", "acme")).Run();
 
-		CollectionAssert.AreEqual(new[] { "default", "acme" }, RecordingRealtime.CleanedFor);
+		Assert.AreSequenceEqual(DefaultAndAcme, RecordingRealtime.CleanedFor);
 	}
 
 	private sealed class TestableCleanUp(IServiceScopeFactory factory, ITenantRegistry registry)
@@ -160,7 +168,6 @@ public sealed class TenantJobsTest
 			provider.GetRequiredService<IServiceScopeFactory>(),
 			new FakeTenantRegistry("default", "acme", "beta")).StartAsync();
 
-		CollectionAssert.AreEqual(new[] { "default", "acme", "beta" },
-			queue.Jobs.Select(j => j.TenantId).ToArray());
+		Assert.AreSequenceEqual(AllThree, queue.Jobs.Select(j => j.TenantId).ToArray());
 	}
 }

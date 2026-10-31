@@ -2,10 +2,10 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using starsky.foundation.database.Models;
@@ -16,14 +16,14 @@ using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.database.Data;
 
-/// <param name="options">options</param>
-/// <param name="tenantContext">
-///     the tenant of the current request; null (CLI, tests, design time) is the default tenant
-/// </param>
 public class ApplicationDbContext : DbContext
 {
 	private readonly ITenantContext? _tenantContext;
 
+	/// <param name="options">options</param>
+	/// <param name="tenantContext">
+	///     the tenant of the current request; null (CLI, tests, design time) is the default tenant
+	/// </param>
 	public ApplicationDbContext(DbContextOptions options, ITenantContext? tenantContext = null) :
 		base(options)
 	{
@@ -433,15 +433,12 @@ public class ApplicationDbContext : DbContext
 
 	private void ConfigureTenantEntities(ModelBuilder modelBuilder)
 	{
-		var applyFilter = typeof(ApplicationDbContext).GetMethod(nameof(ApplyTenantFilter),
-			BindingFlags.NonPublic | BindingFlags.Instance)!;
-
 		foreach ( var clrType in modelBuilder.Model.GetEntityTypes()
 			         .Select(e => e.ClrType)
 			         .Where(t => typeof(ITenantEntity).IsAssignableFrom(t)).ToList() )
 		{
-			modelBuilder.Entity(clrType)
-				.Property<string>(ITenantEntity.TenantPropertyName)
+			var entity = modelBuilder.Entity(clrType);
+			entity.Property<string>(ITenantEntity.TenantPropertyName)
 				// a key column: TEXT can not be (part of) a key in MySQL
 				.HasColumnType("varchar(63)")
 				.HasMaxLength(63)
@@ -453,17 +450,25 @@ public class ApplicationDbContext : DbContext
 				// an update or delete that targets a row of another tenant matches 0 rows and fails
 				.IsConcurrencyToken();
 
-			applyFilter.MakeGenericMethod(clrType).Invoke(this, [modelBuilder]);
+			entity.HasQueryFilter(CreateTenantFilter(clrType));
 		}
 	}
 
-	private void ApplyTenantFilter<T>(ModelBuilder modelBuilder) where T : class
+	/// <summary>
+	///     entity => CrossTenantAccess || EF.Property(entity, "TenantId") == TenantId, where
+	///     CrossTenantAccess and TenantId are read from this context instance on every query
+	/// </summary>
+	private LambdaExpression CreateTenantFilter(Type clrType)
 	{
-		// references the TenantId property of this context instance
-		Expression<Func<T, bool>> filter = entity => CrossTenantAccess ||
-		                                             EF.Property<string>(entity,
-			                                             ITenantEntity.TenantPropertyName) == TenantId;
-		modelBuilder.Entity<T>().HasQueryFilter(filter);
+		var entity = Expression.Parameter(clrType, "entity");
+		var tenantOfRow = Expression.Call(typeof(EF), nameof(EF.Property), [typeof(string)],
+			entity, Expression.Constant(ITenantEntity.TenantPropertyName));
+		var context = Expression.Constant(this);
+		var isOfThisTenant = Expression.Equal(tenantOfRow,
+			Expression.Property(context, nameof(TenantId)));
+		return Expression.Lambda(
+			Expression.OrElse(Expression.Property(context, nameof(CrossTenantAccess)),
+				isOfThisTenant), entity);
 	}
 
 	public override int SaveChanges(bool acceptAllChangesOnSuccess)
@@ -493,41 +498,49 @@ public class ApplicationDbContext : DbContext
 			switch ( entry.State )
 			{
 				case EntityState.Added:
-					// cross tenant access adds for the tenant that is set on the entity
-					if ( CrossTenantAccess && tenant.CurrentValue is string explicitTenant &&
-					     TenantIdHelper.IsValid(explicitTenant) )
-					{
-						break;
-					}
-
-					if ( tenant.CurrentValue is string added && added != TenantId )
-					{
-						throw new InvalidOperationException(
-							"An entity of another tenant can not be added");
-					}
-
-					tenant.CurrentValue = TenantId;
+					EnforceTenantOfNewEntity(tenant);
 					break;
 				case EntityState.Modified or EntityState.Deleted or EntityState.Unchanged:
-					if ( tenant.CurrentValue == null && !CrossTenantAccess )
-					{
-						tenant.CurrentValue = TenantId;
-						tenant.OriginalValue = TenantId;
-						tenant.IsModified = false;
-						break;
-					}
-
-					// never a change of tenant; without cross tenant access also only own rows
-					if ( tenant.CurrentValue == null ||
-					     !tenant.CurrentValue.Equals(tenant.OriginalValue) ||
-					     ( !CrossTenantAccess && !TenantId.Equals(tenant.CurrentValue) ) )
-					{
-						throw new InvalidOperationException(
-							"An entity of another tenant can not be changed or deleted");
-					}
-
+					EnforceTenantOfExistingEntity(tenant);
 					break;
 			}
+		}
+	}
+
+	private void EnforceTenantOfNewEntity(PropertyEntry tenant)
+	{
+		// cross tenant access adds for the tenant that is set on the entity
+		if ( CrossTenantAccess && tenant.CurrentValue is string explicitTenant &&
+		     TenantIdHelper.IsValid(explicitTenant) )
+		{
+			return;
+		}
+
+		if ( tenant.CurrentValue is string added && added != TenantId )
+		{
+			throw new InvalidOperationException("An entity of another tenant can not be added");
+		}
+
+		tenant.CurrentValue = TenantId;
+	}
+
+	private void EnforceTenantOfExistingEntity(PropertyEntry tenant)
+	{
+		if ( tenant.CurrentValue == null && !CrossTenantAccess )
+		{
+			tenant.CurrentValue = TenantId;
+			tenant.OriginalValue = TenantId;
+			tenant.IsModified = false;
+			return;
+		}
+
+		// never a change of tenant; without cross tenant access also only own rows
+		if ( tenant.CurrentValue == null ||
+		     !tenant.CurrentValue.Equals(tenant.OriginalValue) ||
+		     ( !CrossTenantAccess && !TenantId.Equals(tenant.CurrentValue) ) )
+		{
+			throw new InvalidOperationException(
+				"An entity of another tenant can not be changed or deleted");
 		}
 	}
 }

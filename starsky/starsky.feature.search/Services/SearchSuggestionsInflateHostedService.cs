@@ -52,12 +52,12 @@ public class SearchSuggestionsInflateHostedService(
 
 		try
 		{
-			await InflateOnceAsync().ConfigureAwait(false);
+			await InflateOnceAsync(cancellationToken).ConfigureAwait(false);
 
 			using var timer = new PeriodicTimer(Interval);
 			while ( await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false) )
 			{
-				await InflateOnceAsync().ConfigureAwait(false);
+				await InflateOnceAsync(cancellationToken).ConfigureAwait(false);
 			}
 		}
 		catch ( OperationCanceledException ) when ( cancellationToken.IsCancellationRequested )
@@ -71,11 +71,10 @@ public class SearchSuggestionsInflateHostedService(
 		}
 	}
 
-	private async Task InflateOnceAsync()
+	private async Task InflateOnceAsync(CancellationToken cancellationToken)
 	{
 		// the suggestions come from the index of one tenant, and are cached per tenant
-		var failed = false;
-		await TenantJobs.ForEachActiveTenantAsync(scopeFactory,
+		var failures = await TenantJobs.ForEachActiveTenantAsync(scopeFactory,
 			tenantRegistry ?? new TenantRegistry(),
 			async (serviceProvider, _) =>
 			{
@@ -84,13 +83,12 @@ public class SearchSuggestionsInflateHostedService(
 					.Inflate().ConfigureAwait(false);
 			}, (tenantId, exception) =>
 			{
-				failed = true;
 				logger.LogError(
 					$"SearchSuggestionsInflateHostedService failed for tenant {tenantId}: " +
 					exception.Message, exception);
-			});
+			}, cancellationToken);
 
-		if ( !failed )
+		if ( failures.Count == 0 )
 		{
 			logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
 		}

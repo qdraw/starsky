@@ -23,6 +23,8 @@ public sealed class QueueTenantTest
 {
 	public TestContext TestContext { get; set; } = null!;
 
+	private static readonly string[] FourJobs = ["acme", "beta", "acme", "beta"];
+
 	[TestCleanup]
 	public void Cleanup()
 	{
@@ -155,7 +157,7 @@ public sealed class QueueTenantTest
 		RecordingHandler.Runs.Clear();
 		var factory = provider.GetRequiredService<IServiceScopeFactory>();
 
-		await Task.WhenAll(new[] { "acme", "beta", "acme", "beta" }.Select(async tenant =>
+		await Task.WhenAll(FourJobs.Select(async tenant =>
 		{
 			TenantAmbient.Set(tenant);
 			var job = new BackgroundTaskQueueJob { JobType = "record" };

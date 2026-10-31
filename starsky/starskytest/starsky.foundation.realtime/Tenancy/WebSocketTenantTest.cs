@@ -14,6 +14,9 @@ public sealed class WebSocketTenantTest
 {
 	public TestContext TestContext { get; set; } = null!;
 
+	private static readonly string[] OnlyA = ["a"];
+	private static readonly string[] OnlyB = ["b"];
+
 	[TestCleanup]
 	public void Cleanup()
 	{
@@ -123,7 +126,7 @@ public sealed class WebSocketTenantTest
 				await service.SendToAllAsync("b", TestContext.CancellationToken);
 			}, TestContext.CancellationToken));
 
-		CollectionAssert.AreEqual(new[] { "a" }, acme.FakeSendItems);
-		CollectionAssert.AreEqual(new[] { "b" }, beta.FakeSendItems);
+		Assert.AreSequenceEqual(OnlyA, acme.FakeSendItems);
+		Assert.AreSequenceEqual(OnlyB, beta.FakeSendItems);
 	}
 }

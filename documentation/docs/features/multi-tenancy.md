@@ -66,6 +66,14 @@ Files and database rows are not removed.
 
 Every command line tool takes `--tenant acme` and then works on that tenant. Without it, the default tenant.
 
+## Database
+
+Tested with SQLite and MariaDB 12.3 (fresh database, upgrade of a database with users and photos, the whole
+end-to-end suite). The migration `MultiTenancy` makes the existing administrators platform administrators and
+puts all existing rows in the default tenant. The key columns use `varchar(63)`: MySQL does not accept `TEXT` in a
+key. The migrations of Starsky as a whole do not run on MySQL 8 (an older migration fails on `FileHash`); the
+documented databases are SQLite and MariaDB.
+
 ## Accounts
 
 * Registering never adds an *existing* account to a tenant. A new account joins the default tenant, or the tenant of

@@ -123,7 +123,7 @@ public sealed class SyncWatcherConnector
 			await _synchronize?.Sync(path)!;
 
 			syncData.Add(
-				new FileIndexItem(_tenantSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath))
+				new FileIndexItem(_tenantSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath))
 				{
 					IsDirectory = true,
 					ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
@@ -131,7 +131,7 @@ public sealed class SyncWatcherConnector
 				});
 
 			// and now to-path sync
-			var pathToDatabaseStyle = _tenantSettings!.FullPathStorageFolderToDatabaseStyle(toPath);
+			var pathToDatabaseStyle = _tenantSettings.FullPathStorageFolderToDatabaseStyle(toPath);
 			syncData.AddRange(await _synchronize.Sync(pathToDatabaseStyle));
 		}
 		else

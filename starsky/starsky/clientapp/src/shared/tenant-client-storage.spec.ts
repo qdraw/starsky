@@ -52,7 +52,7 @@ describe("client storage per tenant", () => {
 
       new FileListCache().CacheCleanEverything();
 
-      expect(sessionStorage.length).toBe(0);
+      expect(sessionStorage).toHaveLength(0);
     });
   });
 

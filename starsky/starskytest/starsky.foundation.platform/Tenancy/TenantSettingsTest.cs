@@ -135,7 +135,7 @@ public sealed class TenantSettingsTest
 			new FakeTenantRegistry("default", "acme"));
 
 		var exception = Assert.ThrowsExactly<InvalidOperationException>(provider.ValidateRoots);
-		StringAssert.Contains(exception.Message, "overlap");
+		Assert.Contains("overlap", exception.Message);
 	}
 
 	[TestMethod]
@@ -157,9 +157,8 @@ public sealed class TenantSettingsTest
 			new FakeTenantRegistry("default", "acme")
 				.WithRoots("acme", new TenantRoots("relative/photos")));
 
-		StringAssert.Contains(
-			Assert.ThrowsExactly<InvalidOperationException>(provider.ValidateRoots).Message,
-			"absolute");
+		Assert.Contains("absolute",
+			Assert.ThrowsExactly<InvalidOperationException>(provider.ValidateRoots).Message);
 	}
 
 	[TestMethod]

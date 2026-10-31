@@ -145,8 +145,7 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 		try
 		{
 			// each tenant has its own index and thumbnail folder
-			var failed = false;
-			await TenantJobs.ForEachActiveTenantAsync(_factory, _tenantRegistry,
+			var failures = await TenantJobs.ForEachActiveTenantAsync(_factory, _tenantRegistry,
 				async (serviceProvider, _) =>
 				{
 					var service = serviceProvider
@@ -154,7 +153,6 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 					await service.StartBackgroundQueue();
 				}, (tenantId, exception) =>
 				{
-					failed = true;
 					_logger.LogError(
 						$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} " +
 						$"for tenant {tenantId} with exception message {exception.Message} - " +
@@ -162,7 +160,7 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 						exception);
 				}, cancellationToken);
 
-			if ( failed )
+			if ( failures.Count > 0 )
 			{
 				return null;
 			}

@@ -32,12 +32,12 @@ describe("Login tenant landing", () => {
   it("clears the cached folders of the previous user after a login", async () => {
     Router.navigate("/");
     new FileListCache().CacheSet("?f=/", newIArchive());
-    expect(sessionStorage.length).toBe(1);
+    expect(sessionStorage).toHaveLength(1);
     jest.spyOn(UseTenants, "FetchLandingTenant").mockResolvedValue(null);
 
     await login();
 
-    expect(sessionStorage.length).toBe(0);
+    expect(sessionStorage).toHaveLength(0);
   });
 
   it("clears the cached folders when nobody is logged in (login form)", () => {
@@ -49,7 +49,7 @@ describe("Login tenant landing", () => {
 
     render(<Login />);
 
-    expect(sessionStorage.length).toBe(0);
+    expect(sessionStorage).toHaveLength(0);
   });
 
   it("goes to the tenant used last, in a full page load", async () => {

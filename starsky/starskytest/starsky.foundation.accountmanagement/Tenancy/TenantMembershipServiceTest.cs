@@ -12,6 +12,8 @@ public sealed class TenantMembershipServiceTest
 {
 	public TestContext TestContext { get; set; } = null!;
 
+	private static readonly string[] BetaAndDefault = ["beta", "default"];
+
 	/// <summary>
 	///     owner@x (platform admin, Administrator of default), user@x (User of default)
 	/// </summary>
@@ -192,8 +194,7 @@ public sealed class TenantMembershipServiceTest
 
 		var tenants = await service.GetTenantsForUserAsync(member);
 
-		CollectionAssert.AreEqual(new[] { "beta", "default" },
-			tenants.Select(t => t.TenantId).ToArray());
+		Assert.AreSequenceEqual(BetaAndDefault, tenants.Select(t => t.TenantId).ToArray());
 		Assert.AreEqual("Administrator", tenants.Single(t => t.TenantId == "beta").RoleCode);
 		Assert.AreEqual("BETA", tenants.Single(t => t.TenantId == "beta").DisplayName);
 	}

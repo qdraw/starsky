@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -89,16 +90,13 @@ public class CleanThumbnailHostedService(
 		var registry = tenantRegistry ?? new TenantRegistry();
 
 		// the last run is a setting of the tenant: ask each tenant if it is due
-		var dueTenants = new List<string>();
-		await TenantJobs.ForEachActiveTenantAsync(serviceScopeFactory, registry,
+		var dueTenants = await TenantJobs.SelectForTenantsAsync(serviceScopeFactory,
+			registry.ActiveTenantIds.ToArray(),
 			async (serviceProvider, tenantId) =>
 			{
 				var appSettings = serviceProvider.GetRequiredService<AppSettings>();
 				var settingService = serviceProvider.GetRequiredService<ISettingsService>();
-				if ( await ContinueDueSettings(appSettings, settingService) )
-				{
-					dueTenants.Add(tenantId);
-				}
+				return await ContinueDueSettings(appSettings, settingService) ? tenantId : null;
 			}, cancellationToken: cancellationToken);
 
 		if ( dueTenants.Count == 0 )
@@ -108,14 +106,13 @@ public class CleanThumbnailHostedService(
 
 		await Task.Delay(delay, cancellationToken);
 
-		var cleaned = new List<string>();
-		await TenantJobs.ForTenantsAsync(serviceScopeFactory, dueTenants,
+		var cleaned = await TenantJobs.SelectForTenantsAsync(serviceScopeFactory, dueTenants,
 			async (serviceProvider, _) =>
 			{
 				var thumbnailCleaner = serviceProvider.GetRequiredService<IThumbnailCleaner>();
-				cleaned.AddRange(await thumbnailCleaner.CleanAllUnusedFilesAsync());
+				return await thumbnailCleaner.CleanAllUnusedFilesAsync();
 			}, cancellationToken: cancellationToken);
-		return cleaned;
+		return cleaned.SelectMany(p => p).ToList();
 	}
 
 	internal static async Task<bool> ContinueDueSettings(AppSettings appSettings,

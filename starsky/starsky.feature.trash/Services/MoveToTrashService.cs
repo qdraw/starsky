@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -31,6 +32,8 @@ public class MoveToTrashService : IMoveToTrashService
 	private readonly IUpdateBackgroundTaskQueue _queue;
 	private readonly ITrashService _systemTrashService;
 
+	[SuppressMessage("Usage",
+		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 	public MoveToTrashService(AppSettings appSettings, IQuery query,
 		IMetaPreflight metaPreflight,
 		IUpdateBackgroundTaskQueue queue,

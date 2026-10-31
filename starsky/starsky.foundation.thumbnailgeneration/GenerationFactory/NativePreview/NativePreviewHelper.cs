@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview;
 
+[SuppressMessage("Usage",
+	"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 public class NativePreviewHelper(
 	IPreviewImageNativeService previewService,
 	IStorage storage,

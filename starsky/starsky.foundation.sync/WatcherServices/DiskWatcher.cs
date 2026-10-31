@@ -110,10 +110,10 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		wrapper.InternalBufferSize = 64 * 1024; // 64 KB - default = 4096 / 4 KB
 
 		// the events come from the file system, not from a request: the watcher knows the tenant
-		wrapper.Created += (source, e) => OnChanged(source, e, tenantId);
-		wrapper.Changed += (source, e) => OnChanged(source, e, tenantId);
-		wrapper.Deleted += (source, e) => OnChanged(source, e, tenantId);
-		wrapper.Renamed += (source, e) => OnRenamed(source, e, tenantId);
+		wrapper.Created += (_, e) => OnChanged(e, tenantId);
+		wrapper.Changed += (_, e) => OnChanged(e, tenantId);
+		wrapper.Deleted += (_, e) => OnChanged(e, tenantId);
+		wrapper.Renamed += (_, e) => OnRenamed(e, tenantId);
 		wrapper.Error += isPrimary ? OnError : (_, e) =>
 			_webLogger.LogError(e.GetException(),
 				$"[DiskWatcher] Error on mapped path {fullFilePath}{DateTimeDebug()}");
@@ -227,10 +227,10 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	/// <param name="e"></param>
 	internal void OnChanged(object source, FileSystemEventArgs e)
 	{
-		OnChanged(source, e, TenantIdHelper.DefaultTenantId);
+		OnChanged(e, TenantIdHelper.DefaultTenantId);
 	}
 
-	internal void OnChanged(object source, FileSystemEventArgs e, string tenantId)
+	internal void OnChanged(FileSystemEventArgs e, string tenantId)
 	{
 		if ( e.FullPath.EndsWith(".tmp") ||
 		     !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
@@ -281,10 +281,10 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	/// <param name="e">arguments</param>
 	internal void OnRenamed(object source, RenamedEventArgs e)
 	{
-		OnRenamed(source, e, TenantIdHelper.DefaultTenantId);
+		OnRenamed(e, TenantIdHelper.DefaultTenantId);
 	}
 
-	internal void OnRenamed(object source, RenamedEventArgs e, string tenantId)
+	internal void OnRenamed(RenamedEventArgs e, string tenantId)
 	{
 		_webLogger.LogInformation($"[DiskWatcher] {e.OldFullPath} OnRenamed to: {e.FullPath}" +
 		                          DateTimeDebug());

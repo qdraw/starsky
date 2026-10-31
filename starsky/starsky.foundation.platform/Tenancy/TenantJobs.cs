@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,26 +15,29 @@ namespace starsky.foundation.platform.Tenancy;
 public static class TenantJobs
 {
 	/// <summary>
-	///     A failing tenant does not stop the others; the exception goes to onError
+	///     A failing tenant does not stop the others: the failures are returned (and go to onError)
 	/// </summary>
-	public static Task ForEachActiveTenantAsync(IServiceScopeFactory scopeFactory,
+	public static Task<List<TenantFailure>> ForEachActiveTenantAsync(
+		IServiceScopeFactory scopeFactory,
 		ITenantRegistry registry, Func<IServiceProvider, string, Task> work,
 		Action<string, Exception>? onError = null, CancellationToken cancellationToken = default)
 	{
-		return ForTenantsAsync(scopeFactory, System.Linq.Enumerable.ToArray(registry.ActiveTenantIds),
+		return ForTenantsAsync(scopeFactory, registry.ActiveTenantIds.ToArray(),
 			work, onError, cancellationToken);
 	}
 
-	public static async Task ForTenantsAsync(IServiceScopeFactory scopeFactory,
-		System.Collections.Generic.IEnumerable<string> tenantIds,
+	public static async Task<List<TenantFailure>> ForTenantsAsync(
+		IServiceScopeFactory scopeFactory,
+		IEnumerable<string> tenantIds,
 		Func<IServiceProvider, string, Task> work,
 		Action<string, Exception>? onError = null, CancellationToken cancellationToken = default)
 	{
+		var failures = new List<TenantFailure>();
 		foreach ( var tenantId in tenantIds )
 		{
 			if ( cancellationToken.IsCancellationRequested )
 			{
-				return;
+				return failures;
 			}
 
 			try
@@ -43,6 +48,7 @@ public static class TenantJobs
 			}
 			catch ( Exception exception ) when ( exception is not OperationCanceledException )
 			{
+				failures.Add(new TenantFailure(tenantId, exception));
 				onError?.Invoke(tenantId, exception);
 			}
 			finally
@@ -51,5 +57,29 @@ public static class TenantJobs
 				TenantAmbient.Reset();
 			}
 		}
+
+		return failures;
+	}
+
+	/// <summary>
+	///     The results of the tenants that have one (null: nothing for this tenant)
+	/// </summary>
+	public static async Task<List<T>> SelectForTenantsAsync<T>(IServiceScopeFactory scopeFactory,
+		IEnumerable<string> tenantIds, Func<IServiceProvider, string, Task<T?>> work,
+		Action<string, Exception>? onError = null, CancellationToken cancellationToken = default)
+		where T : class
+	{
+		var results = new List<T>();
+		await ForTenantsAsync(scopeFactory, tenantIds, async (serviceProvider, tenantId) =>
+		{
+			var result = await work(serviceProvider, tenantId);
+			if ( result != null )
+			{
+				results.Add(result);
+			}
+		}, onError, cancellationToken);
+		return results;
 	}
 }
+
+public sealed record TenantFailure(string TenantId, Exception Exception);

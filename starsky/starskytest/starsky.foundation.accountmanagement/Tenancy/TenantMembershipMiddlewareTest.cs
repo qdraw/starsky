@@ -17,7 +17,7 @@ public sealed class TenantMembershipMiddlewareTest
 
 	private sealed record Result(HttpContext Context, bool NextCalled);
 
-	private async Task<Result> Run(TenancyTestSetup setup, string tenantId, string path,
+	private static async Task<Result> Run(TenancyTestSetup setup, string tenantId, string path,
 		int? userId, params Claim[] extraClaims)
 	{
 		await using var dbContext = setup.ContextFor("default");
@@ -47,7 +47,7 @@ public sealed class TenantMembershipMiddlewareTest
 		return new Result(context, nextCalled);
 	}
 
-	private async Task<(int Owner, int Member)> Seed(TenancyTestSetup setup)
+	private static async Task<(int Owner, int Member)> Seed(TenancyTestSetup setup)
 	{
 		await using var context = setup.ContextFor("default");
 		var manager = setup.UserManagerFor(context, "default");

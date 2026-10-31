@@ -156,12 +156,11 @@ export class UrlQuery {
    * @param tenantId tenant
    */
   public UrlTenantHomePage(tenantId: string): string {
-    const base = document.location.pathname.includes("/starsky")
-      ? TenantBasePath(tenantId)
-      : tenantId === "default"
-        ? ""
-        : `/t/${tenantId}`;
-    return `${base}/`;
+    // the dev server has no base path
+    if (!document.location.pathname.includes("/starsky")) {
+      return tenantId === "default" ? "/" : `/t/${tenantId}/`;
+    }
+    return `${TenantBasePath(tenantId)}/`;
   }
 
   public UrlLoginApi(): string {

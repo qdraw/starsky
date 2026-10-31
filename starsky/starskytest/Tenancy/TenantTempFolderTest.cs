@@ -97,9 +97,9 @@ public sealed class TenantTempFolderTest
 			new AppSettings { TempFolder = defaultTemp }, new FakeSelectorStorage(storage),
 			"a.jpg", tenantTemp);
 
-		Assert.AreEqual(1, paths.Count);
-		Assert.IsTrue(paths[0].StartsWith(tenantTemp));
-		Assert.IsFalse(paths[0].StartsWith(defaultTemp));
+		Assert.HasCount(1, paths);
+		Assert.StartsWith(tenantTemp, paths[0]);
+		Assert.DoesNotStartWith(defaultTemp, paths[0]);
 	}
 
 	[TestMethod]
@@ -112,7 +112,7 @@ public sealed class TenantTempFolderTest
 			new AppSettings { TempFolder = defaultTemp }, new FakeSelectorStorage(new FakeIStorage()),
 			"a.jpg");
 
-		Assert.IsTrue(paths[0].StartsWith(defaultTemp));
+		Assert.StartsWith(defaultTemp, paths[0]);
 	}
 
 	[TestMethod]
@@ -135,7 +135,7 @@ public sealed class TenantTempFolderTest
 		var (acmeStatus, acmePath) = acmeExport.StatusIsReady("wedding");
 
 		Assert.IsNotNull(defaultPath, "the owner finds its zip");
-		Assert.AreEqual(false, defaultStatus, "no .done file yet, but the zip is known");
+		Assert.IsFalse(defaultStatus, "no .done file yet, but the zip is known");
 		Assert.IsNull(acmeStatus);
 		Assert.IsNull(acmePath, "another tenant does not find that zip");
 	}

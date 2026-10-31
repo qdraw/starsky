@@ -809,7 +809,7 @@ public sealed class ArgsHelperTest
 			TenantAmbient.Set("acme");
 			var exception = Assert.ThrowsExactly<ArgumentException>(() =>
 				new ArgsHelper(new AppSettings()).GetPathFormArgs(["--path", "/some/folder"]));
-			StringAssert.Contains(exception.Message, "--subpath");
+			Assert.Contains("--subpath", exception.Message);
 		}
 		finally
 		{

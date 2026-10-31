@@ -16,6 +16,8 @@ public sealed class TenantAdminServiceTest
 {
 	public TestContext TestContext { get; set; } = null!;
 
+	private static readonly string[] DefaultAndAcme = ["default", "acme"];
+
 	private static TenantAdminService Service(TenancyTestSetup setup,
 		ApplicationDbContext context)
 	{
@@ -23,7 +25,7 @@ public sealed class TenantAdminServiceTest
 			new FakeIWebLogger(), null, setup.AppSettings);
 	}
 
-	private async Task<int> SeedOwner(TenancyTestSetup setup)
+	private static async Task<int> SeedOwner(TenancyTestSetup setup)
 	{
 		await using var context = setup.ContextFor("default");
 		return ( await setup.UserManagerFor(context, "default")
@@ -254,8 +256,7 @@ public sealed class TenantAdminServiceTest
 		await setup.AddActiveTenant("acme");
 
 		Assert.IsTrue(setup.Registry.IsActive("acme"));
-		CollectionAssert.AreEquivalent(new[] { "default", "acme" },
-			setup.Registry.ActiveTenantIds.ToArray());
+		Assert.AreSequenceEqual(DefaultAndAcme, setup.Registry.ActiveTenantIds.ToArray());
 		await setup.AddActiveTenant("off", TenantState.Disabled);
 		Assert.IsFalse(setup.Registry.IsActive("off"));
 	}

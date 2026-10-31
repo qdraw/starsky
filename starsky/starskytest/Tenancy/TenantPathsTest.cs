@@ -141,7 +141,7 @@ public sealed class TenantPathsTest
 		// the same subPath in acme: no such file there, and never the file of the default tenant
 		Assert.IsFalse(acmeSame.IsSuccess);
 		Assert.IsTrue(acmeOnly.IsSuccess);
-		Assert.IsTrue(acmeOnly.FullFilePath.StartsWith(provider.GetSettings("acme").StorageFolder));
+		Assert.StartsWith(provider.GetSettings("acme").StorageFolder, acmeOnly.FullFilePath);
 	}
 
 	[TestMethod]

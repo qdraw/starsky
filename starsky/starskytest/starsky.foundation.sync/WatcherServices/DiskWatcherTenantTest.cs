@@ -15,6 +15,10 @@ namespace starskytest.starsky.foundation.sync.WatcherServices;
 [TestClass]
 public sealed class DiskWatcherTenantTest
 {
+	private static readonly string[] AcmeAndBeta = ["acme", "beta"];
+
+	public TestContext TestContext { get; set; } = null!;
+
 	private readonly string _root =
 		Path.Combine(Path.GetTempPath(), "starsky-watcher-" + Guid.NewGuid().ToString("N"));
 
@@ -86,7 +90,7 @@ public sealed class DiskWatcherTenantTest
 		var watcher = new DiskWatcher(new FakeIFileSystemWatcherWrapper(), new FakeIWebLogger(),
 			queue);
 
-		watcher.OnRenamed(this,
+		watcher.OnRenamed(
 			new RenamedEventArgs(WatcherChangeTypes.Renamed, _root, "b.jpg", "a.jpg"), "beta");
 
 		Assert.AreEqual("beta", queue.Jobs.Single().AmbientTenant);
@@ -103,7 +107,7 @@ public sealed class DiskWatcherTenantTest
 		watcher.Watcher(folder, "acme");
 		watcher.Watcher(folder, "acme");
 
-		Assert.AreEqual(1, logger.TrackedInformation.Count(p =>
+		Assert.ContainsSingle(logger.TrackedInformation.Where(p =>
 			p.Item2?.Contains("[DiskWatcher] started") == true));
 	}
 
@@ -144,12 +148,10 @@ public sealed class DiskWatcherTenantTest
 
 		Assert.AreEqual(appSettings.StorageFolder, fakeWatcher.AddedItems[0],
 			"the default tenant is first: it is the primary watcher");
-		CollectionAssert.AreEqual(new[] { "acme", "beta" },
+		Assert.AreSequenceEqual(AcmeAndBeta,
 			fakeWatcher.AddedByTenant.Select(p => p.TenantId).ToArray());
-		Assert.IsTrue(fakeWatcher.AddedByTenant[0].Path
-			.StartsWith(Path.Combine(_root, "tenants", "acme")));
-		Assert.IsTrue(fakeWatcher.AddedByTenant[1].Path
-			.StartsWith(Path.Combine(_root, "tenants", "beta")));
+		Assert.StartsWith(Path.Combine(_root, "tenants", "acme"), fakeWatcher.AddedByTenant[0].Path);
+		Assert.StartsWith(Path.Combine(_root, "tenants", "beta"), fakeWatcher.AddedByTenant[1].Path);
 	}
 
 	[TestMethod]
@@ -175,7 +177,7 @@ public sealed class DiskWatcherTenantTest
 		registry.Add("acme");
 		for ( var i = 0; i < 100 && fakeWatcher.AddedByTenant.Count == 0; i++ )
 		{
-			await Task.Delay(50);
+			await Task.Delay(50, TestContext.CancellationToken);
 		}
 
 		await service.StopAsync(default);

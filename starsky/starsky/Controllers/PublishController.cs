@@ -28,7 +28,6 @@ namespace starsky.Controllers;
 [Authorize]
 public sealed class PublishController : Controller
 {
-	private readonly AppSettings _appSettings;
 	private readonly ITenantSettings _tenantSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IStorage _hostStorage;
@@ -43,7 +42,6 @@ public sealed class PublishController : Controller
 	{
 		// published zips are in the temp folder of the tenant: not shared with other tenants
 		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
-		_appSettings = appSettings;
 		_publishPreflight = publishPreflight;
 		_metaInfo = metaInfo;
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);

@@ -96,7 +96,7 @@ public sealed class AccountControllerTenantRegisterTest
 		var (controller, manager) = Create("acme", false, Administrator());
 
 		Assert.AreEqual("Account Created", await Register(controller));
-		Assert.AreEqual(true, manager.LastJoinCurrentTenant);
+		Assert.IsTrue(manager.LastJoinCurrentTenant);
 	}
 
 	[TestMethod]
@@ -105,7 +105,7 @@ public sealed class AccountControllerTenantRegisterTest
 		var (controller, manager) = Create("acme", false, PlatformAdmin());
 
 		Assert.AreEqual("Account Created", await Register(controller));
-		Assert.AreEqual(false, manager.LastJoinCurrentTenant);
+		Assert.IsFalse(manager.LastJoinCurrentTenant);
 	}
 
 	[TestMethod]
@@ -114,7 +114,7 @@ public sealed class AccountControllerTenantRegisterTest
 		var (controller, manager) = Create("acme", true);
 
 		Assert.AreEqual("Account Created", await Register(controller));
-		Assert.AreEqual(false, manager.LastJoinCurrentTenant);
+		Assert.IsFalse(manager.LastJoinCurrentTenant);
 	}
 
 	[TestMethod]
@@ -123,7 +123,7 @@ public sealed class AccountControllerTenantRegisterTest
 		var (controller, manager) = Create("acme", true, PlainUser());
 
 		Assert.AreEqual("Account Created", await Register(controller));
-		Assert.AreEqual(false, manager.LastJoinCurrentTenant);
+		Assert.IsFalse(manager.LastJoinCurrentTenant);
 	}
 
 	[TestMethod]
@@ -132,6 +132,6 @@ public sealed class AccountControllerTenantRegisterTest
 		var (controller, manager) = Create("default", true);
 
 		Assert.AreEqual("Account Created", await Register(controller));
-		Assert.AreEqual(true, manager.LastJoinCurrentTenant);
+		Assert.IsTrue(manager.LastJoinCurrentTenant);
 	}
 }

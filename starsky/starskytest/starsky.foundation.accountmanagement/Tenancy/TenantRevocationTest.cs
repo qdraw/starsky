@@ -17,6 +17,8 @@ public sealed class TenantRevocationTest
 {
 	public TestContext TestContext { get; set; } = null!;
 
+	private static readonly string[] AcmeAndBeta = ["acme", "beta"];
+
 	private static async Task<(int Owner, int Member)> SeedUsers(TenancyTestSetup setup)
 	{
 		await using var context = setup.ContextFor("default");
@@ -74,8 +76,7 @@ public sealed class TenantRevocationTest
 		// enabling again does not close anything
 		await service.SetEnabledAsync("acme", true);
 
-		CollectionAssert.AreEqual(new[] { "acme", "beta" },
-			sockets.FakeClosed.Select(c => c.TenantId).ToArray());
+		Assert.AreSequenceEqual(AcmeAndBeta, sockets.FakeClosed.Select(c => c.TenantId).ToArray());
 		Assert.IsTrue(sockets.FakeClosed.All(c => c.UserId == null));
 	}
 

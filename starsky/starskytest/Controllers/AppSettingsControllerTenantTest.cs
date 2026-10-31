@@ -72,7 +72,7 @@ public sealed class AppSettingsControllerTenantTest
 	[TestMethod]
 	public void Env_OneTenant_ShowsTheHostFolders()
 	{
-		Assert.IsTrue(EnvFor(["default"], false).StorageFolder.Contains("secret"));
+		Assert.Contains("secret", EnvFor(["default"], false).StorageFolder);
 	}
 
 	[TestMethod]
@@ -80,9 +80,9 @@ public sealed class AppSettingsControllerTenantTest
 	{
 		var env = EnvFor(["default", "acme"], false);
 
-		Assert.IsFalse(env.StorageFolder.Contains("secret"));
-		Assert.IsFalse(env.TenantsRoot.Contains("tenants"));
-		Assert.IsFalse(env.TempFolder.Contains(System.IO.Path.GetTempPath()));
+		Assert.DoesNotContain("secret", env.StorageFolder);
+		Assert.DoesNotContain("tenants", env.TenantsRoot);
+		Assert.DoesNotContain(System.IO.Path.GetTempPath(), env.TempFolder);
 		Assert.IsEmpty(env.StorageFolderMappings);
 	}
 
@@ -91,6 +91,6 @@ public sealed class AppSettingsControllerTenantTest
 	{
 		var env = EnvFor(["default", "acme"], true);
 
-		Assert.IsTrue(env.StorageFolder.Contains("secret"));
+		Assert.Contains("secret", env.StorageFolder);
 	}
 }
