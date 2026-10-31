@@ -18,6 +18,7 @@ public sealed class TenantSettingsTest
 	[TestCleanup]
 	public void Cleanup()
 	{
+		TenantAmbient.Reset();
 		if ( Directory.Exists(_root) )
 		{
 			Directory.Delete(_root, true);
@@ -169,6 +170,7 @@ public sealed class TenantSettingsTest
 			new FakeTenantRegistry("default", "acme"));
 		var logger = new FakeIWebLogger();
 		var defaultContext = new TenantContext();
+		defaultContext.SetTenant("default");
 		var acmeContext = new TenantContext();
 		acmeContext.SetTenant("acme");
 

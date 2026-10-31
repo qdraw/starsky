@@ -8,6 +8,7 @@ using starsky.feature.thumbnail.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -24,6 +25,7 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 	private readonly IServiceScopeFactory _factory;
 	private readonly IHostApplicationLifetime _hostApplicationLifetime;
 	private readonly IWebLogger _logger;
+	private readonly ITenantRegistry _tenantRegistry;
 	private readonly CancellationTokenSource _stopCts = new();
 	private int _executionCount;
 	private Task? _runTask;
@@ -31,8 +33,10 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 	public PeriodicThumbnailScanHostedService(AppSettings appSettings,
 		IWebLogger logger,
 		IServiceScopeFactory factory,
-		IHostApplicationLifetime hostApplicationLifetime)
+		IHostApplicationLifetime hostApplicationLifetime,
+		ITenantRegistry? tenantRegistry = null)
 	{
+		_tenantRegistry = tenantRegistry ?? new TenantRegistry();
 		_logger = logger;
 		_factory = factory;
 		_hostApplicationLifetime = hostApplicationLifetime;
@@ -140,10 +144,29 @@ public class PeriodicThumbnailScanHostedService : IHostedService
 
 		try
 		{
-			await using var asyncScope = _factory.CreateAsyncScope();
-			var service = asyncScope.ServiceProvider
-				.GetRequiredService<IDatabaseThumbnailGenerationService>();
-			await service.StartBackgroundQueue();
+			// each tenant has its own index and thumbnail folder
+			var failed = false;
+			await TenantJobs.ForEachActiveTenantAsync(_factory, _tenantRegistry,
+				async (serviceProvider, _) =>
+				{
+					var service = serviceProvider
+						.GetRequiredService<IDatabaseThumbnailGenerationService>();
+					await service.StartBackgroundQueue();
+				}, (tenantId, exception) =>
+				{
+					failed = true;
+					_logger.LogError(
+						$"Failed to execute {nameof(PeriodicThumbnailScanHostedService)} " +
+						$"for tenant {tenantId} with exception message {exception.Message} - " +
+						$"{exception.StackTrace} - {exception.InnerException?.StackTrace}",
+						exception);
+				}, cancellationToken);
+
+			if ( failed )
+			{
+				return null;
+			}
+
 			_executionCount++;
 			// Executed PeriodicThumbnailScanHostedService
 			_logger.LogDebug(

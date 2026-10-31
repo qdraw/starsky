@@ -121,6 +121,21 @@ describe("UseFileList", () => {
       expect(hook).toHaveBeenCalledWith(PageType.Unauthorized);
     });
 
+    it("with archive content 403 (not a member of this tenant)", async () => {
+      const hook = jest.fn();
+
+      const controller = new AbortController();
+
+      setFetchSpy(403, PageType.Archive);
+
+      await act(async () => {
+        // perform changes within our component
+        await fetchContentUseFileList("test", "test", controller, jest.fn(), false, hook);
+      });
+
+      expect(hook).toHaveBeenCalledWith(PageType.NoAccess);
+    });
+
     it("with archive content 500", async () => {
       const hook = jest.fn();
       const hook2 = jest.fn();

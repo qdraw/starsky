@@ -17,6 +17,7 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.ArchiveFormats;
 using starsky.foundation.storage.Helpers;
@@ -36,6 +37,7 @@ namespace starsky.feature.export.Services;
 public partial class ExportService : IExport
 {
 	private readonly AppSettings _appSettings;
+	private readonly ITenantSettings _tenantSettings;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IStorage _iStorage;
 	private readonly IWebLogger _logger;
@@ -43,8 +45,12 @@ public partial class ExportService : IExport
 	private readonly IThumbnailService _thumbnailService;
 
 	public ExportService(IQuery query, AppSettings appSettings,
-		ISelectorStorage selectorStorage, IWebLogger logger, IThumbnailService thumbnailService)
+		ISelectorStorage selectorStorage, IWebLogger logger, IThumbnailService thumbnailService,
+		ITenantSettings? tenantSettings = null)
 	{
+		// the folders of the tenant of this request
+		_tenantSettings = tenantSettings ??
+		                  new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_appSettings = appSettings;
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
@@ -124,11 +130,11 @@ public partial class ExportService : IExport
 		var fullFilePaths = await CreateListToExport(fileIndexResultsList, thumbnail);
 		var fileNames = await FilePathToFileNameAsync(fullFilePaths, thumbnail);
 
-		new Zipper(_logger).CreateZip(_appSettings.TempFolder, fullFilePaths, fileNames,
+		new Zipper(_logger).CreateZip(_tenantSettings.TempFolder, fullFilePaths, fileNames,
 			zipOutputFileName);
 
 		// Write a single file to be sure that writing is ready
-		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
+		var doneFileFullPath = Path.Combine(_tenantSettings.TempFolder, zipOutputFileName) + ".done";
 		await _hostFileSystemStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("OK"),
 			doneFileFullPath);
 		if ( _appSettings.IsVerbose() )
@@ -161,8 +167,8 @@ public partial class ExportService : IExport
 			return new Tuple<bool?, string?>(null, null);
 		}
 
-		var sourceFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".zip";
-		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, zipOutputFileName) + ".done";
+		var sourceFullPath = Path.Combine(_tenantSettings.TempFolder, zipOutputFileName) + ".zip";
+		var doneFileFullPath = Path.Combine(_tenantSettings.TempFolder, zipOutputFileName) + ".done";
 
 		if ( !_hostFileSystemStorage.ExistFile(sourceFullPath) )
 		{
@@ -224,7 +230,7 @@ public partial class ExportService : IExport
 		{
 			if ( thumbnail )
 			{
-				var sourceThumb = Path.Combine(_appSettings.ThumbnailTempFolder,
+				var sourceThumb = Path.Combine(_tenantSettings.ThumbnailTempFolder,
 					ThumbnailNameHelper.Combine(item.FileHash!,
 						ThumbnailSize.Large, _appSettings.ThumbnailImageFormat));
 
@@ -236,7 +242,7 @@ public partial class ExportService : IExport
 				continue;
 			}
 
-			var sourceFile = _appSettings.DatabasePathToFilePath(item.FilePath!);
+			var sourceFile = _tenantSettings.DatabasePathToFilePath(item.FilePath!);
 
 			if ( !_hostFileSystemStorage.ExistFile(sourceFile) )
 			{
@@ -256,7 +262,7 @@ public partial class ExportService : IExport
 				continue;
 			}
 
-			var xmpFileFullPath = _appSettings.DatabasePathToFilePath(
+			var xmpFileFullPath = _tenantSettings.DatabasePathToFilePath(
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(
 					item.FilePath));
 
@@ -372,7 +378,7 @@ public partial class ExportService : IExport
 			return false;
 		}
 
-		var storageFolder = PathHelper.AddBackslash(_appSettings.StorageFolder);
+		var storageFolder = PathHelper.AddBackslash(_tenantSettings.StorageFolder);
 
 		foreach ( var filePath in fullFilePaths )
 		{
@@ -410,7 +416,7 @@ public partial class ExportService : IExport
 			return string.Empty;
 		}
 
-		var storageFolder = PathHelper.AddBackslash(_appSettings.StorageFolder);
+		var storageFolder = PathHelper.AddBackslash(_tenantSettings.StorageFolder);
 
 		// If the file path starts with storage folder, get the relative part
 		if ( !fullFilePath.StartsWith(storageFolder, StringComparison.OrdinalIgnoreCase) )

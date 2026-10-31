@@ -227,9 +227,16 @@ public sealed class HomeController : Controller
 
 	internal static string AppendPathBasePrefix(string? requestPathBase, string url)
 	{
-		return requestPathBase?.Equals("/starsky",
+		if ( requestPathBase?.Equals("/starsky",
+			    StringComparison.InvariantCultureIgnoreCase) == true )
+		{
+			return $"/starsky{url}";
+		}
+
+		// a tenant keeps its own base: /starsky/t/acme/search stays in the tenant
+		return requestPathBase?.StartsWith("/starsky/t/",
 			StringComparison.InvariantCultureIgnoreCase) == true
-			? $"/starsky{url}"
+			? $"{requestPathBase}{url}"
 			: url;
 	}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -10,13 +11,15 @@ using starsky.foundation.database.Models.Account;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Tenancy;
+using starsky.foundation.realtime.Interfaces;
 
 namespace starsky.foundation.accountmanagement.Tenancy;
 
 [Service(typeof(ITenantMembershipService), InjectionLifetime = InjectionLifetime.Scoped)]
 public sealed class TenantMembershipService(
 	ApplicationDbContext dbContext,
-	IMemoryCache? cache = null) : ITenantMembershipService
+	IMemoryCache? cache = null,
+	IWebSocketConnectionsService? sockets = null) : ITenantMembershipService
 {
 	/// <summary>
 	///     Revoking a membership works within this time, also on another instance
@@ -42,6 +45,52 @@ public sealed class TenantMembershipService(
 	public void Invalidate(int userId, string tenantId)
 	{
 		cache?.Remove(CacheKey(userId, tenantId));
+	}
+
+	public async Task<string?> GetLastUsedAsync(int userId)
+	{
+		return await dbContext.Users.AsNoTracking().Where(u => u.Id == userId)
+			.Select(u => u.LastTenantId).FirstOrDefaultAsync();
+	}
+
+	public async Task<MembershipResult> SetLastUsedAsync(int userId, string tenantId)
+	{
+		if ( !await dbContext.UserRoles.AnyAsync(p =>
+			    p.UserId == userId && p.TenantId == tenantId) )
+		{
+			return MembershipResult.NotAMember;
+		}
+
+		var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+		if ( user == null )
+		{
+			return MembershipResult.UserNotFound;
+		}
+
+		// no write when nothing changes: every page load reports its tenant
+		if ( user.LastTenantId != tenantId )
+		{
+			user.LastTenantId = tenantId;
+			await dbContext.SaveChangesAsync();
+		}
+
+		return MembershipResult.Ok;
+	}
+
+	/// <summary>
+	///     Where a login lands without a target: the last used tenant when the user is still a
+	///     member, the only tenant when there is one, otherwise null (the user must choose, or
+	///     has no access at all)
+	/// </summary>
+	public static string? ResolveLanding(IReadOnlyCollection<TenantListItem> tenants,
+		string? lastUsed)
+	{
+		if ( lastUsed != null && tenants.Any(t => t.TenantId == lastUsed) )
+		{
+			return lastUsed;
+		}
+
+		return tenants.Count == 1 ? tenants.First().TenantId : null;
 	}
 
 	public async Task<List<TenantListItem>> GetTenantsForUserAsync(int userId)
@@ -92,7 +141,56 @@ public sealed class TenantMembershipService(
 			.OrderBy(r => r.Identifier).ToList();
 	}
 
-	public async Task<MembershipResult> AddMemberAsync(string tenantId, string identifier,
+	public Task<MembershipResult> AddMemberAsync(string tenantId, string identifier,
+		string roleCode)
+	{
+		return InSerializableTransaction(() => AddMemberCore(tenantId, identifier, roleCode));
+	}
+
+	public Task<MembershipResult> SetRoleAsync(string tenantId, int userId, string roleCode)
+	{
+		return InSerializableTransaction(() => SetRoleCore(tenantId, userId, roleCode));
+	}
+
+	public async Task<MembershipResult> RemoveMemberAsync(string tenantId, int userId)
+	{
+		var result = await InSerializableTransaction(() => RemoveMemberCore(tenantId, userId));
+
+		// a socket of this user in this tenant is authorised at connect only: close it
+		if ( result == MembershipResult.Ok && sockets != null )
+		{
+			await sockets.CloseConnectionsAsync(tenantId, userId, "Membership removed");
+		}
+
+		return result;
+	}
+
+	/// <summary>
+	///     The checks (last administrator, already a member) and the change belong together:
+	///     two administrators that demote each other at the same time would leave none
+	/// </summary>
+	private async Task<MembershipResult> InSerializableTransaction(
+		Func<Task<MembershipResult>> work)
+	{
+		// the caller may already have a transaction
+		if ( dbContext.Database.CurrentTransaction != null )
+		{
+			return await work();
+		}
+
+		await using var transaction =
+			await dbContext.Database.BeginTransactionAsync(IsolationLevel.Serializable);
+		var result = await work();
+		if ( result == MembershipResult.Ok )
+		{
+			await transaction.CommitAsync();
+		}
+
+		// everything else is rolled back (nothing was written) when the transaction is disposed
+		return result;
+	}
+
+	private async Task<MembershipResult> AddMemberCore(string tenantId, string identifier,
 		string roleCode)
 	{
 		if ( !await TenantExists(tenantId) )
@@ -128,7 +226,7 @@ public sealed class TenantMembershipService(
 		return MembershipResult.Ok;
 	}
 
-	public async Task<MembershipResult> SetRoleAsync(string tenantId, int userId, string roleCode)
+	private async Task<MembershipResult> SetRoleCore(string tenantId, int userId, string roleCode)
 	{
 		var role = await FindRole(roleCode);
 		if ( role == null )
@@ -154,18 +252,15 @@ public sealed class TenantMembershipService(
 			return MembershipResult.LastAdministrator;
 		}
 
-		// the role is part of the key: replace the row
-		dbContext.UserRoles.Remove(current);
-		dbContext.UserRoles.Add(new UserRole
-		{
-			UserId = userId, RoleId = role.Id, TenantId = tenantId
-		});
-		await dbContext.SaveChangesAsync();
+		// the role is part of the key: change it in one statement (one membership per tenant)
+		await dbContext.UserRoles
+			.Where(p => p.UserId == userId && p.TenantId == tenantId)
+			.ExecuteUpdateAsync(setters => setters.SetProperty(p => p.RoleId, role.Id));
 		Invalidate(userId, tenantId);
 		return MembershipResult.Ok;
 	}
 
-	public async Task<MembershipResult> RemoveMemberAsync(string tenantId, int userId)
+	private async Task<MembershipResult> RemoveMemberCore(string tenantId, int userId)
 	{
 		var current = await dbContext.UserRoles.Include(p => p.Role)
 			.FirstOrDefaultAsync(p => p.UserId == userId && p.TenantId == tenantId);

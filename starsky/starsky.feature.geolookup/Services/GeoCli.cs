@@ -15,6 +15,7 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.storage.Structure;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.geolookup.Services;
 
@@ -65,6 +66,13 @@ public sealed class GeoCli
 	/// <returns>Void Task</returns>
 	public async Task CommandLineAsync(string[] args)
 	{
+		if ( TenantAmbient.Current != TenantIdHelper.DefaultTenantId )
+		{
+			// this tool points the storage folder of the (default) session at the given folder
+			_console.WriteLine("--tenant is not supported by this tool");
+			return;
+		}
+
 		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 		// Set type of GeoReverseLookup
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;

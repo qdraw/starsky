@@ -4,20 +4,60 @@ import { IsRelativeUrl } from "./url.ts";
 
 import packageJson from "../../../package.json";
 
+/**
+ * The tenant in the url: /starsky/t/acme/... (or /t/acme/... without the base path, in
+ * development). No tenant segment is the default tenant
+ */
+const tenantPattern = /^(?:\/starsky)?\/t\/([a-z0-9]+(?:-[a-z0-9]+)*)(?=\/|$)/;
+
+export const TenantFromLocation = (pathname: string = document.location.pathname): string => {
+  const match = tenantPattern.exec(pathname);
+  return match ? match[1] : "default";
+};
+
+/**
+ * Base url of a tenant: the default tenant has none (the existing urls)
+ * @param tenantId tenant
+ */
+export const TenantBasePath = (tenantId: string): string => {
+  return tenantId === "default" ? "/starsky" : `/starsky/t/${tenantId}`;
+};
+
 export class UrlQuery {
-  public prefix: string = "/starsky";
+  private prefixOverride?: string;
+
+  /**
+   * Base of the api urls, including the tenant of the current page
+   */
+  public get prefix(): string {
+    return this.prefixOverride ?? TenantBasePath(TenantFromLocation());
+  }
+
+  public set prefix(value: string) {
+    this.prefixOverride = value;
+  }
+
+  /**
+   * Base of the page urls: the same as the api when the page is served under it, otherwise
+   * (development server) only the tenant part
+   */
+  private PagePrefix(): string {
+    if (document.location.pathname.includes(this.prefix)) {
+      return this.prefix;
+    }
+    const tenant = TenantFromLocation();
+    return tenant === "default" ? "" : `/t/${tenant}`;
+  }
 
   public UrlHomePage(): string {
-    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/` : "/";
+    return `${this.PagePrefix()}/`;
   }
 
   public UrlHomeIndexPage(locationHash: string): string {
     if (!IsRelativeUrl(locationHash)) {
       locationHash = "/";
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}${new URLPath().StartOnSlash(locationHash)}`
-      : `${new URLPath().StartOnSlash(locationHash)}`;
+    return `${this.PagePrefix()}${new URLPath().StartOnSlash(locationHash)}`;
   }
 
   /**
@@ -34,9 +74,22 @@ export class UrlQuery {
     // add only prefix for default situation
     // an off-site ReturnUrl would make the login page an open redirect
     if (!getReturnUrl || !IsRelativeUrl(getReturnUrl)) {
-      return `/${new URLPath().AddPrefixUrl("f=/")}`;
+      // a tenant stays in its tenant after the login
+      const tenant = TenantFromLocation();
+      const tenantPrefix = tenant === "default" ? "" : this.PagePrefix();
+      return `${tenantPrefix}/${new URLPath().AddPrefixUrl("f=/")}`;
     }
     return getReturnUrl;
+  }
+
+  /**
+   * Is this the return url that the app uses when there is no real target (the logout link
+   * passes "/?f=/")? Only a real target (a page the user came from) wins over the tenant
+   * the user used last
+   * @param returnUrl result of GetReturnUrl
+   */
+  public IsDefaultReturnUrl(returnUrl: string): boolean {
+    return returnUrl === "/?f=/" || returnUrl === this.GetReturnUrl("");
   }
 
   /**
@@ -44,9 +97,7 @@ export class UrlQuery {
    * @param t query
    */
   public UrlSearchPage(t: string): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/search?t=${t}`
-      : `/search?t=${t}`;
+    return `${this.PagePrefix()}/search?t=${t}`;
   }
 
   /**
@@ -54,36 +105,26 @@ export class UrlQuery {
    */
   public HashSearchPage(historyLocationHash: string): string {
     const url = new URLPath().StringToIUrl(historyLocationHash);
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/search${new URLPath().IUrlToString(url)}`
-      : `/search${new URLPath().IUrlToString(url)}`;
+    return `${this.PagePrefix()}/search${new URLPath().IUrlToString(url)}`;
   }
 
   public UrlTrashPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/trash?t=!delete!`
-      : `/trash?t=!delete!`;
+    return `${this.PagePrefix()}/trash?t=!delete!`;
   }
 
   public UrlImportPage(): string {
-    return document.location.pathname.includes(this.prefix) ? `${this.prefix}/import` : `/import`;
+    return `${this.PagePrefix()}/import`;
   }
 
   public UrlPreferencesPage(tab?: string): string {
     if (!tab) {
-      return document.location.pathname.includes(this.prefix)
-        ? `${this.prefix}/preferences`
-        : `/preferences`;
+      return `${this.PagePrefix()}/preferences`;
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/preferences/?tab=${tab}`
-      : `/preferences/?tab=${tab}`;
+    return `${this.PagePrefix()}/preferences/?tab=${tab}`;
   }
 
   public UrlLoginPage(): string {
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/account/login`
-      : `/account/login`;
+    return `${this.PagePrefix()}/account/login`;
   }
 
   public UrlLogoutPage(returnUrl: string): string {
@@ -93,9 +134,34 @@ export class UrlQuery {
     // only escape characters that would break out of this query parameter,
     // the rest of the (validated) relative url stays readable
     const encodedReturnUrl = returnUrl.replace(/[&#%\s+]/g, (c) => encodeURIComponent(c));
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/account/logout?ReturnUrl=${encodedReturnUrl}`
-      : `/account/logout?ReturnUrl=${encodedReturnUrl}`;
+    return `${this.PagePrefix()}/account/logout?ReturnUrl=${encodedReturnUrl}`;
+  }
+
+  /**
+   * The tenants of the current user (not behind the tenant membership check)
+   */
+  public UrlTenantsMine(): string {
+    return `${this.prefix}/api/tenants/mine`;
+  }
+
+  /**
+   * Remember the tenant of this page for the next login
+   */
+  public UrlTenantsLastUsed(): string {
+    return `${this.prefix}/api/tenants/last-used`;
+  }
+
+  /**
+   * Home page of a tenant (a full page load: state of another tenant must not be kept)
+   * @param tenantId tenant
+   */
+  public UrlTenantHomePage(tenantId: string): string {
+    const base = document.location.pathname.includes("/starsky")
+      ? TenantBasePath(tenantId)
+      : tenantId === "default"
+        ? ""
+        : `/t/${tenantId}`;
+    return `${base}/`;
   }
 
   public UrlLoginApi(): string {

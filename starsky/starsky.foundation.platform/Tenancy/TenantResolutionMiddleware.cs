@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace starsky.foundation.platform.Tenancy;
 
@@ -25,9 +27,14 @@ public sealed class TenantResolutionMiddleware(RequestDelegate next)
 			var candidate = segments.Length > 1 ? segments[1] : null;
 			var registry = httpContext.RequestServices.GetRequiredService<ITenantRegistry>();
 
-			if ( !TenantIdHelper.IsValid(candidate) || !registry.IsActive(candidate!) )
+			// the default tenant has no prefix: /t/default would be a second url for it
+			if ( !TenantIdHelper.IsValid(candidate) ||
+			     candidate == TenantIdHelper.DefaultTenantId ||
+			     !registry.IsActive(candidate!) )
 			{
-				// same answer for unknown and invalid: do not reveal which tenants exist
+				// the same answer for unknown, invalid and inactive tenants. That an existing tenant
+				// answers 401/403 (and an unknown one 404) is accepted: ids are not secret, the data
+				// is protected by the membership check
 				httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
 				return;
 			}
@@ -43,7 +50,12 @@ public sealed class TenantResolutionMiddleware(RequestDelegate next)
 		var tenantContext = httpContext.RequestServices.GetRequiredService<ITenantContext>();
 		( ( TenantContext ) tenantContext ).SetTenant(tenantId);
 
-		await next(httpContext);
+		// every log line of this request names the tenant
+		var logger = httpContext.RequestServices.GetService<ILogger<TenantResolutionMiddleware>>();
+		using ( logger?.BeginScope(new Dictionary<string, object> { ["TenantId"] = tenantId }) )
+		{
+			await next(httpContext);
+		}
 	}
 }
 

@@ -1504,10 +1504,25 @@
     "nl": "Voltooien",
     "de": "Fertig"
   },
-  "temp1": {
-    "en": ".",
-    "nl": ".",
-    "de": "."
+  "MessageSwitchTenant": {
+    "en": "Switch to",
+    "nl": "Wissel naar",
+    "de": "Wechseln zu"
+  },
+  "MessageNoTenantAccess": {
+    "en": "You have no access to this tenant",
+    "nl": "Je hebt geen toegang tot deze omgeving",
+    "de": "Sie haben keinen Zugriff auf diesen Mandanten"
+  },
+  "MessageChooseTenant": {
+    "en": "Choose a tenant",
+    "nl": "Kies een omgeving",
+    "de": "Wählen Sie einen Mandanten"
+  },
+  "MessageNoTenants": {
+    "en": "You are not a member of any tenant. Ask an administrator to add you.",
+    "nl": "Je bent geen lid van een omgeving. Vraag een beheerder om je toe te voegen.",
+    "de": "Sie sind kein Mitglied eines Mandanten. Bitten Sie einen Administrator, Sie hinzuzufügen."
   },
   "temp1": {
     "en": ".",

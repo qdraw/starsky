@@ -641,8 +641,7 @@ public partial class Query : IQuery
 
 	private string TenantPrefix(string key)
 	{
-		var tenantId = _tenantContext?.TenantId ?? TenantIdHelper.DefaultTenantId;
-		return tenantId == TenantIdHelper.DefaultTenantId ? key : $"tenant-{tenantId}:{key}";
+		return TenantCacheKey.Prefix(key, _tenantContext?.TenantId ?? TenantAmbient.Current);
 	}
 
 	internal static string CachingDbName(string functionName, string? singleItemDbPath)

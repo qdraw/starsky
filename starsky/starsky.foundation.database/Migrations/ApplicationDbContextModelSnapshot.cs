@@ -176,6 +176,10 @@ namespace starsky.foundation.database.Migrations
                     b.Property<bool>("IsPlatformAdmin")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("LastTenantId")
+                        .HasMaxLength(63)
+                        .HasColumnType("TEXT");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("INTEGER");
 
@@ -214,6 +218,10 @@ namespace starsky.foundation.database.Migrations
                     b.HasIndex("RoleId");
 
                     b.HasIndex("TenantId");
+
+                    b.HasIndex("UserId", "TenantId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_UserRoles_UserId_TenantId");
 
                     b.ToTable("UserRoles", (string)null);
 

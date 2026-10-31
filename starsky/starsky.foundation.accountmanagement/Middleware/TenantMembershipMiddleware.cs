@@ -21,20 +21,41 @@ public sealed class TenantMembershipMiddleware(RequestDelegate next)
 	public const string PlatformAdminClaim = "PlatformAdmin";
 	public const string PermissionClaim = "Permission";
 
-	// these decide for themselves: log in, ask for the own tenants, manage tenants
+	// these decide for themselves: log in, ask for the own tenants, manage tenants.
+	// /api/health is the anonymous check only: /api/health/details shows server information
 	private static readonly string[] NoMembershipNeeded =
-		["/api/account", "/api/tenants", "/api/health"];
+		["/api/account", "/api/tenants", "/api/health/version"];
+
+	private static readonly string[] NoMembershipNeededExact = ["/api/health"];
+
+	// not under /api, but they read or change the photos of the tenant in the url
+	private static readonly string[] MembershipNeededOutsideApi =
+		["/realtime", "/mcp", "/redirect"];
 
 	internal static bool RequiresMembership(PathString path)
 	{
 		var value = path.Value;
-		var isTenantApi = !string.IsNullOrEmpty(value) &&
-		                  ( value.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) ||
-		                    value.StartsWith("/realtime", StringComparison.OrdinalIgnoreCase) );
+		if ( string.IsNullOrEmpty(value) )
+		{
+			return false;
+		}
+
+		var isTenantData = value.StartsWith("/api/", StringComparison.OrdinalIgnoreCase) ||
+		                   MembershipNeededOutsideApi.Any(p => IsFolderOrBelow(value, p));
+		if ( !isTenantData )
+		{
+			return false;
+		}
+
 		// the folder itself or below it: /api/tenantsx is not /api/tenants
-		return isTenantApi && !NoMembershipNeeded.Any(p =>
-			value!.Equals(p, StringComparison.OrdinalIgnoreCase) ||
-			value.StartsWith(p + "/", StringComparison.OrdinalIgnoreCase));
+		return !NoMembershipNeeded.Any(p => IsFolderOrBelow(value, p)) &&
+		       !NoMembershipNeededExact.Any(p => value.Equals(p, StringComparison.OrdinalIgnoreCase));
+	}
+
+	private static bool IsFolderOrBelow(string value, string folder)
+	{
+		return value.Equals(folder, StringComparison.OrdinalIgnoreCase) ||
+		       value.StartsWith(folder + "/", StringComparison.OrdinalIgnoreCase);
 	}
 
 	public async Task Invoke(HttpContext context)

@@ -56,4 +56,14 @@ public interface ITenantMembershipService
 	Task<MembershipResult> RemoveMemberAsync(string tenantId, int userId);
 
 	void Invalidate(int userId, string tenantId);
+
+	/// <summary>
+	///     The tenant the user was last in, null when never set
+	/// </summary>
+	Task<string?> GetLastUsedAsync(int userId);
+
+	/// <summary>
+	///     Remember the tenant for the next login. Only for a tenant the user is a member of
+	/// </summary>
+	Task<MembershipResult> SetLastUsedAsync(int userId, string tenantId);
 }

@@ -10,6 +10,7 @@ using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
 using starsky.foundation.native.Trash.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
@@ -22,6 +23,7 @@ namespace starsky.feature.trash.Services;
 public class MoveToTrashService : IMoveToTrashService
 {
 	private readonly AppSettings _appSettings;
+	private readonly ITenantSettings _tenantSettings;
 	private readonly ITrashConnectionService _connectionService;
 	private readonly IMetaPreflight _metaPreflight;
 	private readonly IMetaUpdateService _metaUpdateService;
@@ -33,9 +35,11 @@ public class MoveToTrashService : IMoveToTrashService
 		IMetaPreflight metaPreflight,
 		IUpdateBackgroundTaskQueue queue,
 		ITrashService systemTrashService, IMetaUpdateService metaUpdateService,
-		ITrashConnectionService connectionService
+		ITrashConnectionService connectionService,
+		ITenantSettings? tenantSettings = null
 	)
 	{
+		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_appSettings = appSettings;
 		_query = query;
 		_metaPreflight = metaPreflight;
@@ -174,7 +178,7 @@ public class MoveToTrashService : IMoveToTrashService
 	{
 		var fullFilePaths = moveToTrash
 			.Where(p => p.FilePath != null)
-			.Select(p => _appSettings.DatabasePathToFilePath(p.FilePath!))
+			.Select(p => _tenantSettings.DatabasePathToFilePath(p.FilePath!))
 			.ToList();
 
 		_systemTrashService.Trash(fullFilePaths);

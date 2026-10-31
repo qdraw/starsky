@@ -2,14 +2,17 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Models.Account;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.Helpers;
@@ -20,7 +23,8 @@ public sealed class AccountController(
 	IUserManager userManager,
 	AppSettings appSettings,
 	IAntiforgery antiForgery,
-	ISelectorStorage selectorStorage)
+	ISelectorStorage selectorStorage,
+	ITenantContext? tenantContext = null)
 	: Controller
 {
 	private const string ModelError = "Model is not correct";
@@ -281,7 +285,7 @@ public sealed class AccountController(
 	[EnableRateLimiting(RateLimitPolicies.Login)]
 	public async Task<IActionResult> Register(RegisterViewModel model)
 	{
-		if ( await IsAccountRegisterClosed(User.Identity?.IsAuthenticated == true) )
+		if ( await IsAccountRegisterClosed() )
 		{
 			Response.StatusCode = 403;
 			return Json("Account Register page is closed");
@@ -289,7 +293,13 @@ public sealed class AccountController(
 
 		if ( ModelState.IsValid && model.ConfirmPassword == model.Password )
 		{
-			await userManager.SignUpAsync(model.Name, "email", model.Email, model.Password);
+			// The default tenant works as before: a new account is a member. In another tenant
+			// only an administrator of that tenant creates accounts for it; anybody else (also
+			// open registration) creates an account without membership
+			var joinCurrentTenant = (tenantContext?.TenantId ?? TenantAmbient.Current) == TenantIdHelper.DefaultTenantId ||
+			                        User.HasClaim(ClaimTypes.Role, AdministratorRole);
+			await userManager.SignUpAsync(model.Name, "email", model.Email, model.Password,
+				joinCurrentTenant);
 			return Json("Account Created");
 		}
 
@@ -298,20 +308,27 @@ public sealed class AccountController(
 		return Json(ModelError);
 	}
 
+	private static string AdministratorRole =>
+		AccountRoles.AppAccountRoles.Administrator.ToString();
+
 	/// <summary>
-	///     True == not allowed
+	///     True == not allowed. When registering is not open, only an administrator (of this
+	///     tenant, or of the platform) creates accounts: not every logged in user
 	/// </summary>
-	/// <param name="userIdentityIsAuthenticated"></param>
-	/// <returns></returns>
-	private async Task<bool> IsAccountRegisterClosed(bool userIdentityIsAuthenticated)
+	private async Task<bool> IsAccountRegisterClosed()
 	{
-		if ( userIdentityIsAuthenticated )
+		var isOpen = appSettings.IsAccountRegisterOpen == true ||
+		             ( await userManager.AllUsersAsync() ).Users.Count == 0;
+		if ( isOpen )
 		{
 			return false;
 		}
 
-		return appSettings.IsAccountRegisterOpen != true &&
-		       ( await userManager.AllUsersAsync() ).Users.Count != 0;
+		var isAdministrator = User.Identity?.IsAuthenticated == true &&
+		                      ( User.HasClaim(ClaimTypes.Role, AdministratorRole) ||
+		                        User.HasClaim(TenantMembershipMiddleware.PlatformAdminClaim,
+			                        "true") );
+		return !isAdministrator;
 	}
 
 	/// <summary>
@@ -333,8 +350,7 @@ public sealed class AccountController(
 			Response.StatusCode = 202;
 		}
 
-		if ( !await IsAccountRegisterClosed(
-			    User.Identity?.IsAuthenticated == true) )
+		if ( !await IsAccountRegisterClosed() )
 		{
 			return Json("RegisterStatus open");
 		}

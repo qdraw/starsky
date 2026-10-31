@@ -20,6 +20,11 @@ public sealed class TenantIdHelperTest
 	[DataRow("acme-", false)]
 	[DataRow("acme--x", false)]
 	[DataRow("a.b", false)]
+	// $ matches before a trailing newline: it must not
+	[DataRow("acme\n", false)]
+	[DataRow("default\n", false)]
+	[DataRow("acme\r\n", false)]
+	[DataRow("ac me", false)]
 	public void IsValid(string? tenantId, bool expected)
 	{
 		Assert.AreEqual(expected, TenantIdHelper.IsValid(tenantId));

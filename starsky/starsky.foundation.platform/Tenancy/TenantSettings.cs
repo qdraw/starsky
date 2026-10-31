@@ -46,6 +46,11 @@ public sealed class TenantSettings : ITenantSettings
 		return _paths.DatabasePathToTempFolderFilePath(databaseFilePath);
 	}
 
+	public string FullPathStorageFolderToDatabaseStyle(string fullPath)
+	{
+		return _paths.FullPathStorageFolderToDatabaseStyle(fullPath);
+	}
+
 	public List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList)
 	{
 		return _paths.RenameListItemsToDbStyle(localSubFolderList);

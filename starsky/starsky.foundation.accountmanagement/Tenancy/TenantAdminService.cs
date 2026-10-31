@@ -11,6 +11,8 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Tenancy;
+using starsky.foundation.realtime.Interfaces;
+using System.Linq.Expressions;
 
 namespace starsky.foundation.accountmanagement.Tenancy;
 
@@ -19,7 +21,9 @@ public sealed class TenantAdminService(
 	ApplicationDbContext dbContext,
 	ITenantRegistry registry,
 	ITenantSettingsProvider settingsProvider,
-	IWebLogger logger) : ITenantAdminService
+	IWebLogger logger,
+	IWebSocketConnectionsService? sockets = null,
+	AppSettings? appSettings = null) : ITenantAdminService
 {
 	public async Task<List<TenantOverviewItem>> ListAsync()
 	{
@@ -46,7 +50,7 @@ public sealed class TenantAdminService(
 		}
 
 		var settings = settingsProvider.Build(tenantId, roots);
-		if ( !AreFoldersValid(settings) )
+		if ( !await AreFoldersValid(settings, roots) )
 		{
 			return TenantAdminResult.InvalidFolders;
 		}
@@ -96,9 +100,18 @@ public sealed class TenantAdminService(
 			return TenantAdminResult.InvalidState;
 		}
 
+		if ( enabled && !await AreFoldersValid(settingsProvider.Build(tenant.Id,
+			    new TenantRoots(tenant.StorageFolder, tenant.ThumbnailTempFolder,
+				    tenant.TempFolder)), null) )
+		{
+			// the folders of another tenant were made while this one was disabled
+			return TenantAdminResult.InvalidFolders;
+		}
+
 		tenant.State = enabled ? TenantState.Active : TenantState.Disabled;
 		await dbContext.SaveChangesAsync();
 		registry.Invalidate();
+		await CloseSocketsOfInactiveTenant(tenantId, enabled);
 		return TenantAdminResult.Ok;
 	}
 
@@ -118,7 +131,82 @@ public sealed class TenantAdminService(
 		tenant.State = TenantState.Deleting;
 		await dbContext.SaveChangesAsync();
 		registry.Invalidate();
+		await CloseSocketsOfInactiveTenant(tenantId, false);
 		return TenantAdminResult.Ok;
+	}
+
+	public async Task<TenantAdminResult> PurgeAsync(string tenantId)
+	{
+		var (tenant, early) = await Find(tenantId);
+		if ( tenant == null )
+		{
+			return early;
+		}
+
+		// only after Delete: a tenant that is in use can not be purged by a typo
+		if ( tenant.State != TenantState.Deleting )
+		{
+			return TenantAdminResult.InvalidState;
+		}
+
+		await dbContext.RunCrossTenantAsync(async () =>
+		{
+			await dbContext.FileIndex.Where(OfTenant<FileIndexItem>(tenantId)).ExecuteDeleteAsync();
+			await dbContext.ImportIndex.Where(OfTenant<ImportIndexItem>(tenantId))
+				.ExecuteDeleteAsync();
+			await dbContext.Notifications.Where(OfTenant<NotificationItem>(tenantId))
+				.ExecuteDeleteAsync();
+			await dbContext.Settings.Where(OfTenant<SettingsItem>(tenantId)).ExecuteDeleteAsync();
+			await dbContext.Thumbnails.Where(OfTenant<ThumbnailItem>(tenantId))
+				.ExecuteDeleteAsync();
+			await dbContext.QueueItems.Where(OfTenant<QueueItem>(tenantId)).ExecuteDeleteAsync();
+			await dbContext.UserRoles.Where(p => p.TenantId == tenantId).ExecuteDeleteAsync();
+			return 0;
+		});
+
+		DeleteFoldersOfTheTenantsRootLayout(tenant);
+
+		tenant.State = TenantState.Deleted;
+		await dbContext.SaveChangesAsync();
+		registry.Invalidate();
+		logger.LogInformation($"[TenantAdmin] purged tenant {tenantId}");
+		return TenantAdminResult.Ok;
+	}
+
+	private static Expression<Func<T, bool>> OfTenant<T>(string tenantId) where T : class
+	{
+		return entity => EF.Property<string>(entity, ITenantEntity.TenantPropertyName) == tenantId;
+	}
+
+	/// <summary>
+	///     Only the folder TenantsRoot/{id} that the application made itself. A tenant with
+	///     explicit folders keeps its files: those are the files of whoever pointed to them
+	/// </summary>
+	private void DeleteFoldersOfTheTenantsRootLayout(TenantItem tenant)
+	{
+		if ( appSettings == null || tenant.StorageFolder != null ||
+		     tenant.ThumbnailTempFolder != null || tenant.TempFolder != null )
+		{
+			return;
+		}
+
+		var tenantFolder = Path.Combine(appSettings.TenantsRoot, tenant.Id);
+		// a valid id has no separators or dots: the folder is always directly in TenantsRoot
+		if ( TenantIdHelper.IsValid(tenant.Id) && Directory.Exists(tenantFolder) )
+		{
+			Directory.Delete(tenantFolder, true);
+		}
+	}
+
+	/// <summary>
+	///     Nobody can use a tenant that is not active: also not with a socket that is open
+	/// </summary>
+	private async Task CloseSocketsOfInactiveTenant(string tenantId, bool isActive)
+	{
+		if ( !isActive && sockets != null )
+		{
+			await sockets.CloseConnectionsAsync(tenantId, null, "Tenant is not active");
+		}
 	}
 
 	private async Task<(TenantItem? Tenant, TenantAdminResult Early)> Find(string tenantId)
@@ -133,14 +221,40 @@ public sealed class TenantAdminService(
 	}
 
 	/// <summary>
-	///     The new folders must be absolute and not overlap with the active tenants
+	///     The folders must be absolute (explicit ones: not a volume root or a top level folder), may
+	///     not overlap each other, and may not overlap the folders of any other tenant that is not
+	///     deleted. A disabled tenant counts: it can be enabled again
 	/// </summary>
-	private bool AreFoldersValid(ITenantSettings newTenant)
+	private async Task<bool> AreFoldersValid(ITenantSettings candidate, TenantRoots? explicitRoots)
 	{
+		if ( explicitRoots != null && new[]
+		    {
+			    explicitRoots.StorageFolder, explicitRoots.ThumbnailTempFolder,
+			    explicitRoots.TempFolder
+		    }.Any(folder => folder != null &&
+		                    !TenantRootsValidator.IsAcceptableExplicitRoot(folder)) )
+		{
+			return false;
+		}
+
 		try
 		{
-			var others = registry.ActiveTenantIds.Select(settingsProvider.GetSettings);
-			TenantRootsValidator.Validate(others.Append(newTenant));
+			TenantRootsValidator.ValidateOwnFolders(candidate);
+
+			var others = new List<ITenantSettings>
+			{
+				settingsProvider.Build(TenantIdHelper.DefaultTenantId, null)
+			};
+			foreach ( var tenant in await dbContext.Tenants.AsNoTracking()
+				         .Where(t => t.Id != candidate.TenantId && t.State != TenantState.Deleted)
+				         .ToListAsync() )
+			{
+				others.Add(settingsProvider.Build(tenant.Id,
+					new TenantRoots(tenant.StorageFolder, tenant.ThumbnailTempFolder,
+						tenant.TempFolder)));
+			}
+
+			TenantRootsValidator.Validate(others.Append(candidate));
 			return true;
 		}
 		catch ( InvalidOperationException )

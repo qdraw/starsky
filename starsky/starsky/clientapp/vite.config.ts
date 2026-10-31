@@ -23,6 +23,12 @@ export default defineConfig({
   server: {
     proxy: {
       "/starsky/api": "http://localhost:4000",
+      // the api and realtime of a tenant: /starsky/t/acme/api/... (not the pages: vite serves those)
+      "^/starsky/t/[^/]+/api": "http://localhost:4000",
+      "^/starsky/t/[^/]+/realtime": {
+        target: "ws://localhost:4000",
+        ws: true
+      },
       "/starsky/realtime": {
         target: "ws://localhost:4000/starsky/realtime",
         ws: true

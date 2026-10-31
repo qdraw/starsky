@@ -28,6 +28,11 @@ public interface ITenantSettings
 
 	string DatabasePathToTempFolderFilePath(string databaseFilePath);
 
+	/// <summary>
+	///     A full path in the storage folder of this tenant to a database style subPath
+	/// </summary>
+	string FullPathStorageFolderToDatabaseStyle(string fullPath);
+
 	List<string> RenameListItemsToDbStyle(IEnumerable<string> localSubFolderList);
 
 	IEnumerable<KeyValuePair<string, DateTime>> RenameListItemsToDbStyle(

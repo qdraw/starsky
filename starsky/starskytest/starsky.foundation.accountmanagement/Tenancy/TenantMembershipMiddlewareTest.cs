@@ -70,6 +70,22 @@ public sealed class TenantMembershipMiddlewareTest
 	}
 
 	[TestMethod]
+	[DataRow("/mcp")]
+	[DataRow("/redirect/sub-path-relative")]
+	[DataRow("/api/health/details")]
+	public async Task NonMember_McpRedirectAndServerDetails_Forbidden(string path)
+	{
+		await using var setup = await TenancyTestSetup.Create();
+		var (_, member) = await Seed(setup);
+		await setup.AddActiveTenant("beta");
+
+		var result = await Run(setup, "beta", path, member);
+
+		Assert.IsFalse(result.NextCalled);
+		Assert.AreEqual(403, result.Context.Response.StatusCode);
+	}
+
+	[TestMethod]
 	public async Task NonMember_Realtime_Forbidden()
 	{
 		await using var setup = await TenancyTestSetup.Create();
@@ -86,6 +102,7 @@ public sealed class TenantMembershipMiddlewareTest
 	[DataRow("/api/account/login")]
 	[DataRow("/api/tenants/mine")]
 	[DataRow("/api/health")]
+	[DataRow("/api/health/version")]
 	[DataRow("/")]
 	[DataRow("/assets/app.js")]
 	public async Task NonMember_ExemptPaths_Pass_WithoutRoleClaims(string path)
@@ -177,5 +194,14 @@ public sealed class TenantMembershipMiddlewareTest
 		Assert.IsFalse(TenantMembershipMiddleware.RequiresMembership("/api/tenants/mine"));
 		Assert.IsFalse(TenantMembershipMiddleware.RequiresMembership("/api/account/status"));
 		Assert.IsFalse(TenantMembershipMiddleware.RequiresMembership(""));
+
+		// the MCP endpoint and the other data outside /api need a membership too
+		Assert.IsTrue(TenantMembershipMiddleware.RequiresMembership("/mcp"));
+		Assert.IsTrue(TenantMembershipMiddleware.RequiresMembership("/mcp/anything"));
+		Assert.IsTrue(TenantMembershipMiddleware.RequiresMembership("/redirect/sub-path-relative"));
+		// server information is for members, not for every logged in user
+		Assert.IsTrue(TenantMembershipMiddleware.RequiresMembership("/api/health/details"));
+		Assert.IsTrue(TenantMembershipMiddleware.RequiresMembership("/api/healthx"));
+		Assert.IsFalse(TenantMembershipMiddleware.RequiresMembership("/api/health"));
 	}
 }

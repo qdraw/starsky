@@ -9,6 +9,7 @@ using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Models.PublishProfileRemote;
+using starsky.foundation.platform.Tenancy;
 using starsky.project.web.Attributes;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
@@ -752,5 +753,76 @@ public sealed class ArgsHelperTest
 		var args = new List<string> { "--importindex-export-json" }.ToArray();
 		var value = ArgsHelper.GetImportIndexExportJsonPath(args);
 		Assert.AreEqual(string.Empty, value);
+	}
+
+	[TestMethod]
+	public void GetTenant_Default_WhenNotUsed()
+	{
+		Assert.AreEqual("default", ArgsHelper.GetTenant(["--path", "/x"]));
+	}
+
+	[TestMethod]
+	public void GetTenant_Valid()
+	{
+		Assert.AreEqual("acme", ArgsHelper.GetTenant(["--path", "/x", "--tenant", "acme"]));
+		Assert.AreEqual("acme-2", ArgsHelper.GetTenant(["--TENANT", "acme-2"]));
+	}
+
+	[TestMethod]
+	[DataRow("../x")]
+	[DataRow("Acme")]
+	[DataRow("")]
+	public void GetTenant_Invalid_Throws(string tenant)
+	{
+		Assert.ThrowsExactly<ArgumentException>(() => ArgsHelper.GetTenant(["--tenant", tenant]));
+	}
+
+	[TestMethod]
+	public void GetTenant_WithoutValue_Throws()
+	{
+		Assert.ThrowsExactly<ArgumentException>(() => ArgsHelper.GetTenant(["--tenant"]));
+	}
+
+	[TestMethod]
+	public void SetEnvironmentByArgs_Tenant_SetsTheAmbientTenant_OnlyWhenGiven()
+	{
+		try
+		{
+			TenantAmbient.Reset();
+			new ArgsHelper().SetEnvironmentByArgs(["--path", "/x"]);
+			Assert.AreEqual("default", TenantAmbient.Current);
+
+			new ArgsHelper().SetEnvironmentByArgs(["--tenant", "acme"]);
+			Assert.AreEqual("acme", TenantAmbient.Current);
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
+	}
+
+	[TestMethod]
+	public void GetPathFormArgs_WithTenant_FullPathIsNotSupported()
+	{
+		try
+		{
+			TenantAmbient.Set("acme");
+			var exception = Assert.ThrowsExactly<ArgumentException>(() =>
+				new ArgsHelper(new AppSettings()).GetPathFormArgs(["--path", "/some/folder"]));
+			StringAssert.Contains(exception.Message, "--subpath");
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
+	}
+
+	[TestMethod]
+	public void GetPathFormArgs_DefaultTenant_StillWorks()
+	{
+		TenantAmbient.Reset();
+		var result = new ArgsHelper(new AppSettings()).GetPathFormArgs(["--path", "/some/folder"],
+			false);
+		Assert.AreEqual("/some/folder", result);
 	}
 }

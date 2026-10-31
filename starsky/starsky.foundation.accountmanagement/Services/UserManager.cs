@@ -23,6 +23,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Tenancy;
+using starsky.foundation.realtime.Interfaces;
 using AuthenticationProperties = Microsoft.AspNetCore.Authentication.AuthenticationProperties;
 
 [assembly: InternalsVisibleTo("starskytest")]
@@ -51,10 +52,13 @@ public sealed class UserManager : IUserManager
 	private readonly IWebLogger _logger;
 
 	private readonly ITenantContext? _tenantContext;
+	private readonly IWebSocketConnectionsService? _sockets;
 
 	public UserManager(ApplicationDbContext dbContext, AppSettings appSettings, IWebLogger logger,
-		IMemoryCache? memoryCache = null, ITenantContext? tenantContext = null)
+		IMemoryCache? memoryCache = null, ITenantContext? tenantContext = null,
+		IWebSocketConnectionsService? sockets = null)
 	{
+		_sockets = sockets;
 		_tenantContext = tenantContext;
 		_dbContext = dbContext;
 		_cache = memoryCache;
@@ -136,7 +140,8 @@ public sealed class UserManager : IUserManager
 	/// <param name="secret">Password</param>
 	/// <returns>result object</returns>
 	public async Task<SignUpResult> SignUpAsync(string name,
-		string credentialTypeCode, string? identifier, string? secret)
+		string credentialTypeCode, string? identifier, string? secret,
+		bool joinCurrentTenant = true)
 	{
 		var credentialType = await AddDefaultCredentialType(credentialTypeCode);
 		var roles = AddDefaultRoles();
@@ -150,6 +155,7 @@ public sealed class UserManager : IUserManager
 
 		// The email is stored in the Credentials database
 		var user = Exist(identifier);
+		var isNewUser = user == null;
 		if ( user == null )
 		{
 			// Check if user not already exist
@@ -175,10 +181,11 @@ public sealed class UserManager : IUserManager
 			}
 		}
 
-		// Add a user role based on a user id. An existing user only gets a role when it has no
-		// membership at all: joining a tenant is done by a tenant administrator, otherwise
-		// registering with an existing e-mail address would add that user to this tenant
-		if ( !_dbContext.UserRoles.Any(p => p.UserId == user.Id) )
+		// Only a NEW user gets a role, in this tenant. An existing user (also one without any
+		// membership) never does: otherwise registering with an e-mail address that exists, on the
+		// url of another tenant, would join that tenant (or undo that an administrator removed the
+		// user). Joining a tenant is done by a tenant administrator
+		if ( isNewUser && joinCurrentTenant )
 		{
 			var roleToAdd = roles.Find(p => p.Code == GetRoleAddToUser(identifier, user));
 			AddToRole(user, roleToAdd);
@@ -528,6 +535,12 @@ public sealed class UserManager : IUserManager
 		await _dbContext.SaveChangesAsync();
 
 		await RemoveUserFromCacheAsync(user);
+
+		// an open socket is authorised at connect only: the deleted user may not keep listening
+		if ( _sockets != null )
+		{
+			await _sockets.CloseConnectionsAsync(null, user.Id, "User removed");
+		}
 
 		return new ValidateResult { Success = true };
 	}

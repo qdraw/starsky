@@ -17,6 +17,7 @@ using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.sync.SyncInterfaces;
 
@@ -28,6 +29,7 @@ public sealed class SyncWatcherConnector
 {
 	private readonly IServiceScope? _serviceScope;
 	private AppSettings? _appSettings;
+	private ITenantSettings? _tenantSettings;
 	private IWebSocketConnectionsService? _connectionsService;
 	private IWebLogger? _logger;
 	private INotificationQuery? _notificationQuery;
@@ -39,6 +41,7 @@ public sealed class SyncWatcherConnector
 		INotificationQuery notificationQuery)
 	{
 		_appSettings = appSettings;
+		_tenantSettings = new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_synchronize = synchronize;
 		_connectionsService = connectionsService;
 		_query = query;
@@ -61,6 +64,9 @@ public sealed class SyncWatcherConnector
 		// ISynchronize is a scoped service
 		_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
 		_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
+		// the storage folder of the tenant of this job: the watcher gives full paths
+		_tenantSettings = _serviceScope.ServiceProvider.GetService<ITenantSettings>() ??
+		                  new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings);
 		_connectionsService = _serviceScope.ServiceProvider
 			.GetRequiredService<IWebSocketConnectionsService>();
 		var query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();
@@ -113,11 +119,11 @@ public sealed class SyncWatcherConnector
 		if ( type == WatcherChangeTypes.Renamed && !string.IsNullOrEmpty(toPath) )
 		{
 			// from path sync
-			var path = _appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath);
+			var path = _tenantSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath);
 			await _synchronize?.Sync(path)!;
 
 			syncData.Add(
-				new FileIndexItem(_appSettings.FullPathStorageFolderToDatabaseStyle(fullFilePath))
+				new FileIndexItem(_tenantSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath))
 				{
 					IsDirectory = true,
 					ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
@@ -125,14 +131,14 @@ public sealed class SyncWatcherConnector
 				});
 
 			// and now to-path sync
-			var pathToDatabaseStyle = _appSettings.FullPathStorageFolderToDatabaseStyle(toPath);
+			var pathToDatabaseStyle = _tenantSettings!.FullPathStorageFolderToDatabaseStyle(toPath);
 			syncData.AddRange(await _synchronize.Sync(pathToDatabaseStyle));
 		}
 		else
 		{
 			syncData =
 				await _synchronize?.Sync(
-					_appSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath))!;
+					_tenantSettings!.FullPathStorageFolderToDatabaseStyle(fullFilePath))!;
 		}
 
 		var filtered = FilterBefore(syncData);

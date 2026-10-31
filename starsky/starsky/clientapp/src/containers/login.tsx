@@ -3,10 +3,12 @@ import ButtonStyled from "../components/atoms/button-styled/button-styled";
 import Preloader from "../components/atoms/preloader/preloader";
 import useFetch from "../hooks/use-fetch";
 import useGlobalSettings from "../hooks/use-global-settings";
+import { FetchLandingTenant, GoToTenant, ResetTenants } from "../hooks/use-tenants/use-tenants";
 import useLocation from "../hooks/use-location/use-location";
 import localization from "../localization/localization.json";
 import { BrowserDetect } from "../shared/browser-detect";
 import { DocumentTitle } from "../shared/document-title";
+import { FileListCache } from "../shared/filelist-cache";
 import FetchPost from "../shared/fetch/fetch-post";
 import { Language } from "../shared/language";
 import { UrlQuery } from "../shared/url/url-query";
@@ -55,6 +57,10 @@ export const Login: React.FC<ILoginProps> = () => {
   useEffect(() => {
     if (!accountStatus) return;
     setIsLogin(accountStatus.statusCode === 401);
+    if (accountStatus.statusCode === 401) {
+      // nobody is logged in: what is cached in this tab belongs to a user that is gone
+      new FileListCache().CacheCleanEverything();
+    }
     new DocumentTitle().SetDocumentTitlePrefix(
       accountStatus.statusCode === 401 ? MessageLogin : MessageLogout
     );
@@ -84,6 +90,22 @@ export const Login: React.FC<ILoginProps> = () => {
       } else if (response.statusCode === 401 || response.statusCode === 302) {
         setError(MessageWrongUsernamePassword);
       } else {
+        // a new session: the tenants (menu, last used) and the cached folders from before the
+        // login are not valid: they belong to the previous user, who may have had other rights
+        new FileListCache().CacheCleanEverything();
+        ResetTenants();
+
+        // without a target, a user with more tenants goes to the tenant used last
+        if (
+          new UrlQuery().IsDefaultReturnUrl(new UrlQuery().GetReturnUrl(history.location.search))
+        ) {
+          const landing = await FetchLandingTenant();
+          if (landing) {
+            GoToTenant(landing);
+            return;
+          }
+        }
+
         // redirect
         let returnUrl = new UrlQuery().GetReturnUrl(history.location.search);
         // only used in the dev, because you have the same url

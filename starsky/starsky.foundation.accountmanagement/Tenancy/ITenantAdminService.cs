@@ -56,4 +56,12 @@ public interface ITenantAdminService
 	///     Marks the tenant Deleting. Does not remove files or rows: that is a separate cleanup
 	/// </summary>
 	Task<TenantAdminResult> DeleteAsync(string tenantId);
+
+	/// <summary>
+	///     IRREVERSIBLE: removes the data of a tenant that is Deleting: its rows in the database,
+	///     its memberships and, when they are in the TenantsRoot layout, its folders (explicit
+	///     folders chosen by an administrator are left alone). The tenant becomes Deleted and
+	///     its id is never free again
+	/// </summary>
+	Task<TenantAdminResult> PurgeAsync(string tenantId);
 }

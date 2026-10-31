@@ -26,6 +26,12 @@ public class User
 	/// </summary>
 	public bool IsPlatformAdmin { get; set; }
 
+	/// <summary>
+	///     The tenant the user used last: where the login lands when there is no other target.
+	///     A preference of the user (global), not a setting of a tenant
+	/// </summary>
+	public string? LastTenantId { get; set; }
+
 	// menu settings in the future
 
 	public virtual ICollection<Credential>? Credentials { get; set; }

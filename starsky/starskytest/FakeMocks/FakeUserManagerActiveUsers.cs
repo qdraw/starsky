@@ -38,9 +38,15 @@ public class FakeUserManagerActiveUsers : IUserManager
 		return Task.FromResult(new UserOverviewModel([CurrentUser!]));
 	}
 
+	/// <summary>
+	///     The value of the last SignUpAsync call
+	/// </summary>
+	public bool? LastJoinCurrentTenant { get; private set; }
+
 	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
-		string? identifier, string? secret)
+		string? identifier, string? secret, bool joinCurrentTenant = true)
 	{
+		LastJoinCurrentTenant = joinCurrentTenant;
 		Users.Add(new User
 		{
 			Name = name,

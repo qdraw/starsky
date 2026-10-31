@@ -56,4 +56,52 @@ public static class TenantRootsValidator
 		       path.StartsWith(possibleParent + Path.DirectorySeparatorChar,
 			       StringComparison.OrdinalIgnoreCase);
 	}
+
+	/// <summary>
+	///     The folders of ONE tenant may not overlap each other either (the temp folder inside
+	///     the storage folder would be indexed, and cleaned up)
+	/// </summary>
+	public static void ValidateOwnFolders(ITenantSettings tenant)
+	{
+		var roots = new[]
+		{
+			( Name: "storage", Path: Canonical(tenant.TenantId, tenant.StorageFolder) ),
+			( Name: "thumbnails", Path: Canonical(tenant.TenantId, tenant.ThumbnailTempFolder) ),
+			( Name: "temp", Path: Canonical(tenant.TenantId, tenant.TempFolder) )
+		};
+		for ( var i = 0; i < roots.Length; i++ )
+		{
+			for ( var j = i + 1; j < roots.Length; j++ )
+			{
+				if ( IsInsideOrEqual(roots[i].Path, roots[j].Path) ||
+				     IsInsideOrEqual(roots[j].Path, roots[i].Path) )
+				{
+					throw new InvalidOperationException(
+						$"Tenant '{tenant.TenantId}' folders overlap: {roots[i].Name} " +
+						$"'{roots[i].Path}' and {roots[j].Name} '{roots[j].Path}'");
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	///     An explicit folder of a tenant (given by an administrator) must be absolute and not a
+	///     volume root or a top level folder like /etc
+	/// </summary>
+	public static bool IsAcceptableExplicitRoot(string? folder)
+	{
+		if ( string.IsNullOrWhiteSpace(folder) || !Path.IsPathRooted(folder) )
+		{
+			return false;
+		}
+
+		var full = Path.GetFullPath(folder)
+			.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+		var rootLength = Path.GetPathRoot(full)?.TrimEnd(Path.DirectorySeparatorChar,
+			Path.AltDirectorySeparatorChar).Length ?? 0;
+		var below = full[rootLength..]
+			.Split([Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar],
+				StringSplitOptions.RemoveEmptyEntries);
+		return below.Length >= 2;
+	}
 }

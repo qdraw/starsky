@@ -50,20 +50,24 @@ public static class FileStreamingHelper
 	}
 
 	public static async Task<List<string>> StreamFile(this HttpRequest request,
-		AppSettings appSettings, ISelectorStorage selectorStorage)
+		AppSettings appSettings, ISelectorStorage selectorStorage, string? tempFolder = null)
 	{
 		// The Header 'filename' is for uploading on file without a form.
 		return await StreamFile(request.ContentType, request.Body,
 			appSettings,
-			selectorStorage, HeaderFileName(request));
+			selectorStorage, HeaderFileName(request), tempFolder);
 	}
 
 	[SuppressMessage("Usage", "S125:Remove this commented out code")]
 	[SuppressMessage("Usage", "S2589:contentDisposition null")]
 	public static async Task<List<string>> StreamFile(string? contentType, Stream requestBody,
 		AppSettings appSettings,
-		ISelectorStorage selectorStorage, string? headerFileName = null)
+		ISelectorStorage selectorStorage, string? headerFileName = null,
+		string? tempFolder = null)
 	{
+		// the staging folder of the tenant that uploads (default: the process wide temp folder)
+		var tempRoot = tempFolder ?? appSettings.TempFolder;
+
 		// headerFileName is for uploading on a single file without a multi part form.
 
 		// fallback
@@ -81,14 +85,14 @@ public static class FileStreamingHelper
 
 			var randomFolderName = "stream_" +
 			                       Base32.Encode(FileHash.GenerateRandomBytes(4));
-			var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
+			var fullFilePath = Path.Combine(tempRoot, randomFolderName,
 				headerFileName);
 
 			// Write to disk
 			var hostFileSystemStorage =
 				selectorStorage.Get(SelectorStorage.StorageServices
 					.HostFilesystem);
-			hostFileSystemStorage.CreateDirectory(Path.Combine(appSettings.TempFolder,
+			hostFileSystemStorage.CreateDirectory(Path.Combine(tempRoot,
 				randomFolderName));
 			await hostFileSystemStorage
 				.WriteStreamAsync(requestBody, fullFilePath);
@@ -126,14 +130,14 @@ public static class FileStreamingHelper
 					true, false, true); // underscore allowed
 				var randomFolderName = "stream_" +
 				                       Base32.Encode(FileHash.GenerateRandomBytes(4));
-				var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
+				var fullFilePath = Path.Combine(tempRoot, randomFolderName,
 					tempHash + inputExtension);
 				tempPaths.Add(fullFilePath);
 
 				var hostFileSystemStorage =
 					selectorStorage.Get(SelectorStorage.StorageServices
 						.HostFilesystem);
-				hostFileSystemStorage.CreateDirectory(Path.Combine(appSettings.TempFolder,
+				hostFileSystemStorage.CreateDirectory(Path.Combine(tempRoot,
 					randomFolderName));
 
 				await hostFileSystemStorage

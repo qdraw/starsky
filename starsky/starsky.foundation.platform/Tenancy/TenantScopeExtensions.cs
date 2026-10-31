@@ -12,11 +12,21 @@ public static class TenantScopeExtensions
 	public static IServiceScope CreateTenantScope(this IServiceScopeFactory scopeFactory,
 		ITenantContext? tenantContext)
 	{
+		return scopeFactory.CreateTenantScope(tenantContext?.TenantId);
+	}
+
+	/// <summary>
+	///     Null is the default tenant
+	/// </summary>
+	public static IServiceScope CreateTenantScope(this IServiceScopeFactory scopeFactory,
+		string? tenantId)
+	{
 		var scope = scopeFactory.CreateScope();
-		if ( tenantContext != null &&
+		if ( tenantId != null &&
 		     scope.ServiceProvider.GetService<ITenantContext>() is TenantContext newContext )
 		{
-			newContext.SetTenant(tenantContext.TenantId);
+			// not the ambient tenant: the caller may open a scope for another tenant than its own
+			newContext.SetTenant(tenantId, false);
 		}
 
 		return scope;

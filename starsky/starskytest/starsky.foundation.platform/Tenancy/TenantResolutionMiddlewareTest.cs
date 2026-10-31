@@ -1,6 +1,10 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Tenancy;
 using starskytest.FakeMocks;
@@ -112,5 +116,98 @@ public sealed class TenantResolutionMiddlewareTest
 
 		Assert.IsTrue(registry.IsActive("default"));
 		Assert.IsFalse(registry.IsActive("acme"));
+	}
+
+	[TestMethod]
+	public void TenantContext_WithoutSetTenant_FollowsTheTenantOfTheFlow()
+	{
+		var context = new TenantContext();
+		try
+		{
+			Assert.AreEqual("default", context.TenantId);
+
+			TenantAmbient.Set("acme");
+			Assert.AreEqual("acme", context.TenantId);
+
+			// once set (request, job) it stays, whatever the flow does afterwards
+			context.SetTenant("beta", false);
+			TenantAmbient.Set("acme");
+			Assert.AreEqual("beta", context.TenantId);
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
+	}
+
+	private sealed class CapturingLogger : ILogger<TenantResolutionMiddleware>
+	{
+		public readonly List<object> ActiveScopes = [];
+
+		public IDisposable BeginScope<TState>(TState state) where TState : notnull
+		{
+			ActiveScopes.Add(state);
+			return new Scope(() => ActiveScopes.Remove(state));
+		}
+
+		public bool IsEnabled(LogLevel logLevel) => true;
+
+		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state,
+			Exception? exception, Func<TState, Exception?, string> formatter)
+		{
+		}
+
+		private sealed class Scope(Action onDispose) : IDisposable
+		{
+			public void Dispose() => onDispose();
+		}
+	}
+
+	[TestMethod]
+	public async Task Request_HasALogScopeWithTheTenant_ThatEndsWithTheRequest()
+	{
+		var logger = new CapturingLogger();
+		var services = new ServiceCollection();
+		services.AddSingleton<ITenantRegistry>(new FakeTenantRegistry("default", "acme"));
+		services.AddScoped<ITenantContext, TenantContext>();
+		services.AddSingleton<ILogger<TenantResolutionMiddleware>>(logger);
+		await using var provider = services.BuildServiceProvider();
+		using var scope = provider.CreateScope();
+		var httpContext = new DefaultHttpContext { RequestServices = scope.ServiceProvider };
+		httpContext.Request.Path = "/t/acme/api/index";
+
+		object? seen = null;
+		await new TenantResolutionMiddleware(_ =>
+		{
+			seen = logger.ActiveScopes.SingleOrDefault();
+			return Task.CompletedTask;
+		}).Invoke(httpContext);
+
+		var scopeData = seen as Dictionary<string, object>;
+		Assert.IsNotNull(scopeData);
+		Assert.AreEqual("acme", scopeData["TenantId"]);
+		Assert.IsEmpty(logger.ActiveScopes);
+	}
+
+	[TestMethod]
+	[DataRow("/t/default/api/index")]
+	[DataRow("/t/default")]
+	public async Task DefaultTenant_HasNoSecondUrl(string path)
+	{
+		var result = await Run(path);
+
+		Assert.IsFalse(result.NextCalled);
+		Assert.AreEqual(404, result.StatusCode);
+	}
+
+	[TestMethod]
+	[DataRow("/t/acme\n/api")]
+	[DataRow("/t/acme%0A/api")]
+	public async Task NewlineInTheTenant_IsNotFound(string path)
+	{
+		var result = await Run(path);
+
+		Assert.IsFalse(result.NextCalled);
+		Assert.AreEqual(404, result.StatusCode);
 	}
 }

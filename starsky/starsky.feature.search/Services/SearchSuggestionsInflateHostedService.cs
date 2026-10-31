@@ -8,6 +8,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.search.Services;
 
@@ -16,7 +17,8 @@ public class SearchSuggestionsInflateHostedService(
 	IServiceScopeFactory scopeFactory,
 	IMemoryCache memoryCache,
 	IWebLogger logger,
-	AppSettings appSettings)
+	AppSettings appSettings,
+	ITenantRegistry? tenantRegistry = null)
 	: IHostedService
 {
 	private readonly CancellationTokenSource _stopCts = new();
@@ -71,10 +73,26 @@ public class SearchSuggestionsInflateHostedService(
 
 	private async Task InflateOnceAsync()
 	{
-		using var scope = scopeFactory.CreateScope();
-		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		await new SearchSuggestionsService(dbContext, memoryCache, logger, appSettings)
-			.Inflate().ConfigureAwait(false);
-		logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
+		// the suggestions come from the index of one tenant, and are cached per tenant
+		var failed = false;
+		await TenantJobs.ForEachActiveTenantAsync(scopeFactory,
+			tenantRegistry ?? new TenantRegistry(),
+			async (serviceProvider, _) =>
+			{
+				var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+				await new SearchSuggestionsService(dbContext, memoryCache, logger, appSettings)
+					.Inflate().ConfigureAwait(false);
+			}, (tenantId, exception) =>
+			{
+				failed = true;
+				logger.LogError(
+					$"SearchSuggestionsInflateHostedService failed for tenant {tenantId}: " +
+					exception.Message, exception);
+			});
+
+		if ( !failed )
+		{
+			logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
+		}
 	}
 }

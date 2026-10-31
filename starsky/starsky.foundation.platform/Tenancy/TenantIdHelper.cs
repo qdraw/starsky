@@ -19,6 +19,7 @@ public static partial class TenantIdHelper
 		       ValidTenantIdRegex().IsMatch(tenantId);
 	}
 
-	[GeneratedRegex("^[a-z0-9]+(-[a-z0-9]+)*$")]
+	// \\z: $ also matches before a trailing newline ("acme\\n" would be valid)
+	[GeneratedRegex("^[a-z0-9]+(-[a-z0-9]+)*\\z")]
 	private static partial Regex ValidTenantIdRegex();
 }

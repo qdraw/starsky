@@ -42,7 +42,40 @@ public class ApplicationDbContext : DbContext
 	/// <summary>
 	///     Read by the query filters on every query (EF parameterizes it per context instance)
 	/// </summary>
-	public string TenantId => _tenantContext?.TenantId ?? TenantIdHelper.DefaultTenantId;
+	/// <summary>
+	///     Without a tenant context (a context created outside DI, e.g. by QueryFactory in a
+	///     job) the tenant of the current flow: never silently another tenant
+	/// </summary>
+	public string TenantId => _tenantContext?.TenantId ?? TenantAmbient.Current;
+
+	/// <summary>
+	///     Only for system services that serve all tenants (the queue backends read the jobs of
+	///     every tenant). Request code never calls this: the query filters stay on by default
+	/// </summary>
+	public bool CrossTenantAccess { get; private set; }
+
+	public void EnableCrossTenantAccess()
+	{
+		CrossTenantAccess = true;
+	}
+
+	/// <summary>
+	///     Cross tenant access for the duration of one operation only (a purge of a tenant), then
+	///     back to what it was
+	/// </summary>
+	public async Task<T> RunCrossTenantAsync<T>(Func<Task<T>> operation)
+	{
+		var before = CrossTenantAccess;
+		CrossTenantAccess = true;
+		try
+		{
+			return await operation();
+		}
+		finally
+		{
+			CrossTenantAccess = before;
+		}
+	}
 
 	private bool _tenantTrackingHooked;
 
@@ -166,6 +199,7 @@ public class ApplicationDbContext : DbContext
 					.ValueGeneratedOnAdd()
 					.HasAnnotation(mySqlValueGeneratedOnAdd, true);
 				etb.Property(e => e.Name).IsRequired().HasMaxLength(64);
+				etb.Property(e => e.LastTenantId).HasMaxLength(63);
 				etb.ToTable("Users");
 
 				DateTime parsedDateTime;
@@ -234,6 +268,9 @@ public class ApplicationDbContext : DbContext
 				etb.Property(e => e.TenantId).IsRequired().HasMaxLength(63)
 					.HasDefaultValue(TenantIdHelper.DefaultTenantId);
 				etb.HasIndex(e => e.TenantId);
+				// one role per user per tenant: two requests can not both add a membership
+				etb.HasIndex(e => new { e.UserId, e.TenantId }).IsUnique()
+					.HasDatabaseName("IX_UserRoles_UserId_TenantId");
 				etb.ToTable("UserRoles");
 			}
 		);
@@ -420,8 +457,9 @@ public class ApplicationDbContext : DbContext
 	private void ApplyTenantFilter<T>(ModelBuilder modelBuilder) where T : class
 	{
 		// references the TenantId property of this context instance
-		Expression<Func<T, bool>> filter = entity =>
-			EF.Property<string>(entity, ITenantEntity.TenantPropertyName) == TenantId;
+		Expression<Func<T, bool>> filter = entity => CrossTenantAccess ||
+		                                             EF.Property<string>(entity,
+			                                             ITenantEntity.TenantPropertyName) == TenantId;
 		modelBuilder.Entity<T>().HasQueryFilter(filter);
 	}
 
@@ -452,6 +490,13 @@ public class ApplicationDbContext : DbContext
 			switch ( entry.State )
 			{
 				case EntityState.Added:
+					// cross tenant access adds for the tenant that is set on the entity
+					if ( CrossTenantAccess && tenant.CurrentValue is string explicitTenant &&
+					     TenantIdHelper.IsValid(explicitTenant) )
+					{
+						break;
+					}
+
 					if ( tenant.CurrentValue is string added && added != TenantId )
 					{
 						throw new InvalidOperationException(
@@ -461,7 +506,7 @@ public class ApplicationDbContext : DbContext
 					tenant.CurrentValue = TenantId;
 					break;
 				case EntityState.Modified or EntityState.Deleted or EntityState.Unchanged:
-					if ( tenant.CurrentValue == null )
+					if ( tenant.CurrentValue == null && !CrossTenantAccess )
 					{
 						tenant.CurrentValue = TenantId;
 						tenant.OriginalValue = TenantId;
@@ -469,8 +514,10 @@ public class ApplicationDbContext : DbContext
 						break;
 					}
 
-					if ( !TenantId.Equals(tenant.CurrentValue) ||
-					     !TenantId.Equals(tenant.OriginalValue) )
+					// never a change of tenant; without cross tenant access also only own rows
+					if ( tenant.CurrentValue == null ||
+					     !tenant.CurrentValue.Equals(tenant.OriginalValue) ||
+					     ( !CrossTenantAccess && !TenantId.Equals(tenant.CurrentValue) ) )
 					{
 						throw new InvalidOperationException(
 							"An entity of another tenant can not be changed or deleted");

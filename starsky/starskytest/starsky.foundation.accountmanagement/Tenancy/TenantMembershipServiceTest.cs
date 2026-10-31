@@ -232,4 +232,64 @@ public sealed class TenantMembershipServiceTest
 		Assert.AreEqual(0, await context.UserRoles.CountAsync(p => p.User!.Name == "Member",
 			TestContext.CancellationToken));
 	}
+
+	[TestMethod]
+	public async Task Register_WithExistingEmail_OfAUserWithoutMemberships_DoesNotGiveAMembership()
+	{
+		await using var setup = await TenancyTestSetup.Create();
+		var (_, member) = await SeedUsers(setup);
+		await using var context = setup.ContextFor("default");
+		var service = new TenantMembershipService(context);
+		// an administrator removed the user from its only tenant
+		await service.RemoveMemberAsync("default", member);
+		Assert.IsNull(( await service.GetAccessAsync(member, "default") ).Membership);
+
+		// the user (still logged in) registers its own address again: removal must stay
+		await using ( var again = setup.ContextFor("default") )
+		{
+			await setup.UserManagerFor(again, "default")
+				.SignUpAsync("x", "email", "user@x.nl", "another-password-1");
+		}
+
+		await using var verify = setup.ContextFor("default");
+		Assert.IsNull(( await new TenantMembershipService(verify).GetAccessAsync(member, "default") )
+			.Membership);
+	}
+
+	[TestMethod]
+	public async Task SignUp_WithoutJoining_CreatesAUserWithoutMembership()
+	{
+		await using var setup = await TenancyTestSetup.Create();
+		await SeedUsers(setup);
+		await setup.AddActiveTenant("beta");
+		await using var context = setup.ContextFor("beta");
+
+		var result = await setup.UserManagerFor(context, "beta")
+			.SignUpAsync("n", "email", "new@x.nl", "password-1234", false);
+
+		Assert.IsTrue(result.Success);
+		await using var verify = setup.ContextFor("default");
+		var service = new TenantMembershipService(verify);
+		Assert.IsNull(( await service.GetAccessAsync(result.User!.Id, "beta") ).Membership);
+		Assert.IsNull(( await service.GetAccessAsync(result.User.Id, "default") ).Membership);
+		// the administrator of the tenant adds the user afterwards
+		Assert.AreEqual(MembershipResult.Ok, await service.AddMemberAsync("beta", "new@x.nl", "User"));
+	}
+
+	[TestMethod]
+	public async Task SignUp_NewUserInATenant_JoinsThatTenantOnly()
+	{
+		await using var setup = await TenancyTestSetup.Create();
+		await SeedUsers(setup);
+		await setup.AddActiveTenant("beta");
+		await using var context = setup.ContextFor("beta");
+
+		var result = await setup.UserManagerFor(context, "beta")
+			.SignUpAsync("n", "email", "new@x.nl", "password-1234");
+
+		await using var verify = setup.ContextFor("default");
+		var service = new TenantMembershipService(verify);
+		Assert.IsNotNull(( await service.GetAccessAsync(result.User!.Id, "beta") ).Membership);
+		Assert.IsNull(( await service.GetAccessAsync(result.User.Id, "default") ).Membership);
+	}
 }

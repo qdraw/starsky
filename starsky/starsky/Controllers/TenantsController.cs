@@ -33,7 +33,24 @@ public sealed class TenantsController(
 	{
 		var userId = userManager.GetCurrentUserId(HttpContext);
 		var tenants = await membershipService.GetTenantsForUserAsync(userId);
-		return Json(new CurrentTenantResponse(tenantContext.TenantId, tenants));
+		var lastUsed = await membershipService.GetLastUsedAsync(userId);
+		return Json(new CurrentTenantResponse(tenantContext.TenantId, tenants, lastUsed,
+			TenantMembershipService.ResolveLanding(tenants, lastUsed)));
+	}
+
+	/// <summary>
+	///     The client reports the tenant of the page it loaded; the next login can go there
+	/// </summary>
+	/// <response code="200">saved</response>
+	/// <response code="404">not a member of that tenant</response>
+	// No antiforgery token: the page that reports its tenant is still the one of before the login
+	// (its token was made for an anonymous user), and the only thing a forged call can do is
+	// change the landing tenant between tenants the user is a member of anyway
+	[HttpPost("/api/tenants/last-used")]
+	public async Task<IActionResult> LastUsed([FromBody] SetLastTenantRequest request)
+	{
+		var userId = userManager.GetCurrentUserId(HttpContext);
+		return ToResult(await membershipService.SetLastUsedAsync(userId, request.TenantId));
 	}
 
 	/// <summary>
@@ -52,6 +69,7 @@ public sealed class TenantsController(
 	///     Give an existing user a role in the current tenant
 	/// </summary>
 	[HttpPost("/api/tenants/members")]
+	[ValidateAntiForgeryToken]
 	[TenantAdmin]
 	public async Task<IActionResult> AddMember([FromBody] AddMemberRequest request)
 	{
@@ -60,6 +78,7 @@ public sealed class TenantsController(
 	}
 
 	[HttpPut("/api/tenants/members/{userId:int}")]
+	[ValidateAntiForgeryToken]
 	[TenantAdmin]
 	public async Task<IActionResult> SetRole(int userId, [FromBody] SetRoleRequest request)
 	{
@@ -68,6 +87,7 @@ public sealed class TenantsController(
 	}
 
 	[HttpDelete("/api/tenants/members/{userId:int}")]
+	[ValidateAntiForgeryToken]
 	[TenantAdmin]
 	public async Task<IActionResult> RemoveMember(int userId)
 	{
@@ -86,6 +106,7 @@ public sealed class TenantsController(
 	}
 
 	[HttpPost("/api/tenants")]
+	[ValidateAntiForgeryToken]
 	[PlatformAdmin]
 	public async Task<IActionResult> Create([FromBody] CreateTenantRequest request)
 	{
@@ -94,6 +115,7 @@ public sealed class TenantsController(
 	}
 
 	[HttpPost("/api/tenants/{tenantId}/disable")]
+	[ValidateAntiForgeryToken]
 	[PlatformAdmin]
 	public async Task<IActionResult> Disable(string tenantId)
 	{
@@ -101,6 +123,7 @@ public sealed class TenantsController(
 	}
 
 	[HttpPost("/api/tenants/{tenantId}/enable")]
+	[ValidateAntiForgeryToken]
 	[PlatformAdmin]
 	public async Task<IActionResult> Enable(string tenantId)
 	{
@@ -111,10 +134,30 @@ public sealed class TenantsController(
 	///     Marks the tenant as deleting; files and rows are removed by a separate cleanup
 	/// </summary>
 	[HttpDelete("/api/tenants/{tenantId}")]
+	[ValidateAntiForgeryToken]
 	[PlatformAdmin]
 	public async Task<IActionResult> Delete(string tenantId)
 	{
 		return ToResult(await adminService.DeleteAsync(tenantId));
+	}
+
+	/// <summary>
+	///     IRREVERSIBLE: remove the data of a tenant that is deleting. Confirm with the id of the
+	///     tenant, so a wrong id in the url alone does nothing
+	/// </summary>
+	/// <param name="tenantId">tenant in the deleting state</param>
+	/// <param name="confirm">the same id again</param>
+	[HttpPost("/api/tenants/{tenantId}/purge")]
+	[ValidateAntiForgeryToken]
+	[PlatformAdmin]
+	public async Task<IActionResult> Purge(string tenantId, string? confirm)
+	{
+		if ( confirm != tenantId )
+		{
+			return BadRequest("confirm must be the id of the tenant");
+		}
+
+		return ToResult(await adminService.PurgeAsync(tenantId));
 	}
 
 	private IActionResult ToResult(MembershipResult result)

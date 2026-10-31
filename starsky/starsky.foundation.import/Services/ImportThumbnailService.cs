@@ -10,6 +10,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.import.Services;
 
@@ -23,7 +24,7 @@ public class ImportThumbnailService : IImportThumbnailService
 	private readonly IStorage _thumbnailStorage;
 
 	public ImportThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger,
-		AppSettings appSettings)
+		AppSettings appSettings, ITenantSettings? tenantSettings = null)
 	{
 		_logger = logger;
 		_appSettings = appSettings;
@@ -31,7 +32,8 @@ public class ImportThumbnailService : IImportThumbnailService
 			selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
 		_removeTempAndParentStreamFolderHelper =
-			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings);
+			new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings,
+				tenantSettings);
 	}
 
 	public IEnumerable<ThumbnailResultDataTransferModel> MapToTransferObject(

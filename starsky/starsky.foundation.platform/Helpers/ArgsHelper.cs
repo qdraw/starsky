@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.platform.Helpers;
 
@@ -170,11 +171,45 @@ public sealed class ArgsHelper
 	}
 
 	/// <summary>
+	///     The tenant a command line tool works for: --tenant acme. Default tenant when not used
+	/// </summary>
+	/// <param name="args">args input</param>
+	/// <returns>a valid tenant id</returns>
+	/// <exception cref="ArgumentException">--tenant without a valid tenant id</exception>
+	public static string GetTenant(IReadOnlyList<string> args)
+	{
+		for ( var arg = 0; arg < args.Count; arg++ )
+		{
+			if ( !args[arg].Equals("--tenant", StringComparison.OrdinalIgnoreCase) )
+			{
+				continue;
+			}
+
+			if ( arg + 1 == args.Count || !TenantIdHelper.IsValid(args[arg + 1]) )
+			{
+				throw new ArgumentException(
+					"--tenant needs a tenant id: lowercase letters, digits and dashes");
+			}
+
+			return args[arg + 1];
+		}
+
+		return TenantIdHelper.DefaultTenantId;
+	}
+
+	/// <summary>
 	///     SetEnvironmentByArgs
 	/// </summary>
 	/// <param name="args"></param>
 	public void SetEnvironmentByArgs(IReadOnlyList<string> args)
 	{
+		// --tenant for the whole tool: the storage, index and settings of that tenant. Set here
+		// because every command line tool calls this first
+		if ( args.Any(p => p.Equals("--tenant", StringComparison.OrdinalIgnoreCase)) )
+		{
+			TenantAmbient.Set(GetTenant(args));
+		}
+
 		var shortNameList = ShortNameList.ToArray();
 		var longNameList = LongNameList.ToArray();
 		var envNameList = EnvNameList.ToArray();
@@ -580,6 +615,14 @@ public sealed class ArgsHelper
 			throw new FieldAccessException("AppSettings can't be Null at start");
 		}
 
+		// a full path is converted with the folders of the default tenant (and a tool that sets the
+		// storage folder of the session does that for the default tenant only): use a subPath
+		if ( TenantAmbient.Current != TenantIdHelper.DefaultTenantId )
+		{
+			throw new ArgumentException(
+				"--path (a full path) can not be used with --tenant, use --subpath");
+		}
+
 		var path = GetUserInputPathFromArg(args);
 
 		// To use only with -p or --path > current directory
@@ -700,6 +743,13 @@ public sealed class ArgsHelper
 		if ( _appSettings == null )
 		{
 			throw new FieldAccessException("use with _appSettings in ctor");
+		}
+
+		// a full path is converted with the folders of the default tenant: use a subPath
+		if ( TenantAmbient.Current != TenantIdHelper.DefaultTenantId )
+		{
+			throw new ArgumentException(
+				"--path (a full path) can not be used with --tenant, use --subpath");
 		}
 
 		var path = GetUserInputPathFromArg(args);

@@ -21,6 +21,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.Controllers;
 
@@ -28,6 +29,7 @@ namespace starsky.Controllers;
 public sealed class PublishController : Controller
 {
 	private readonly AppSettings _appSettings;
+	private readonly ITenantSettings _tenantSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IStorage _hostStorage;
 	private readonly IMetaInfo _metaInfo;
@@ -36,8 +38,11 @@ public sealed class PublishController : Controller
 
 	public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight, IMetaInfo metaInfo,
 		ISelectorStorage selectorStorage,
-		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger)
+		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger,
+		ITenantSettings? tenantSettings = null)
 	{
+		// published zips are in the temp folder of the tenant: not shared with other tenants
+		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_appSettings = appSettings;
 		_publishPreflight = publishPreflight;
 		_metaInfo = metaInfo;
@@ -99,7 +104,7 @@ public sealed class PublishController : Controller
 		_webLogger.LogInformation($"[/api/publish/create] Press publish: " +
 		                          $"{slugItemName} {f} {DateTime.UtcNow}");
 
-		var location = Path.Combine(_appSettings.TempFolder, slugItemName);
+		var location = Path.Combine(_tenantSettings.TempFolder, slugItemName);
 
 		if ( CheckIfNameExist(slugItemName) )
 		{
@@ -161,7 +166,7 @@ public sealed class PublishController : Controller
 			return true;
 		}
 
-		var location = Path.Combine(_appSettings.TempFolder, slugItemName);
+		var location = Path.Combine(_tenantSettings.TempFolder, slugItemName);
 		return _hostStorage.ExistFolder(location) || _hostStorage.ExistFile(location + ".zip");
 	}
 
