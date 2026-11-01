@@ -33,8 +33,9 @@ public sealed class TenantsController(
 		var userId = userManager.GetCurrentUserId(HttpContext);
 		var tenants = await membershipService.GetTenantsForUserAsync(userId);
 		var lastUsed = await membershipService.GetLastUsedAsync(userId);
+		var access = await membershipService.GetAccessAsync(userId, tenantContext.TenantId);
 		return Json(new CurrentTenantResponse(tenantContext.TenantId, tenants, lastUsed,
-			TenantMembershipService.ResolveLanding(tenants, lastUsed)));
+			TenantMembershipService.ResolveLanding(tenants, lastUsed), access.IsPlatformAdmin));
 	}
 
 	/// <summary>

@@ -28,6 +28,19 @@
   margin-bottom: 10px;
 }
 
+.preferences-tenants__list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.preferences-tenant-members__table td {
+  padding: 4px 10px 4px 0;
+}
+
+.preferences--tenant-members .warning-box {
+  margin-top: 10px;
+}
+
 .preferences-tabs {
   display: flex;
   gap: 10px;

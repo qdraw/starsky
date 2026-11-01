@@ -145,6 +145,36 @@ export class UrlQuery {
   }
 
   /**
+   * All tenants (list and create: platform administrators)
+   */
+  public UrlTenants(): string {
+    return `${this.prefix}/api/tenants`;
+  }
+
+  /**
+   * One tenant (delete: platform administrators)
+   * @param tenantId tenant
+   */
+  public UrlTenant(tenantId: string): string {
+    return `${this.prefix}/api/tenants/${encodeURIComponent(tenantId)}`;
+  }
+
+  /**
+   * Members of the current tenant (tenant administrators)
+   */
+  public UrlTenantsMembers(): string {
+    return `${this.prefix}/api/tenants/members`;
+  }
+
+  /**
+   * One member of the current tenant (change the role, remove)
+   * @param userId id of the user
+   */
+  public UrlTenantsMember(userId: number): string {
+    return `${this.prefix}/api/tenants/members/${userId}`;
+  }
+
+  /**
    * Remember the tenant of this page for the next login
    */
   public UrlTenantsLastUsed(): string {

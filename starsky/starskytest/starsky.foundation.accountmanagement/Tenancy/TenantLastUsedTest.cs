@@ -109,6 +109,7 @@ public sealed class TenantLastUsedTest
 		Assert.HasCount(2, first!.Tenants);
 		Assert.IsNull(first.LastUsed);
 		Assert.IsNull(first.Landing, "two memberships and no last used: the user chooses");
+		Assert.IsTrue(first.IsPlatformAdmin, "the first user is platform admin");
 
 		var result = await controller.LastUsed(new SetLastTenantRequest("beta"));
 		Assert.IsInstanceOfType<OkResult>(result);
@@ -116,6 +117,21 @@ public sealed class TenantLastUsedTest
 		var second = ( await controller.Mine() as JsonResult )?.Value as CurrentTenantResponse;
 		Assert.AreEqual("beta", second?.LastUsed);
 		Assert.AreEqual("beta", second?.Landing);
+	}
+
+	[TestMethod]
+	public async Task Controller_Mine_OtherUserIsNoPlatformAdmin()
+	{
+		await using var setup = await TenancyTestSetup.Create();
+		await using var context = setup.ContextFor("default");
+		var manager = setup.UserManagerFor(context, "default");
+		await manager.SignUpAsync("o", "email", "o@x.nl", "password-1234");
+		var member = ( await manager.SignUpAsync("m", "email", "m@x.nl", "password-1234") ).User!.Id;
+		var controller = Controller(setup, context, member, "default");
+
+		var response = ( await controller.Mine() as JsonResult )?.Value as CurrentTenantResponse;
+
+		Assert.IsFalse(response?.IsPlatformAdmin);
 	}
 
 	[TestMethod]
