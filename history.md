@@ -44,7 +44,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.9 - _(Unreleased)_ - 2026-?-? {#0.9.9}
 
-- nothing yet
+- [x] (Fixed) _Back-end_ Publish kept spinning because the zip status check only accepted names
+  with letters and digits, so publish names with a hyphen got a 404 that the front-end treats as
+  'not ready yet'. Hyphens and underscores are now allowed, `..` and slashes are still rejected
+  (regression of PR #3375)
 
 ## version 0.9.8 - 2026-10-30 {#0.9.8}
 
