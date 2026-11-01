@@ -138,15 +138,15 @@ public partial class ExportService : IExport
 	}
 
 	/// <summary>
-	///     Generated names are 'TN'/'SR' + digits (see GetName); the name comes from the url
-	///     so path characters (path traversal) are not allowed
+	///     Generated names are 'TN'/'SR' + digits (see GetName) or a publish slug (letters, digits
+	///     and hyphens); the name comes from the url so path characters (path traversal) are not allowed
 	/// </summary>
 	internal static bool IsValidZipName(string? zipName)
 	{
 		return !string.IsNullOrEmpty(zipName) && ZipNameRegex().IsMatch(zipName);
 	}
 
-	[GeneratedRegex("^[a-zA-Z0-9]{1,64}$", RegexOptions.None, 100)]
+	[GeneratedRegex("^[a-zA-Z0-9_-]{1,128}$", RegexOptions.None, 100)]
 	private static partial Regex ZipNameRegex();
 
 	/// <summary>
