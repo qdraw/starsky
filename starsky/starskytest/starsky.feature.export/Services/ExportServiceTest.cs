@@ -200,6 +200,24 @@ public class ExportServiceTest
 	}
 
 	[TestMethod]
+	public void StatusIsReady_PublishSlugWithHyphens_ShouldWork()
+	{
+		// publish slugs contain hyphens; a 404 here makes the publish modal poll forever
+		const string slug = "kotor-montenegro-bezienswaardigheden-tips-en-ervaringen";
+		var storage = new FakeIStorage(["/tmp", "/tmp/export-temp"],
+			[Path.Combine("/tmp/export-temp", slug) + ".zip"]);
+		var exportService = new ExportService(new FakeIQuery(),
+			new AppSettings { TempFolder = "/tmp/export-temp" },
+			new FakeSelectorStorage(storage), new FakeIWebLogger(),
+			new FakeIThumbnailService());
+
+		var (status, path) = exportService.StatusIsReady(slug);
+
+		Assert.IsFalse(status);
+		Assert.IsNotNull(path);
+	}
+
+	[TestMethod]
 	[DataRow("../outside")]
 	[DataRow("a/b")]
 	[DataRow("")]
