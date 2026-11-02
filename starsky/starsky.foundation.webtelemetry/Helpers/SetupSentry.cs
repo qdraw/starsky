@@ -45,7 +45,15 @@ public static partial class SetupSentry
 	{
 		var options = CreateOptions(appSettings,
 			GetAssemblyDsn(typeof(SetupSentry).Assembly), transport, webLogger);
-		return options == null ? null : SentrySdk.Init(options);
+		if ( options == null )
+		{
+			return null;
+		}
+
+		// show in the settings (masked by CloneToDisplay) that a DSN is configured
+		appSettings.Sentry ??= new SentrySettings();
+		appSettings.Sentry.Dsn = options.Dsn;
+		return SentrySdk.Init(options);
 	}
 
 	public static void Flush()

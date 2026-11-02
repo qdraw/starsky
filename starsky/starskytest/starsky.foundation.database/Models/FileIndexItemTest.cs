@@ -613,4 +613,29 @@ public sealed class FileIndexItemTest
 		Assert.AreEqual("test|test2",
 			FileIndexItem.FixedListToString(new List<string> { "test", "test2" }));
 	}
+
+	[TestMethod]
+	[DataRow(double.PositiveInfinity)]
+	[DataRow(double.NegativeInfinity)]
+	[DataRow(double.NaN)]
+	public void NonFiniteNumbers_AreStoredAsZero_AndSerializable(double value)
+	{
+		var item = new FileIndexItem
+		{
+			Latitude = value,
+			Longitude = value,
+			LocationAltitude = value,
+			FocalLength = value,
+			Aperture = value
+		};
+
+		Assert.AreEqual(0d, item.Latitude);
+		Assert.AreEqual(0d, item.Longitude);
+		Assert.AreEqual(0d, item.LocationAltitude);
+		Assert.AreEqual(0d, item.FocalLength);
+		Assert.AreEqual(0d, item.Aperture);
+
+		// must not throw
+		Assert.IsFalse(string.IsNullOrEmpty(System.Text.Json.JsonSerializer.Serialize(item)));
+	}
 }

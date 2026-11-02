@@ -102,6 +102,20 @@ public sealed class FileIndexItem
 	/// </summary>
 	private double _aperture;
 
+	private double _latitude;
+	private double _longitude;
+	private double _locationAltitude;
+	private double _focalLength;
+
+	/// <summary>
+	///     Infinity and NaN (for example from a corrupt exif value) cannot be stored
+	///     in the database or written as json
+	/// </summary>
+	private static double FiniteOrZero(double value)
+	{
+		return double.IsFinite(value) ? value : 0d;
+	}
+
 	/// <summary>
 	///     Internal API: to store description
 	/// </summary>
@@ -427,7 +441,11 @@ public sealed class FileIndexItem
 	/// <value>
 	///     The latitude value
 	/// </value>
-	public double Latitude { get; set; }
+	public double Latitude
+	{
+		get => _latitude;
+		set => _latitude = FiniteOrZero(value);
+	}
 
 	/// <summary>
 	///     Longitude  as decimal degrees using WGS84 (stored as double)
@@ -435,7 +453,11 @@ public sealed class FileIndexItem
 	/// <value>
 	///     The longitude value
 	/// </value>
-	public double Longitude { get; set; }
+	public double Longitude
+	{
+		get => _longitude;
+		set => _longitude = FiniteOrZero(value);
+	}
 
 	/// <summary>
 	///     Location altitude in meters. How how difference there is relative to WGS84 round earth.
@@ -444,7 +466,11 @@ public sealed class FileIndexItem
 	/// <value>
 	///     The location altitude.
 	/// </value>
-	public double LocationAltitude { get; set; } // in meters
+	public double LocationAltitude // in meters
+	{
+		get => _locationAltitude;
+		set => _locationAltitude = FiniteOrZero(value);
+	}
 
 	/// <summary>
 	///     The name of the nearest city
@@ -575,7 +601,7 @@ public sealed class FileIndexItem
 	public double Aperture
 	{
 		get => Math.Round(_aperture, 5);
-		set => _aperture = Math.Round(value, 5);
+		set => _aperture = Math.Round(FiniteOrZero(value), 5);
 	}
 
 	/// <summary>
@@ -724,7 +750,11 @@ public sealed class FileIndexItem
 	/// <summary>
 	///     The Zoom of the camera (that is currently used)
 	/// </summary>
-	public double FocalLength { get; set; }
+	public double FocalLength
+	{
+		get => _focalLength;
+		set => _focalLength = FiniteOrZero(value);
+	}
 
 	/// <summary>
 	///     Size of the file in bytes (BigInt)

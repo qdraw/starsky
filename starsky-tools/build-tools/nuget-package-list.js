@@ -46,7 +46,14 @@ async function checkCsProjFile(filePathList) {
 	);
 
 	// https://stackoverflow.com/a/70567308
-	const result = JSON.stringify(Array.from(packageReferenceSet), null, 2).replace(/^(\s*).*\\n.*$/gm, (line, indent) =>
+	// sorted by package name so the file does not change order between runs
+	const sortedPackages = Array.from(packageReferenceSet).sort((a, b) => {
+		const nameA = a.split(" ")[0].toLowerCase();
+		const nameB = b.split(" ")[0].toLowerCase();
+		return nameA < nameB ? -1 : nameA > nameB ? 1 : 0;
+	});
+
+	const result = JSON.stringify(sortedPackages, null, 2).replace(/^(\s*).*\\n.*$/gm, (line, indent) =>
 		line.replace(/\\n/g, "\n" + indent)
 	);
 
