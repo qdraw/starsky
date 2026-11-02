@@ -27,12 +27,11 @@ public class RemoveTempAndParentStreamFolderHelper
 	/// </summary>
 	public static bool IsSubFolderOf(string path, string root)
 	{
-		var separators = new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
-		var folder = path.TrimEnd(separators);
-		var tempRoot = root.TrimEnd(separators);
+		// Normalise to forward slashes so that Linux-style db paths and Windows OS paths both work
+		var folder = path.Replace('\\', '/').TrimEnd('/');
+		var tempRoot = root.Replace('\\', '/').TrimEnd('/');
 		return folder.Length > tempRoot.Length &&
-		       folder.StartsWith(tempRoot + Path.DirectorySeparatorChar,
-			       System.StringComparison.OrdinalIgnoreCase);
+		       folder.StartsWith(tempRoot + '/', System.StringComparison.OrdinalIgnoreCase);
 	}
 
 	public void RemoveTempAndParentStreamFolder(List<string> tempImportFullPaths)
