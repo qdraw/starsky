@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
     - name: Setup .NET SDK
-      uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73
       with:
         dotnet-version: 10.0.403
 
@@ -85,7 +85,7 @@ jobs:
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
       if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
-      uses: peter-evans/create-pull-request@86c87cfdd87dd582eb8b8f226cfec4e09d825326
+      uses: peter-evans/create-pull-request@3afad46a91e1234a4e2800ffa47bd6c2a6b66b6c
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
         commit-message: 'WebApp Update Swagger .NET'
