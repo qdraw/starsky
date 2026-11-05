@@ -17,6 +17,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.search.Services;
 
@@ -125,9 +126,9 @@ public class SearchService : ISearch
 
 	private static string GetCacheKey(string query, bool collections)
 	{
-		return collections
+		return TenantCacheKey.Prefix(collections
 			? "search-" + query
-			: $"search-{query}-collections-false";
+			: $"search-{query}-collections-false");
 	}
 
 	/// <summary>

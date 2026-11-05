@@ -10,6 +10,7 @@ using starsky.foundation.platform.Helpers.Slug;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.Controllers;
 
@@ -18,8 +19,13 @@ public class PublishRemoteController(
 	ISelectorStorage selectorStorage,
 	IPublishPreflight publishPreflight,
 	AppSettings appSettings,
-	IRemotePublishService remotePublishService) : Controller
+	IRemotePublishService remotePublishService,
+	ITenantSettings? tenantSettings = null) : Controller
 {
+	// the zip is in the temp folder of the tenant that created it
+	private readonly ITenantSettings _tenantSettings =
+		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
@@ -62,7 +68,7 @@ public class PublishRemoteController(
 		}
 
 		var slugItemName = GenerateSlugHelper.GenerateSlug(itemName, true);
-		var zipFullPath = Path.Combine(appSettings.TempFolder, slugItemName + ".zip");
+		var zipFullPath = Path.Combine(_tenantSettings.TempFolder, slugItemName + ".zip");
 
 		if ( !_hostStorage.ExistFile(zipFullPath) )
 		{

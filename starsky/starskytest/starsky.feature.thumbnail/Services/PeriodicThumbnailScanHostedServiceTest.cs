@@ -298,4 +298,39 @@ public class PeriodicThumbnailScanHostedServiceTest
 	}
 
 	public TestContext TestContext { get; set; }
+
+	private sealed class ThrowingThumbnailGenerationService(bool withInnerException)
+		: IDatabaseThumbnailGenerationService
+	{
+		public Task StartBackgroundQueue()
+		{
+			throw new InvalidOperationException("outer",
+				withInnerException ? new InvalidOperationException("inner") : null);
+		}
+
+		public Task ExecuteQueuedJobAsync(CancellationToken cancellationToken)
+		{
+			throw new NotSupportedException();
+		}
+	}
+
+	[TestMethod]
+	[DataRow(true)]
+	[DataRow(false)]
+	public async Task RunJob_TenantFails_IsLogged(bool withInnerException)
+	{
+		var services = new ServiceCollection();
+		services.AddScoped<IDatabaseThumbnailGenerationService>(_ =>
+			new ThrowingThumbnailGenerationService(withInnerException));
+		var serviceProvider = services.BuildServiceProvider();
+		var logger = new FakeIWebLogger();
+		var service = new PeriodicThumbnailScanHostedService(new AppSettings(), logger,
+			serviceProvider.GetRequiredService<IServiceScopeFactory>(),
+			new FakeTriggerableIHostApplicationLifetime());
+
+		await service.RunJob(TestContext.CancellationToken);
+
+		Assert.IsTrue(logger.TrackedExceptions.Exists(p =>
+			p.Item2?.Contains("for tenant default") == true));
+	}
 }

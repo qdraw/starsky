@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
@@ -10,9 +11,16 @@ using starsky.foundation.storage.Storage;
 namespace starsky.foundation.storage.Services;
 
 [Service(typeof(IFullFilePathExistsService), InjectionLifetime = InjectionLifetime.Scoped)]
-public class FullFilePathExistsService(ISelectorStorage selectorStorage, AppSettings appSettings)
+public class FullFilePathExistsService(
+	ISelectorStorage selectorStorage,
+	AppSettings appSettings,
+	ITenantSettings? tenantSettings = null)
 	: IFullFilePathExistsService
 {
+	// the folders of the tenant of this request, not the (default) process wide ones
+	private readonly ITenantSettings _tenantSettings =
+		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
@@ -30,9 +38,9 @@ public class FullFilePathExistsService(ISelectorStorage selectorStorage, AppSett
 	public async Task<FullFilePathExistsResultModel> GetFullFilePath(string subPath,
 		string beforeFileHashWithoutExtension)
 	{
-		var fullFilePath = appSettings.DatabasePathToFilePath(subPath);
+		var fullFilePath = _tenantSettings.DatabasePathToFilePath(subPath);
 
-		if ( _hostStorage.ExistFile(appSettings.DatabasePathToFilePath(subPath)) )
+		if ( _hostStorage.ExistFile(_tenantSettings.DatabasePathToFilePath(subPath)) )
 		{
 			// Exists on host machine
 			return new FullFilePathExistsResultModel(
@@ -52,7 +60,7 @@ public class FullFilePathExistsService(ISelectorStorage selectorStorage, AppSett
 		var tempFileHashWithExtension =
 			GetTempFileHashWithExtension(subPath, beforeFileHashWithoutExtension);
 		await _tempStorage.WriteStreamAsync(sourceStream, tempFileHashWithExtension);
-		fullFilePath = appSettings.DatabasePathToTempFolderFilePath(tempFileHashWithExtension);
+		fullFilePath = _tenantSettings.DatabasePathToTempFolderFilePath(tempFileHashWithExtension);
 
 		return new FullFilePathExistsResultModel(
 			true, fullFilePath, true, tempFileHashWithExtension);

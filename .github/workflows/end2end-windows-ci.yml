@@ -25,6 +25,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0 # needed to diff against the base branch
+
+      - name: Detect backend changes
+        id: backend_changes
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          # Only PRs build their own binary; master/schedule/dispatch reuse the latest master build
+          CHANGED=false
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            if ! git diff --quiet "origin/${BASE_REF}...HEAD" -- starsky ':!starsky/starsky/clientapp'; then
+              CHANGED=true
+            fi
+          fi
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "backend changed: $CHANGED"
+
+      - name: Setup .NET
+        if: ${{ steps.backend_changes.outputs.changed == 'true' }}
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73
+        with:
+          dotnet-version: 10.0.403
 
       - name: Create temp folder
         shell: powershell
@@ -35,7 +60,19 @@ jobs:
           Add-Content -Path $env:GITHUB_OUTPUT -Value "folder_path=$((Get-Location).Path)"
           Get-Content $env:GITHUB_OUTPUT -Raw
 
+      - name: Build win-x64 (backend changed in this PR)
+        if: ${{ steps.backend_changes.outputs.changed == 'true' }}
+        shell: powershell
+        working-directory: ./starsky
+        run: .\build.ps1 --runtime "win-x64" --no-unit-test --ready-to-run
+
+      - name: Use PR build instead of download
+        if: ${{ steps.backend_changes.outputs.changed == 'true' }}
+        shell: powershell
+        run: Copy-Item -Path "starsky/starsky-win-x64.zip" -Destination "${{ steps.create_temp_folder.outputs.folder_path }}"
+
       - name: github-artifacts-download
+        if: ${{ steps.backend_changes.outputs.changed != 'true' }}
         shell: powershell
         working-directory: ./starsky/starsky
         run: .\github-artifacts-download.ps1 -output ${{ steps.create_temp_folder.outputs.folder_path }} -token ${{ secrets.GITHUB_TOKEN }}

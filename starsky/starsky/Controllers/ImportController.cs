@@ -25,6 +25,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.Controllers;
 
@@ -35,6 +36,7 @@ namespace starsky.Controllers;
 public sealed class ImportController : Controller
 {
 	private readonly AppSettings _appSettings;
+	private readonly ITenantSettings _tenantSettings;
 	private readonly IUpdateBackgroundTaskQueue _bgTaskQueue;
 	private readonly IStorage _hostFileSystemStorage;
 	private readonly IHttpClientHelper _httpClientHelper;
@@ -44,8 +46,10 @@ public sealed class ImportController : Controller
 
 	public ImportController(IImport import, AppSettings appSettings,
 		IUpdateBackgroundTaskQueue queue,
-		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger)
+		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger,
+		ITenantSettings? tenantSettings = null)
 	{
+		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_appSettings = appSettings;
 		_import = import;
 		_bgTaskQueue = queue;
@@ -75,7 +79,7 @@ public sealed class ImportController : Controller
 		415)] // Wrong input (e.g. wrong extenstion type)
 	public async Task<IActionResult> IndexPost() // aka ActionResult Import
 	{
-		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage, _tenantSettings.TempFolder);
 		var importSettings = new ImportSettingsModel(Request);
 
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths, importSettings);
@@ -149,7 +153,10 @@ public sealed class ImportController : Controller
 			return BadRequest();
 		}
 
-		var tempImportFullPath = Path.Combine(_appSettings.TempFolder, filename);
+		// a folder of its own in the temp folder of the tenant: the name is chosen by the user, it
+		// may not replace (or delete) the export or publish zip of anybody else
+		var tempImportFullPath = Path.Combine(_tenantSettings.TempFolder,
+			"import_" + Base32.Encode(FileHash.GenerateRandomBytes(4)), filename);
 		var importSettings = new ImportSettingsModel(Request) { Structure = structure };
 		if ( !Uri.TryCreate(fileUrl, UriKind.Absolute, out var fileUri) )
 		{
@@ -165,7 +172,8 @@ public sealed class ImportController : Controller
 
 		var importedFiles =
 			await _import.Importer(new List<string> { tempImportFullPath }, importSettings);
-		new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings)
+		new RemoveTempAndParentStreamFolderHelper(_hostFileSystemStorage, _appSettings,
+				_tenantSettings)
 			.RemoveTempAndParentStreamFolder(tempImportFullPath);
 
 		if ( importedFiles.Count == 0 )

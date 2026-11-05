@@ -11,6 +11,7 @@ using starsky.foundation.http.Streaming;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.Controllers;
 
@@ -20,14 +21,16 @@ namespace starsky.Controllers;
 public class ImportThumbnailController : Controller
 {
 	private readonly AppSettings _appSettings;
+	private readonly ITenantSettings _tenantSettings;
 	private readonly IImportThumbnailService _importThumbnailService;
 	private readonly ISelectorStorage _selectorStorage;
 	private readonly IThumbnailQuery _thumbnailQuery;
 
 	public ImportThumbnailController(AppSettings appSettings,
 		ISelectorStorage selectorStorage, IThumbnailQuery thumbnailQuery,
-		IImportThumbnailService importThumbnailService)
+		IImportThumbnailService importThumbnailService, ITenantSettings? tenantSettings = null)
 	{
+		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_appSettings = appSettings;
 		_selectorStorage = selectorStorage;
 		_thumbnailQuery = thumbnailQuery;
@@ -52,7 +55,7 @@ public class ImportThumbnailController : Controller
 	[ProducesResponseType(typeof(List<ImportIndexItem>), 415)] // wrong input
 	public async Task<IActionResult> Thumbnail()
 	{
-		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage, _tenantSettings.TempFolder);
 
 		var thumbnailNamesWithSuffix =
 			_importThumbnailService.GetThumbnailNamesWithSuffix(tempImportPaths);

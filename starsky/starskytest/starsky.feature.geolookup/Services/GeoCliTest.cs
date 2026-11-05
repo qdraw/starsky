@@ -1,3 +1,4 @@
+using starsky.foundation.platform.Tenancy;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -150,5 +151,27 @@ public sealed class GeoCliTest
 
 		Assert.AreEqual(1, geoLookup.Count);
 		Assert.IsTrue(storage.ExistFile($"/{hash}.jpg"));
+	}
+
+	[TestMethod]
+	public async Task GeoCli_WithTenant_IsRefused()
+	{
+		TenantAmbient.Set("acme");
+		try
+		{
+			var console = new FakeConsoleWrapper();
+			var geoCli = new GeoCli(new FakeIGeoFolderReverseLookup(), new FakeIGeoLocationWrite(),
+				new FakeSelectorStorage(new FakeIStorage([])), new AppSettings(),
+				console, new FakeIGeoFileDownload(), new FakeExifToolDownload(),
+				new FakeIWebLogger());
+			await geoCli.CommandLineAsync(["-p"]);
+
+			Assert.AreEqual("--tenant is not supported by this tool",
+				console.WrittenLines.LastOrDefault());
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
 	}
 }

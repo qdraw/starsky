@@ -118,3 +118,17 @@ npm install --save-dev get-port
 npm install --save-dev typescript
 npm install --save-dev eslint-config-standard-with-typescript --force
 ```
+
+## Multi tenancy specs
+
+`75-multi-tenancy` (the flow: tenants, memberships, switching, last used tenant, isolation, lifecycle, purge) and
+`76-multi-tenancy-security` (what an attacker tries: other tenants, registering, MCP, CSRF, sockets, redirects,
+temp files). They need the first account of the server (spec `01-create-account`: it is the platform
+administrator), create their own tenants and users (ids of the run, so they can be repeated) and clean up their
+files. Helpers: `cypress/support/tenant-helper.ts`. A write to the tenant api needs the antiforgery token,
+use `apiWrite`.
+
+```sh
+npx cypress run --env configFolder=starsky,configEnv=local \
+  --spec "cypress/e2e/01-create-account/*,cypress/e2e/75-multi-tenancy/*,cypress/e2e/76-multi-tenancy-security/*"
+```

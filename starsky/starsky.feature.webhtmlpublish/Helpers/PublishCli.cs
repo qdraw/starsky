@@ -10,6 +10,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.webhtmlpublish.Helpers;
 
@@ -48,6 +49,13 @@ public class PublishCli
 	/// <returns>void</returns>
 	public async Task Publisher(string[] args)
 	{
+		if ( TenantAmbient.Current != TenantIdHelper.DefaultTenantId )
+		{
+			// this tool points the storage folder of the (default) session at the given folder
+			_console.WriteLine("--tenant is not supported by this tool");
+			return;
+		}
+
 		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 
 		if ( ArgsHelper.NeedHelp(args) )

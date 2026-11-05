@@ -11,6 +11,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.desktop.Service;
 
@@ -19,9 +20,14 @@ public class OpenEditorPreflight(
 	IQuery query,
 	AppSettings appSettings,
 	ISelectorStorage selectorStorage,
-	IWebLogger logger)
+	IWebLogger logger,
+	ITenantSettings? tenantSettings = null)
 	: IOpenEditorPreflight
 {
+	// the file to open is in the storage folder of the tenant of this request
+	private readonly ITenantSettings _tenantSettings =
+		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+
 	private readonly IStorage _hostFileSystem =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 
@@ -40,7 +46,7 @@ public class OpenEditorPreflight(
 				Status = fileIndexItem.Status,
 				ImageFormat = fileIndexItem.ImageFormat,
 				SubPath = fileIndexItem.FilePath!,
-				FullFilePath = appSettings.DatabasePathToFilePath(fileIndexItem.FilePath!)
+				FullFilePath = _tenantSettings.DatabasePathToFilePath(fileIndexItem.FilePath!)
 			})
 			.ToList();
 	}

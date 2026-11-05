@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -10,9 +11,12 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview;
 
+[SuppressMessage("Usage",
+	"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
 public class NativePreviewHelper(
 	IPreviewImageNativeService previewService,
 	IStorage storage,
@@ -20,8 +24,13 @@ public class NativePreviewHelper(
 	AppSettings appSettings,
 	IFullFilePathExistsService existsService,
 	IReadMetaSubPathStorage readMeta,
-	IWebLogger logger)
+	IWebLogger logger,
+	ITenantSettings? tenantSettings = null)
 {
+	// the preview is written to the temp folder of the tenant: it is read and deleted there
+	private readonly ITenantSettings _tenantSettings =
+		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+
 	internal const string ErrorFileDoesNotExist = "File does not exist";
 	internal const string ErrorNativeServiceNotSupported = "Native service not supported";
 
@@ -50,7 +59,7 @@ public class NativePreviewHelper(
 			await existsService.GetFullFilePath(singleSubPath, fileHash);
 
 		var previewImageName = GetPreviewImageName(fileHash);
-		var outputFullPath = Path.Combine(appSettings.TempFolder, previewImageName);
+		var outputFullPath = Path.Combine(_tenantSettings.TempFolder, previewImageName);
 
 		var result = previewService.GeneratePreviewImage(fullFilePath,
 			outputFullPath, width, height);

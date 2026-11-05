@@ -5,13 +5,16 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.realtime.Model;
+using System.Security.Claims;
 
 [assembly: InternalsVisibleTo("starskytest")]
 #pragma warning disable CS9113 // Parameter is unread.
@@ -56,8 +59,18 @@ public sealed class WebSocketConnectionsMiddleware(RequestDelegate _,
 			return;
 		}
 
+		// the tenant of the url; the membership middleware already refused non-members
+		var tenantId = context.RequestServices?.GetService<ITenantContext>()?.TenantId
+		               ?? TenantIdHelper.DefaultTenantId;
 		var webSocketConnection =
-			new WebSocketConnection(webSocket, _logger, _options.ReceivePayloadBufferSize);
+			new WebSocketConnection(webSocket, _logger, _options.ReceivePayloadBufferSize)
+			{
+				TenantId = tenantId,
+				UserId = int.TryParse(
+					context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId)
+					? userId
+					: null
+			};
 
 		// Capture before the HttpContext can be disposed by the pipeline.
 		var requestAborted = context.RequestAborted;

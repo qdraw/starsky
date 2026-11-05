@@ -1,12 +1,16 @@
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using starsky.Attributes;
 using starsky.feature.settings.Interfaces;
+using starsky.foundation.accountmanagement.Middleware;
 using starsky.foundation.accountmanagement.Services;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.Controllers;
 
@@ -39,6 +43,21 @@ public sealed class AppSettingsController : Controller
 	{
 		var appSettings = _appSettings.CloneToDisplay();
 
+		// the host folders are those of the platform (and of the default tenant): a member of one
+		// tenant does not need them to know where the files of another tenant are
+		if ( IsMoreThanOneTenantAndNotPlatformAdmin() )
+		{
+			const string hidden = "hidden";
+			appSettings.StorageFolder = hidden;
+			appSettings.ThumbnailTempFolder = hidden;
+			appSettings.TempFolder = hidden;
+			appSettings.DependenciesFolder = hidden;
+			appSettings.TenantsRoot = hidden;
+			appSettings.AppSettingsPath = hidden;
+			appSettings.AppSettingsLocalPath = hidden;
+			appSettings.StorageFolderMappings = new Dictionary<string, string>();
+		}
+
 		// For end-to-end testing
 		if ( Request != null! && Request.Headers.Any(p => p.Key == "x-force-html") )
 		{
@@ -66,6 +85,12 @@ public sealed class AppSettingsController : Controller
 			return BadRequest("ModelState is not valid");
 		}
 
+		// these settings (and the file they are written to) are shared by all tenants
+		if ( IsMoreThanOneTenantAndNotPlatformAdmin() )
+		{
+			return StatusCode(403, "Process wide settings: platform administrator only");
+		}
+
 		var result = await _updateAppSettingsByPath.UpdateAppSettingsAsync(
 			appSettingTransferObject);
 
@@ -76,5 +101,16 @@ public sealed class AppSettingsController : Controller
 
 		Response.StatusCode = result.StatusCode;
 		return Content(result.Message);
+	}
+
+	/// <summary>
+	///     With one tenant everything is as before. With more, the process wide settings are for
+	///     the platform administrator
+	/// </summary>
+	private bool IsMoreThanOneTenantAndNotPlatformAdmin()
+	{
+		var registry = HttpContext?.RequestServices?.GetService<ITenantRegistry>();
+		return registry?.ActiveTenantIds.Count > 1 &&
+		       !User.Claims.Any(c => c.Type == TenantMembershipMiddleware.PlatformAdminClaim);
 	}
 }

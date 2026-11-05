@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace starsky.foundation.database.Models;
 
-public sealed class NotificationItem
+public sealed class NotificationItem : ITenantEntity
 {
 	[Key]
 	[JsonIgnore]

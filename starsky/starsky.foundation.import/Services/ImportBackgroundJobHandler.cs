@@ -18,6 +18,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.import.Services;
 
@@ -81,7 +82,9 @@ public sealed class ImportBackgroundJobHandler(
 		// Remove source files
 		foreach ( var toDelPath in tempImportPaths )
 		{
-			new RemoveTempAndParentStreamFolderHelper(hostFileSystemStorage, appSettings)
+			// the job runs as its tenant: the scoped settings are the ones of that tenant
+			new RemoveTempAndParentStreamFolderHelper(hostFileSystemStorage, appSettings,
+					scope.ServiceProvider.GetService<ITenantSettings>())
 				.RemoveTempAndParentStreamFolder(toDelPath);
 		}
 

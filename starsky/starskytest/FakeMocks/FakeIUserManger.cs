@@ -23,10 +23,16 @@ public class FakeIUserManger : IUserManager
 		return Task.FromResult(_userOverviewModel);
 	}
 
+	/// <summary>
+	///     The value of the last SignUpAsync call
+	/// </summary>
+	public bool? LastJoinCurrentTenant { get; private set; }
+
 	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
 		string? identifier,
-		string? secret)
+		string? secret, bool joinCurrentTenant = true)
 	{
+		LastJoinCurrentTenant = joinCurrentTenant;
 		_userOverviewModel.Users.Add(new User
 		{
 			Name = name,
@@ -113,7 +119,7 @@ public class FakeIUserManger : IUserManager
 
 	public int GetCurrentUserId(HttpContext httpContext)
 	{
-		throw new NotImplementedException();
+		return 1;
 	}
 
 	public User GetCurrentUser(HttpContext httpContext)

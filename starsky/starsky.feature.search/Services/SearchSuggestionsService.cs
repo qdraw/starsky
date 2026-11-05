@@ -10,6 +10,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.search.Services;
 
@@ -21,6 +22,8 @@ public class SearchSuggestionsService(
 	AppSettings appSettings)
 	: ISearchSuggest
 {
+	private static string CacheKey => TenantCacheKey.Prefix(nameof(SearchSuggestionsService));
+
 	private const int MaxResult = 20;
 	private const int InflateBatchSize = 5000;
 
@@ -36,7 +39,7 @@ public class SearchSuggestionsService(
 			return [];
 		}
 
-		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService), out var objectFileFolders) )
+		if ( memoryCache.TryGetValue(CacheKey, out var objectFileFolders) )
 		{
 			return objectFileFolders as List<KeyValuePair<string, int>> ?? [];
 		}
@@ -45,7 +48,7 @@ public class SearchSuggestionsService(
 		{
 			var suggestions = await LoadSuggestionsAsync();
 			var suggestionsFiltered = FilterSuggestions(suggestions);
-			memoryCache.Set(nameof(SearchSuggestionsService), suggestionsFiltered,
+			memoryCache.Set(CacheKey, suggestionsFiltered,
 				GetCacheExpire(suggestionsFiltered.Count));
 
 			return suggestionsFiltered;
@@ -74,7 +77,7 @@ public class SearchSuggestionsService(
 			return [];
 		}
 
-		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService),
+		if ( memoryCache.TryGetValue(CacheKey,
 			    out var objectFileFolders) )
 		{
 			return objectFileFolders as List<KeyValuePair<string, int>> ??

@@ -10,6 +10,8 @@ export enum PageType {
   ApplicationException = "ApplicationException",
   NotFound = "NotFound",
   Unauthorized = "Unauthorized",
+  /** logged in, but not a member of this tenant */
+  NoAccess = "NoAccess",
   Trash = "Trash"
 }
 

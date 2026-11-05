@@ -1504,10 +1504,120 @@
     "nl": "Voltooien",
     "de": "Fertig"
   },
-  "temp1": {
-    "en": ".",
-    "nl": ".",
-    "de": "."
+  "MessageSwitchTenant": {
+    "en": "Switch to",
+    "nl": "Wissel naar",
+    "de": "Wechseln zu"
+  },
+  "MessageNoTenantAccess": {
+    "en": "You have no access to this tenant",
+    "nl": "Je hebt geen toegang tot deze omgeving",
+    "de": "Sie haben keinen Zugriff auf diesen Mandanten"
+  },
+  "MessageChooseTenant": {
+    "en": "Choose a tenant",
+    "nl": "Kies een omgeving",
+    "de": "Wählen Sie einen Mandanten"
+  },
+  "MessageNoTenants": {
+    "en": "You are not a member of any tenant. Ask an administrator to add you.",
+    "nl": "Je bent geen lid van een omgeving. Vraag een beheerder om je toe te voegen.",
+    "de": "Sie sind kein Mitglied eines Mandanten. Bitten Sie einen Administrator, Sie hinzuzufügen."
+  },
+  "MessageTenants": {
+    "en": "Tenants",
+    "nl": "Omgevingen",
+    "de": "Mandanten"
+  },
+  "MessageTenantMemberships": {
+    "en": "Tenants you are a member of",
+    "nl": "Omgevingen waar je lid van bent",
+    "de": "Mandanten, in denen Sie Mitglied sind"
+  },
+  "MessageTenantCurrent": {
+    "en": "current",
+    "nl": "huidige",
+    "de": "aktuell"
+  },
+  "MessageTenantMembers": {
+    "en": "Members of this tenant",
+    "nl": "Leden van deze omgeving",
+    "de": "Mitglieder dieses Mandanten"
+  },
+  "MessageTenantAddMember": {
+    "en": "Add member",
+    "nl": "Lid toevoegen",
+    "de": "Mitglied hinzufügen"
+  },
+  "MessageTenantMemberEmail": {
+    "en": "E-mail address of an existing user",
+    "nl": "E-mailadres van een bestaande gebruiker",
+    "de": "E-Mail-Adresse eines bestehenden Benutzers"
+  },
+  "MessageTenantRemoveMember": {
+    "en": "Remove",
+    "nl": "Verwijderen",
+    "de": "Entfernen"
+  },
+  "MessageTenantMemberNotFound": {
+    "en": "This user or member was not found",
+    "nl": "Deze gebruiker of dit lid is niet gevonden",
+    "de": "Dieser Benutzer oder dieses Mitglied wurde nicht gefunden"
+  },
+  "MessageTenantMemberConflict": {
+    "en": "Not possible: already a member, or the last administrator",
+    "nl": "Niet mogelijk: al lid, of de laatste beheerder",
+    "de": "Nicht möglich: bereits Mitglied oder letzter Administrator"
+  },
+  "MessageTenantMemberError": {
+    "en": "The change could not be saved",
+    "nl": "De wijziging kon niet worden opgeslagen",
+    "de": "Die Änderung konnte nicht gespeichert werden"
+  },
+  "MessageTenantManage": {
+    "en": "Manage tenants",
+    "nl": "Omgevingen beheren",
+    "de": "Mandanten verwalten"
+  },
+  "MessageTenantPlatformAdminOnly": {
+    "en": "Only a platform administrator can add and delete tenants",
+    "nl": "Alleen een platformbeheerder kan omgevingen toevoegen en verwijderen",
+    "de": "Nur ein Plattformadministrator kann Mandanten hinzufügen und löschen"
+  },
+  "MessageTenantId": {
+    "en": "Tenant id (a-z, 0-9 and -)",
+    "nl": "Id van de omgeving (a-z, 0-9 en -)",
+    "de": "Mandanten-ID (a-z, 0-9 und -)"
+  },
+  "MessageTenantDisplayName": {
+    "en": "Name",
+    "nl": "Naam",
+    "de": "Name"
+  },
+  "MessageTenantAdd": {
+    "en": "Add tenant",
+    "nl": "Omgeving toevoegen",
+    "de": "Mandant hinzufügen"
+  },
+  "MessageTenantDelete": {
+    "en": "Delete",
+    "nl": "Verwijderen",
+    "de": "Löschen"
+  },
+  "MessageTenantDeleteConfirm": {
+    "en": "Delete this tenant? Nobody can use it anymore; its photos stay on disk until the data is purged.",
+    "nl": "Deze omgeving verwijderen? Niemand kan haar meer gebruiken; de foto's blijven op schijf staan tot de data wordt opgeschoond.",
+    "de": "Diesen Mandanten löschen? Niemand kann ihn mehr verwenden; die Fotos bleiben auf der Festplatte, bis die Daten bereinigt werden."
+  },
+  "MessageTenantInvalid": {
+    "en": "This id is not valid, or its folders are not allowed",
+    "nl": "Dit id is ongeldig, of de mappen zijn niet toegestaan",
+    "de": "Diese ID ist ungültig oder die Ordner sind nicht erlaubt"
+  },
+  "MessageTenantExists": {
+    "en": "This tenant already exists",
+    "nl": "Deze omgeving bestaat al",
+    "de": "Dieser Mandant existiert bereits"
   },
   "temp1": {
     "en": ".",

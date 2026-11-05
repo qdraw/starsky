@@ -28,8 +28,10 @@ public sealed class CheckIfAccountExistMiddleware(RequestDelegate next)
 		// call that the user still exists. Sign-in/out calls are skipped to let a stale cookie
 		// be replaced by a new login.
 		var path = context.Request.Path.Value;
+		// the MCP endpoint is an API too: a deleted user may not keep using it
 		var isApiCall = !string.IsNullOrEmpty(path) &&
-		                path.Contains("api/", StringComparison.OrdinalIgnoreCase) &&
+		                ( path.Contains("api/", StringComparison.OrdinalIgnoreCase) ||
+		                  path.StartsWith("/mcp", StringComparison.OrdinalIgnoreCase) ) &&
 		                !path.EndsWith("api/account/login", StringComparison.OrdinalIgnoreCase) &&
 		                !path.EndsWith("api/account/logout", StringComparison.OrdinalIgnoreCase) &&
 		                !path.EndsWith("api/account/register", StringComparison.OrdinalIgnoreCase);

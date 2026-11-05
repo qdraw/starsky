@@ -28,6 +28,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Interfaces;
 using starsky.foundation.writemeta.Helpers;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -37,6 +38,7 @@ namespace starsky.feature.webhtmlpublish.Services;
 public class WebHtmlPublishService : IWebHtmlPublishService
 {
 	private readonly AppSettings _appSettings;
+	private readonly ITenantSettings _tenantSettings;
 	private readonly IConsole _console;
 	private readonly CopyPublishedContent _copyPublishedContent;
 	private readonly IExifTool _exifTool;
@@ -57,8 +59,10 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			selectorStorage, AppSettings appSettings, IExifToolHostStorage exifTool,
 		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
 		IThumbnailService thumbnailService,
-		IImageOptimisationService imageOptimisationService)
+		IImageOptimisationService imageOptimisationService,
+		ITenantSettings? tenantSettings = null)
 	{
+		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_publishPreflight = publishPreflight;
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);
@@ -117,11 +121,11 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 			slugItemName);
 
 		// Write a single file to be sure that writing is ready
-		var doneFileFullPath = Path.Combine(_appSettings.TempFolder, slugItemName) + ".done";
+		var doneFileFullPath = Path.Combine(_tenantSettings.TempFolder, slugItemName) + ".done";
 		await _hostFileSystemStorage.WriteStreamAsync(StringToStreamHelper.StringToStream("OK"),
 			doneFileFullPath);
 
-		_hostFileSystemStorage.FolderDelete(Path.Combine(_appSettings.TempFolder,
+		_hostFileSystemStorage.FolderDelete(Path.Combine(_tenantSettings.TempFolder,
 			slugItemName));
 	}
 

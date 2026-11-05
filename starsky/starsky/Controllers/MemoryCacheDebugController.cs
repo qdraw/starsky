@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
-using Microsoft.AspNetCore.Authorization;
+using starsky.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.foundation.database.Models.Account;
@@ -9,7 +9,10 @@ using starsky.foundation.platform.Interfaces;
 
 namespace starsky.Controllers;
 
-[Authorize]
+/// <summary>
+///     Shows the cache of ALL tenants (and the users): a platform administrator only
+/// </summary>
+[PlatformAdmin]
 public sealed class MemoryCacheDebugController : Controller
 {
 	private readonly IWebLogger _logger;

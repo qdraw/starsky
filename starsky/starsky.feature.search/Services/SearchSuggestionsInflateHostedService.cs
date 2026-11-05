@@ -8,6 +8,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.search.Services;
 
@@ -16,7 +17,8 @@ public class SearchSuggestionsInflateHostedService(
 	IServiceScopeFactory scopeFactory,
 	IMemoryCache memoryCache,
 	IWebLogger logger,
-	AppSettings appSettings)
+	AppSettings appSettings,
+	ITenantRegistry? tenantRegistry = null)
 	: IHostedService
 {
 	private readonly CancellationTokenSource _stopCts = new();
@@ -50,12 +52,12 @@ public class SearchSuggestionsInflateHostedService(
 
 		try
 		{
-			await InflateOnceAsync().ConfigureAwait(false);
+			await InflateOnceAsync(cancellationToken).ConfigureAwait(false);
 
 			using var timer = new PeriodicTimer(Interval);
 			while ( await timer.WaitForNextTickAsync(cancellationToken).ConfigureAwait(false) )
 			{
-				await InflateOnceAsync().ConfigureAwait(false);
+				await InflateOnceAsync(cancellationToken).ConfigureAwait(false);
 			}
 		}
 		catch ( OperationCanceledException ) when ( cancellationToken.IsCancellationRequested )
@@ -69,12 +71,26 @@ public class SearchSuggestionsInflateHostedService(
 		}
 	}
 
-	private async Task InflateOnceAsync()
+	private async Task InflateOnceAsync(CancellationToken cancellationToken)
 	{
-		using var scope = scopeFactory.CreateScope();
-		var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-		await new SearchSuggestionsService(dbContext, memoryCache, logger, appSettings)
-			.Inflate().ConfigureAwait(false);
-		logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
+		// the suggestions come from the index of one tenant, and are cached per tenant
+		var failures = await TenantJobs.ForEachActiveTenantAsync(scopeFactory,
+			tenantRegistry ?? new TenantRegistry(),
+			async (serviceProvider, _) =>
+			{
+				var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+				await new SearchSuggestionsService(dbContext, memoryCache, logger, appSettings)
+					.Inflate().ConfigureAwait(false);
+			}, (tenantId, exception) =>
+			{
+				logger.LogError(
+					$"SearchSuggestionsInflateHostedService failed for tenant {tenantId}: " +
+					exception.Message, exception);
+			}, cancellationToken);
+
+		if ( failures.Count == 0 )
+		{
+			logger.LogDebug("SearchSuggestionsInflateHostedService: Cache inflated successfully.");
+		}
 	}
 }

@@ -8,6 +8,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
 using starsky.foundation.worker.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.webhtmlpublish.Services;
 
@@ -15,8 +16,12 @@ namespace starsky.feature.webhtmlpublish.Services;
 public sealed class PublishCreateBackgroundJobHandler(
 	IWebHtmlPublishService publishService,
 	AppSettings appSettings,
-	IWebLogger logger) : IBackgroundJobHandler
+	IWebLogger logger,
+	ITenantSettings? tenantSettings = null) : IBackgroundJobHandler
 {
+	private readonly ITenantSettings _tenantSettings =
+		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+
 	public const string JobTypeValue = "Publish.Create.v1";
 	public string JobType { get; } = JobTypeValue;
 
@@ -32,7 +37,7 @@ public sealed class PublishCreateBackgroundJobHandler(
 
 		var renderCopyResult = await publishService.RenderCopy(payload.Info,
 			payload.PublishProfileName, payload.ItemName, payload.Location);
-		await publishService.GenerateZip(appSettings.TempFolder, payload.ItemName,
+		await publishService.GenerateZip(_tenantSettings.TempFolder, payload.ItemName,
 			renderCopyResult);
 		logger.LogInformation($"[/api/publish/create] done: {payload.ItemName} {DateTime.UtcNow}");
 	}
