@@ -268,7 +268,8 @@ describe("Multi tenancy security (76)", () => {
           .should("be.oneOf", [200, 403]);
       });
       // an account may exist (registering is open on some servers), but never a membership of B
-      loginApi(newEmail, password);
+      // 401 is fine here: the account was not created
+      loginApi(newEmail, password, undefined, true);
       cy.request({ url: "/starsky/api/tenants/mine", failOnStatusCode: false }).then(
         (response) => {
           if (response.status !== 200) return; // the account was not created: fine

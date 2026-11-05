@@ -21,7 +21,16 @@ export function runId(): string {
  * Login with the account api, as that user (clears the session first).
  * Uses the same steps as the login form: first the antiforgery cookie, then the post.
  */
-export function loginApi(email: string, password: string, tenantId = defaultTenant): void {
+/**
+ * @param mayBeRejected when the account may legitimately not exist (a security test asserting it was
+ * not created), a 401 is accepted instead of failing the test
+ */
+export function loginApi(
+  email: string,
+  password: string,
+  tenantId = defaultTenant,
+  mayBeRejected = false
+): void {
   const base = tenantBase(tenantId);
   cy.clearCookies();
   cy.request({ url: `${base}/account/login`, failOnStatusCode: false });
@@ -35,9 +44,10 @@ export function loginApi(email: string, password: string, tenantId = defaultTena
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: `Email=${encodeURIComponent(email)}&Password=${encodeURIComponent(password)}`,
+      failOnStatusCode: !mayBeRejected,
     })
       .its("status")
-      .should("eq", 200);
+      .should(mayBeRejected ? "be.oneOf" : "eq", mayBeRejected ? [200, 401] : 200);
   });
 }
 
