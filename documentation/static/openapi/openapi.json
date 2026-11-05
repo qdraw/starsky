@@ -4704,6 +4704,18 @@
             "type": "boolean",
             "nullable": true
           },
+          "mcpEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "mcpAllowWrite": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "mcpMaxItemsPerCall": {
+            "type": "integer",
+            "format": "int32"
+          },
           "addSwaggerExport": {
             "type": "boolean",
             "nullable": true
