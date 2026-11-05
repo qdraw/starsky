@@ -170,8 +170,11 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 		}
 		remove
 		{
-			_containedFsw.Created -= BufferEvent;
 			_onCreatedHandler -= value;
+			if ( _onCreatedHandler == null )
+			{
+				_containedFsw.Created -= BufferEvent;
+			}
 		}
 	}
 
@@ -188,8 +191,11 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 		}
 		remove
 		{
-			_containedFsw.Changed -= BufferEvent;
 			_onChangedHandler -= value;
+			if ( _onChangedHandler == null )
+			{
+				_containedFsw.Changed -= BufferEvent;
+			}
 		}
 	}
 
@@ -206,8 +212,11 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 		}
 		remove
 		{
-			_containedFsw.Deleted -= BufferEvent;
 			_onDeletedHandler -= value;
+			if ( _onDeletedHandler == null )
+			{
+				_containedFsw.Deleted -= BufferEvent;
+			}
 		}
 	}
 
@@ -224,8 +233,11 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 		}
 		remove
 		{
-			_containedFsw.Renamed -= BufferEvent;
 			_onRenamedHandler -= value;
+			if ( _onRenamedHandler == null )
+			{
+				_containedFsw.Renamed -= BufferEvent;
+			}
 		}
 	}
 

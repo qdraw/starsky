@@ -1504,6 +1504,81 @@
     "nl": "Voltooien",
     "de": "Fertig"
   },
+  "MessageConnect": {
+    "en": "Connect",
+    "nl": "Verbinding",
+    "de": "Verbinden"
+  },
+  "MessageConnectDeviceId": {
+    "en": "Your Device ID",
+    "nl": "Jouw apparaat-ID",
+    "de": "Deine Geräte-ID"
+  },
+  "MessageConnectDeviceName": {
+    "en": "Device Name",
+    "nl": "Apparaatnaam",
+    "de": "Gerätename"
+  },
+  "MessageConnectDevices": {
+    "en": "Known Devices",
+    "nl": "Bekende apparaten",
+    "de": "Bekannte Geräte"
+  },
+  "MessageConnectNoDevices": {
+    "en": "No devices added yet.",
+    "nl": "Nog geen apparaten toegevoegd.",
+    "de": "Noch keine Geräte hinzugefügt."
+  },
+  "MessageConnectAddDevice": {
+    "en": "Add Device",
+    "nl": "Apparaat toevoegen",
+    "de": "Gerät hinzufügen"
+  },
+  "MessageConnectAddDevicePlaceholderId": {
+    "en": "Device ID (63 characters)",
+    "nl": "Apparaat-ID (63 tekens)",
+    "de": "Geräte-ID (63 Zeichen)"
+  },
+  "MessageConnectAddDevicePlaceholderName": {
+    "en": "Friendly name (optional)",
+    "nl": "Naam (optioneel)",
+    "de": "Anzeigename (optional)"
+  },
+  "MessageConnectRemove": {
+    "en": "Remove",
+    "nl": "Verwijderen",
+    "de": "Entfernen"
+  },
+  "MessageConnectCopied": {
+    "en": "Copied",
+    "nl": "Gekopieerd",
+    "de": "Kopiert"
+  },
+  "MessageConnectCopy": {
+    "en": "Copy",
+    "nl": "Kopiëren",
+    "de": "Kopieren"
+  },
+  "MessageConnectLoading": {
+    "en": "Loading connect settings…",
+    "nl": "Verbindingsinstellingen laden…",
+    "de": "Verbindungseinstellungen werden geladen…"
+  },
+  "MessageConnectError": {
+    "en": "Failed to load connect settings.",
+    "nl": "Verbindingsinstellingen konden niet worden geladen.",
+    "de": "Verbindungseinstellungen konnten nicht geladen werden."
+  },
+  "MessageConnectAddError": {
+    "en": "Failed to add device. Check the Device ID and try again.",
+    "nl": "Apparaat kon niet worden toegevoegd. Controleer de apparaat-ID en probeer opnieuw.",
+    "de": "Gerät konnte nicht hinzugefügt werden. Bitte Geräte-ID prüfen und erneut versuchen."
+  },
+  "MessageConnectRemoveError": {
+    "en": "Failed to remove device.",
+    "nl": "Apparaat kon niet worden verwijderd.",
+    "de": "Gerät konnte nicht entfernt werden."
+  },
   "temp1": {
     "en": ".",
     "nl": ".",
