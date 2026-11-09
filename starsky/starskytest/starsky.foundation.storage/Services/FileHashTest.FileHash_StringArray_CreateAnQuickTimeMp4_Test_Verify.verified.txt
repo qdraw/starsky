@@ -1,5 +1,0 @@
-﻿[
-  {
-    5YHH4YH7V5WJDAUYJ5NC6ERHQA: true
-  }
-]

@@ -27,8 +27,8 @@
 *.md text eol=lf
 *.xml text eol=lf
 
-# Verify.MSTest — snapshot files must have LF so VerifiedLineEndingException is not thrown on Windows
-*.verified.txt text eol=lf
+# Snapshooter.MSTest — snapshot files must have LF so they match on Windows
+__snapshots__/*.snap text eol=lf
 
 # windows specific files
 *.{cmd,[cC][mM][dD]} text eol=crlf

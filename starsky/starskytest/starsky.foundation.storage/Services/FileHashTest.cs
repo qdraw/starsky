@@ -11,13 +11,15 @@ using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter.MSTest;
 
 namespace starskytest.starsky.foundation.storage.Services;
 
 [TestClass]
-public sealed class FileHashTest : VerifyBase
+public sealed class FileHashTest
 {
+	public TestContext TestContext { get; set; } = null!;
+
 	[TestMethod]
 	public void FileHashGenerateRandomBytesTest()
 	{
@@ -57,7 +59,7 @@ public sealed class FileHashTest : VerifyBase
 				ExtensionRolesHelper.ImageFormat.jpg);
 		Assert.IsTrue(fileHashCode.Value);
 		Assert.AreEqual(26, fileHashCode.Key.Length);
-		await Verify(fileHashCode);
+		Snapshot.Match(fileHashCode);
 	}
 
 	[TestMethod]
@@ -75,7 +77,7 @@ public sealed class FileHashTest : VerifyBase
 				ExtensionRolesHelper.ImageFormat.jpg);
 		Assert.IsTrue(fileHashCode.Value);
 		Assert.AreEqual(26, fileHashCode.Key.Length);
-		await Verify(fileHashCode);
+		Snapshot.Match(fileHashCode);
 	}
 
 	[TestMethod]
@@ -90,7 +92,7 @@ public sealed class FileHashTest : VerifyBase
 			]);
 		Assert.IsTrue(fileHashCode[0].Value);
 		Assert.AreEqual(26, fileHashCode[0].Key.Length);
-		await Verify(fileHashCode);
+		Snapshot.Match(fileHashCode);
 	}
 
 	[TestMethod]
@@ -109,7 +111,7 @@ public sealed class FileHashTest : VerifyBase
 		Assert.IsTrue(fileHashCode[0].Value);
 		Assert.AreEqual(26, fileHashCode[0].Key.Length);
 
-		await Verify(fileHashCode);
+		Snapshot.Match(fileHashCode);
 	}
 
 	[TestMethod]
@@ -128,7 +130,7 @@ public sealed class FileHashTest : VerifyBase
 		Assert.IsTrue(fileHashCode[0].Value);
 		Assert.AreEqual(26, fileHashCode[0].Key.Length);
 
-		await Verify(fileHashCode);
+		Snapshot.Match(fileHashCode);
 	}
 
 
@@ -149,7 +151,7 @@ public sealed class FileHashTest : VerifyBase
 		Assert.AreEqual(26, fileHashCode[0].Key.Length);
 		Assert.AreEqual(CreateAnQuickTimeMp4.FileHash, fileHashCode[0].Key);
 
-		await Verify(fileHashCode);
+		Snapshot.Match(fileHashCode);
 	}
 
 	[TestMethod]
@@ -169,7 +171,7 @@ public sealed class FileHashTest : VerifyBase
 		Assert.AreEqual(26, fileHashCode[0].Key.Length);
 		Assert.AreEqual(CreateAnQuickTimeMp4.FileHashWithLocation, fileHashCode[0].Key);
 
-		await Verify(fileHashCode);
+		Snapshot.Match(fileHashCode);
 	}
 
 	[TestMethod]

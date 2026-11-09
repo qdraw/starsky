@@ -420,3 +420,6 @@ windows/dist
 windows/dist-prod
 mac/dist
 
+
+# Snapshooter mismatch output
+__mismatch__/
