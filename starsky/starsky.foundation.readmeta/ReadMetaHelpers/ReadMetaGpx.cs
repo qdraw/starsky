@@ -17,6 +17,14 @@ namespace starsky.foundation.readmeta.ReadMetaHelpers;
 public sealed class ReadMetaGpx
 {
 	private const string GpxXmlNameSpaceName = "http://www.topografix.com/GPX/1/1";
+	private static readonly string[] GpxDateTimeFormats =
+	[
+		"yyyy-MM-ddTHH:mm:ssZ",
+		"yyyy-MM-ddTHH:mm:ss.FFFFFFFZ",
+		"yyyy-MM-ddTHH:mm:sszzz",
+		"yyyy-MM-ddTHH:mm:ss.FFFFFFFzzz"
+	];
+
 	private readonly IWebLogger _logger;
 
 	public ReadMetaGpx(IWebLogger logger)
@@ -198,11 +206,11 @@ public sealed class ReadMetaGpx
 
 				var datetimeString = childNode.InnerText;
 
-				// 2018-08-21T19:15:41Z
+				// 2018-08-21T19:15:41Z or with fractional seconds (Komoot): 2026-11-09T12:27:22.001Z
 				DateTime.TryParseExact(datetimeString,
-					"yyyy-MM-ddTHH:mm:ssZ",
+					GpxDateTimeFormats,
 					CultureInfo.InvariantCulture,
-					DateTimeStyles.AdjustToUniversal,
+					DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal,
 					out dateTime);
 
 				dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);

@@ -182,4 +182,28 @@ public sealed class ReadGpxFromFileTest
 		Assert.AreEqual(31, result.Minute);
 		Assert.AreEqual(53, result.Second);
 	}
+
+	[TestMethod]
+	public async Task ReadGpxFromFileTest_FractionalSeconds()
+	{
+		const string gpx = """
+		                   <?xml version='1.0' encoding='UTF-8'?>
+		                   <gpx version="1.1" xmlns="http://www.topografix.com/GPX/1/1">
+		                     <trk><name>Wandeling</name><trkseg>
+		                       <trkpt lat="51.921321" lon="4.469364"><ele>-0.76</ele>
+		                         <time>2026-11-09T12:27:22.001Z</time></trkpt>
+		                     </trkseg></trk>
+		                   </gpx>
+		                   """;
+		var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(gpx));
+
+		var returnItem = await new ReadMetaGpx(new FakeIWebLogger())
+			.ReadGpxFromFileReturnAfterFirstFieldAsync(stream, "/test.gpx", false);
+
+		Assert.AreEqual(new DateTime(2026, 11, 9, 12, 27, 22, DateTimeKind.Utc).Date,
+			returnItem.DateTime.Date);
+		Assert.AreEqual(12, returnItem.DateTime.Hour);
+		Assert.AreEqual(27, returnItem.DateTime.Minute);
+		Assert.AreEqual(22, returnItem.DateTime.Second);
+	}
 }
