@@ -45,11 +45,11 @@
   "Sentry 6.12.1",
   "SkiaSharp 4.154.0",
   "SkiaSharp.NativeAssets.Linux.NoDependencies 4.154.0",
+  "Snapshooter.MSTest 1.3.1",
   "SQLitePCLRaw.lib.e_sqlite3 3.53.3",
   "Swashbuckle.AspNetCore 10.3.1",
   "System.ComponentModel.Annotations 5.0.0",
   "System.Management 10.0.11",
   "TimeZoneConverter 7.2.0",
-  "Verify.MSTest 32.0.1",
   "XmpCore 6.1.10.1"
 ]
