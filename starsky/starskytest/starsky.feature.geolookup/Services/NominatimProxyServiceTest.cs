@@ -99,6 +99,7 @@ public class NominatimProxyServiceTest
 		var service = new NominatimProxyService(new FakeIHttpClientHelper(null!,
 			new Dictionary<string, KeyValuePair<bool, string>>()));
 		var result = await service.ReverseAsync(523898, 49414);
+		Assert.AreEqual("Non-valid location", result.Error);
 		Snapshot.Match(result);
 	}
 

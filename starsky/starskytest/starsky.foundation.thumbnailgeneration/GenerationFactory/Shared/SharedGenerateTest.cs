@@ -96,6 +96,7 @@ public class SharedGenerateTest
 			_ => true,
 			singleSubPath, fileHash, imageFormat, thumbnailSizes);
 
+		Assert.IsNotNull(result);
 		Verify(result);
 	}
 

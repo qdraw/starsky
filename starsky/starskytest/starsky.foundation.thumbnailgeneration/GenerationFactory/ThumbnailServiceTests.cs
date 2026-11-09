@@ -157,6 +157,7 @@ public sealed class ThumbnailServiceTests
 		var isCreated = await sut.GenerateThumbnail(
 			"/notfound.dng", _fakeIStorageImageSubPath);
 
+		Assert.IsNotNull(isCreated);
 		Verify(isCreated);
 	}
 
