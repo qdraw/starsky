@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.geolookup.Services;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter.MSTest;
 
 namespace starskytest.starsky.feature.geolookup.Services;
 
 [TestClass]
-public class NominatimProxyServiceTest : VerifyBase
+public class NominatimProxyServiceTest
 {
 	[TestMethod]
 	public async Task ReverseAsync_ReturnsExpectedJson_Verify()
@@ -28,7 +28,7 @@ public class NominatimProxyServiceTest : VerifyBase
 		Assert.Contains("lat=52.38230014307398", fakeHttp.UrlsCalled[0]);
 		Assert.Contains("lon=4.941273642639544", fakeHttp.UrlsCalled[0]);
 
-		await Verify(result);
+		Snapshot.Match(result);
 	}
 
 	[TestMethod]
@@ -69,7 +69,7 @@ public class NominatimProxyServiceTest : VerifyBase
 		Assert.Contains("lat=52.38230014307398", fakeHttp.UrlsCalled[0]);
 		Assert.Contains("lon=4.941273642639544", fakeHttp.UrlsCalled[0]);
 
-		await Verify(result);
+		Snapshot.Match(result);
 	}
 
 	[TestMethod]
@@ -90,7 +90,7 @@ public class NominatimProxyServiceTest : VerifyBase
 		Assert.Contains("lat=52.38230014307398", fakeHttp.UrlsCalled[0]);
 		Assert.Contains("lon=4.941273642639544", fakeHttp.UrlsCalled[0]);
 
-		await Verify(result);
+		Snapshot.Match(result);
 	}
 
 	[TestMethod]
@@ -99,7 +99,8 @@ public class NominatimProxyServiceTest : VerifyBase
 		var service = new NominatimProxyService(new FakeIHttpClientHelper(null!,
 			new Dictionary<string, KeyValuePair<bool, string>>()));
 		var result = await service.ReverseAsync(523898, 49414);
-		await Verify(result);
+		Assert.AreEqual("Non-valid location", result.Error);
+		Snapshot.Match(result);
 	}
 
 	[TestMethod]
@@ -120,7 +121,7 @@ public class NominatimProxyServiceTest : VerifyBase
 		Assert.Contains("lat=52.38230014307398", fakeHttp.UrlsCalled[0]);
 		Assert.Contains("lon=4.941273642639544", fakeHttp.UrlsCalled[0]);
 
-		await Verify(result);
+		Snapshot.Match(result);
 	}
 	
 	[TestMethod]
@@ -141,6 +142,6 @@ public class NominatimProxyServiceTest : VerifyBase
 		Assert.Contains("lat=52.38230014307398", fakeHttp.UrlsCalled[0]);
 		Assert.Contains("lon=4.941273642639544", fakeHttp.UrlsCalled[0]);
 
-		await Verify(result);
+		Snapshot.Match(result);
 	}
 }

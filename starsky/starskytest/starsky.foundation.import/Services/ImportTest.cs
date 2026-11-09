@@ -28,7 +28,8 @@ using starskytest.FakeCreateAn.CreateAnImageA6700;
 using starskytest.FakeCreateAn.CreateAnImageEOS7DRawCr2;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter;
+using Snapshooter.MSTest;
 
 namespace starskytest.starsky.foundation.import.Services;
 
@@ -36,7 +37,7 @@ namespace starskytest.starsky.foundation.import.Services;
 ///     ImportTest.cs / ImportServiceTest
 /// </summary>
 [TestClass]
-public sealed class ImportTest : VerifyBase
+public sealed class ImportTest
 {
 	private readonly IConsole _console;
 	private readonly string _exampleHash;
@@ -96,7 +97,7 @@ public sealed class ImportTest : VerifyBase
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
 		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 
-		await Verify(result);
+		Verify(result);
 	}
 
 	[TestMethod]
@@ -136,25 +137,29 @@ public sealed class ImportTest : VerifyBase
 		Assert.IsNotNull(result.FirstOrDefault()?.FileIndexItem?.FilePath);
 		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 
-		await Verify(result, filePath);
+		Verify(result, filePath);
 	}
 
 	/// <summary>
 	///     Validator for the ImportIndexItem
 	/// </summary>
 	/// <param name="result">List of items</param>
-	private static async Task Verify(List<ImportIndexItem> result, params object?[] parameters)
+	private static void Verify(List<ImportIndexItem> result, params object?[] parameters)
 	{
 		result[0].FileIndexItem!.Id = 1;
 		result[0].AddToDatabase = DateTime.MinValue;
 		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
+		// Local-kind dates serialize with the machine's UTC offset, which differs between dev machines and CI
+		result[0].DateTime = DateTime.SpecifyKind(result[0].DateTime, DateTimeKind.Unspecified);
+		result[0].FileIndexItem!.DateTime =
+			DateTime.SpecifyKind(result[0].FileIndexItem!.DateTime, DateTimeKind.Unspecified);
 		if ( parameters.Length > 0 )
 		{
-			await Verifier.Verify(result).DontScrubDateTimes().UseParameters(parameters);
+			Snapshot.Match(result, SnapshotNameExtension.Create(parameters!));
 		}
 		else
 		{
-			await Verifier.Verify(result).DontScrubDateTimes();
+			Snapshot.Match(result);
 		}
 	}
 
@@ -295,7 +300,7 @@ public sealed class ImportTest : VerifyBase
 		Assert.AreNotEqual(0, result.FirstOrDefault()?.FileIndexItem?.Size);
 		Assert.AreEqual(ColorClassParser.Color.Typical,
 			result.FirstOrDefault()?.FileIndexItem?.ColorClass);
-		await Verify(result);
+		Verify(result);
 	}
 
 	[TestMethod]

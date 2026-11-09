@@ -1,5 +1,0 @@
-﻿[
-  {
-    HXSZMHIAFLYXFYUPJVNIUB4QJQ: true
-  }
-]

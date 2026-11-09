@@ -15,7 +15,8 @@ using starsky.foundation.geo.LocationNameSearch.Interfaces;
 using starsky.foundation.geo.LocationNameSearch.Models;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter;
+using Snapshooter.MSTest;
 
 namespace starskytest.Controllers;
 
@@ -46,7 +47,7 @@ public class FakeLocationNameService : ILocationNameService
 }
 
 [TestClass]
-public class GeoLocationNameControllerTest : VerifyBase
+public class GeoLocationNameControllerTest
 {
 	[TestMethod]
 	public async Task SearchCityTimezone_ReturnsOk()
@@ -87,7 +88,7 @@ public class GeoLocationNameControllerTest : VerifyBase
 		Assert.AreEqual("Europe/Amsterdam", cityTimezoneResults[0].TimeZoneId);
 
 		Assert.AreEqual(1, fakeGeoFileDownload.Count);
-		await Verify(cityTimezoneResults);
+		Snapshot.Match(cityTimezoneResults);
 	}
 
 	private static ApplicationDbContext CreateDbContext()
@@ -225,7 +226,7 @@ public class GeoLocationNameControllerTest : VerifyBase
 		Assert.IsNotNull(cityTimezoneResults);
 		Assert.HasCount(1, cityTimezoneResults);
 		Assert.AreEqual(1, fakeGeoFileDownload.Count);
-		await Verify(cityTimezoneResults).UseParameters(dateTime, cityName);
+		Snapshot.Match(cityTimezoneResults, SnapshotNameExtension.Create(dateTime.Replace(":", "-"), cityName));
 	}
 
 	[TestMethod]

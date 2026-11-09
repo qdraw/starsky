@@ -20,10 +20,13 @@ const string photoText = "foto";
 {
 var item = @Model.FileIndexItems[i];
 var count = i + 1;
-var height = Math.Round((double)@item.ImageHeight, 1)
-.ToString(CultureInfo.InvariantCulture);
-var width = Math.Round((double)@item.ImageWidth, 1)
-.ToString(CultureInfo.InvariantCulture);
+// the published image is scaled to 1000px wide, so use that size instead of the original
+const int scaledWidth = 1000;
+var scaledHeight = item.ImageWidth > 0
+	? Math.Round((double)item.ImageHeight * scaledWidth / item.ImageWidth)
+	: 0;
+var width = scaledWidth.ToString(CultureInfo.InvariantCulture);
+var height = scaledHeight.ToString(CultureInfo.InvariantCulture);
 var latitude = Math.Round(@item.Latitude, 6).ToString(CultureInfo.InvariantCulture);
 var longitude = Math.Round(@item.Longitude, 6).ToString(CultureInfo.InvariantCulture);
 

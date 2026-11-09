@@ -12,13 +12,15 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter.MSTest;
 
 namespace starskytest.starsky.foundation.geo.GeoNameCitySeed;
 
 [TestClass]
-public sealed class GeoNameCitySeedServiceTest : VerifyBase
+public sealed class GeoNameCitySeedServiceTest
 {
+	public TestContext TestContext { get; set; } = null!;
+
 	private static ApplicationDbContext CreateDbContext(string connectionString)
 	{
 		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -60,7 +62,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		var all = await dbContext.GeoNameCities.ToListAsync(TestContext.CancellationToken);
 		Assert.HasCount(68, all);
 
-		await Verify(all);
+		Snapshot.Match(all);
 
 		Assert.Contains(x => x.GeonameId == 38832 && x.Name == "Vila", all);
 		Assert.Contains(x => x.GeonameId == 3039154 && x.Name == "El Tarter", all);
@@ -83,7 +85,7 @@ public sealed class GeoNameCitySeedServiceTest : VerifyBase
 		var all = await dbContext.GeoNameCities.ToListAsync(TestContext.CancellationToken);
 		Assert.HasCount(68, all);
 
-		await Verify(all);
+		Snapshot.Match(all);
 
 		Assert.Contains(x => x.GeonameId == 38832 && x.Name == "Vila", all);
 		Assert.Contains(x => x.GeonameId == 3039154 && x.Name == "El Tarter", all);
