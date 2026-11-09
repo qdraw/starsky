@@ -3,15 +3,24 @@ import { useSearchParams } from "react-router-dom";
 import MenuDefault from "../../components/organisms/menu-default/menu-default";
 import PreferencesAppSettings from "../../components/organisms/preferences-app-settings/preferences-app-settings";
 import PreferencesCloudImport from "../../components/organisms/preferences-cloud-import/preferences-cloud-import";
+import PreferencesConnect from "../../components/organisms/preferences-connect/preferences-connect";
 import PreferencesPassword from "../../components/organisms/preferences-password/preferences-password";
 import PreferencesUsername from "../../components/organisms/preferences-username/preferences-username";
+import useFetch from "../../hooks/use-fetch";
 import useGlobalSettings from "../../hooks/use-global-settings";
 import localization from "../../localization/localization.json";
 import { Language } from "../../shared/language";
+import { UrlQuery } from "../../shared/url/url-query";
 
-type PreferencesTab = "username" | "password" | "app" | "cloud";
+type PreferencesTab = "username" | "password" | "app" | "cloud" | "connect";
 
-const tabValues: Set<PreferencesTab> = new Set(["username", "password", "app", "cloud"]);
+const tabValues: Set<PreferencesTab> = new Set([
+  "username",
+  "password",
+  "app",
+  "cloud",
+  "connect"
+]);
 
 const isPreferencesTab = (value: string | null): value is PreferencesTab => {
   if (!value) {
@@ -28,8 +37,18 @@ export const Preferences: React.FunctionComponent = () => {
   const messagePassword = language.key(localization.MessagePassword);
   const messageAppSettings = language.key(localization.MessageAppSettings);
   const messageCloudImports = language.key(localization.MessageCloudImports);
+  const messageConnect = language.key(localization.MessageConnect);
 
   const [searchParams, setSearchParams] = useSearchParams();
+
+  // Check admin permission to show the Connect tab
+  const permissionsResult = useFetch(new UrlQuery().UrlAccountPermissions(), "get");
+  const isAdmin =
+    permissionsResult.statusCode === 200 &&
+    Array.isArray(permissionsResult.data) &&
+    (permissionsResult.data as string[]).includes(
+      new UrlQuery().KeyAccountPermissionAppSettingsWrite()
+    );
 
   const currentTab = searchParams.get("tab");
   const activeTab: PreferencesTab = isPreferencesTab(currentTab) ? currentTab : "username";
@@ -43,12 +62,15 @@ export const Preferences: React.FunctionComponent = () => {
     setSearchParams(nextSearchParams, { replace: true });
   }, [activeTab, currentTab, searchParams, setSearchParams]);
 
-  const tabs: { id: PreferencesTab; label: string }[] = [
+  const tabs: { id: PreferencesTab; label: string; adminOnly?: boolean }[] = [
     { id: "username", label: messageUsername },
     { id: "password", label: messagePassword },
     { id: "app", label: messageAppSettings },
-    { id: "cloud", label: messageCloudImports }
+    { id: "cloud", label: messageCloudImports },
+    { id: "connect", label: messageConnect, adminOnly: true }
   ];
+
+  const visibleTabs = tabs.filter((tab) => !tab.adminOnly || isAdmin);
 
   const onChangeTab = (tab: PreferencesTab) => {
     if (tab === activeTab) {
@@ -65,7 +87,7 @@ export const Preferences: React.FunctionComponent = () => {
       <div className="content--header">{messagePreferences}</div>
 
       <div className="preferences-tabs" role="tablist" aria-label="Preferences sections">
-        {tabs.map((tab) => (
+        {visibleTabs.map((tab) => (
           <button
             key={tab.id}
             type="button"
@@ -88,6 +110,7 @@ export const Preferences: React.FunctionComponent = () => {
       {activeTab === "password" && <PreferencesPassword />}
       {activeTab === "app" && <PreferencesAppSettings />}
       {activeTab === "cloud" && <PreferencesCloudImport />}
+      {activeTab === "connect" && isAdmin && <PreferencesConnect />}
     </>
   );
 };
