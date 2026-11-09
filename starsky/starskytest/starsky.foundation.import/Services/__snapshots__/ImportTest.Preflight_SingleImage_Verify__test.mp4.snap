@@ -4,7 +4,7 @@
     "FileHash": "5YHH4YH7V5WJDAUYJ5NC6ERHQA",
     "FilePath": "/2020/03/2020_03_29/20200329_131007_test.mp4",
     "AddToDatabase": "0001-01-01T00:00:00",
-    "DateTime": "2020-03-29T13:10:07+02:00",
+    "DateTime": "2020-03-29T13:10:07",
     "Status": "Ok",
     "FileIndexItem": {
       "Id": 1,
@@ -18,7 +18,7 @@
       "Status": "Ok",
       "Description": "",
       "Title": "",
-      "DateTime": "2020-03-29T13:10:07+02:00",
+      "DateTime": "2020-03-29T13:10:07",
       "AddToDatabase": "0001-01-01T00:00:00",
       "LastEdited": "0001-01-01T00:00:00",
       "Latitude": 0.0,

@@ -149,6 +149,10 @@ public sealed class ImportTest
 		result[0].FileIndexItem!.Id = 1;
 		result[0].AddToDatabase = DateTime.MinValue;
 		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
+		// Local-kind dates serialize with the machine's UTC offset, which differs between dev machines and CI
+		result[0].DateTime = DateTime.SpecifyKind(result[0].DateTime, DateTimeKind.Unspecified);
+		result[0].FileIndexItem!.DateTime =
+			DateTime.SpecifyKind(result[0].FileIndexItem!.DateTime, DateTimeKind.Unspecified);
 		if ( parameters.Length > 0 )
 		{
 			Snapshot.Match(result, SnapshotNameExtension.Create(parameters!));
