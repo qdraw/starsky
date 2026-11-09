@@ -27,12 +27,12 @@ using starskytest.FakeCreateAn.CreateAnImageEOSM50RawCr3;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter.MSTest;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory;
 
 [TestClass]
-public sealed class ThumbnailServiceTests : VerifyBase
+public sealed class ThumbnailServiceTests
 {
 	private readonly AppSettings _appSettings;
 	private readonly string _fakeIStorageImageSubPath;
@@ -157,12 +157,12 @@ public sealed class ThumbnailServiceTests : VerifyBase
 		var isCreated = await sut.GenerateThumbnail(
 			"/notfound.dng", _fakeIStorageImageSubPath);
 
-		await Verify(isCreated);
+		Verify(isCreated);
 	}
 
-	private static async Task Verify(List<GenerationResultModel> result)
+	private static void Verify(List<GenerationResultModel> result)
 	{
-		await Verifier.Verify(result).DontScrubDateTimes();
+		Snapshot.Match(result);
 	}
 
 	[TestMethod]

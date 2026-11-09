@@ -18,7 +18,7 @@ using starsky.foundation.platform.Services;
 using starsky.foundation.storage.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter.MSTest;
 
 namespace starskytest.starsky.foundation.import.Services;
 
@@ -26,7 +26,7 @@ namespace starskytest.starsky.foundation.import.Services;
 ///     Also known as ImportServiceTest (Also check the FakeDb version)
 /// </summary>
 [TestClass]
-public sealed class ImportTestInMemoryDb : VerifyBase
+public sealed class ImportTestInMemoryDb
 {
 	private readonly AppSettings _appSettings;
 	private readonly IConsole _console;
@@ -100,15 +100,15 @@ public sealed class ImportTestInMemoryDb : VerifyBase
 
 		await _query.RemoveItemAsync(getResult);
 
-		await Verify(result);
+		Verify(result);
 	}
 
-	private static async Task Verify(List<ImportIndexItem> result)
+	private static void Verify(List<ImportIndexItem> result)
 	{
 		result[0].FileIndexItem!.Id = 1;
 		result[0].AddToDatabase = DateTime.MinValue;
 		result[0].FileIndexItem!.AddToDatabase = DateTime.MinValue;
-		await Verifier.Verify(result).DontScrubDateTimes();
+		Snapshot.Match(result);
 	}
 
 	[TestMethod]

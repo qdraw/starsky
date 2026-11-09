@@ -7,12 +7,12 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 using starsky.foundation.thumbnailgeneration.Models;
 using starskytest.FakeMocks;
-using VerifyMSTest;
+using Snapshooter.MSTest;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.Shared;
 
 [TestClass]
-public class SharedGenerateTest : VerifyBase
+public class SharedGenerateTest
 {
 	[TestMethod]
 	[DataRow(true, 1)]
@@ -96,7 +96,7 @@ public class SharedGenerateTest : VerifyBase
 			_ => true,
 			singleSubPath, fileHash, imageFormat, thumbnailSizes);
 
-		await Verify(result);
+		Verify(result);
 	}
 
 	[TestMethod]
@@ -176,8 +176,8 @@ public class SharedGenerateTest : VerifyBase
 	///     Validator for the GenerationResultModel
 	/// </summary>
 	/// <param name="result">List of items</param>
-	private static async Task Verify(IEnumerable<GenerationResultModel> result)
+	private static void Verify(IEnumerable<GenerationResultModel> result)
 	{
-		await Verifier.Verify(result).DontScrubDateTimes();
+		Snapshot.Match(result);
 	}
 }
