@@ -49,7 +49,10 @@ export class URLPath {
           this.parsePagination(key, urlObject);
           break;
         case "select".toLowerCase():
-          urlObject.select = this.getStringArrayFromCommaSeparatedString(key[1]);
+          // file names can contain a comma, those are escaped as %2C (see IUrlToString)
+          urlObject.select = this.getStringArrayFromCommaSeparatedString(key[1]).map((name) =>
+            name.replaceAll("%2C", ",")
+          );
           break;
         case "sort".toLowerCase():
           urlObject.sort = SortType[key[1] as keyof typeof SortType];
@@ -105,6 +108,11 @@ export class URLPath {
   public IUrlToString(urlObject: IUrl): string {
     const params = new URLSearchParams();
     for (const key of Object.entries(urlObject)) {
+      if (key[0] === "select" && Array.isArray(key[1])) {
+        // a comma in a file name would otherwise be read back as two separate items
+        params.set(key[0], key[1].map((name) => String(name).replaceAll(",", "%2C")).join(","));
+        continue;
+      }
       params.set(key[0], key[1]);
     }
     let url = this.AddPrefixUrl(params.toString());
