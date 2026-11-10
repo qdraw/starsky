@@ -45,6 +45,10 @@ GPX (GPS Exchange Format) files contain location tracks recorded by GPS devices,
 
 The sync process matches the date and time of each photo with the corresponding location in the GPX track. **Important:** Your camera clock must be accurate for the locations to match correctly.
 
+### Supported GPX files
+
+Starsky reads GPX 1.1 track points (`trkpt` with `lat`, `lon`, `ele` and `time`). Timestamps with or without fractional seconds are supported. Files from apps such as Komoot and TrailTrackr that use extension prefixes (for example `gpxtpx:`) without declaring them are also accepted, even though strict XML validators report this as an error.
+
 ### Viewing GPX Files
 
 Starsky can display GPX files with an interactive map powered by Leaflet and OpenStreetMap. When viewing a GPX file:
