@@ -20,7 +20,7 @@
 
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.14" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.15" />
         <!--      instead of : Microsoft.AspNetCore.Http.Abstractions 2.2.0-->
         <PackageReference Include="Sentry" Version="6.12.1"/>
         <PackageReference Include="OpenTelemetry" Version="1.20.1"/>
