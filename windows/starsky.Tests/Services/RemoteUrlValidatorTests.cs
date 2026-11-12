@@ -6,6 +6,7 @@ using starsky.Tests.Helpers;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public class RemoteUrlValidatorTests
 {
     private static RemoteUrlValidator Create(HttpStatusCode status, string content = "") =>

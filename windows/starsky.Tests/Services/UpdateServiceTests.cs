@@ -5,6 +5,7 @@ using Starsky.Desktop.Services;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public sealed class UpdateServiceTests : IDisposable
 {
     private readonly string _tempFile;

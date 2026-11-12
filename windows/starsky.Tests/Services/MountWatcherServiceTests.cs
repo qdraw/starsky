@@ -6,6 +6,7 @@ using starsky.Tests.FakeCreateAn;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public class MountWatcherServiceTests
 {
     // ── Helpers ───────────────────────────────────────────────────────────────

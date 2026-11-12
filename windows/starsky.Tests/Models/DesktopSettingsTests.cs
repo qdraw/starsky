@@ -3,6 +3,7 @@ using Starsky.Desktop.Models;
 namespace starsky.Tests.Models;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public class DesktopSettingsTests
 {
     [TestMethod]

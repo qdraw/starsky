@@ -4,6 +4,7 @@ using Starsky.Desktop.Services;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public sealed class DailyFileLoggerProviderTests : IDisposable
 {
     private readonly string _logDir;

@@ -3,6 +3,7 @@ using Starsky.Desktop.Services;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public class PortFinderTests
 {
     [TestMethod]

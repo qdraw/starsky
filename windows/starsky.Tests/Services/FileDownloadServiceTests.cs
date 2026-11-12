@@ -6,6 +6,7 @@ using starsky.Tests.Helpers;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public sealed class FileDownloadServiceTests : IDisposable
 {
     private const string StarskyPath = "/test-session/photo.jpg";

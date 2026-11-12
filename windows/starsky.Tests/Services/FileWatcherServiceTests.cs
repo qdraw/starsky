@@ -6,6 +6,7 @@ using starsky.Tests.Helpers;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
 public sealed class FileWatcherServiceTests : IDisposable
 {
     private readonly FileWatcherService _sut = new(NullLogger<FileWatcherService>.Instance);
