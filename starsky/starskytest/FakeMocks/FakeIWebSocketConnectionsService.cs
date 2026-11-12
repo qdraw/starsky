@@ -24,6 +24,11 @@ public class FakeIWebSocketConnectionsService : IWebSocketConnectionsService
 	public List<string> FakeSendToAllAsync { get; set; } = new();
 
 	/// <summary>
+	///     What went to one tenant (tenant id, message)
+	/// </summary>
+	public List<(string TenantId, string Message)> FakeSendToTenant { get; } = new();
+
+	/// <summary>
 	///     Add a connection to the service. This is used to simulate clients connecting to the WebSocket
 	///     service.
 	/// </summary>
@@ -61,5 +66,29 @@ public class FakeIWebSocketConnectionsService : IWebSocketConnectionsService
 			DefaultJsonSerializer.CamelCaseNoEnters);
 		FakeSendToAllAsync.Add(stringMessage);
 		return Task.CompletedTask;
+	}
+
+	public Task SendToTenantAsync(string tenantId, string message,
+		CancellationToken cancellationToken)
+	{
+		FakeSendToTenant.Add(( tenantId, message ));
+		return Task.CompletedTask;
+	}
+
+	/// <summary>
+	///     What was closed (tenant id, user id, reason)
+	/// </summary>
+	public List<(string? TenantId, int? UserId, string Reason)> FakeClosed { get; } = new();
+
+	public Task CloseConnectionsAsync(string? tenantId, int? userId, string reason)
+	{
+		FakeClosed.Add(( tenantId, userId, reason ));
+		return Task.CompletedTask;
+	}
+
+	public Task SendToEveryTenantAsync<T>(ApiNotificationResponseModel<T> message,
+		CancellationToken cancellationToken)
+	{
+		return SendToAllAsync(message, cancellationToken);
 	}
 }

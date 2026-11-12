@@ -429,4 +429,18 @@ public sealed class HomeControllerTest
 		var result = HomeController.AppendPathBasePrefix("/starsky", "/search");
 		Assert.AreEqual("/starsky/search", result);
 	}
+
+	[TestMethod]
+	public void AppendPathBasePrefix_Tenant()
+	{
+		var result = HomeController.AppendPathBasePrefix("/starsky/t/acme", "/search?t=a");
+		Assert.AreEqual("/starsky/t/acme/search?t=a", result);
+	}
+
+	[TestMethod]
+	public void AppendPathBasePrefix_NotATenantBase()
+	{
+		Assert.AreEqual("/search",
+			HomeController.AppendPathBasePrefix("/starskyx/t/acme", "/search"));
+	}
 }

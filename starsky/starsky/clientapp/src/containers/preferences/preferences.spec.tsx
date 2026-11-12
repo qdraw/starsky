@@ -22,6 +22,16 @@ describe("Preferences", () => {
     expect(item).toBeTruthy();
   });
 
+  it("has a tenants tab", async () => {
+    const { router } = renderWithRouter();
+
+    fireEvent.click(await screen.findByTestId("preferences-tab-tenants"));
+
+    await waitFor(() => {
+      expect(router.state.location.search).toContain("tab=tenants");
+    });
+  });
+
   describe("tabs", () => {
     it("should render username tab by default", async () => {
       const preferencesUsernameSpy = jest

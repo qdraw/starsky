@@ -256,7 +256,7 @@ public sealed class DiskWatcherTest
 		var configureWatcherMethod = typeof(DiskWatcher).GetMethod("ConfigureWatcher",
 			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
 		configureWatcherMethod.Invoke(watcher,
-			[mappedWrapper, "/mapped/path", false]);
+			[mappedWrapper, "/mapped/path", false, "default"]);
 
 		mappedWrapper.TriggerOnError(new ErrorEventArgs(new Exception("mapped-boom")));
 

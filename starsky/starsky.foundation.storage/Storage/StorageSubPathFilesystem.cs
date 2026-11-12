@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Models;
 
@@ -18,12 +19,29 @@ public sealed class StorageSubPathFilesystem : IStorage
 {
 	private readonly AppSettings _appSettings;
 	private readonly IWebLogger _logger;
+	private readonly Func<ITenantSettings> _tenantSettings;
 
+	/// <summary>
+	///     Without a request (CLI, tests): the default tenant
+	/// </summary>
 	public StorageSubPathFilesystem(AppSettings appSettings, IWebLogger logger)
 	{
 		_appSettings = appSettings;
 		_logger = logger;
+		var defaultTenant = new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = () => defaultTenant;
 	}
+
+	public StorageSubPathFilesystem(AppSettings appSettings, IWebLogger logger,
+		ITenantContext tenantContext, ITenantSettingsProvider tenantSettingsProvider)
+	{
+		_appSettings = appSettings;
+		_logger = logger;
+		// resolved per call: the tenant is set by the middleware, after the scope is created
+		_tenantSettings = () => tenantSettingsProvider.GetSettings(tenantContext.TenantId);
+	}
+
+	private ITenantSettings Settings => _tenantSettings();
 
 	/// <summary>
 	///     Checks if a file is ready
@@ -32,13 +50,13 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <returns></returns>
 	public bool IsFileReady(string path)
 	{
-		var fullPath = _appSettings.DatabasePathToFilePath(path);
+		var fullPath = Settings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).IsFileReady(fullPath);
 	}
 
 	public IAsyncEnumerable<string> ReadLinesAsync(string path, CancellationToken cancellationToken)
 	{
-		var fullPath = _appSettings.DatabasePathToFilePath(path);
+		var fullPath = Settings.DatabasePathToFilePath(path);
 
 		return new StorageHostFullPathFilesystem(_logger).ReadLinesAsync(fullPath,
 			cancellationToken);
@@ -46,7 +64,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 	public string[] ReadAllLines(string path)
 	{
-		var fullPath = _appSettings.DatabasePathToFilePath(path);
+		var fullPath = Settings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).ReadAllLines(fullPath);
 	}
 
@@ -57,7 +75,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <returns>StorageInfo object</returns>
 	public StorageInfo Info(string path)
 	{
-		var fullPath = _appSettings.DatabasePathToFilePath(path);
+		var fullPath = Settings.DatabasePathToFilePath(path);
 
 		return new StorageHostFullPathFilesystem(_logger).Info(fullPath);
 	}
@@ -91,7 +109,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 	public bool IsFolderEmpty(string path)
 	{
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).IsFolderEmpty(fullFilePath);
 	}
 
@@ -102,7 +120,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <returns>is file, folder or deleted</returns>
 	public FolderOrFileModel.FolderOrFileTypeList IsFolderOrFile(string path)
 	{
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).IsFolderOrFile(fullFilePath);
 	}
 
@@ -113,8 +131,8 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <param name="toPath">toSubPath</param>
 	public void FolderMove(string fromPath, string toPath)
 	{
-		var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
-		var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
+		var inputFileFullPath = Settings.DatabasePathToFilePath(fromPath);
+		var toFileFullPath = Settings.DatabasePathToFilePath(toPath);
 		new StorageHostFullPathFilesystem(_logger).FolderMove(inputFileFullPath,
 			toFileFullPath);
 	}
@@ -126,8 +144,8 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <param name="toPath">toSubPath</param>
 	public bool FileMove(string fromPath, string toPath)
 	{
-		var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
-		var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
+		var inputFileFullPath = Settings.DatabasePathToFilePath(fromPath);
+		var toFileFullPath = Settings.DatabasePathToFilePath(toPath);
 		return new StorageHostFullPathFilesystem(_logger).FileMove(inputFileFullPath,
 			toFileFullPath);
 	}
@@ -139,8 +157,8 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <param name="toPath">toSubPath</param>
 	public void FileCopy(string fromPath, string toPath)
 	{
-		var inputFileFullPath = _appSettings.DatabasePathToFilePath(fromPath);
-		var toFileFullPath = _appSettings.DatabasePathToFilePath(toPath);
+		var inputFileFullPath = Settings.DatabasePathToFilePath(fromPath);
+		var toFileFullPath = Settings.DatabasePathToFilePath(toPath);
 		new StorageHostFullPathFilesystem(_logger).FileCopy(inputFileFullPath, toFileFullPath);
 	}
 
@@ -151,7 +169,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <returns>bool</returns>
 	public bool FileDelete(string path)
 	{
-		var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
+		var inputFileFullPath = Settings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).FileDelete(inputFileFullPath);
 	}
 
@@ -162,7 +180,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <returns>bool</returns>
 	public bool FolderDelete(string path)
 	{
-		var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
+		var inputFileFullPath = Settings.DatabasePathToFilePath(path);
 		return new StorageHostFullPathFilesystem(_logger).FolderDelete(inputFileFullPath);
 	}
 
@@ -177,7 +195,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	public IEnumerable<string> GetAllFilesInDirectory(string path)
 	{
 		var storage = new StorageHostFullPathFilesystem(_logger);
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 
 		var imageFilesList = storage.GetAllFilesInDirectory(fullFilePath);
 
@@ -186,7 +204,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 		//	.Where(ExtensionRolesHelper.IsExtensionExifToolSupported)
 
 		// convert back to subPath style
-		return _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
+		return Settings.RenameListItemsToDbStyle(imageFilesList.ToList());
 	}
 
 
@@ -200,7 +218,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <returns>list of files</returns>
 	public IEnumerable<string> GetAllFilesInDirectoryRecursive(string path)
 	{
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 		var storage = new StorageHostFullPathFilesystem(_logger);
 
 		if ( !storage.ExistFolder(fullFilePath) )
@@ -216,19 +234,19 @@ public sealed class StorageSubPathFilesystem : IStorage
 		// OR:
 		//  .Where(ExtensionRolesHelper.IsExtensionSyncSupported)
 
-		var result = _appSettings.RenameListItemsToDbStyle(imageFilesList.ToList());
+		var result = Settings.RenameListItemsToDbStyle(imageFilesList.ToList());
 
 		// Also include files inside mapped child folders
 		foreach ( var mappedSubPath in GetMappedChildSubPaths(path) )
 		{
-			var mappedFullPath = _appSettings.DatabasePathToFilePath(mappedSubPath);
+			var mappedFullPath = Settings.DatabasePathToFilePath(mappedSubPath);
 			if ( !storage.ExistFolder(mappedFullPath) )
 			{
 				continue;
 			}
 
 			var mappedFiles = storage.GetAllFilesInDirectoryRecursive(mappedFullPath);
-			result.AddRange(_appSettings.RenameListItemsToDbStyle(mappedFiles.ToList()));
+			result.AddRange(Settings.RenameListItemsToDbStyle(mappedFiles.ToList()));
 		}
 
 		return result;
@@ -241,7 +259,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <returns>list of Directories (example: /2020_01_01/test)</returns>
 	public IEnumerable<string> GetDirectories(string path)
 	{
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 		var storage = new StorageHostFullPathFilesystem(_logger);
 
 		if ( !storage.ExistFolder(fullFilePath) )
@@ -253,7 +271,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 		// Used For subfolders
 		// convert back to subPath style
-		var result = _appSettings.RenameListItemsToDbStyle(folders.ToList());
+		var result = Settings.RenameListItemsToDbStyle(folders.ToList());
 
 		// Inject mapped child folders whose parent is this path
 		result.AddRange(GetMappedChildSubPaths(path));
@@ -271,18 +289,18 @@ public sealed class StorageSubPathFilesystem : IStorage
 	{
 		var storage = new StorageHostFullPathFilesystem(_logger);
 
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 		var folders = storage.GetDirectoryRecursive(fullFilePath,
 			maxInnerChildDirectoryLookups);
 
 		// Used For subfolders
 		// convert back to subPath style
-		var result = _appSettings.RenameListItemsToDbStyle(folders.ToList()).ToList();
+		var result = Settings.RenameListItemsToDbStyle(folders.ToList()).ToList();
 
 		// Inject mapped child folders and their recursive contents
 		foreach ( var mappedSubPath in GetMappedChildSubPaths(path) )
 		{
-			var mappedFullPath = _appSettings.DatabasePathToFilePath(mappedSubPath);
+			var mappedFullPath = Settings.DatabasePathToFilePath(mappedSubPath);
 			if ( !storage.ExistFolder(mappedFullPath) )
 			{
 				continue;
@@ -293,7 +311,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 			var subFolders = storage.GetDirectoryRecursive(mappedFullPath,
 				maxInnerChildDirectoryLookups);
-			result.AddRange(_appSettings.RenameListItemsToDbStyle(subFolders.ToList()));
+			result.AddRange(Settings.RenameListItemsToDbStyle(subFolders.ToList()));
 		}
 
 		return result;
@@ -304,13 +322,13 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// </summary>
 	private IEnumerable<string> GetMappedChildSubPaths(string parentSubPath)
 	{
-		if ( _appSettings.StorageFolderMappings.Count == 0 )
+		if ( Settings.StorageFolderMappings.Count == 0 )
 		{
 			return [];
 		}
 
 		var normalized = parentSubPath == "/" ? "/" : parentSubPath.TrimEnd('/');
-		return _appSettings.StorageFolderMappings.Keys
+		return Settings.StorageFolderMappings.Keys
 			.Where(key =>
 			{
 				var lastSlash = key.LastIndexOf('/');
@@ -342,7 +360,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 		Stream LocalGet()
 		{
-			var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+			var fullFilePath = Settings.DatabasePathToFilePath(path);
 			var fileStream = new FileStream(fullFilePath, FileMode.Open, FileAccess.Read);
 			if ( maxRead <= 1 )
 			{
@@ -375,7 +393,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	public bool WriteStream(Stream stream, string path)
 	{
 		// should be able to write files that are not exist yet			
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 
 		return new StorageHostFullPathFilesystem(_logger).WriteStream(stream, fullFilePath);
 	}
@@ -387,7 +405,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 	public Task<bool> WriteStreamAsync(Stream stream, string path)
 	{
-		var fullFilePath = _appSettings.DatabasePathToFilePath(path);
+		var fullFilePath = Settings.DatabasePathToFilePath(path);
 		var service = new StorageHostFullPathFilesystem(_logger);
 		return service.WriteStreamAsync(stream, fullFilePath);
 	}
@@ -398,7 +416,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 	/// <param name="path">subPath location</param>
 	public bool CreateDirectory(string path)
 	{
-		var inputFileFullPath = _appSettings.DatabasePathToFilePath(path);
+		var inputFileFullPath = Settings.DatabasePathToFilePath(path);
 
 		try
 		{
@@ -415,7 +433,7 @@ public sealed class StorageSubPathFilesystem : IStorage
 
 	internal DateTime SetLastWriteTime(string path, DateTime? dateTime = null)
 	{
-		var fullPath = _appSettings.DatabasePathToFilePath(path);
+		var fullPath = Settings.DatabasePathToFilePath(path);
 
 		return new StorageHostFullPathFilesystem(_logger).SetLastWriteTime(fullPath, dateTime);
 	}

@@ -13,6 +13,7 @@ using starsky.foundation.database.Helpers;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.http.Streaming;
+using starsky.foundation.import.Helpers;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.import.Models;
 using starsky.foundation.platform.Enums;
@@ -24,6 +25,7 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.sync.SyncServices;
 using starsky.foundation.thumbnailmeta.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.Controllers;
 
@@ -33,6 +35,7 @@ namespace starsky.Controllers;
 public sealed class UploadController : Controller
 {
 	private readonly AppSettings _appSettings;
+	private readonly ITenantSettings _tenantSettings;
 	private readonly IStorage _iHostStorage;
 	private readonly IImport _import;
 	private readonly IStorage _iStorage;
@@ -49,8 +52,11 @@ public sealed class UploadController : Controller
 		ISelectorStorage selectorStorage, IQuery query,
 		IRealtimeConnectionsService realtimeService, IWebLogger logger,
 		IMetaExifThumbnailService metaExifThumbnailService,
-		IMetaUpdateStatusThumbnailService metaUpdateStatusThumbnailService)
+		IMetaUpdateStatusThumbnailService metaUpdateStatusThumbnailService,
+		ITenantSettings? tenantSettings = null)
 	{
+		// staging of the upload: in the temp folder of the tenant
+		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
 		_appSettings = appSettings;
 		_import = import;
 		_query = query;
@@ -104,7 +110,7 @@ public sealed class UploadController : Controller
 			return NotFound(new ImportIndexItem { Status = ImportStatus.ParentDirectoryNotFound });
 		}
 
-		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage, _tenantSettings.TempFolder);
 
 		var fileIndexResultsList = await _import.Preflight(tempImportPaths,
 			new ImportSettingsModel { IndexMode = false });
@@ -154,7 +160,9 @@ public sealed class UploadController : Controller
 				$"[UploadController] delete {tempImportPaths[i]} is {deleteStatus}");
 
 			var parentPath = Directory.GetParent(tempImportPaths[i])?.FullName;
-			if ( !string.IsNullOrEmpty(parentPath) && parentPath != _appSettings.TempFolder )
+			if ( !string.IsNullOrEmpty(parentPath) &&
+			     RemoveTempAndParentStreamFolderHelper.IsSubFolderOf(parentPath,
+				     _tenantSettings.TempFolder) )
 			{
 				_iHostStorage.FolderDelete(parentPath);
 			}
@@ -279,7 +287,7 @@ public sealed class UploadController : Controller
 			return NotFound(new ImportIndexItem());
 		}
 
-		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage);
+		var tempImportPaths = await Request.StreamFile(_appSettings, _selectorStorage, _tenantSettings.TempFolder);
 
 		var importedList = new List<string>();
 		foreach ( var tempImportSinglePath in tempImportPaths )

@@ -2,6 +2,7 @@ import { IArchive, SortType } from "../interfaces/IArchive";
 import { IDetailView, PageType } from "../interfaces/IDetailView";
 import { IUrl } from "../interfaces/IUrl";
 import { DifferenceInDate } from "./date";
+import { TenantFromLocation } from "./url/url-query";
 import { URLPath } from "./url/url-path";
 
 interface IGetAllTransferObject {
@@ -106,9 +107,19 @@ export class FileListCache {
     );
   }
 
+  /**
+   * The same path exists in every tenant: the cache of one tenant may never show in another.
+   * The default tenant keeps the original key
+   */
+  private TenantPart(): string {
+    const tenant = TenantFromLocation();
+    return tenant === "default" ? "" : `t:${tenant};`;
+  }
+
   public CacheKeyGenerator(urlObject: IUrl) {
     return (
       this.cachePrefix +
+      this.TenantPart() +
       `c${urlObject.colorClass};l${urlObject.collections}` +
       // should have f:
       `f:${urlObject.f}` +

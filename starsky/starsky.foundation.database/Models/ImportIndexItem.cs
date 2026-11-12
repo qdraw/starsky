@@ -24,7 +24,7 @@ public enum ImportStatus
 }
 
 [SuppressMessage("ReSharper", "PropertyCanBeMadeInitOnly.Global")]
-public sealed class ImportIndexItem
+public sealed class ImportIndexItem : ITenantEntity
 {
 	/// <summary>
 	///     In order to create an instance of 'ImportIndexItem'

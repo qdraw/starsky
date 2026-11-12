@@ -78,4 +78,27 @@ public sealed class WebSocketConnectionTest
 
 		Assert.StartsWith("message", message);
 	}
+
+	[TestMethod]
+	public async Task CloseAsync_ClosesOutput()
+	{
+		var fakeSocket = new FakeWebSocket();
+		var socketConnection = new WebSocketConnection(fakeSocket, new FakeIWebLogger());
+
+		await socketConnection.CloseAsync(WebSocketCloseStatus.PolicyViolation, "reason");
+
+		Assert.AreEqual(WebSocketCloseStatus.PolicyViolation,
+			fakeSocket.FakeCloseOutputAsync.Single());
+	}
+
+	[TestMethod]
+	public async Task CloseAsync_SocketNotOpen_IsLoggedNotThrown()
+	{
+		var logger = new FakeIWebLogger();
+		var socketConnection = new WebSocketConnection(new ClientWebSocket(), logger);
+
+		await socketConnection.CloseAsync(WebSocketCloseStatus.PolicyViolation, "reason");
+
+		Assert.HasCount(1, logger.TrackedInformation);
+	}
 }

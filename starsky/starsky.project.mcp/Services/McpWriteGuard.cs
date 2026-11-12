@@ -4,6 +4,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.project.mcp.Services;
 
@@ -35,10 +36,13 @@ public sealed class McpWriteGuard
 	private readonly IHttpContextAccessor _httpContextAccessor;
 	private readonly IWebLogger _logger;
 	private readonly McpConfirmationStore _store;
+	private readonly ITenantContext? _tenantContext;
 
 	public McpWriteGuard(AppSettings appSettings, McpConfirmationStore store,
-		IHttpContextAccessor httpContextAccessor, IWebLogger logger)
+		IHttpContextAccessor httpContextAccessor, IWebLogger logger,
+		ITenantContext? tenantContext = null)
 	{
+		_tenantContext = tenantContext;
 		_appSettings = appSettings;
 		_store = store;
 		_httpContextAccessor = httpContextAccessor;
@@ -53,8 +57,14 @@ public sealed class McpWriteGuard
 		get
 		{
 			var user = _httpContextAccessor.HttpContext?.User;
-			return user?.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-			       user?.Identity?.Name ?? "unknown";
+			var account = user?.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
+			              user?.Identity?.Name ?? "unknown";
+
+			// the caller is part of the token fingerprint: a preview of one tenant can not be
+			// confirmed in another tenant, also not by the same account (the default tenant
+			// keeps the plain account id)
+			var tenantId = _tenantContext?.TenantId ?? TenantIdHelper.DefaultTenantId;
+			return tenantId == TenantIdHelper.DefaultTenantId ? account : $"{tenantId}/{account}";
 		}
 	}
 

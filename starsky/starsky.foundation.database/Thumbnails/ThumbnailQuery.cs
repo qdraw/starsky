@@ -17,6 +17,7 @@ using starsky.foundation.database.Query;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.database.Thumbnails;
 
@@ -125,7 +126,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			return false;
 		}
 
-		_memoryCache.TryGetValue($"{nameof(ThumbnailQuery)}_IsRunningJob",
+		_memoryCache.TryGetValue(TenantCacheKey.Prefix($"{nameof(ThumbnailQuery)}_IsRunningJob"),
 			out bool isRunning);
 		return isRunning;
 	}
@@ -138,7 +139,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			return false;
 		}
 
-		_memoryCache.Set($"{nameof(ThumbnailQuery)}_IsRunningJob",
+		_memoryCache.Set(TenantCacheKey.Prefix($"{nameof(ThumbnailQuery)}_IsRunningJob"),
 			value, TimeSpan.FromDays(2));
 		return true;
 	}

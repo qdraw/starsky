@@ -12,7 +12,7 @@ using starsky.foundation.platform.Helpers;
 
 namespace starsky.foundation.database.Models;
 
-public sealed class FileIndexItem
+public sealed class FileIndexItem : ITenantEntity
 {
 	/// <summary>
 	///     Used to display file status (eg. NotFoundNotInIndex, Ok)

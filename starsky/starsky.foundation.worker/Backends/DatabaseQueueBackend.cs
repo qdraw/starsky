@@ -8,6 +8,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
 
@@ -26,6 +27,8 @@ public sealed class DatabaseQueueBackend(
 	{
 		using var scope = scopeFactory.CreateScope();
 		var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		// the queue is shared by all tenants
+		context.EnableCrossTenantAccess();
 		return context.QueueItems.Count(item =>
 			item.QueueName == queueName && item.Status == QueueItemStatus.Pending);
 	}
@@ -38,7 +41,8 @@ public sealed class DatabaseQueueBackend(
 			throw new ArgumentException("JobType is required", nameof(job));
 		}
 
-		using var scope = scopeFactory.CreateScope();
+		// stamped with the tenant of the job, not with the tenant of this scope
+		using var scope = scopeFactory.CreateTenantScope(job.TenantId);
 		var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 		context.QueueItems.Add(new QueueItem
 		{
@@ -62,6 +66,8 @@ public sealed class DatabaseQueueBackend(
 		{
 			using var scope = scopeFactory.CreateScope();
 			var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+			// jobs of all tenants: the job carries its tenant back to the executor
+			context.EnableCrossTenantAccess();
 			var candidates = await context.QueueItems
 				.Where(item => item.QueueName == queueName && item.Status == QueueItemStatus.Pending)
 				.OrderBy(item => item.CreatedAtUtc)
@@ -92,7 +98,10 @@ public sealed class DatabaseQueueBackend(
 						PriorityLane = candidate.PriorityLane,
 						JobType = candidate.JobType,
 						PayloadJson = candidate.PayloadJson,
-						CreatedAtUtc = candidate.CreatedAtUtc
+						CreatedAtUtc = candidate.CreatedAtUtc,
+						TenantId = context.Entry(candidate)
+							.Property<string>(ITenantEntity.TenantPropertyName).CurrentValue
+						           ?? TenantIdHelper.DefaultTenantId
 					};
 
 					// Mimic in-memory semantics: remove from durable queue once dequeued.

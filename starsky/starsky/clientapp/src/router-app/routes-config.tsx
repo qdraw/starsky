@@ -8,6 +8,22 @@ import { PreferencesPage } from "../pages/preferences-page";
 import { SearchPage } from "../pages/search-page";
 import { TrashPage } from "../pages/trash-page";
 
+/**
+ * The pages of one tenant, relative to /starsky/t/:tenantId (or /t/:tenantId in development).
+ * The default tenant has no tenant segment: those routes are listed below
+ */
+const TenantPages: RouteObject[] = [
+  { index: true, element: <ContentPage />, errorElement: <NotFoundPage /> },
+  { path: "search", element: <SearchPage /> },
+  { path: "trash", element: <TrashPage /> },
+  { path: "import", element: <ImportPage /> },
+  { path: "login", element: <LoginPage /> },
+  { path: "account/login", element: <LoginPage /> },
+  { path: "account/register", element: <AccountRegisterPage /> },
+  { path: "preferences", element: <PreferencesPage /> },
+  { path: "*", element: <NotFoundPage /> }
+];
+
 export const RoutesConfig: RouteObject[] = [
   {
     path: "/",
@@ -15,6 +31,8 @@ export const RoutesConfig: RouteObject[] = [
     errorElement: <NotFoundPage />
   },
   { path: "starsky/", element: <ContentPage /> },
+  { path: "starsky/t/:tenantId", children: TenantPages },
+  { path: "t/:tenantId", children: TenantPages },
   { path: "search", element: <SearchPage /> },
   { path: "starsky/search", element: <SearchPage /> },
   { path: "trash", element: <TrashPage /> },

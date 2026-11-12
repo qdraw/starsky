@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.realtime.Helpers;
 
@@ -17,6 +18,34 @@ public sealed class WebSocketConnection(
 		webSocket ?? throw new ArgumentNullException(nameof(webSocket));
 
 	public Guid Id { get; } = Guid.NewGuid();
+
+	/// <summary>
+	///     The tenant in the url the socket was opened on; messages of other tenants are not sent
+	/// </summary>
+	public string TenantId { get; init; } = TenantIdHelper.DefaultTenantId;
+
+	/// <summary>
+	///     The user of the connection, to close it when the membership is removed
+	/// </summary>
+	public int? UserId { get; init; }
+
+	/// <summary>
+	///     Close from the server side (the access of the user ended). The receive loop then ends
+	/// </summary>
+	public async Task CloseAsync(WebSocketCloseStatus status, string description)
+	{
+		try
+		{
+			await _webSocket.CloseOutputAsync(status, description, CancellationToken.None);
+		}
+		catch ( Exception exception ) when ( exception is WebSocketException
+		                                        or ObjectDisposedException
+		                                        or InvalidOperationException )
+		{
+			// already closed or gone
+			logger.LogInformation(exception, "[WebSocketConnection.CloseAsync] already closed");
+		}
+	}
 
 	public WebSocketCloseStatus? CloseStatus { get; private set; }
 

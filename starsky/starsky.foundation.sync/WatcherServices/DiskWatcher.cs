@@ -4,10 +4,12 @@ using System.Globalization;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.sync.WatcherHelpers;
 using starsky.foundation.sync.WatcherInterfaces;
 
@@ -26,6 +28,9 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	private IFileSystemWatcherWrapper _fileSystemWatcherWrapper;
 	private readonly List<IFileSystemWatcherWrapper> _additionalWatchers = [];
 	private bool _primaryWatcherConfigured;
+	private string _primaryTenantId = TenantIdHelper.DefaultTenantId;
+	private readonly HashSet<string> _watchedPaths = new(StringComparer.OrdinalIgnoreCase);
+	private readonly object _watchLock = new();
 
 	public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 		IServiceScopeFactory scopeFactory)
@@ -50,18 +55,35 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	/// </summary>
 	public void Watcher(string fullFilePath)
 	{
+		Watcher(fullFilePath, TenantIdHelper.DefaultTenantId);
+	}
+
+	public void Watcher(string fullFilePath, string tenantId)
+	{
 		if ( !Directory.Exists(fullFilePath) )
 		{
+			// not remembered as watched: a folder that appears later is started by the next
+			// reconcile of the tenants
 			_webLogger.LogError(
 				$"[DiskWatcher] FAIL can't find directory: {fullFilePath} so watcher is not started");
 			return;
 		}
 
+		lock ( _watchLock )
+		{
+			// a folder is watched once; the tenants are reconciled regularly
+			if ( !_watchedPaths.Add(fullFilePath) )
+			{
+				return;
+			}
+		}
+
 		if ( !_primaryWatcherConfigured )
 		{
 			_primaryWatcherConfigured = true;
+			_primaryTenantId = tenantId;
 			_webLogger.LogInformation($"[DiskWatcher] started {fullFilePath}{DateTimeDebug()}");
-			ConfigureWatcher(_fileSystemWatcherWrapper, fullFilePath, isPrimary: true);
+			ConfigureWatcher(_fileSystemWatcherWrapper, fullFilePath, isPrimary: true, tenantId);
 		}
 		else
 		{
@@ -69,12 +91,12 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 				$"[DiskWatcher] started mapped path {fullFilePath}{DateTimeDebug()}");
 			var wrapper = new BufferingFileSystemWatcher();
 			_additionalWatchers.Add(wrapper);
-			ConfigureWatcher(wrapper, fullFilePath, isPrimary: false);
+			ConfigureWatcher(wrapper, fullFilePath, isPrimary: false, tenantId);
 		}
 	}
 
 	private void ConfigureWatcher(IFileSystemWatcherWrapper wrapper, string fullFilePath,
-		bool isPrimary)
+		bool isPrimary, string tenantId)
 	{
 		wrapper.Path = fullFilePath;
 		wrapper.Filter = "*";
@@ -87,10 +109,11 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		// handle many file system events quickly
 		wrapper.InternalBufferSize = 64 * 1024; // 64 KB - default = 4096 / 4 KB
 
-		wrapper.Created += OnChanged;
-		wrapper.Changed += OnChanged;
-		wrapper.Deleted += OnChanged;
-		wrapper.Renamed += OnRenamed;
+		// the events come from the file system, not from a request: the watcher knows the tenant
+		wrapper.Created += (_, e) => OnChanged(e, tenantId);
+		wrapper.Changed += (_, e) => OnChanged(e, tenantId);
+		wrapper.Deleted += (_, e) => OnChanged(e, tenantId);
+		wrapper.Renamed += (_, e) => OnRenamed(e, tenantId);
 		wrapper.Error += isPrimary ? OnError : (_, e) =>
 			_webLogger.LogError(e.GetException(),
 				$"[DiskWatcher] Error on mapped path {fullFilePath}{DateTimeDebug()}");
@@ -166,7 +189,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 				// watcher. Do NOT call Watcher(path) here: since _primaryWatcherConfigured
 				// is already true, that would spawn yet another BufferingFileSystemWatcher
 				// into _additionalWatchers on every retry instead of re-arming this one.
-				ConfigureWatcher(_fileSystemWatcherWrapper, path, isPrimary: true);
+				ConfigureWatcher(_fileSystemWatcherWrapper, path, isPrimary: true, _primaryTenantId);
 				if ( _fileSystemWatcherWrapper.EnableRaisingEvents )
 				{
 					_webLogger.LogInformation("[DiskWatcher] I'm Back!");
@@ -204,6 +227,11 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	/// <param name="e"></param>
 	internal void OnChanged(object source, FileSystemEventArgs e)
 	{
+		OnChanged(e, TenantIdHelper.DefaultTenantId);
+	}
+
+	internal void OnChanged(FileSystemEventArgs e, string tenantId)
+	{
 		if ( e.FullPath.EndsWith(".tmp") ||
 		     !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
 		{
@@ -214,8 +242,24 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		                    $"{e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
 		                    DateTimeDebug());
 
-		_queueProcessor.QueueJob(e.FullPath, null, e.ChangeType).ConfigureAwait(false);
+		QueueAsTenant(tenantId, () => _queueProcessor.QueueJob(e.FullPath, null, e.ChangeType));
 		// Specify what is done when a file is changed, created, or deleted.
+	}
+
+	/// <summary>
+	///     The queued job takes the tenant of the current flow: set it for this call only
+	/// </summary>
+	private static void QueueAsTenant(string tenantId, Func<Task> queueJob)
+	{
+		TenantAmbient.Set(tenantId);
+		try
+		{
+			queueJob().ConfigureAwait(false);
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
 	}
 
 	private static FileAttributes? GetFileAttributes(string fullPath)
@@ -237,6 +281,11 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	/// <param name="e">arguments</param>
 	internal void OnRenamed(object source, RenamedEventArgs e)
 	{
+		OnRenamed(e, TenantIdHelper.DefaultTenantId);
+	}
+
+	internal void OnRenamed(RenamedEventArgs e, string tenantId)
+	{
 		_webLogger.LogInformation($"[DiskWatcher] {e.OldFullPath} OnRenamed to: {e.FullPath}" +
 		                          DateTimeDebug());
 
@@ -250,8 +299,8 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		                            || e.FullPath.EndsWith(".tmp");
 		if ( !isDirectory && isOldFullPathTempFile )
 		{
-			_queueProcessor.QueueJob(e.FullPath, null, WatcherChangeTypes.Created)
-				.ConfigureAwait(false);
+			QueueAsTenant(tenantId,
+				() => _queueProcessor.QueueJob(e.FullPath, null, WatcherChangeTypes.Created));
 			return;
 		}
 
@@ -260,7 +309,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 			return;
 		}
 
-		_queueProcessor.QueueJob(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed)
-			.ConfigureAwait(false);
+		QueueAsTenant(tenantId,
+			() => _queueProcessor.QueueJob(e.OldFullPath, e.FullPath, WatcherChangeTypes.Renamed));
 	}
 }

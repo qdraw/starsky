@@ -65,9 +65,13 @@ public interface IUserManager
 	/// <param name="credentialTypeCode">default is: Email</param>
 	/// <param name="identifier">an email address, e.g. dont@mail.us</param>
 	/// <param name="secret">Password</param>
+	/// <param name="joinCurrentTenant">
+	///     give a NEW user a role in the tenant of this request. An existing user never gets a
+	///     membership here: joining a tenant is done by a tenant administrator
+	/// </param>
 	/// <returns>result object</returns>
 	Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
-		string? identifier, string? secret);
+		string? identifier, string? secret, bool joinCurrentTenant = true);
 
 	void AddToRole(User user, string roleCode);
 	void AddToRole(User user, Role role);
