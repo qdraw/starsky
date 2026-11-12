@@ -42,12 +42,17 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 > Within a version block the top are item is the newest
 
-## version 0.9.9 - _(Unreleased)_ - 2026-?-? {#0.9.9}
+## version 0.9.10 - _(Unreleased)_ - 2026-?-? {#0.9.10}
+
+- nothing yet
+
+## version 0.9.9 - 2026-11-12 {#0.9.9}
 
 - [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.404 (Runtime: 10.0.15)
-
-- [x] (Fixed) _Back-end_ Publish kept spinning because the zip status check only accepted names with letters and digits, (PR #3447)
-- [x] (Fixed) _Back-end_ Infinity and NaN (for example from a corrupt exif value) cannot be stored in the database or written as json (PR #3450)
+- [x] (Fixed) _Back-end_ Publish kept spinning because the zip status check only accepted names with
+  letters and digits, (PR #3447)
+- [x] (Fixed) _Back-end_ Infinity and NaN (for example from a corrupt exif value) cannot be stored
+  in the database or written as json (PR #3450)
 
 ## version 0.9.8 - 2026-10-30 {#0.9.8}
 
