@@ -414,6 +414,7 @@ public sealed class ExtensionRolesHelperTest
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionVideoSupported("file.m4a"));
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.m4a"));
 		Assert.IsFalse(ExtensionRolesHelper.IsExtensionAudioSupported("file.mp4"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionAudioSupported(null));
 	}
 
 	[TestMethod]

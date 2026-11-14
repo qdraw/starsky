@@ -44,7 +44,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.10 - _(Unreleased)_ - 2026-?-? {#0.9.10}
 
-- nothing yet
+- [x] (Added) _Back-end_ _Front-end_ Support for `.m4a` audio files: recognised by extension and
+  `ftyp M4A` header, listed with an audio icon and played in the detail view with an audio player
+  (PR #3486)
+- [x] (Fixed) _Front-end_ Pasting formatted text (for example a copied link) in the tags field and other
+  text fields failed on the macOS app with a Content-Security-Policy `style-src` error. Paste is now
+  always plain text, so no inline styles are inserted (PR #3486)
 
 ## version 0.9.9 - 2026-11-12 {#0.9.9}
 

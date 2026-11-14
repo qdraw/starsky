@@ -215,6 +215,83 @@ describe("FormControl", () => {
       component.unmount();
     });
 
+    describe("paste as plain text", () => {
+      const renderAndPaste = (text: string) => {
+        const component = render(
+          <FormControl contentEditable={true} maxlength={100} onBlur={() => {}} name="test">
+            a
+          </FormControl>
+        );
+        const formControl = component.container.getElementsByClassName("form-control")[0];
+        const pasteEvent = createEvent.paste(formControl, {
+          clipboardData: { getData: () => text }
+        });
+        act(() => {
+          fireEvent(formControl, pasteEvent);
+        });
+        return { component, formControl };
+      };
+
+      afterEach(() => {
+        // jsdom has no execCommand; remove what the tests added
+        delete (document as unknown as Record<string, unknown>).execCommand;
+        jest.restoreAllMocks();
+      });
+
+      it("uses execCommand insertText when supported", () => {
+        const execCommand = jest.fn(() => true);
+        (document as unknown as Record<string, unknown>).execCommand = execCommand;
+
+        const { component } = renderAndPaste("[link](https://example.com)");
+
+        expect(execCommand).toHaveBeenCalledWith(
+          "insertText",
+          false,
+          "[link](https://example.com)"
+        );
+        component.unmount();
+      });
+
+      it("falls back to inserting a text node at the selection", () => {
+        const component = render(
+          <FormControl contentEditable={true} maxlength={100} onBlur={() => {}} name="test">
+            a
+          </FormControl>
+        );
+        const formControl = component.container.getElementsByClassName("form-control")[0];
+        const range = document.createRange();
+        range.selectNodeContents(formControl);
+        range.collapse(false);
+        const selection = {
+          rangeCount: 1,
+          getRangeAt: () => range,
+          removeAllRanges: jest.fn(),
+          addRange: jest.fn()
+        };
+        jest.spyOn(globalThis, "getSelection").mockReturnValue(selection as unknown as Selection);
+
+        const pasteEvent = createEvent.paste(formControl, {
+          clipboardData: { getData: () => "plain" }
+        });
+        act(() => {
+          fireEvent(formControl, pasteEvent);
+        });
+
+        expect(formControl.textContent).toBe("aplain");
+        expect(selection.addRange).toHaveBeenCalled();
+        component.unmount();
+      });
+
+      it("does nothing when there is no selection", () => {
+        jest.spyOn(globalThis, "getSelection").mockReturnValue(null);
+
+        const { component, formControl } = renderAndPaste("plain");
+
+        expect(formControl.textContent).toBe("a");
+        component.unmount();
+      });
+    });
+
     it("limitLengthBlur - null/nothing", async () => {
       const component = render(
         <FormControl contentEditable={true} maxlength={10} onBlur={() => {}} name="test">
