@@ -77,6 +77,7 @@ export enum ImageFormat {
   mp4 = "mp4",
   mjpeg = "mjpeg",
   mts = "mts",
+  m4a = "m4a",
   // there is a sorting helper that filters out duplicates based on imageFormat
   // xmp / meta_json are the least important files
   xmp = "xmp",

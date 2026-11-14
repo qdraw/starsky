@@ -1,7 +1,7 @@
 import { SecondsToHours } from "../../../../shared/date";
 
 export function TimeUpdate(
-  videoRef: React.RefObject<HTMLVideoElement | null>,
+  videoRef: React.RefObject<HTMLMediaElement | null>,
   setIsLoading: (value: React.SetStateAction<boolean>) => void,
   progressRef: React.RefObject<HTMLProgressElement | null>,
   scrubberRef: React.RefObject<HTMLSpanElement | null>,

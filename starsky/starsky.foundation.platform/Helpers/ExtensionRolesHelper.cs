@@ -53,6 +53,9 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		mjpeg = 51,
 		mts = 52,
 
+		// audio
+		m4a = 53,
+
 		// archives
 		zip = 60,
 
@@ -184,6 +187,11 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	private static readonly List<string> ExtensionMp4 = ["mp4", "mov"];
 
 	/// <summary>
+	///     Audio-only in an MP4 container (ftyp brand "M4A ")
+	/// </summary>
+	private static readonly List<string> ExtensionM4A = ["m4a"];
+
+	/// <summary>
 	///     Video with MTS stream
 	/// </summary>
 	private static readonly List<string> ExtensionMts = ["mts"];
@@ -226,6 +234,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 				{ ImageFormat.gpx, ExtensionGpx },
 				{ ImageFormat.mp4, ExtensionMp4 },
 				{ ImageFormat.mts, ExtensionMts },
+				{ ImageFormat.m4a, ExtensionM4A },
 				{ ImageFormat.xmp, ExtensionXmp },
 				{ ImageFormat.webp, ExtensionWebp },
 				{ ImageFormat.psd, ExtensionPsd }
@@ -261,6 +270,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
 			extensionList.AddRange(ExtensionMjpeg);
+			extensionList.AddRange(ExtensionM4A);
 			extensionList.AddRange(ExtensionXmp);
 			extensionList.AddRange(ExtensionJsonSidecar);
 			extensionList.AddRange(ExtensionWebp);
@@ -285,6 +295,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
 			extensionList.AddRange(ExtensionMjpeg);
+			extensionList.AddRange(ExtensionM4A);
 			extensionList.AddRange(ExtensionWebp);
 			extensionList.AddRange(ExtensionPsd);
 			extensionList.AddRange(ExtensionRawSony);
@@ -358,6 +369,8 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		}
 	}
 
+	public static List<string> ExtensionAudioSupportedList => [.. ExtensionM4A];
+
 	/// <summary>
 	///     List of extension that are forced to use site car xmp files
 	/// </summary>
@@ -396,6 +409,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 			extensionList.AddRange(ExtensionMp4);
 			extensionList.AddRange(ExtensionMts);
 			extensionList.AddRange(ExtensionMjpeg);
+			extensionList.AddRange(ExtensionM4A);
 			return extensionList;
 		}
 	}
@@ -506,6 +520,11 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	public static bool IsExtensionVideoSupported(string? fileName)
 	{
 		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionVideoSupportedList);
+	}
+
+	public static bool IsExtensionAudioSupported(string? fileName)
+	{
+		return IsExtensionForce(fileName?.ToLowerInvariant(), ExtensionAudioSupportedList);
 	}
 
 	public static bool IsExtensionRawThumbnailSupported(string? filename)
@@ -883,6 +902,13 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		if ( ExtensionRaw.HasHeicHeader(bytes) )
 		{
 			return ImageFormat.heic;
+		}
+
+		// audio-only; checked before the generic ftyp match, which would call it a video
+		var fTypM4A = "ftypM4A "u8.ToArray();
+		if ( fTypM4A.SequenceEqual(bytes.Skip(4).Take(fTypM4A.Length)) )
+		{
+			return ImageFormat.m4a;
 		}
 
 		var fTypMp4 = "ftyp"u8.ToArray(); //  00 00 00 [skip this byte]

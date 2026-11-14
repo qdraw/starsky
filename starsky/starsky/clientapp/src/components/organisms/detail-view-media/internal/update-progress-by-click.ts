@@ -1,7 +1,7 @@
 import { GetMousePosition } from "./get-mouse-position";
 
 export function UpdateProgressByClick(
-  videoRef: React.RefObject<HTMLVideoElement | null>,
+  videoRef: React.RefObject<HTMLMediaElement | null>,
   event?: React.MouseEvent
 ) {
   if (!videoRef.current || !event?.target) return;

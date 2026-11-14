@@ -299,6 +299,10 @@ between 1 and 2 items
   background-image: url("../images/baseline-file-gpx-24px.svg");
 }
 
+.list-image-box > .box-content.isDirectory-false > .img-box--m4a {
+  background-image: url("../images/baseline-file-m4a-24px.svg");
+}
+
 .list-image-box > .box-content.isDirectory-false > .img-box--tiff {
   background-image: url("../images/baseline-file-raw-24px.svg");
 }
@@ -333,6 +337,7 @@ between 1 and 2 items
   .list-image-box > .box-content.isDirectory-false > .img-box--gpx,
   .list-image-box > .box-content.isDirectory-false > .img-box--tiff,
   .list-image-box > .box-content.isDirectory-false > .img-box--mp4,
+  .list-image-box > .box-content.isDirectory-false > .img-box--m4a,
   .list-image-box > .box-content.isDirectory-false > .img-box--jpg,
   .list-image-box > .box-content.isDirectory-false > .img-box--bmp,
   .list-image-box > .box-content.isDirectory-false > .img-box--png,

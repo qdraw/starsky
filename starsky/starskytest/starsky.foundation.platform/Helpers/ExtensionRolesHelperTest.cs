@@ -8,6 +8,7 @@ using starskytest.FakeCreateAn.CreateAnImageA6600Raw;
 using starskytest.FakeCreateAn.CreateAnImageCorrupt;
 using starskytest.FakeCreateAn.CreateAnImagePsd;
 using starskytest.FakeCreateAn.CreateAnImageWebP;
+using starskytest.FakeCreateAn.CreateAnAudioM4a;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
 
@@ -396,6 +397,31 @@ public sealed class ExtensionRolesHelperTest
 
 		var result = ExtensionRolesHelper.GetImageFormat(bytes);
 		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.heic, result);
+	}
+
+	[TestMethod]
+	public void Files_GetImageFormat_M4aFixture_ReturnsM4aAudioOnly()
+	{
+		var fileType = ExtensionRolesHelper.GetImageFormat(
+			[.. new CreateAnAudioM4a().Bytes]);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.m4a, fileType);
+	}
+
+	[TestMethod]
+	public void Files_IsExtensionAudioSupported_M4aIsAudioNotVideoNorImage()
+	{
+		Assert.IsTrue(ExtensionRolesHelper.IsExtensionAudioSupported("file.m4a"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionVideoSupported("file.m4a"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported("file.m4a"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionAudioSupported("file.mp4"));
+		Assert.IsFalse(ExtensionRolesHelper.IsExtensionAudioSupported(null));
+	}
+
+	[TestMethod]
+	public void Files_MapFileTypesToExtension_M4a()
+	{
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.m4a,
+			ExtensionRolesHelper.MapFileTypesToExtension("file.m4a"));
 	}
 
 	[TestMethod]

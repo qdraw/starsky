@@ -14,6 +14,32 @@ describe("DetailViewMp4", () => {
     expect(item).toBeTruthy();
   });
 
+  describe("audioOnly", () => {
+    it("renders an audio element and no video element", () => {
+      const component = render(<DetailViewMp4 audioOnly={true}></DetailViewMp4>);
+
+      expect(screen.getByTestId("audio-figure")).toBeTruthy();
+      expect(screen.queryByTestId("video")).toBeNull();
+      expect(component.container.querySelector("audio")).toBeTruthy();
+      expect(component.container.querySelector("video")).toBeNull();
+      expect(component.container.querySelector("source")?.getAttribute("type")).toBe("audio/mp4");
+
+      component.unmount();
+    });
+
+    it("click to play audio", () => {
+      const component = render(<DetailViewMp4 audioOnly={true}></DetailViewMp4>);
+      const playSpy = jest
+        .spyOn(HTMLMediaElement.prototype, "play")
+        .mockImplementationOnce(() => Promise.resolve());
+
+      (screen.queryByTestId("audio-figure") as HTMLElement).click();
+
+      expect(playSpy).toHaveBeenCalled();
+      component.unmount();
+    });
+  });
+
   describe("with Context", () => {
     beforeEach(() => {
       jest.spyOn(HTMLMediaElement.prototype, "load").mockImplementationOnce(() => {
