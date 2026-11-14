@@ -6,6 +6,7 @@ namespace starsky.Tests.Services;
 
 [TestClass]
 [SupportedOSPlatform("windows")]
+[OSCondition(OperatingSystems.Windows)]
 public sealed class UpdateServiceTests : IDisposable
 {
     private readonly string _tempFile;

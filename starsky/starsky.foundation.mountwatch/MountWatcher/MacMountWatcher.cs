@@ -18,7 +18,7 @@ internal class MacMountWatcher : BaseMountWatcher
 	private readonly MacMountWatcherDelegate.DiskAppearedCallback _diskAppearedCallback;
 	private readonly MacMountWatcherDelegate.DiskDisappearedCallback _diskDisappearedCallback;
 	private readonly HashSet<string> _knownVolumes = new(StringComparer.OrdinalIgnoreCase);
-	private readonly object _knownVolumesLock = new();
+	private readonly Lock _knownVolumesLock = new();
 	private readonly IStorage _storage;
 	private readonly IMacMountWatcherSystem _system = new MacMountWatcherSystem();
 	private Thread? _backupPollThread;

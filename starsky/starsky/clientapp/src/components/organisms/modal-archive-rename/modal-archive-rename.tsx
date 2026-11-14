@@ -19,6 +19,15 @@ export interface IModalRenameFolderProps {
   dispatch?: React.Dispatch<ArchiveAction>;
 }
 
+// Polls recursively (each attempt depends on the previous one) until the backend index no longer returns 404.
+async function waitForIndex(url: string, attemptsLeft: number): Promise<void> {
+  if (attemptsLeft <= 0) return;
+  const check = await FetchGet(url);
+  if (check.statusCode !== 404) return;
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return waitForIndex(url, attemptsLeft - 1);
+}
+
 const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (props) => {
   // content
   const settings = useGlobalSettings();
@@ -118,12 +127,7 @@ const ModalArchiveRename: React.FunctionComponent<IModalRenameFolderProps> = (pr
     // Wait for the backend index to reflect the renamed folder before navigating,
     // otherwise the new page loads before the index is updated and shows a 404.
     const newIndexUrl = new UrlQuery().UrlIndexServerApiPath(filePathAfterChange);
-    for (let attempt = 0; attempt < 10; attempt++) {
-      // sequential on purpose: each attempt depends on the previous one failing
-      const check = await FetchGet(newIndexUrl); // NOSONAR(S9382)
-      if (check.statusCode !== 404) break;
-      await new Promise((resolve) => setTimeout(resolve, 300));
-    }
+    await waitForIndex(newIndexUrl, 10);
 
     // redirect to new path (so if you press refresh the image is shown)
     const replacePath = new UrlQuery().updateFilePathHash(
