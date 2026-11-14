@@ -4,6 +4,7 @@ namespace starsky.Tests.Models;
 
 [TestClass]
 [SupportedOSPlatform("windows")]
+[OSCondition(OperatingSystems.Windows)]
 public class DesktopSettingsTests
 {
     [TestMethod]

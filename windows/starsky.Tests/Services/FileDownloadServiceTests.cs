@@ -7,6 +7,7 @@ namespace starsky.Tests.Services;
 
 [TestClass]
 [SupportedOSPlatform("windows")]
+[OSCondition(OperatingSystems.Windows)]
 public sealed class FileDownloadServiceTests : IDisposable
 {
     private const string StarskyPath = "/test-session/photo.jpg";

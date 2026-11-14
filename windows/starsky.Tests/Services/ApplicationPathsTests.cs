@@ -5,6 +5,7 @@ namespace starsky.Tests.Services;
 
 [TestClass]
 [SupportedOSPlatform("windows")]
+[OSCondition(OperatingSystems.Windows)]
 public class ApplicationPathsTests
 {
     [TestMethod]
