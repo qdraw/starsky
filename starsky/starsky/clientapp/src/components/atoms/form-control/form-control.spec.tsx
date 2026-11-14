@@ -233,26 +233,10 @@ describe("FormControl", () => {
       };
 
       afterEach(() => {
-        // jsdom has no execCommand; remove what the tests added
-        delete (document as unknown as Record<string, unknown>).execCommand;
         jest.restoreAllMocks();
       });
 
-      it("uses execCommand insertText when supported", () => {
-        const execCommand = jest.fn(() => true);
-        (document as unknown as Record<string, unknown>).execCommand = execCommand;
-
-        const { component } = renderAndPaste("[link](https://example.com)");
-
-        expect(execCommand).toHaveBeenCalledWith(
-          "insertText",
-          false,
-          "[link](https://example.com)"
-        );
-        component.unmount();
-      });
-
-      it("falls back to inserting a text node at the selection", () => {
+      it("inserts a text node at the selection", () => {
         const component = render(
           <FormControl contentEditable={true} maxlength={100} onBlur={() => {}} name="test">
             a

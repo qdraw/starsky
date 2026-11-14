@@ -23,10 +23,6 @@ interface IFormControlProps {
 }
 
 function insertPlainText(text: string) {
-  // keeps native undo behaviour where supported
-  if (typeof document.execCommand === "function" && document.execCommand("insertText", false, text))
-    return;
-
   const selection = globalThis.getSelection();
   if (!selection?.rangeCount) return;
   const range = selection.getRangeAt(0);

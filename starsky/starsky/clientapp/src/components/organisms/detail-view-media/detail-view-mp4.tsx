@@ -148,6 +148,7 @@ const DetailViewMp4: React.FunctionComponent<DetailViewMp4Props> = memo(({ audio
               preload="metadata"
               data-test="audio"
             >
+              <track kind="captions" />
               <source src={downloadPhotoApi} type="audio/mp4" />
             </audio>
           ) : (

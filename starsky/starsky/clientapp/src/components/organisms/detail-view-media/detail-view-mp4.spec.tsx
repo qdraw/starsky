@@ -18,7 +18,7 @@ describe("DetailViewMp4", () => {
     it("renders an audio element and no video element", () => {
       const component = render(<DetailViewMp4 audioOnly={true}></DetailViewMp4>);
 
-      expect(screen.queryByTestId("audio-figure")).toBeTruthy();
+      expect(screen.getByTestId("audio-figure")).toBeTruthy();
       expect(screen.queryByTestId("video")).toBeNull();
       expect(component.container.querySelector("audio")).toBeTruthy();
       expect(component.container.querySelector("video")).toBeNull();

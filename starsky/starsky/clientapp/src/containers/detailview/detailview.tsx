@@ -3,7 +3,7 @@ import FileHashImage from "../../components/atoms/file-hash-image/file-hash-imag
 import Preloader from "../../components/atoms/preloader/preloader";
 import ColorClassSelectKeyboard from "../../components/molecules/color-class-select/color-class-select-keyboard";
 import DetailViewGpx from "../../components/organisms/detail-view-media/detail-view-gpx";
-import DetailViewMp4 from "../../components/organisms/detail-view-media/detail-view-mp4";
+import DetailViewPlayer from "../../components/organisms/detail-view-media/detail-view-player";
 import DetailViewSidebar from "../../components/organisms/detail-view-sidebar/detail-view-sidebar";
 import { DetailViewContext } from "../../contexts/detailview-context";
 import { useGestures } from "../../hooks/use-gestures/use-gestures";
@@ -295,10 +295,7 @@ const DetailView: FC<IDetailView> = () => {
         ) : null}
 
         {state.fileIndexItem.imageFormat === ImageFormat.gpx ? <DetailViewGpx /> : null}
-        {state.fileIndexItem.imageFormat === ImageFormat.mp4 ? <DetailViewMp4 /> : null}
-        {state.fileIndexItem.imageFormat === ImageFormat.m4a ? (
-          <DetailViewMp4 audioOnly={true} />
-        ) : null}
+        <DetailViewPlayer imageFormat={state.fileIndexItem.imageFormat} />
 
         <div
           ref={mainRef}
