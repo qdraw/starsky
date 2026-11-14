@@ -16,7 +16,12 @@ import { SetDefaultEffect } from "./internal/set-default-effect";
 import { TimeUpdate } from "./internal/time-update";
 import { Waiting } from "./internal/waiting";
 
-const DetailViewMp4: React.FunctionComponent = memo(() => {
+type DetailViewMp4Props = {
+  /** m4a and other audio-only files: render an audio element instead of a video element */
+  audioOnly?: boolean;
+};
+
+const DetailViewMp4: React.FunctionComponent<DetailViewMp4Props> = memo(({ audioOnly }) => {
   // content
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
@@ -61,7 +66,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
     setIsError("");
   }, [state, MessageVideoNotFound]);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  // shared by <video> and <audio>, the playback helpers only use the HTMLMediaElement api
+  const videoRef = useRef<HTMLMediaElement>(null);
   const progressRef = useRef<HTMLProgressElement>(null);
   const scrubberRef = useRef<HTMLSpanElement>(null);
   const timeRef = useRef<HTMLSpanElement>(null);
@@ -106,8 +112,8 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
 
       {isError ? null : (
         <figure
-          data-test="video"
-          className={GetVideoClassName(paused, started)}
+          data-test={audioOnly ? "audio-figure" : "video"}
+          className={GetVideoClassName(paused, started) + (audioOnly ? " audio" : "")}
           onKeyDown={(event) => {
             if (event.key === "Enter") {
               PlayPause(
@@ -135,10 +141,26 @@ const DetailViewMp4: React.FunctionComponent = memo(() => {
             TimeUpdate(videoRef, setIsLoading, progressRef, scrubberRef, timeRef);
           }}
         >
-          <video playsInline={true} ref={videoRef} controls={false} preload="metadata">
-            <track kind="captions" src={downloadPhotoApi.replaceAll("mp4", "srt")} />
-            <source src={downloadPhotoApi} type="video/mp4" />
-          </video>
+          {audioOnly ? (
+            <audio
+              ref={videoRef as React.RefObject<HTMLAudioElement>}
+              controls={false}
+              preload="metadata"
+              data-test="audio"
+            >
+              <source src={downloadPhotoApi} type="audio/mp4" />
+            </audio>
+          ) : (
+            <video
+              playsInline={true}
+              ref={videoRef as React.RefObject<HTMLVideoElement>}
+              controls={false}
+              preload="metadata"
+            >
+              <track kind="captions" src={downloadPhotoApi.replaceAll("mp4", "srt")} />
+              <source src={downloadPhotoApi} type="video/mp4" />
+            </video>
+          )}
           <Controls
             progressRef={progressRef}
             scrubberRef={scrubberRef}

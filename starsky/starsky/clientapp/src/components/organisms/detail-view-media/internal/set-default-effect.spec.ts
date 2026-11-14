@@ -5,7 +5,7 @@ import { SetDefaultEffect } from "./set-default-effect";
 describe("setDefaultEffect function", () => {
   let historyLocationSearch: string;
   let setDownloadPhotoApiMock: jest.Mock;
-  let videoRef: React.RefObject<HTMLVideoElement | null>;
+  let videoRef: React.RefObject<HTMLMediaElement | null>;
   let scrubberRef: React.RefObject<HTMLSpanElement | null>;
   let progressRef: React.RefObject<HTMLProgressElement | null>;
   let timeRef: React.RefObject<HTMLSpanElement | null>;
@@ -15,7 +15,7 @@ describe("setDefaultEffect function", () => {
     setDownloadPhotoApiMock = jest.fn();
     videoRef = {
       current: document.createElement("video")
-    } as React.RefObject<HTMLVideoElement | null>;
+    } as React.RefObject<HTMLMediaElement | null>;
     scrubberRef = {
       current: document.createElement("span")
     } as React.RefObject<HTMLSpanElement | null>;

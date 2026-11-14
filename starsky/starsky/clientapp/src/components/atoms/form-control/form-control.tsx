@@ -22,6 +22,23 @@ interface IFormControlProps {
   "data-test"?: string;
 }
 
+function insertPlainText(text: string) {
+  // keeps native undo behaviour where supported
+  if (typeof document.execCommand === "function" && document.execCommand("insertText", false, text))
+    return;
+
+  const selection = globalThis.getSelection();
+  if (!selection?.rangeCount) return;
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+  const node = document.createTextNode(text);
+  range.insertNode(node);
+  range.setStartAfter(node);
+  range.collapse(true);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
 const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, onFocus, ...props }) => {
   const maxlength = props.maxlength ?? 255;
   const [childLength, setChildLength] = useState(getTextLength(props.children));
@@ -36,13 +53,19 @@ const FormControl: React.FunctionComponent<IFormControlProps> = ({ onBlur, onFoc
   );
 
   /**
-   * Limit length on paste event
+   * Limit length on paste event and paste as plain text only.
+   * Rich (HTML) paste carries inline style attributes, which the strict
+   * Content-Security-Policy (style-src 'self') refuses, and which are unwanted in tags anyway.
    * @param element ClipboardEvent
    */
   const limitLengthPaste = function (element: React.ClipboardEvent<HTMLDivElement>) {
-    if (childLength + element.clipboardData.getData("Text").length <= maxlength) return;
     element.preventDefault();
-    setChildLength(childLength + element.clipboardData.getData("Text").length);
+    const text = element.clipboardData.getData("Text");
+    if (childLength + text.length > maxlength) {
+      setChildLength(childLength + text.length);
+      return;
+    }
+    insertPlainText(text);
   };
 
   const propsClassName = props.className ?? "";

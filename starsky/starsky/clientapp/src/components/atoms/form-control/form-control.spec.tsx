@@ -190,7 +190,7 @@ describe("FormControl", () => {
       component.unmount();
     });
 
-    it("limitLengthPaste - copy -> paste ok", async () => {
+    it("limitLengthPaste - copy -> paste ok (plain text, default prevented)", async () => {
       const component = render(
         <FormControl contentEditable={true} maxlength={10} onBlur={() => {}} name="test">
           987654321
@@ -209,8 +209,8 @@ describe("FormControl", () => {
         fireEvent(formControl, pasteEvent);
       });
 
-      // limit!
-      await waitFor(() => expect(pasteEvent.defaultPrevented).toBeFalsy());
+      // always plain text insert, never the rich html (inline styles break the CSP)
+      await waitFor(() => expect(pasteEvent.defaultPrevented).toBeTruthy());
 
       component.unmount();
     });

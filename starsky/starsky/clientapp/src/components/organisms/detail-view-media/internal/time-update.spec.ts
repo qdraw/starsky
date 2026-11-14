@@ -3,7 +3,7 @@ import * as DateModule from "../../../../shared/date";
 import { TimeUpdate } from "./time-update";
 
 describe("TimeUpdate function", () => {
-  let videoRef: React.RefObject<HTMLVideoElement | null>;
+  let videoRef: React.RefObject<HTMLMediaElement | null>;
   let setIsLoadingMock: jest.Mock;
   let progressRef: React.RefObject<HTMLProgressElement | null>;
   let scrubberRef: React.RefObject<HTMLSpanElement | null>;
@@ -17,7 +17,7 @@ describe("TimeUpdate function", () => {
     const scrubberElement = document.createElement("span");
     const timeElement = document.createElement("span");
 
-    videoRef = { current: videoElement } as React.RefObject<HTMLVideoElement | null>;
+    videoRef = { current: videoElement } as React.RefObject<HTMLMediaElement | null>;
     setIsLoadingMock = jest.fn();
     progressRef = {
       current: progressElement
@@ -56,7 +56,7 @@ describe("TimeUpdate function", () => {
 
   it("should update values and setIsLoading when refs are valid", () => {
     // Set up valid values for refs
-    videoRef = { current: { currentTime: 10, duration: 100 } as HTMLVideoElement };
+    videoRef = { current: { currentTime: 10, duration: 100 } as HTMLMediaElement };
 
     act(() => {
       TimeUpdate(videoRef, setIsLoadingMock, progressRef, scrubberRef, timeRef);
@@ -75,7 +75,7 @@ describe("TimeUpdate function", () => {
     videoRef = {
       current: {
         duration: 100
-      } as HTMLVideoElement
+      } as HTMLMediaElement
     };
 
     const setAttributeSpy = jest.fn();

@@ -4,7 +4,7 @@ import { UrlQuery } from "../../../../shared/url/url-query";
 export function SetDefaultEffect(
   historyLocationSearch: string,
   setDownloadPhotoApi: React.Dispatch<React.SetStateAction<string>>,
-  videoRef: React.RefObject<HTMLVideoElement | null>,
+  videoRef: React.RefObject<HTMLMediaElement | null>,
   scrubberRef: React.RefObject<HTMLSpanElement | null>,
   progressRef: React.RefObject<HTMLProgressElement | null>,
   timeRef: React.RefObject<HTMLSpanElement | null>

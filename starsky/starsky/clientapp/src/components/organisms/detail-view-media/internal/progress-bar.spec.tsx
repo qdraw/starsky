@@ -7,7 +7,7 @@ import * as UpdateProgressByClick from "./update-progress-by-click";
 describe("ProgressBar component", () => {
   let scrubberRef: React.RefObject<HTMLSpanElement>;
   let progressRef: React.RefObject<HTMLProgressElement>;
-  let videoRef: React.RefObject<HTMLVideoElement>;
+  let videoRef: React.RefObject<HTMLMediaElement>;
 
   beforeEach(() => {
     scrubberRef = {
@@ -18,7 +18,7 @@ describe("ProgressBar component", () => {
     } as React.RefObject<HTMLProgressElement>;
     videoRef = {
       current: document.createElement("video")
-    } as React.RefObject<HTMLVideoElement>;
+    } as React.RefObject<HTMLMediaElement>;
   });
 
   it("should call UpdateProgressByClick on click event", () => {

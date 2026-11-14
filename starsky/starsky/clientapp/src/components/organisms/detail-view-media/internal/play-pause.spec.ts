@@ -2,18 +2,18 @@ import React, { act } from "react";
 import { PlayPause } from "./play-pause";
 
 describe("YourComponent", () => {
-  let videoRef: React.RefObject<HTMLVideoElement | null>;
+  let videoRef: React.RefObject<HTMLMediaElement | null>;
   let setIsErrorMock: jest.Mock;
   let setStartedMock: jest.Mock;
   let setPausedMock: jest.Mock;
   let setIsLoadingMock: jest.Mock;
-  let videoElement: HTMLVideoElement;
+  let videoElement: HTMLMediaElement;
 
   beforeEach(() => {
     videoElement = document.createElement("video");
     videoRef = {
       current: videoElement
-    } as React.RefObject<HTMLVideoElement>;
+    } as React.RefObject<HTMLMediaElement>;
     setIsErrorMock = jest.fn();
     setStartedMock = jest.fn();
     setPausedMock = jest.fn();
@@ -56,7 +56,7 @@ describe("YourComponent", () => {
 
     act(() => {
       PlayPause(
-        videoRef2 as unknown as React.RefObject<HTMLVideoElement>,
+        videoRef2 as unknown as React.RefObject<HTMLMediaElement>,
         setIsErrorMock,
         "Error Message",
         setStartedMock,

@@ -192,6 +192,10 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
+        <None Remove="FakeCreateAn\CreateAnAudioM4a\voice_memo.m4a" />
+        <Content Include="FakeCreateAn\CreateAnAudioM4a\voice_memo.m4a">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
         <None Remove="FakeCreateAn\CreateAnQuickTimeMp4\C0008_head_part.mp4" />
         <Content Include="FakeCreateAn\CreateAnQuickTimeMp4\C0008_head_part.mp4">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

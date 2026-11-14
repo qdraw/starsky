@@ -296,6 +296,9 @@ const DetailView: FC<IDetailView> = () => {
 
         {state.fileIndexItem.imageFormat === ImageFormat.gpx ? <DetailViewGpx /> : null}
         {state.fileIndexItem.imageFormat === ImageFormat.mp4 ? <DetailViewMp4 /> : null}
+        {state.fileIndexItem.imageFormat === ImageFormat.m4a ? (
+          <DetailViewMp4 audioOnly={true} />
+        ) : null}
 
         <div
           ref={mainRef}
