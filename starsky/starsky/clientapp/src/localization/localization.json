@@ -1534,6 +1534,11 @@
     "nl": "Omgevingen waar je lid van bent",
     "de": "Mandanten, in denen Sie Mitglied sind"
   },
+  "MessagePlatformAdmin": {
+    "en": "Platform administrator (may create and disable environments)",
+    "nl": "Platformbeheerder (mag omgevingen aanmaken en uitschakelen)",
+    "de": "Plattformadministrator (darf Mandanten erstellen und deaktivieren)"
+  },
   "MessageTenantCurrent": {
     "en": "current",
     "nl": "huidige",

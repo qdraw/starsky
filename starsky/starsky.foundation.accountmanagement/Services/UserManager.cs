@@ -262,6 +262,20 @@ public sealed class UserManager : IUserManager
 		_dbContext.SaveChanges();
 	}
 
+	public async Task<bool> SetPlatformAdminAsync(int userId, bool isPlatformAdmin)
+	{
+		var user = await _dbContext.Users.FindAsync(userId);
+		if ( user == null )
+		{
+			return false;
+		}
+
+		user.IsPlatformAdmin = isPlatformAdmin;
+		await _dbContext.SaveChangesAsync();
+		await AddUserToCache(user);
+		return true;
+	}
+
 	public void RemoveFromRole(User user, string roleCode)
 	{
 		var role = _dbContext.Roles.TagWith("RemoveFromRole").FirstOrDefault(r =>

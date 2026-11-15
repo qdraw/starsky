@@ -147,6 +147,18 @@ public class FakeUserManagerActiveUsers : IUserManager
 		return Credentials;
 	}
 
+	public Task<bool> SetPlatformAdminAsync(int userId, bool isPlatformAdmin)
+	{
+		var user = GetUser("Email", Credentials.Identifier!);
+		if ( user == null )
+		{
+			return Task.FromResult(false);
+		}
+
+		user.IsPlatformAdmin = isPlatformAdmin;
+		return Task.FromResult(true);
+	}
+
 	public Task<ValidateResult> RemoveUser(string credentialTypeCode,
 		string identifier)
 	{

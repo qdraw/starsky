@@ -140,6 +140,11 @@ public class FakeIUserManger : IUserManager
 			p.Id == 0);
 	}
 
+	public Task<bool> SetPlatformAdminAsync(int userId, bool isPlatformAdmin)
+	{
+		throw new NotImplementedException();
+	}
+
 	public Task<ValidateResult> RemoveUser(string credentialTypeCode, string identifier)
 	{
 		throw new NotImplementedException();

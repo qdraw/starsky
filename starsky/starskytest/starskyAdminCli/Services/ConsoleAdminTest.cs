@@ -99,7 +99,7 @@ public sealed class ConsoleAdminTest
 	[TestMethod]
 	public async Task ToggleUserAdminRole_toAdmin()
 	{
-		var console = new FakeConsoleWrapper(["test", "3"]);
+		var console = new FakeConsoleWrapper(["test", "3", "n"]);
 		var service = new ConsoleAdmin(
 			new FakeUserManagerActiveUsers("test",
 				new User
@@ -113,8 +113,7 @@ public sealed class ConsoleAdminTest
 
 		await service.Tool(string.Empty, string.Empty);
 
-		Assert.AreEqual("User test has now the role Administrator",
-			console.WrittenLines.LastOrDefault());
+		Assert.IsTrue(console.WrittenLines.Contains("User test has now the role Administrator"));
 	}
 
 	[TestMethod]
@@ -137,6 +136,50 @@ public sealed class ConsoleAdminTest
 		await new ConsoleAdmin(userMan, console, new FakeIHttpClientHelper(new FakeIStorage(),
 			new Dictionary<string, KeyValuePair<bool, string>>())).Tool(string.Empty, string.Empty);
 		Assert.AreEqual("User test has now the role User",
+			console.WrittenLines.LastOrDefault());
+	}
+
+	[TestMethod]
+	public async Task ToggleUserAdminRole_toAdmin_AndPlatformAdmin()
+	{
+		var console = new FakeConsoleWrapper(["test", "3", "y"]);
+		var user = new User
+		{
+			Name = "t1",
+			Id = 99,
+			Credentials = new List<Credential> { new() { Identifier = "test" } }
+		};
+
+		await new ConsoleAdmin(new FakeUserManagerActiveUsers("test", user), console,
+			new FakeIHttpClientHelper(new FakeIStorage(),
+				new Dictionary<string, KeyValuePair<bool, string>>())).Tool(string.Empty,
+			string.Empty);
+
+		Assert.IsTrue(user.IsPlatformAdmin);
+		Assert.AreEqual("User test is now platform admin", console.WrittenLines.LastOrDefault());
+	}
+
+	[TestMethod]
+	public async Task ToggleUserAdminRole_toUser_RemovesPlatformAdmin()
+	{
+		var console = new FakeConsoleWrapper(["test", "3"]);
+		var user = new User
+		{
+			Name = "t1",
+			Id = 99,
+			IsPlatformAdmin = true,
+			Credentials = new List<Credential> { new() { Identifier = "test" } }
+		};
+		var userMan = new FakeUserManagerActiveUsers("test", user)
+		{
+			Role = new Role { Code = AccountRoles.AppAccountRoles.Administrator.ToString() }
+		};
+
+		await new ConsoleAdmin(userMan, console, new FakeIHttpClientHelper(new FakeIStorage(),
+			new Dictionary<string, KeyValuePair<bool, string>>())).Tool(string.Empty, string.Empty);
+
+		Assert.IsFalse(user.IsPlatformAdmin);
+		Assert.AreEqual("User test is no longer platform admin",
 			console.WrittenLines.LastOrDefault());
 	}
 

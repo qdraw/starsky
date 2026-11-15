@@ -78,6 +78,11 @@ public interface IUserManager
 	void RemoveFromRole(User user, string roleCode);
 	void RemoveFromRole(User user, Role role);
 
+	/// <summary>
+	///     Set the platform admin flag (may create and disable tenants). Global, not per tenant
+	/// </summary>
+	Task<bool> SetPlatformAdminAsync(int userId, bool isPlatformAdmin);
+
 	ChangeSecretResult ChangeSecret(string credentialTypeCode, string? identifier,
 		string secret);
 
