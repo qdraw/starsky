@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -9,9 +8,6 @@ using starsky.foundation.database.Interfaces;
 using starsky.foundation.database.Models;
 using starsky.foundation.injection;
 using starsky.foundation.metaupdate.Interfaces;
-using starsky.foundation.native.Trash.Interfaces;
-using starsky.foundation.platform.Models;
-using starsky.foundation.platform.Tenancy;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
@@ -23,33 +19,26 @@ namespace starsky.feature.trash.Services;
 [Service(typeof(IMoveToTrashService), InjectionLifetime = InjectionLifetime.Scoped)]
 public class MoveToTrashService : IMoveToTrashService
 {
-	private readonly AppSettings _appSettings;
-	private readonly ITenantSettings _tenantSettings;
 	private readonly ITrashConnectionService _connectionService;
 	private readonly IMetaPreflight _metaPreflight;
 	private readonly IMetaUpdateService _metaUpdateService;
 	private readonly IQuery _query;
 	private readonly IUpdateBackgroundTaskQueue _queue;
-	private readonly ITrashService _systemTrashService;
+	private readonly ISystemTrashMover _systemTrashMover;
 
-	[SuppressMessage("Usage",
-		"S107: Constructor has 8 parameters, which is greater than the 7 authorized")]
-	public MoveToTrashService(AppSettings appSettings, IQuery query,
+	public MoveToTrashService(IQuery query,
 		IMetaPreflight metaPreflight,
 		IUpdateBackgroundTaskQueue queue,
-		ITrashService systemTrashService, IMetaUpdateService metaUpdateService,
+		IMetaUpdateService metaUpdateService,
 		ITrashConnectionService connectionService,
-		ITenantSettings? tenantSettings = null
-	)
+		ISystemTrashMover systemTrashMover)
 	{
-		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
-		_appSettings = appSettings;
 		_query = query;
 		_metaPreflight = metaPreflight;
 		_queue = queue;
-		_systemTrashService = systemTrashService;
 		_metaUpdateService = metaUpdateService;
 		_connectionService = connectionService;
+		_systemTrashMover = systemTrashMover;
 	}
 
 	/// <summary>
@@ -58,8 +47,7 @@ public class MoveToTrashService : IMoveToTrashService
 	/// <returns>Should you use it?</returns>
 	public bool IsEnabled()
 	{
-		return _appSettings.UseSystemTrash == true &&
-			   _systemTrashService.DetectToUseSystemTrash();
+		return _systemTrashMover.IsEnabled();
 	}
 
 	/// <summary>
@@ -116,7 +104,7 @@ public class MoveToTrashService : IMoveToTrashService
 	/// <returns>true if supported</returns>
 	public bool DetectToUseSystemTrash()
 	{
-		return _systemTrashService.DetectToUseSystemTrash();
+		return _systemTrashMover.DetectToUseSystemTrash();
 	}
 
 	public async Task MoveToTrashAsync(MoveToTrashPayload payload)
@@ -179,12 +167,7 @@ public class MoveToTrashService : IMoveToTrashService
 
 	private async Task SystemTrashInQueue(List<FileIndexItem> moveToTrash)
 	{
-		var fullFilePaths = moveToTrash
-			.Where(p => p.FilePath != null)
-			.Select(p => _tenantSettings.DatabasePathToFilePath(p.FilePath!))
-			.ToList();
-
-		_systemTrashService.Trash(fullFilePaths);
+		_systemTrashMover.Trash(moveToTrash);
 
 		var subPaths = moveToTrash
 			.Where(p => !string.IsNullOrEmpty(p.FilePath))

@@ -845,6 +845,18 @@ public sealed class ArgsHelper
 	}
 
 	/// <summary>
+	///     Is -p or --path (a full path) used
+	/// </summary>
+	/// <param name="args">input[]</param>
+	/// <returns>true when a full path is asked for</returns>
+	public static bool IsFullPathInArgs(IReadOnlyList<string> args)
+	{
+		return args.Any(arg =>
+			arg.Equals(PathCommandLineArgLong, StringComparison.CurrentCultureIgnoreCase) ||
+			arg.Equals("-p", StringComparison.CurrentCultureIgnoreCase));
+	}
+
+	/// <summary>
 	///     Know if --subpath or --path
 	/// </summary>
 	/// <param name="args">input[]</param>

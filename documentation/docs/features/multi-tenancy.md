@@ -100,8 +100,7 @@ free again.
 * Process-wide settings (`/api/env`) and the cache overview are for platform administrators once there is more
   than one tenant; the host folders are hidden from other users.
 * Every log line of a request has the scope `TenantId`.
-* The command line tools with a full `--path`, and the geo and publish command line tools, do not support
-  `--tenant` (use `--subpath`).
-* Cloud import and the demo data cleanup only work on the default tenant for now.
-
-See [the security audit](../developer-guide/security/multi-tenancy-security-audit.md) for what was checked.
+* The command line tools do not support a full `--path` with `--tenant` (use `--subpath`). The publish command
+  line tool does not support `--tenant` at all. The geo command line tool works on a `--subpath` (or `-g`
+  relative days) in the storage of the tenant.
+* Cloud import imports into the tenant set with `TenantId` on each provider, see [Cloud Import](import/cloudimport.md#import-into-a-tenant). The demo data cleanup only works on the default tenant for now.

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.cloudimport;
 using starsky.feature.cloudimport.Controllers;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starskytest.FakeMocks;
 
 namespace starskytest.starsky.feature.cloudimport.Controllers;
@@ -306,7 +307,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = []
+				Providers = [new CloudImportProviderSettings { Id = "dropbox-1" }]
 			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -358,7 +359,7 @@ public class CloudImportControllerTest
 		{
 			CloudImport = new CloudImportSettings
 			{
-				Providers = []
+				Providers = [new CloudImportProviderSettings { Id = "dropbox-1" }]
 			}
 		};
 		var controller = new CloudImportController(fakeService, appSettings);
@@ -395,5 +396,105 @@ public class CloudImportControllerTest
 		Assert.IsNotNull(messageProp);
 		Assert.AreEqual("No sync result found for provider 'not-exist'",
 			messageProp.GetValue(value));
+	}
+
+	private static (CloudImportController Controller, FakeCloudImportService Service)
+		TenantController(string requestTenant)
+	{
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers =
+				[
+					new CloudImportProviderSettings { Id = "mine", Enabled = true, TenantId = "acme" },
+					new CloudImportProviderSettings
+					{
+						Id = "default-one", Enabled = true
+					}
+				]
+			}
+		};
+		var service = new FakeCloudImportService
+		{
+			LastSyncResults = new Dictionary<string, CloudImportResult>
+			{
+				{ "mine", new CloudImportResult { ProviderId = "mine" } },
+				{ "default-one", new CloudImportResult { ProviderId = "default-one" } }
+			}
+		};
+		var context = new TenantContext();
+		context.SetTenant(requestTenant, false);
+		return (new CloudImportController(service, appSettings, context), service);
+	}
+
+	[TestMethod]
+	public void GetStatus_OnlyShowsTheProvidersOfTheTenant()
+	{
+		var (controller, _) = TenantController("acme");
+
+		var result = controller.GetStatus() as OkObjectResult;
+
+		var json = System.Text.Json.JsonSerializer.Serialize(result?.Value);
+		Assert.Contains("\"id\":\"mine\"", json);
+		Assert.DoesNotContain("default-one", json);
+	}
+
+	[TestMethod]
+	public void GetProviderStatus_ProviderOfAnotherTenant_NotFound()
+	{
+		var (controller, _) = TenantController("acme");
+
+		Assert.IsInstanceOfType<NotFoundObjectResult>(controller.GetProviderStatus("default-one"));
+	}
+
+	[TestMethod]
+	public async Task TriggerSync_ProviderOfAnotherTenant_NotFound()
+	{
+		var (controller, service) = TenantController("acme");
+
+		var result = await controller.TriggerSync("default-one");
+
+		Assert.IsInstanceOfType<NotFoundObjectResult>(result);
+		Assert.IsEmpty(service.SyncCalls);
+	}
+
+	[TestMethod]
+	public async Task TriggerSyncAll_OnlyForTheTenantOfTheRequest()
+	{
+		var (controller, service) = TenantController("acme");
+
+		await controller.TriggerSyncAll();
+
+		Assert.AreEqual("acme", service.LastSyncAllTenantId);
+	}
+
+	[TestMethod]
+	public void GetLastResults_OnlyOfTheTenant()
+	{
+		var (controller, _) = TenantController("acme");
+
+		var result = controller.GetLastResults() as OkObjectResult;
+
+		var value = result?.Value as IDictionary<string, CloudImportResult>;
+		Assert.IsNotNull(value);
+		Assert.HasCount(1, value);
+		Assert.IsTrue(value.ContainsKey("mine"));
+	}
+
+	[TestMethod]
+	public void GetLastResult_OfAnotherTenant_NotFound()
+	{
+		var (controller, _) = TenantController("acme");
+
+		Assert.IsInstanceOfType<NotFoundObjectResult>(controller.GetLastResult("default-one"));
+	}
+
+	[TestMethod]
+	public async Task TriggerSyncAll_TenantWithoutProviders_BadRequest()
+	{
+		var (controller, _) = TenantController("beta");
+
+		Assert.IsInstanceOfType<BadRequestObjectResult>(await controller.TriggerSyncAll());
 	}
 }

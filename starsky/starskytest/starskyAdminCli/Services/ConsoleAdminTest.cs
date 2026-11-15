@@ -113,7 +113,7 @@ public sealed class ConsoleAdminTest
 
 		await service.Tool(string.Empty, string.Empty);
 
-		Assert.IsTrue(console.WrittenLines.Contains("User test has now the role Administrator"));
+		Assert.Contains("User test has now the role Administrator", console.WrittenLines);
 	}
 
 	[TestMethod]
@@ -206,6 +206,7 @@ public sealed class ConsoleAdminTest
 			"4",
 			"test-app-key", // Dropbox App Key
 			"test-app-secret", // Dropbox App Secret
+			"", // Tenant id: empty is the default tenant
 			"test-access-code", // Access code
 			""
 		]);
@@ -240,5 +241,38 @@ public sealed class ConsoleAdminTest
 		Assert.IsTrue(console.WrittenLines.Exists(x =>
 			x.Contains("Merge this with an existing appsettings.json:")));
 		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("refresh-token")));
+		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("\"tenantId\": \"default\"")));
+	}
+
+	[TestMethod]
+	public async Task DropboxSetup_TenantId_InvalidThenValid()
+	{
+		var console = new FakeConsoleWrapper([
+			"test", "4", "test-app-key", "test-app-secret",
+			"Not Valid!", // asked again
+			"acme", "test-access-code", ""
+		]);
+		var httpClientHelper = new FakeIHttpClientHelper(
+			new FakeIStorage(),
+			new Dictionary<string, KeyValuePair<bool, string>>
+			{
+				{
+					"https://api.dropbox.com/oauth2/token",
+					new KeyValuePair<bool, string>(true, "{\"refresh_token\":\"refresh-token\"}")
+				}
+			});
+		var service = new ConsoleAdmin(
+			new FakeUserManagerActiveUsers("test",
+				new User
+				{
+					Name = "t1",
+					Id = 99,
+					Credentials = new List<Credential> { new() { Identifier = "test" } }
+				}), console, httpClientHelper);
+
+		await service.Tool(string.Empty, string.Empty);
+
+		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("is not a valid tenant id")));
+		Assert.IsTrue(console.WrittenLines.Exists(x => x.Contains("\"tenantId\": \"acme\"")));
 	}
 }

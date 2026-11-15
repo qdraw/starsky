@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
@@ -23,7 +24,7 @@ public sealed class DatabaseTenantRegistry(
 {
 	internal static readonly TimeSpan MaxAge = TimeSpan.FromSeconds(30);
 
-	private readonly object _lock = new();
+	private readonly Lock _lock = new();
 	private Snapshot _snapshot = Snapshot.Empty;
 
 	public IReadOnlyCollection<string> ActiveTenantIds =>

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 
@@ -117,5 +118,34 @@ public class CloudImportSettingsTest
 		};
 		Assert.AreSequenceEqual(
 			new List<string> { "jpg", "png", "gif", "JPG" }, provider.Extensions, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
+	}
+
+	[TestMethod]
+	[DataRow(null)]
+	[DataRow("")]
+	[DataRow("  ")]
+	public void ProviderTenantId_Empty_IsTheDefaultTenant(string? value)
+	{
+		var provider = new CloudImportProviderSettings { TenantId = value! };
+
+		Assert.AreEqual("default", provider.TenantId);
+		Assert.AreEqual("default", new CloudImportProviderSettings().TenantId);
+	}
+
+	[TestMethod]
+	public void GetProvidersOfTenant_FiltersOnTenant()
+	{
+		var settings = new CloudImportSettings
+		{
+			Providers =
+			[
+				new CloudImportProviderSettings { Id = "a", TenantId = "acme" },
+				new CloudImportProviderSettings { Id = "b" }
+			]
+		};
+
+		Assert.AreEqual("a", settings.GetProvidersOfTenant("acme").Single().Id);
+		Assert.AreEqual("b", settings.GetProvidersOfTenant("default").Single().Id);
+		Assert.IsEmpty(settings.GetProvidersOfTenant("beta"));
 	}
 }

@@ -30,7 +30,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	private bool _primaryWatcherConfigured;
 	private string _primaryTenantId = TenantIdHelper.DefaultTenantId;
 	private readonly HashSet<string> _watchedPaths = new(StringComparer.OrdinalIgnoreCase);
-	private readonly object _watchLock = new();
+	private readonly Lock _watchLock = new();
 
 	public DiskWatcher(IFileSystemWatcherWrapper fileSystemWatcherWrapper,
 		IServiceScopeFactory scopeFactory)

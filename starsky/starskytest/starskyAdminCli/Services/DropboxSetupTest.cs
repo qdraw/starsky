@@ -18,6 +18,7 @@ public class DropboxSetupTest
 		var console = new FakeConsoleWrapper([
 			"test-app-key", // Dropbox App Key
 			"test-app-secret", // Dropbox App Secret
+			"", // Tenant id: empty is the default tenant
 			"test-access-code", // Access code
 			""
 		]);
@@ -54,6 +55,7 @@ public class DropboxSetupTest
 
 		const string expected = "{\n  \"app\": {  \n    \"CloudImport\" :{\n      \"providers\": [\n        " +
 		                        "{\n          \"id\": \"dropbox-import-example-id\",\n          " +
+		                        "\"tenantId\": \"default\",\n          " +
 		                        "\"enabled\": true,\n          \"provider\": \"Dropbox\",\n          " +
 		                        "\"remoteFolder\": \"/Camera Uploads\",\n          " +
 		                        "\"syncFrequencyMinutes\": 0,\n          " +
