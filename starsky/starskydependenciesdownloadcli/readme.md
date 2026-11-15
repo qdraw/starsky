@@ -21,6 +21,7 @@
       are updated in the database_
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
       generating smaller images_
+    * [starskyThumbnailMetaCli](../../starsky/starskythumbnailmetacli/readme.md)  _create small thumbnails from the embedded preview_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
@@ -28,3 +29,16 @@
 * [Starsky Desktop](../../readme-desktop.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 * [Changelog](../../history.md) _Release notes and history_
+
+## starskyDependenciesDownloadCli docs
+
+Downloads the external tools that Starsky needs: the geo data files, ExifTool, FFmpeg and the image
+optimisation tools. The tools are stored in the `DependenciesFolder`
+(`--dependencies` or `app__DependenciesFolder`). This is for example used when building a package
+for another operating system.
+
+Use `--runtime` to select the target platforms, separated by a comma:
+
+```sh
+./starskydependenciesdownloadcli --runtime linux-x64,osx-arm64
+```

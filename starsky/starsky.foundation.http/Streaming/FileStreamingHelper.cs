@@ -80,7 +80,7 @@ public static class FileStreamingHelper
 			}
 
 			var randomFolderName = "stream_" +
-			                       Base32.Encode(FileHash.GenerateRandomBytes(4));
+								   Base32.Encode(FileHash.GenerateRandomBytes(4));
 			var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
 				headerFileName);
 
@@ -114,7 +114,7 @@ public static class FileStreamingHelper
 				section.ContentDisposition, out var contentDisposition);
 
 			if ( hasContentDispositionHeader && contentDisposition != null &&
-			     MultipartRequestHelper.HasFileContentDisposition(contentDisposition) )
+				 MultipartRequestHelper.HasFileContentDisposition(contentDisposition) )
 			{
 				var sourceFileName = contentDisposition.FileName.ToString()
 					.Replace("\"", string.Empty);
@@ -125,7 +125,7 @@ public static class FileStreamingHelper
 					Path.GetFileNameWithoutExtension(sourceFileName),
 					true, false, true); // underscore allowed
 				var randomFolderName = "stream_" +
-				                       Base32.Encode(FileHash.GenerateRandomBytes(4));
+									   Base32.Encode(FileHash.GenerateRandomBytes(4));
 				var fullFilePath = Path.Combine(appSettings.TempFolder, randomFolderName,
 					tempHash + inputExtension);
 				tempPaths.Add(fullFilePath);

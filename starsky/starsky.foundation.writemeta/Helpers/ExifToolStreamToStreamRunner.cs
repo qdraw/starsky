@@ -50,8 +50,8 @@ public class ExifToolStreamToStreamRunner
 				argumentsWithPipeEnd).ConfigureAwait(false);
 
 			_logger.LogInformation($"[ExifToolRunProcessAsync] {resultSuccess} ~ exifTool " +
-			                       $"{referenceInfoAndPath} {exifToolInputArguments} " +
-			                       $"run with result: {resultSuccess}  ~ ");
+								   $"{referenceInfoAndPath} {exifToolInputArguments} " +
+								   $"run with result: {resultSuccess}  ~ ");
 
 			memoryStream.Seek(0, SeekOrigin.Begin);
 
@@ -71,8 +71,8 @@ public class ExifToolStreamToStreamRunner
 		catch ( Win32Exception exception )
 		{
 			throw new ArgumentException("Error when trying to start the exifTool process.  " +
-			                            "Please make sure exifTool is installed, and its path is properly " +
-			                            "specified in the options.", exception);
+										"Please make sure exifTool is installed, and its path is properly " +
+										"specified in the options.", exception);
 		}
 	}
 

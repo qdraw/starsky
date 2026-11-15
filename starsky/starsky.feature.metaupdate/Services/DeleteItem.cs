@@ -45,7 +45,7 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 
 			// Status should be deleted before you can delete the item
 			if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				HandleNotFoundSourceMissingStatus(detailView.FileIndexItem,
 					fileIndexResultsList);
@@ -54,14 +54,14 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 
 			// Dir is readonly / don't delete
 			if ( _statusCodeHelper.IsReadOnlyStatus(detailView) ==
-			     FileIndexItem.ExifStatus.ReadOnly )
+				 FileIndexItem.ExifStatus.ReadOnly )
 			{
 				HandleReadOnlyStatus(detailView.FileIndexItem, fileIndexResultsList);
 				continue;
 			}
 
 			if ( StatusCodesHelper.IsDeletedStatus(detailView) !=
-			     FileIndexItem.ExifStatus.Deleted )
+				 FileIndexItem.ExifStatus.Deleted )
 			{
 				HandleOperationNotSupportedStatus(detailView.FileIndexItem,
 					fileIndexResultsList);
@@ -96,7 +96,7 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 	{
 		// collectionAndInsideDirectoryList should not have duplicate items
 		foreach ( var collectionSubPath in
-		         new HashSet<string>(collectionAndInsideDirectoryList) )
+				 new HashSet<string>(collectionAndInsideDirectoryList) )
 		{
 			var detailViewItem = query.SingleItem(collectionSubPath, null, false, false);
 
@@ -126,8 +126,8 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 			}
 
 			foreach ( var item in
-			         ( await query.GetAllRecursiveAsync(collectionSubPath) ).Where(p =>
-				         p.IsDirectory == true) )
+					 ( await query.GetAllRecursiveAsync(collectionSubPath) ).Where(p =>
+						 p.IsDirectory == true) )
 			{
 				item.Status = FileIndexItem.ExifStatus.Deleted;
 				fileIndexResultsList.Add(item.Clone());
@@ -168,7 +168,7 @@ public class DeleteItem(IQuery query, AppSettings appSettings, ISelectorStorage 
 	{
 		// remove the sidecar file (if exist)
 		if ( ExtensionRolesHelper.IsExtensionForceXmp(detailViewItem.FileIndexItem!
-			    .FileName) )
+				.FileName) )
 		{
 			_iStorage.FileDelete(
 				ExtensionRolesHelper.ReplaceExtensionWithXmp(detailViewItem

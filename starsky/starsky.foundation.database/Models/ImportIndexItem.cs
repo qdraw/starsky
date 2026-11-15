@@ -75,7 +75,7 @@ public sealed class ImportIndexItem
 
 	[NotMapped] public FileIndexItem? FileIndexItem { get; set; }
 
-	[NotMapped] [JsonIgnore] public string SourceFullFilePath { get; set; } = string.Empty;
+	[NotMapped][JsonIgnore] public string SourceFullFilePath { get; set; } = string.Empty;
 
 
 	/// <summary>

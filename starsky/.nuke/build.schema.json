@@ -26,6 +26,7 @@
       "enum": [
         "BuildNetCore",
         "BuildNetCoreRuntimeSpecific",
+        "CheckCloudflareIpRanges",
         "Client",
         "Compile",
         "CoverageReport",
@@ -121,6 +122,10 @@
         "NoClient": {
           "type": "boolean",
           "description": "Skip clientside code"
+        },
+        "NoCloudflareCheck": {
+          "type": "boolean",
+          "description": "Skip checking Cloudflare's IP ranges list"
         },
         "NoDependencies": {
           "type": "boolean",

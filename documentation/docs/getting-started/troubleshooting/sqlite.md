@@ -25,7 +25,7 @@ the mechanical heads of your disks. To some extent, this may also happen with so
 but it is much more likely with slow storage.
 
 You may be able to optimize the behavior and reduce locking errors with SQLite parameters that you
-can set with the [database config option](../configuration/config-options.md#database-connection),
+can set with the [database config option](../../advanced-options/starsky/starsky/readme.md#recommend-settings),
 but ultimately you should use an SSD if you want to keep SQLite or switch to MariaDB. Please note
 that our team cannot provide support otherwise.
 

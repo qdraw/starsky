@@ -114,7 +114,7 @@ public static class FileIndexCompareHelper
 	private static bool PropertyCanRead(PropertyInfo propertyA, PropertyInfo? propertyB)
 	{
 		return propertyB == null || !propertyA.CanRead ||
-		       !propertyB.CanRead;
+			   !propertyB.CanRead;
 	}
 
 	/// <summary>
@@ -179,7 +179,7 @@ public static class FileIndexCompareHelper
 	/// <param name="fieldName">name e.g. Tags</param>
 	/// <returns>bool, true=exist</returns>
 	[SuppressMessage("Usage", "S6605: Collection-specific Exists " +
-	                          "method should be used instead of the Any extension.")]
+							  "method should be used instead of the Any extension.")]
 	public static bool CheckIfPropertyExist(string fieldName)
 	{
 		var propertiesA = new FileIndexItem().GetType().GetProperties(
@@ -239,7 +239,7 @@ public static class FileIndexCompareHelper
 		List<string> differenceList)
 	{
 		if ( oldRotationValue == newRotationValue || newRotationValue == null ||
-		     newRotationValue == ImageRotation.Rotation.DoNotChange )
+			 newRotationValue == ImageRotation.Rotation.DoNotChange )
 		{
 			return;
 		}
@@ -263,9 +263,9 @@ public static class FileIndexCompareHelper
 		const double tolerance = 0.000001d;
 		// Dont allow to overwrite with default 0 value
 		if ( oldDoubleValue == null ||
-		     newDoubleValue == null ||
-		     Math.Abs(oldDoubleValue.Value - newDoubleValue.Value) < tolerance ||
-		     Math.Abs(newDoubleValue.Value) < tolerance )
+			 newDoubleValue == null ||
+			 Math.Abs(oldDoubleValue.Value - newDoubleValue.Value) < tolerance ||
+			 Math.Abs(newDoubleValue.Value) < tolerance )
 		{
 			return;
 		}
@@ -288,7 +288,7 @@ public static class FileIndexCompareHelper
 	{
 		// Dont allow to overwrite with default 0 value
 		if ( oldUshortValue == newUshortValue || newUshortValue == null ||
-		     newUshortValue == 0 )
+			 newUshortValue == 0 )
 		{
 			return;
 		}
@@ -311,7 +311,7 @@ public static class FileIndexCompareHelper
 		ExtensionRolesHelper.ImageFormat? newImageFormatValue, List<string> differenceList)
 	{
 		if ( oldImageFormatValue == newImageFormatValue || newImageFormatValue == null ||
-		     newImageFormatValue == ExtensionRolesHelper.ImageFormat.unknown )
+			 newImageFormatValue == ExtensionRolesHelper.ImageFormat.unknown )
 		{
 			return;
 		}
@@ -335,7 +335,7 @@ public static class FileIndexCompareHelper
 		List<string> differenceList)
 	{
 		if ( oldImageStabValue == newImageStabValue || newImageStabValue == null ||
-		     newImageStabValue == ImageStabilisationType.Unknown )
+			 newImageStabValue == ImageStabilisationType.Unknown )
 		{
 			return;
 		}
@@ -358,7 +358,7 @@ public static class FileIndexCompareHelper
 	{
 		// Dont allow to overwrite with default year 0001
 		if ( oldDateValue == newDateValue || newDateValue == null ||
-		     newDateValue.Value.Year < 2 )
+			 newDateValue.Value.Year < 2 )
 		{
 			return;
 		}
@@ -381,8 +381,8 @@ public static class FileIndexCompareHelper
 		ColorClassParser.Color? newColorValue, List<string> differenceList)
 	{
 		if ( oldColorValue == newColorValue ||
-		     newColorValue == ColorClassParser.Color.DoNotChange ||
-		     newColorValue == null )
+			 newColorValue == ColorClassParser.Color.DoNotChange ||
+			 newColorValue == null )
 		{
 			return;
 		}
@@ -461,8 +461,8 @@ public static class FileIndexCompareHelper
 	{
 		// ignore capitals
 		if ( string.IsNullOrEmpty(newStringValue) ||
-		     string.Equals(oldStringValue, newStringValue,
-			     StringComparison.InvariantCultureIgnoreCase) )
+			 string.Equals(oldStringValue, newStringValue,
+				 StringComparison.InvariantCultureIgnoreCase) )
 		{
 			return;
 		}

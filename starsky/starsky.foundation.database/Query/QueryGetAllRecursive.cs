@@ -52,10 +52,10 @@ public partial class Query
 		{
 			// https://github.com/qdraw/starsky/issues/1243
 			// https://github.com/qdraw/starsky/issues/1628
-			if ( exception.ErrorCode is not (MySqlErrorCode.CommandTimeoutExpired or
-			    MySqlErrorCode.QueryTimeout or
-			    MySqlErrorCode.LockWaitTimeout or
-			    MySqlErrorCode.QueryInterrupted) )
+			if ( exception.ErrorCode is not ( MySqlErrorCode.CommandTimeoutExpired or
+				MySqlErrorCode.QueryTimeout or
+				MySqlErrorCode.LockWaitTimeout or
+				MySqlErrorCode.QueryInterrupted ) )
 			{
 				_logger.LogError(
 					$"[GetAllRecursiveAsync] MySqlException ErrorCode: {exception.ErrorCode}");
@@ -63,7 +63,7 @@ public partial class Query
 			}
 
 			_logger.LogInformation($"[GetAllRecursiveAsync] Retry Timeout/interrupted " +
-			                       $"{exception.ErrorCode} in GetAllRecursiveAsync");
+								   $"{exception.ErrorCode} in GetAllRecursiveAsync");
 
 			return await RetryHelper.DoAsync(LocalRetryQuery, TimeSpan.FromSeconds(2), 4);
 		}
@@ -98,8 +98,8 @@ public partial class Query
 		if ( prefix == "/" )
 		{
 			return p => p.FilePath != null &&
-			            p.FilePath != "/" &&
-			            p.FilePath.StartsWith(prefix);
+						p.FilePath != "/" &&
+						p.FilePath.StartsWith(prefix);
 		}
 
 		return p => p.FilePath != null && p.FilePath.StartsWith(prefix);

@@ -7,6 +7,7 @@
         * [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line
       interface_
+    * [starskyDemoSeedCli](../../starsky/starskydemoseedcli/readme.md)  _demo seed data_
     * [starskyMountWatcherCli](../../starsky/starskymountwatchercli/readme.md)  _watch sd cards_
     * [starskyDemoSeedCli](../../starsky/starskydependenciesdownloadcli/readme.md) _make sure
       external dependencies are installed_
@@ -20,6 +21,7 @@
       are updated in the database_
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
       generating smaller images_
+    * [starskyThumbnailMetaCli](../../starsky/starskythumbnailmetacli/readme.md)  _create small thumbnails from the embedded preview_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_

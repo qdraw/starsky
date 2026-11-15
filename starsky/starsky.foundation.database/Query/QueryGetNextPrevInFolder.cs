@@ -17,8 +17,8 @@ public partial class Query
 		{
 			var items = context.FileIndex.Where(
 				p => p.ParentDirectory == parentFolderPath
-				     && p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json
-				     && p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
+					 && p.ImageFormat != ExtensionRolesHelper.ImageFormat.meta_json
+					 && p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
 
 			var groupedItems = items
 				.GroupBy(item => item.FileCollectionName)
@@ -32,7 +32,7 @@ public partial class Query
 			// For the case when there is a folder named: test and a file test.jpg
 			var itemWithSameNameInQueryResult = items.Find(p => p.FilePath == currentFolder);
 			if ( itemWithSameNameInQueryResult != null &&
-			     !groupedItems.Exists(p => p.FileName == itemWithSameNameInQueryResult.FileName) )
+				 !groupedItems.Exists(p => p.FileName == itemWithSameNameInQueryResult.FileName) )
 			{
 				groupedItems.Add(itemWithSameNameInQueryResult);
 			}

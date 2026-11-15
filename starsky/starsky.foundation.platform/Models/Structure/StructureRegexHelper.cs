@@ -21,8 +21,8 @@ public static partial class StructureRegexHelper
 	public static bool StructureCheck(string? structure)
 	{
 		return !string.IsNullOrEmpty(structure) &&
-		       StructureRegex().IsMatch(structure) &&
-		       // a structure is a relative sub path, it should not climb out of the storage folder
-		       !structure.Replace('\\', '/').Split('/').Any(segment => segment.Trim() == "..");
+			   StructureRegex().IsMatch(structure) &&
+			   // a structure is a relative sub path, it should not climb out of the storage folder
+			   !structure.Replace('\\', '/').Split('/').Any(segment => segment.Trim() == "..");
 	}
 }

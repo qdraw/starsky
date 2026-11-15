@@ -30,8 +30,8 @@ public class CloudImportSettings
 	public List<CloudImportProviderSettings> GetEnabledSyncFrequencyProviders()
 	{
 		return Providers.Where(p => p.Enabled &&
-		                            ( p.SyncFrequencyHours > 0 ||
-		                              p.SyncFrequencyMinutes > 0 ))
+									( p.SyncFrequencyHours > 0 ||
+									  p.SyncFrequencyMinutes > 0 ))
 			.ToList();
 	}
 }

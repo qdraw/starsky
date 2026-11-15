@@ -30,14 +30,14 @@ public static class PortProgramHelper
 	{
 		var appContainer = await ReadAppSettings.Read(appSettingsPath);
 		if ( appContainer?.Kestrel?.Endpoints?.Http?.Url == null &&
-		     appContainer?.Kestrel?.Endpoints?.Https?.Url == null )
+			 appContainer?.Kestrel?.Endpoints?.Https?.Url == null )
 		{
 			return false;
 		}
 
 		Console.WriteLine("Kestrel Endpoints are set in appsettings.json, " +
-		                  "this results in skip setting the PORT and default " +
-		                  "ASPNETCORE_URLS environment variable");
+						  "this results in skip setting the PORT and default " +
+						  "ASPNETCORE_URLS environment variable");
 		Environment.SetEnvironmentVariable(AspNetCoreUrlsEnv, null);
 		return true;
 	}
@@ -48,7 +48,7 @@ public static class PortProgramHelper
 		var portString = Environment.GetEnvironmentVariable("PORT");
 
 		if ( args.Contains("--urls") || string.IsNullOrEmpty(portString)
-		                             || !int.TryParse(portString, out var port) )
+									 || !int.TryParse(portString, out var port) )
 		{
 			return;
 		}
@@ -60,7 +60,7 @@ public static class PortProgramHelper
 	private static void SetEnvironmentVariableForPort(int port)
 	{
 		Console.WriteLine($"Set port from environment variable: {port} " +
-		                  $"\nPro tip: Its recommended to use a https proxy like nginx or traefik");
+						  $"\nPro tip: Its recommended to use a https proxy like nginx or traefik");
 		Environment.SetEnvironmentVariable(AspNetCoreUrlsEnv, $"http://*:{port}");
 	}
 

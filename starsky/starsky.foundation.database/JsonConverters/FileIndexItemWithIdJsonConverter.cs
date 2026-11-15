@@ -30,7 +30,7 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 		{
 			// Skip this converter and the factory to avoid recursion when building safe options
 			if ( conv is FileIndexItemWithIdJsonConverter
-			    or FileIndexItemWithIdJsonConverterFactory )
+				or FileIndexItemWithIdJsonConverterFactory )
 			{
 				continue;
 			}
@@ -43,17 +43,17 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 		var json = element.GetRawText();
 
 		var result = JsonSerializer.Deserialize<FileIndexItem>(json, readOptions) ??
-		             new FileIndexItem();
+					 new FileIndexItem();
 
 		// If JSON contains an explicit id field, set it on the result even if the POCO has [JsonIgnore]
 		// (we write "id" in Write as lower-case). Be case-insensitive to support different naming policies.
 		foreach ( var propValue in element.EnumerateObject()
-			         .Where(prop =>
-				         string.Equals(prop.Name, "id", StringComparison.OrdinalIgnoreCase))
-			         .Select(prop => prop.Value) )
+					 .Where(prop =>
+						 string.Equals(prop.Name, "id", StringComparison.OrdinalIgnoreCase))
+					 .Select(prop => prop.Value) )
 		{
 			if ( propValue.ValueKind == JsonValueKind.Number &&
-			     propValue.TryGetInt32(out var idVal) )
+				 propValue.TryGetInt32(out var idVal) )
 			{
 				result.Id = idVal;
 			}
@@ -79,7 +79,7 @@ public sealed class FileIndexItemWithIdJsonConverter : JsonConverter<FileIndexIt
 		{
 			// Skip this converter and the factory to avoid recursion when building safe options
 			if ( conv is FileIndexItemWithIdJsonConverter
-			    or FileIndexItemWithIdJsonConverterFactory )
+				or FileIndexItemWithIdJsonConverterFactory )
 			{
 				continue;
 			}

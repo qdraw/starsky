@@ -12,10 +12,10 @@ namespace starsky.foundation.platform.VersionHelpers;
 public sealed class SemVersion : IComparable<SemVersion>
 {
 	private static readonly Regex ParseEx = new(@"^(?<major>\d+)" +
-	                                            @"(?>\.(?<minor>\d+))?" +
-	                                            @"(?>\.(?<patch>\d+))?" +
-	                                            @"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
-	                                            @"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
+												@"(?>\.(?<minor>\d+))?" +
+												@"(?>\.(?<patch>\d+))?" +
+												@"(?>\-(?<pre>[0-9A-Za-z\-\.]+))?" +
+												@"(?>\+(?<build>[0-9A-Za-z\-\.]+))?$",
 		RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
 		TimeSpan.FromSeconds(0.5));
 
@@ -299,10 +299,10 @@ public sealed class SemVersion : IComparable<SemVersion>
 		var other = ( SemVersion ) obj;
 
 		return Major == other.Major
-		       && Minor == other.Minor
-		       && Patch == other.Patch
-		       && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
-		       && string.Equals(Build, other.Build, StringComparison.Ordinal);
+			   && Minor == other.Minor
+			   && Patch == other.Patch
+			   && string.Equals(Prerelease, other.Prerelease, StringComparison.Ordinal)
+			   && string.Equals(Build, other.Build, StringComparison.Ordinal);
 	}
 
 	public static bool operator ==(SemVersion? left, SemVersion? right)

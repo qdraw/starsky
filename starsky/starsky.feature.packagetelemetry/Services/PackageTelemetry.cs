@@ -66,8 +66,8 @@ public class PackageTelemetry : IPackageTelemetry
 			if ( !postResult )
 			{
 				_logger.LogError($"[PackageTelemetry] postResult: {postResult} - " +
-				                 $"Url: {PackageTelemetryUrl} - " +
-				                 $"Form: {formEncodedData}");
+								 $"Url: {PackageTelemetryUrl} - " +
+								 $"Form: {formEncodedData}");
 			}
 
 			return postResult;
@@ -90,9 +90,9 @@ public class PackageTelemetry : IPackageTelemetry
 	{
 		OSPlatform? currentPlatform = null;
 		foreach ( var platform in new List<OSPlatform>
-		         {
-			         OSPlatform.Linux, OSPlatform.Windows, OSPlatform.OSX, OSPlatform.FreeBSD
-		         }.Where(RuntimeInformation.IsOSPlatform) )
+				 {
+					 OSPlatform.Linux, OSPlatform.Windows, OSPlatform.OSX, OSPlatform.FreeBSD
+				 }.Where(RuntimeInformation.IsOSPlatform) )
 		{
 			currentPlatform = platform;
 		}
@@ -106,8 +106,8 @@ public class PackageTelemetry : IPackageTelemetry
 		currentPlatform ??= GetCurrentOsPlatform();
 
 		var dockerContainer = currentPlatform == OSPlatform.Linux &&
-		                      Environment.GetEnvironmentVariable(
-			                      "DOTNET_RUNNING_IN_CONTAINER") == "true";
+							  Environment.GetEnvironmentVariable(
+								  "DOTNET_RUNNING_IN_CONTAINER") == "true";
 
 		var data = new List<KeyValuePair<string, string>>
 		{
@@ -197,12 +197,12 @@ public class PackageTelemetry : IPackageTelemetry
 			}
 
 			if ( propValue?.GetType() == typeof(List<string>) ||
-			     propValue?.GetType() ==
-			     typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) ||
-			     propValue?.GetType() == typeof(List<CameraMakeModel>) ||
-			     propValue?.GetType() == typeof(List<AppSettingsDefaultEditorApplication>) ||
-			     propValue?.GetType() == typeof(AppSettingsImportTransformationModel) ||
-			     propValue?.GetType() == typeof(AppSettingsStructureModel) )
+				 propValue?.GetType() ==
+				 typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) ||
+				 propValue?.GetType() == typeof(List<CameraMakeModel>) ||
+				 propValue?.GetType() == typeof(List<AppSettingsDefaultEditorApplication>) ||
+				 propValue?.GetType() == typeof(AppSettingsImportTransformationModel) ||
+				 propValue?.GetType() == typeof(AppSettingsStructureModel) )
 			{
 				value = ParseContentToJson(propValue);
 			}

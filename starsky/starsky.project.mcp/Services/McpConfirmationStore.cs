@@ -49,7 +49,7 @@ public sealed class McpConfirmationStore
 		}
 
 		return entry.Expires > _timeProvider.GetUtcNow() &&
-		       entry.Fingerprint == Fingerprint(caller, tool, paths, args);
+			   entry.Fingerprint == Fingerprint(caller, tool, paths, args);
 	}
 
 	private void RemoveExpired()

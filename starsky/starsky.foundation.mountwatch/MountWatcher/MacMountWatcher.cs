@@ -171,7 +171,7 @@ internal class MacMountWatcher : BaseMountWatcher
 			try
 			{
 				if ( _session != IntPtr.Zero && _runLoop != IntPtr.Zero &&
-				     _runLoopMode != IntPtr.Zero )
+					 _runLoopMode != IntPtr.Zero )
 				{
 					_system.DASessionUnscheduleWithRunLoopApi(_session, _runLoop,
 						_runLoopMode);

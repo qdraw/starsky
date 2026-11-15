@@ -6,8 +6,8 @@ namespace starsky.foundation.native.PreviewImageNative.Helpers;
 
 [SuppressMessage("ReSharper", "InconsistentNaming")]
 [SuppressMessage("Interoperability", "SYSLIB1054:Use \'LibraryImportAttribute\' " +
-                                     "instead of \'DllImportAttribute\' to generate P/Invoke " +
-                                     "marshalling code at compile time")]
+									 "instead of \'DllImportAttribute\' to generate P/Invoke " +
+									 "marshalling code at compile time")]
 [SuppressMessage("Usage", "CA2101: Specify marshaling for P/Invoke string arguments")]
 public class QuicklookMacOs(IWebLogger logger)
 {
@@ -64,7 +64,7 @@ public class QuicklookMacOs(IWebLogger logger)
 			}
 
 			logger.LogInformation("[QuicklookMacOs] Failed to generate thumbnail" +
-			                      $" for F: {filePath} O: {outputPath}");
+								  $" for F: {filePath} O: {outputPath}");
 			return false;
 		}
 		finally
@@ -104,7 +104,7 @@ public class QuicklookMacOs(IWebLogger logger)
 		if ( destination == IntPtr.Zero )
 		{
 			logger.LogInformation("[QuicklookMacOs] Failed to create image destination"
-			                      + $" for F: {outputPath} U: {uniformTypeIdentifier}");
+								  + $" for F: {outputPath} U: {uniformTypeIdentifier}");
 			return false;
 		}
 
@@ -134,7 +134,7 @@ public class QuicklookMacOs(IWebLogger logger)
 		if ( !CGImageDestinationFinalize(destination) )
 		{
 			logger.LogInformation("[QuicklookMacOs] Failed to finalize image" +
-			                      $" destination for R: {reference}");
+								  $" destination for R: {reference}");
 		}
 	}
 

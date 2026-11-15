@@ -46,7 +46,7 @@ public sealed class GeoLocationWrite : IGeoLocationWrite
 		bool syncLocationNames)
 	{
 		foreach ( var metaFileItem in metaFilesInDirectory.Where(metaFileItem =>
-			         ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
+					 ExtensionRolesHelper.IsExtensionExifToolSupported(metaFileItem.FileName)) )
 		{
 			if ( _appSettings.IsVerbose() )
 			{

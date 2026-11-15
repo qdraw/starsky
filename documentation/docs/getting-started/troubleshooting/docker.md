@@ -101,7 +101,7 @@ docker compose up
 
 ## Adding Swap
 
-*Note that high-resolution panoramic images may require additional swap space and/or [physical memory](performance.md#memory) above the [recommended minimum](../readme.mdx#system-requirements).*
+*Note that high-resolution panoramic images may require additional swap space and/or [physical memory](performance.md#memory) above the [recommended minimum](../setup.md#system-requirements).*
 
 ### Linux
 
@@ -186,7 +186,7 @@ In case the logs show "disk full", "quota exceeded", or "no space left" errors, 
 in the Docker, Kubernetes, or Virtual Machine configuration (remove or increase it):
 
 - on Linux and other Unix-like operating systems, the [available disk space](https://opensource.com/article/18/7/how-check-free-disk-space-linux) can be viewed by running `df -h` in a terminal
-- if you are using *Kubernetes*, *Docker Desktop*, *Hyper-V*, or a Virtual Machine, they have their own settings to adjust the size of [storage](../docker/docker-compose.md#volumes), [RAM](../readme.mdx#system-requirements), and [swap](#adding-swap)
+- if you are using *Kubernetes*, *Docker Desktop*, *Hyper-V*, or a Virtual Machine, they have their own settings to adjust the size of [storage](../docker/docker-compose.md#volumes), [RAM](../setup.md#system-requirements), and [swap](#adding-swap)
 - for details, refer to the corresponding documentation
 
 *Start a full rescan if necessary, for example, if it looks like [thumbnails](index.md#broken-thumbnails) or [pictures are missing](index.md#missing-pictures).*

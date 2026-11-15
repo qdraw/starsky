@@ -58,7 +58,7 @@ public sealed class ThumbnailCleaner : IThumbnailCleaner
 			catch ( RetryLimitExceededException exception )
 			{
 				_logger.LogInformation($"[CleanAllUnusedFiles] catch-ed and " +
-				                       $"skip {string.Join(",", itemsInChunk.ToList())} ~ {exception.Message}",
+									   $"skip {string.Join(",", itemsInChunk.ToList())} ~ {exception.Message}",
 					exception);
 			}
 		}
@@ -114,7 +114,7 @@ public sealed class ThumbnailCleaner : IThumbnailCleaner
 			results.Add(fileHashWithoutSize);
 		}
 
-		return [..results];
+		return [.. results];
 	}
 
 	internal static string GetFileHashWithoutSize(string fileHash)

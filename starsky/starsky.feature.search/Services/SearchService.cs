@@ -79,7 +79,7 @@ public class SearchService : ISearch
 		}
 
 		if ( !enableCache ||
-		     _cache == null || _appSettings?.AddMemoryCache == false )
+			 _cache == null || _appSettings?.AddMemoryCache == false )
 		{
 			return SkipSearchItems(await SearchDirect(query, collections), pageNumber);
 		}
@@ -89,7 +89,7 @@ public class SearchService : ISearch
 
 		// Return Cached object if the cache exists
 		if ( _cache.TryGetValue(querySearchCacheName,
-			    out var objectSearchModel) )
+				out var objectSearchModel) )
 		{
 			return SkipSearchItems(objectSearchModel, pageNumber);
 		}
@@ -154,7 +154,7 @@ public class SearchService : ISearch
 
 		var skipFirstNumber = pageNumber * NumberOfResultsInView;
 		var skipLastNumber = searchModel.SearchCount - pageNumber * NumberOfResultsInView -
-		                     NumberOfResultsInView;
+							 NumberOfResultsInView;
 
 
 		// Remove the last items
@@ -181,7 +181,8 @@ public class SearchService : ISearch
 		// Create a view model
 		var model = new SearchViewModel
 		{
-			SearchQuery = query ?? string.Empty, Breadcrumb = ["/", query ?? string.Empty]
+			SearchQuery = query ?? string.Empty,
+			Breadcrumb = ["/", query ?? string.Empty]
 			// Null check will save you from error 500 with Empty request
 		};
 
@@ -223,9 +224,9 @@ public class SearchService : ISearch
 		model.ElapsedSeconds = stopWatch.Elapsed.TotalSeconds;
 
 		_logger.LogInformation($"[SearchService] Query: \"{model.SearchQuery}\" " +
-		                       $"TotalSeconds: {model.ElapsedSeconds} " +
-		                       $"SearchCount: {model.SearchCount} " +
-		                       $"Last Page: {model.LastPageNumber} ");
+							   $"TotalSeconds: {model.ElapsedSeconds} " +
+							   $"SearchCount: {model.SearchCount} " +
+							   $"Last Page: {model.LastPageNumber} ");
 
 		return model;
 	}
@@ -262,7 +263,7 @@ public class SearchService : ISearch
 	/// <returns>search model with content</returns>
 	[SuppressMessage("ReSharper", "AccessToModifiedClosure")]
 	[SuppressMessage("Performance", "CA1862:Use the \'StringComparison\' " +
-	                                "method overloads to perform case-insensitive string comparisons",
+									"method overloads to perform case-insensitive string comparisons",
 		Justification =
 			"EF Core does not support this:  System.InvalidOperationException: The LINQ expression 'DbSet<FileIndexItem>()")]
 	private static async Task<SearchViewModel> WideSearch(IQueryable<FileIndexItem> sourceList,
@@ -285,7 +286,7 @@ public class SearchService : ISearch
 			{
 				case SearchViewModel.SearchInTypes.imageformat:
 					if ( Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
-						    model.SearchFor[i].ToLowerInvariant(), out var castImageFormat) )
+							model.SearchFor[i].ToLowerInvariant(), out var castImageFormat) )
 					{
 						var result = castImageFormat;
 						predicates.Add(x => x.ImageFormat == result);
@@ -345,7 +346,7 @@ public class SearchService : ISearch
 					break;
 				case SearchViewModel.SearchInTypes.isdirectory:
 					if ( bool.TryParse(model.SearchFor[i].ToLowerInvariant(),
-						    out var boolIsDirectory) )
+							out var boolIsDirectory) )
 					{
 						predicates.Add(x => x.IsDirectory == boolIsDirectory);
 						model.SearchFor[i] = boolIsDirectory.ToString();
@@ -366,7 +367,7 @@ public class SearchService : ISearch
 					break;
 				case SearchViewModel.SearchInTypes.colorclass:
 					if ( Enum.TryParse<ColorClassParser.Color>(
-						    model.SearchFor[i].ToLowerInvariant(), out var castColorClass) )
+							model.SearchFor[i].ToLowerInvariant(), out var castColorClass) )
 					{
 						predicates.Add(x => x.ColorClass == castColorClass);
 					}

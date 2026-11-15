@@ -22,7 +22,7 @@ public sealed class MoveToTrashJobHandler(
 		}
 
 		var payload = JsonSerializer.Deserialize<MoveToTrashPayload>(payloadJson) ??
-		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
+					  throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
 		await moveToTrashService.MoveToTrashAsync(payload);
 	}

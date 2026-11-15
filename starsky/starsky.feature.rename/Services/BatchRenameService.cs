@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -79,17 +79,21 @@ public class BatchRenameService(
 			{
 				mappings.Add(new BatchRenameMapping
 				{
-					SourceFilePath = key, HasError = true, ErrorMessage = "Is a directory"
+					SourceFilePath = key,
+					HasError = true,
+					ErrorMessage = "Is a directory"
 				});
 				continue;
 			}
 
 			if ( new StatusCodesHelper(appSettings).IsReadOnlyStatus(fileItem) !=
-			     FileIndexItem.ExifStatus.Default )
+				 FileIndexItem.ExifStatus.Default )
 			{
 				mappings.Add(new BatchRenameMapping
 				{
-					SourceFilePath = key, HasError = true, ErrorMessage = "Read-only location"
+					SourceFilePath = key,
+					HasError = true,
+					ErrorMessage = "Read-only location"
 				});
 				continue;
 			}
@@ -214,7 +218,7 @@ public class BatchRenameService(
 
 		var sequence = 0;
 		foreach ( var group in grouped.OrderBy(g => g.Key.OriginalBase)
-			         .ThenBy(g => g.Key.DateTime) )
+					 .ThenBy(g => g.Key.DateTime) )
 		{
 			foreach ( var mapping in group )
 			{

@@ -69,7 +69,7 @@ public partial class Query
 		catch ( DbUpdateConcurrencyException e )
 		{
 			_logger.LogInformation(e, "[RemoveItemAsync] catch-ed " +
-			                          "DbUpdateConcurrencyException (do nothing)");
+									  "DbUpdateConcurrencyException (do nothing)");
 		}
 
 		// remove parent directory cache
@@ -137,7 +137,7 @@ public partial class Query
 		catch ( DbUpdateConcurrencyException e )
 		{
 			_logger.LogInformation(e, "[RemoveItemAsync:List] catch-ed " +
-			                          "DbUpdateConcurrencyException (do nothing)");
+									  "DbUpdateConcurrencyException (do nothing)");
 		}
 
 		// remove parent directory cache

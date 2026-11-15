@@ -85,6 +85,13 @@ public class PublishRemoteController(
 		return Json(true);
 	}
 
+	/// <summary>
+	///     Check if remote publishing is enabled and the publish profile is valid
+	/// </summary>
+	/// <param name="publishProfileName">name of the remote publish profile</param>
+	/// <returns>true when the profile is valid and publishing is enabled, otherwise false</returns>
+	/// <response code="200">true or false</response>
+	/// <response code="401">User unauthorized</response>
 	[HttpGet("/api/publish-remote/status")]
 	[Produces("application/json")]
 	[ProducesResponseType(typeof(bool), 200)]

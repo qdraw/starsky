@@ -27,7 +27,7 @@ public class QueryFactory(
 
 		var context = setupDatabaseTypes?.BuilderDbFactory();
 		if ( query.GetType() == typeof(Query) && context != null && appSettings != null &&
-		     logger != null )
+			 logger != null )
 		{
 			return new Query(context, appSettings, serviceScopeFactory!, logger, cache);
 		}

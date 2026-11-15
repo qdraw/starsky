@@ -37,7 +37,7 @@ After applying a timezone or offset shift, the modal provides an optional step t
     - Errors are highlighted, and the user is prevented from proceeding if there are unresolved issues.
 
 - **API Integration:**
-    - The component calls the batch rename API endpoint with the selected files and new names.
+    - The component calls the `/api/batch-rename-datetime/*` endpoints with the selected files and the correction details.
     - On success, the archive state is updated and the modal closes.
 
 This feature ensures that filenames remain meaningful and consistent with the new date/time metadata, improving organization and searchability.
@@ -57,3 +57,24 @@ This feature ensures that filenames remain meaningful and consistent with the ne
 ## Where to Find It
 
 - The Timezone Shift option is available in the archive view menu when you have one or more files selected.
+
+## API
+
+The shift is done by the `meta-time-correct` endpoints. Every endpoint has a preview (dry-run) and an
+execute variant. The files are selected with the `f` query parameter (sub paths separated by `;`)
+and the correction details are sent in the request body.
+
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/meta-time-correct/offset-preview` | POST | Preview a fixed offset (years, months, days, hours, minutes, seconds) |
+| `/api/meta-time-correct/offset-execute` | POST | Apply a fixed offset |
+| `/api/meta-time-correct/timezone-preview` | POST | Preview a conversion between two timezones (DST-aware) |
+| `/api/meta-time-correct/timezone-execute` | POST | Apply a timezone conversion |
+
+The optional rename step after a shift renames files that contain a date time pattern in their name
+(for example `20240131_142530.jpg`). It uses the `/api/batch-rename-datetime/offset-preview`,
+`offset-execute`, `timezone-preview` and `timezone-execute` endpoints. These take the same correction
+details as a JSON body together with the file paths and the `collections` flag, and return the
+before and after file names.
+
+See the [API reference](../developer-guide/api/readme.md) for all endpoints.

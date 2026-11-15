@@ -114,7 +114,7 @@ This document is auto generated
 | __/api/publish/exist__                            | GET   | To give the user UI feedback when submitting the itemNameTrue is not to conti...|
 | __/api/publish-remote/create__                    | POST  | Publish generated zip to remote destination (FTP or LocalFileSystem)            |
 | _Parameters: itemName (itemName used in /api/publish/create), publishProfileName (publishProfileName used in /api/publish/create)         _ |
-| __/api/publish-remote/status__                    | GET   | Missing summary                                                                 |
+| __/api/publish-remote/status__                    | GET   | Check if remote publishing is enabled and the publish profile is valid          |
 | __/redirect/sub-path-relative__                   | GET   | Redirect or view path to relative paths using the structure-config (see /api/...|
 | __/api/search__                                   | GET   | Gets the list of search results (cached)                                        |
 | _Parameters: t (search query), p (page number), collections (to combine files with the same name before the extension)                    _ |

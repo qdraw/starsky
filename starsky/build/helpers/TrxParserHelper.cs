@@ -99,9 +99,9 @@ public static class TrxParserHelper
 		var startRaw = unitTestResult.Attribute("startTime")?.Value;
 		var endRaw = unitTestResult.Attribute("endTime")?.Value;
 		if ( DateTime.TryParse(startRaw, CultureInfo.InvariantCulture,
-			     DateTimeStyles.RoundtripKind, out var startTime) &&
-		     DateTime.TryParse(endRaw, CultureInfo.InvariantCulture,
-			     DateTimeStyles.RoundtripKind, out var endTime) && endTime >= startTime )
+				 DateTimeStyles.RoundtripKind, out var startTime) &&
+			 DateTime.TryParse(endRaw, CultureInfo.InvariantCulture,
+				 DateTimeStyles.RoundtripKind, out var endTime) && endTime >= startTime )
 		{
 			duration = endTime - startTime;
 			return true;

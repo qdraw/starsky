@@ -60,11 +60,13 @@ public class FilenameDatetimeRepairService(
 			var mapping = new FilenameDatetimeRepairMapping { SourceFilePath = key };
 
 			if ( new StatusCodesHelper(appSettings).IsReadOnlyStatus(fileItem) !=
-			     FileIndexItem.ExifStatus.Default )
+				 FileIndexItem.ExifStatus.Default )
 			{
 				mappings.Add(new FilenameDatetimeRepairMapping
 				{
-					SourceFilePath = key, HasError = true, ErrorMessage = "Read-only location"
+					SourceFilePath = key,
+					HasError = true,
+					ErrorMessage = "Read-only location"
 				});
 				continue;
 			}
@@ -73,7 +75,9 @@ public class FilenameDatetimeRepairService(
 			{
 				mappings.Add(new FilenameDatetimeRepairMapping
 				{
-					SourceFilePath = key, HasError = true, ErrorMessage = "Is a directory"
+					SourceFilePath = key,
+					HasError = true,
+					ErrorMessage = "Is a directory"
 				});
 				continue;
 			}
@@ -250,8 +254,8 @@ public class FilenameDatetimeRepairService(
 
 		var dateTimeString = match.Value;
 		if ( DateTime.TryParseExact(dateTimeString, pattern.Format,
-			    CultureInfo.InvariantCulture,
-			    DateTimeStyles.None, out var dateTime) )
+				CultureInfo.InvariantCulture,
+				DateTimeStyles.None, out var dateTime) )
 		{
 			return dateTime;
 		}

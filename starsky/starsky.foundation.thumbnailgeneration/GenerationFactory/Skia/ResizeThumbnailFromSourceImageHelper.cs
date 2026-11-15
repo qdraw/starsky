@@ -93,9 +93,9 @@ internal class ResizeThumbnailFromSourceImageHelper(
 			}
 
 			logger.LogError($"[ResizeThumbnailFromSourceImage] Exception " +
-			                $"Subpath: {subPath} Message: {message} " +
-			                $"StackTrace: {ex.StackTrace} " +
-			                $"Inner: {ex.InnerException}", ex);
+							$"Subpath: {subPath} Message: {message} " +
+							$"StackTrace: {ex.StackTrace} " +
+							$"Inner: {ex.InnerException}", ex);
 
 			result.Success = false;
 			result.ErrorMessage = message;

@@ -22,6 +22,7 @@ This [tutorial](https://www.serverlab.ca/tutorials/linux/web-servers-linux/how-t
 
       location / {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header Host $host;
   
         proxy_pass http://localhost:2342;
@@ -40,6 +41,25 @@ This [tutorial](https://www.serverlab.ca/tutorials/linux/web-servers-linux/how-t
 At the very least you will need to adapt `server_name` and the `ssl_certificate`/`ssl_certificate_key` paths to match your setup. Please refer to their [official documentation](https://nginx.org/en/docs/) for further details.
 
 [View "Pitfalls and Common Mistakes" ›](https://www.nginx.com/nginx-wiki/build/dirhtml/start/topics/tutorials/config_pitfalls/)
+
+### Running the proxy in a different container or host ###
+
+Starsky only trusts the `X-Forwarded-For`/`X-Forwarded-Proto` headers when they come directly
+from `127.0.0.1`/`::1`. That's enough when NgInx runs on the same host as Starsky (as in the
+example above, where `proxy_pass` points at `localhost`). If your reverse proxy instead runs in a
+different Docker container or on a different host, tell Starsky to trust it explicitly:
+
+```
+app__TrustedProxies__0=172.17.0.1
+```
+
+(use the proxy's own address, or a CIDR range such as `10.0.0.0/8`). Once any entry is set, only
+the listed addresses are trusted and the default loopback trust is dropped, so also add
+`127.0.0.1` and `::1` if a proxy on the same host should keep working. Hostnames are not
+supported, and invalid entries are skipped (a message is written to the console). Do **not** try to make
+Starsky trust every client — that would let any visitor spoof their IP address in
+`X-Forwarded-For`, bypassing the login/register rate limiting and, if `NoAccountLocalhost` is
+enabled, the localhost auto-login check.
 
 ### Why Use a Proxy? ###
 

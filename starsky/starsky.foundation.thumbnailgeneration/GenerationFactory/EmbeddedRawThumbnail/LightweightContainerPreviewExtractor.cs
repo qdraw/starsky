@@ -37,7 +37,7 @@ public class LightweightContainerPreviewExtractor(
 
 			var extension = Path.GetExtension(subPathRawFile).ToLowerInvariant();
 			var ok = extension == ".x3f" &&
-			         await TryExtractX3FTaggedPreview(input, output);
+					 await TryExtractX3FTaggedPreview(input, output);
 
 			if ( !ok )
 			{
@@ -63,7 +63,7 @@ public class LightweightContainerPreviewExtractor(
 	internal static async Task<bool> TryExtractX3FTaggedPreview(Stream input, Stream output)
 	{
 		if ( !TryParseTiffHeader(input, out var tiffBase, out var littleEndian,
-			    out var firstIfdRelative) )
+				out var firstIfdRelative) )
 		{
 			return false;
 		}
@@ -72,14 +72,14 @@ public class LightweightContainerPreviewExtractor(
 		for ( var i = 0; i < 4 && ifdOffset > 0; i++ )
 		{
 			if ( !TryReadIfdJpegPair(input, ifdOffset, littleEndian,
-				    out var candidateOffset, out var candidateLength, out var compression,
-				    out var nextIfdRelative) )
+					out var candidateOffset, out var candidateLength, out var compression,
+					out var nextIfdRelative) )
 			{
 				break;
 			}
 
 			if ( compression is 6 or 7 && TryResolveAndValidateOffset(input, tiffBase,
-				    candidateOffset, candidateLength, out var resolvedOffset) )
+					candidateOffset, candidateLength, out var resolvedOffset) )
 			{
 				return await CopyRangeAsync(input, output, resolvedOffset, candidateLength);
 			}
@@ -156,9 +156,9 @@ public class LightweightContainerPreviewExtractor(
 		for ( var i = 0; i <= scanLength - 4; i++ )
 		{
 			var isLittle = bytes[i] == 0x49 && bytes[i + 1] == 0x49 && bytes[i + 2] == 0x2A &&
-			               bytes[i + 3] == 0x00;
+						   bytes[i + 3] == 0x00;
 			var isBig = bytes[i] == 0x4D && bytes[i + 1] == 0x4D && bytes[i + 2] == 0x00 &&
-			            bytes[i + 3] == 0x2A;
+						bytes[i + 3] == 0x2A;
 			if ( isLittle || isBig )
 			{
 				return i;
@@ -178,7 +178,7 @@ public class LightweightContainerPreviewExtractor(
 
 		// Read entry count
 		if ( !StreamPrimitives.TrySeek(input, ifdOffset) ||
-		     !TryReadUInt16(input, littleEndian, out var entryCount) )
+			 !TryReadUInt16(input, littleEndian, out var entryCount) )
 		{
 			return false;
 		}
@@ -191,7 +191,7 @@ public class LightweightContainerPreviewExtractor(
 		for ( var i = 0; i < entryCount; i++ )
 		{
 			if ( !TryReadIfdEntry(input, littleEndian, out var tag, out var type, out var count,
-				    out var value) )
+					out var value) )
 			{
 				return false;
 			}
@@ -217,9 +217,9 @@ public class LightweightContainerPreviewExtractor(
 		count = 0;
 		value = 0;
 		if ( !TryReadUInt16(input, littleEndian, out tag) ||
-		     !TryReadUInt16(input, littleEndian, out type) ||
-		     !TryReadUInt32(input, littleEndian, out count) ||
-		     !TryReadUInt32(input, littleEndian, out value) )
+			 !TryReadUInt16(input, littleEndian, out type) ||
+			 !TryReadUInt32(input, littleEndian, out count) ||
+			 !TryReadUInt32(input, littleEndian, out value) )
 		{
 			return false;
 		}

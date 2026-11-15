@@ -16,7 +16,7 @@ The endpoint is disabled by default. Set the AppSettings (or environment variabl
 app__McpEnabled=true
 ```
 
-The endpoint is then available at `/starsky/mcp` (Streamable HTTP, stateless), for example
+The endpoint is then available at `/mcp` below the application's base path, which is `/starsky/mcp` by default (Streamable HTTP, stateless), for example
 `http://localhost:4000/starsky/mcp`. It always needs an authenticated user:
 
 - Desktop apps and `NoAccountLocalhost`: no credentials needed from localhost.

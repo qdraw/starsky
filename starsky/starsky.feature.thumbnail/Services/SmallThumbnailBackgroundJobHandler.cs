@@ -22,7 +22,7 @@ public sealed class SmallThumbnailBackgroundJobHandler(
 		}
 
 		var payload = JsonSerializer.Deserialize<SmallThumbnailBackgroundPayload>(payloadJson) ??
-		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
+					  throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
 		await service.WorkThumbnailGenerationLoop(payload.Path);
 	}

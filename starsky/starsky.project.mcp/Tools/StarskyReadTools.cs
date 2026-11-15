@@ -23,8 +23,8 @@ public sealed class StarskyReadTools(
 
 	[McpServerTool(Name = "search_photos", ReadOnly = true, Idempotent = true, OpenWorld = false)]
 	[Description("Search the photo library. Query examples: `-Tags:holiday`, " +
-	             "`-DateTime>2024-01-01`, `-FilePath:/2024/`, or plain words. " +
-	             "Returns one page (zero-based) of results.")]
+				 "`-DateTime>2024-01-01`, `-FilePath:/2024/`, or plain words. " +
+				 "Returns one page (zero-based) of results.")]
 	public async Task<McpSearchResult> SearchPhotos(
 		[Description("search query")] string query,
 		[Description("zero-based page number")]
@@ -39,7 +39,7 @@ public sealed class StarskyReadTools(
 
 	[McpServerTool(Name = "list_folder", ReadOnly = true, Idempotent = true, OpenWorld = false)]
 	[Description("List the files and subfolders of a folder in the library, " +
-	             "not including deleted files. Use `/` for the root.")]
+				 "not including deleted files. Use `/` for the root.")]
 	public McpFolderResult ListFolder(
 		[Description("subPath of the folder, for example `/2024/trip`")]
 		string path = "/")
@@ -55,7 +55,7 @@ public sealed class StarskyReadTools(
 	[McpServerTool(Name = "get_photo_info", ReadOnly = true, Idempotent = true,
 		OpenWorld = false)]
 	[Description("Metadata of one or more files: tags, title, description, color class, " +
-	             "date, location. Status is `Ok` when the file exists.")]
+				 "date, location. Status is `Ok` when the file exists.")]
 	public async Task<IReadOnlyList<McpPhoto>> GetPhotoInfo(
 		[Description("subPaths of the files, for example `/2024/trip/img_01.jpg`")]
 		string[] paths,

@@ -160,6 +160,11 @@ copyFileSync(
 );
 
 copyFileSync(
+	"starsky/starskythumbnailmetacli/readme.md",
+	"advanced-options/starsky/starskythumbnailmetacli/readme.md"
+);
+
+copyFileSync(
 	"starsky/starskybusinesslogic/readme.md",
 	"advanced-options/starsky/starskybusinesslogic/readme.md"
 );

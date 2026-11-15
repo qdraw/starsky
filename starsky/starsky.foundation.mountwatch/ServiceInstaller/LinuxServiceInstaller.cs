@@ -146,7 +146,7 @@ internal class LinuxServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			running = false;
 		}
 
-		return ( installed, running );
+		return (installed, running);
 	}
 
 	private async Task<bool> StartStopAsync(bool isStart)

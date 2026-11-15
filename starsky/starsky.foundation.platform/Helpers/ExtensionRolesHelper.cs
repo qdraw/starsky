@@ -40,7 +40,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		rw2 = 27, // Panasonic
 		pef = 28, // pentax
 		x3f = 29, // sigma
-		// fff hasselblad has tiff previews
+				  // fff hasselblad has tiff previews
 
 		heic = 32,
 
@@ -512,7 +512,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 	public static bool IsExtensionNativeSupported(string? filename)
 	{
 		List<string> nativeSupportList =
-			[..ExtensionSkiaSharpThumbnailSupportedList, ..ExtensionHeic];
+			[.. ExtensionSkiaSharpThumbnailSupportedList, .. ExtensionHeic];
 		return IsExtensionForce(filename?.ToLowerInvariant(),
 			nativeSupportList);
 	}
@@ -601,7 +601,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 
 		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if ( filename.ToLowerInvariant().EndsWith(".meta.json") &&
-		     checkThisList.Contains("meta.json") )
+			 checkThisList.Contains("meta.json") )
 		{
 			return true;
 		}
@@ -912,7 +912,7 @@ public partial class ExtensionRolesHelper(IWebLogger logger)
 		}
 
 		var fTypMp4 = "ftyp"u8.ToArray(); //  00 00 00 [skip this byte]
-		// 66 74 79 70 QuickTime Container 3GG, 3GP, 3G2 	FLV
+										  // 66 74 79 70 QuickTime Container 3GG, 3GP, 3G2 	FLV
 
 		if ( fTypMp4.SequenceEqual(bytes.Skip(4).Take(fTypMp4.Length)) )
 		{

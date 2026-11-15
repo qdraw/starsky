@@ -4,6 +4,9 @@
     - [starsky](starsky/starsky/readme.md) _web api application / interface_
         - [client app](starsky/starsky/clientapp/readme.md) _react front-end application_
     - [starskyImporterCli](starsky/starskyimportercli/readme.md) _import command line interface_
+    - [starskyMountWatcherCli](starsky/starskymountwatchercli/readme.md) _watch sd cards_
+    - [starskyDemoSeedCli](starsky/starskydemoseedcli/readme.md) _demo seed data_
+    - [starskyDependenciesDownloadCli](starsky/starskydependenciesdownloadcli/readme.md) _make sure external dependencies are installed_
     - [starskyGeoCli](starsky/starskygeocli/readme.md) _gpx sync and reverse 'geotagging'_
     - [starskyWebHtmlCli](starsky/starskywebhtmlcli/readme.md) _publish web images to a content
       package_
@@ -14,6 +17,7 @@
       updated in the database_
     - [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md) _speed web performance by
       generating smaller images_
+    - [starskyThumbnailMetaCli](starsky/starskythumbnailmetacli/readme.md) _create small thumbnails from the embedded preview_
     - [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _internal libraries (.NET)_
     - [starskyTest](starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
 - [starsky-tools](starsky-tools/readme.md) _Node.js tools to add-on tasks_

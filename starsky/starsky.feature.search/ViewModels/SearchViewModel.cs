@@ -224,7 +224,7 @@ public class SearchViewModel
 	///     Used to know if a page is cached
 	/// </summary>
 	[SuppressMessage("Usage", "S6561: Avoid using DateTime.Now " +
-	                          "for benchmarking or timespan calculation operations.")]
+							  "for benchmarking or timespan calculation operations.")]
 	public double Offset => Math.Round(Math.Abs(( DateTime.UtcNow - _dateTime ).TotalSeconds), 2);
 
 	/// <summary>
@@ -411,7 +411,7 @@ public class SearchViewModel
 	{
 		var returnQueryBuilder = new StringBuilder();
 
-		( defaultQuery, returnQueryBuilder ) = ParseQuotedValues(defaultQuery, returnQueryBuilder);
+		(defaultQuery, returnQueryBuilder) = ParseQuotedValues(defaultQuery, returnQueryBuilder);
 
 		// fallback situation
 		// search on for example: '%'
@@ -487,9 +487,9 @@ public class SearchViewModel
 			var lastChar = defaultQuery[startIndexer + regexInUrl.Length - 1];
 
 			if ( ( defaultQuery[regexInUrl.Index] == '"' &&
-			       lastChar == '"' ) ||
-			     ( defaultQuery[regexInUrl.Index] == '\'' &&
-			       lastChar == '\'' ) )
+				   lastChar == '"' ) ||
+				 ( defaultQuery[regexInUrl.Index] == '\'' &&
+				   lastChar == '\'' ) )
 			{
 				startIndexer = regexInUrl.Index + 1;
 				startLength = regexInUrl.Length - 2;
@@ -505,8 +505,8 @@ public class SearchViewModel
 
 			// Detecting Not Queries (string must be at least 3 chars)
 			if ( ( regexInUrl.Index - 1 >= 0 && defaultQuery[regexInUrl.Index - 1] == '-' )
-			     || ( regexInUrl.Index + 2 <= regexInUrl.Length &&
-			          defaultQuery[regexInUrl.Index + 2] == '-' ) )
+				 || ( regexInUrl.Index + 2 <= regexInUrl.Length &&
+					  defaultQuery[regexInUrl.Index + 2] == '-' ) )
 			{
 				SetAddSearchForOptions("-");
 				continue;
@@ -515,7 +515,7 @@ public class SearchViewModel
 			SetAddSearchForOptions("=");
 		}
 
-		return ( defaultQuery, returnQueryBuilder );
+		return (defaultQuery, returnQueryBuilder);
 	}
 
 	/// <summary>
@@ -557,7 +557,7 @@ public class SearchViewModel
 
 		// hide xmp files in default view
 		if ( model.SearchIn.TrueForAll(p => !string.Equals(p, nameof(SearchInTypes.imageformat),
-			    StringComparison.InvariantCultureIgnoreCase)) )
+				StringComparison.InvariantCultureIgnoreCase)) )
 		{
 			model.FileIndexItems = model.FileIndexItems!
 				.Where(p => p.ImageFormat != ExtensionRolesHelper.ImageFormat.xmp).ToList();
@@ -585,9 +585,9 @@ public class SearchViewModel
 			default:
 				model.FileIndexItems = model.FileIndexItems?
 					.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-					            && p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
-						            .ToString()?.ToLowerInvariant().Contains(searchForQuery,
-							            StringComparison.InvariantCultureIgnoreCase) == true
+								&& p.GetType().GetProperty(property.Name)!.GetValue(p, null)?
+									.ToString()?.ToLowerInvariant().Contains(searchForQuery,
+										StringComparison.InvariantCultureIgnoreCase) == true
 					).ToList();
 				break;
 		}
@@ -611,8 +611,8 @@ public class SearchViewModel
 
 		model.FileIndexItems = model.FileIndexItems?
 			.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-			            && ( bool? ) p.GetType().GetProperty(property.Name)?.GetValue(p, null) ==
-			            boolIsValue
+						&& ( bool? ) p.GetType().GetProperty(property.Name)?.GetValue(p, null) ==
+						boolIsValue
 			).ToList();
 		return model;
 	}
@@ -627,19 +627,19 @@ public class SearchViewModel
 			case SearchForOptionType.Not:
 				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-					            && ( ExtensionRolesHelper.ImageFormat ) p.GetType()
-						            .GetProperty(property.Name)?
-						            .GetValue(p, null)!
-					            != // not
-					            castImageFormat
+								&& ( ExtensionRolesHelper.ImageFormat ) p.GetType()
+									.GetProperty(property.Name)?
+									.GetValue(p, null)!
+								!= // not
+								castImageFormat
 					).ToList();
 				break;
 			default:
 				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-					            && ( ExtensionRolesHelper.ImageFormat ) p.GetType()
-						            .GetProperty(property.Name)?
-						            .GetValue(p, null)! == castImageFormat
+								&& ( ExtensionRolesHelper.ImageFormat ) p.GetType()
+									.GetProperty(property.Name)?
+									.GetValue(p, null)! == castImageFormat
 					).ToList();
 				break;
 		}
@@ -660,25 +660,25 @@ public class SearchViewModel
 			case SearchForOptionType.LessThen:
 				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-					            && ( DateTime ) p.GetType().GetProperty(property.Name)
-						            ?.GetValue(p, null)!
-					            <= parsedDateTime
+								&& ( DateTime ) p.GetType().GetProperty(property.Name)
+									?.GetValue(p, null)!
+								<= parsedDateTime
 					).ToList();
 				break;
 			case SearchForOptionType.GreaterThen:
 				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-					            && ( DateTime ) p.GetType().GetProperty(property.Name)
-						            ?.GetValue(p, null)!
-					            >= parsedDateTime
+								&& ( DateTime ) p.GetType().GetProperty(property.Name)
+									?.GetValue(p, null)!
+								>= parsedDateTime
 					).ToList();
 				break;
 			default:
 				model.FileIndexItems = model.FileIndexItems!
 					.Where(p => p.GetType().GetProperty(property.Name)?.Name == property.Name
-					            && ( DateTime ) p.GetType().GetProperty(property.Name)
-						            ?.GetValue(p, null)!
-					            == parsedDateTime
+								&& ( DateTime ) p.GetType().GetProperty(property.Name)
+									?.GetValue(p, null)!
+								== parsedDateTime
 					).ToList();
 				break;
 		}
@@ -703,14 +703,14 @@ public class SearchViewModel
 		}
 
 		if ( ( property.PropertyType == typeof(bool) || property.PropertyType == typeof(bool?) ) &&
-		     bool.TryParse(searchForQuery, out var boolIsValue) )
+			 bool.TryParse(searchForQuery, out var boolIsValue) )
 		{
 			return PropertySearchBoolType(model, property, boolIsValue);
 		}
 
 		if ( property.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) &&
-		     Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
-			     searchForQuery.ToLowerInvariant(), out var castImageFormat) )
+			 Enum.TryParse<ExtensionRolesHelper.ImageFormat>(
+				 searchForQuery.ToLowerInvariant(), out var castImageFormat) )
 		{
 			return PropertySearchImageFormatType(model, property, castImageFormat, searchType);
 		}
@@ -732,8 +732,8 @@ public class SearchViewModel
 	{
 		// For relative values
 		if ( Regex.IsMatch(input, @"^\d+$",
-			     RegexOptions.None, TimeSpan.FromMilliseconds(100)) &&
-		     int.TryParse(input, out var relativeValue) )
+				 RegexOptions.None, TimeSpan.FromMilliseconds(100)) &&
+			 int.TryParse(input, out var relativeValue) )
 		{
 			if ( relativeValue >= 1 )
 			{

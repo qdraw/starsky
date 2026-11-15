@@ -124,7 +124,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		foreach ( var c in traversalContext.Previews )
 		{
 			if ( ( c.Width != 0 && c.Height != 0 ) ||
-			     !TryGetJpegDimensionsAtOffset(input, c.Offset, c.Length, out var w, out var h) )
+				 !TryGetJpegDimensionsAtOffset(input, c.Offset, c.Length, out var w, out var h) )
 			{
 				continue;
 			}
@@ -215,7 +215,7 @@ public partial class TiffEmbeddedPreviewExtractor
 		// Early bounds check
 		var entryBytes = ( long ) entryCount * 12;
 		if ( !StreamPrimitives.TryGetRemainingBytes(input, out var remaining) ||
-		     entryBytes + 4 > remaining )
+			 entryBytes + 4 > remaining )
 		{
 			return;
 		}
@@ -359,10 +359,10 @@ public partial class TiffEmbeddedPreviewExtractor
 		// Strip-based JPEG (Canon CR2 IFD0: 0x0111 / 0x0117, count=1)
 		// Canon CR2 IFD3/IFD4 use strip tags for raw lossless data; reject those markers.
 		var shouldRejectCanonLosslessStrip = rawFlavor == RawFlavor.CanonCr2 &&
-		                                     IsLosslessJpegAtOffset(input, state.StripOffset);
+											 IsLosslessJpegAtOffset(input, state.StripOffset);
 		if ( IsJpegCompression(state.IfdCompression) && state is
-			     { HasStrip: true, StripOffset: > 0, StripLength: >= MinJpegSize } &&
-		     !shouldRejectCanonLosslessStrip )
+			{ HasStrip: true, StripOffset: > 0, StripLength: >= MinJpegSize } &&
+			 !shouldRejectCanonLosslessStrip )
 		{
 			previews.Add(new PreviewCandidate
 			{
@@ -465,7 +465,7 @@ public partial class TiffEmbeddedPreviewExtractor
 				littleEndian));
 
 		if ( hasPair &&
-		     TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset, out var resolvedOffset) )
+			 TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset, out var resolvedOffset) )
 		{
 			var resolvedLength = rawLength;
 			if ( resolvedLength < MinJpegSize )
@@ -479,7 +479,8 @@ public partial class TiffEmbeddedPreviewExtractor
 			{
 				previews.Add(new PreviewCandidate
 				{
-					Offset = resolvedOffset, Length = resolvedLength
+					Offset = resolvedOffset,
+					Length = resolvedLength
 				});
 			}
 		}
@@ -504,8 +505,8 @@ public partial class TiffEmbeddedPreviewExtractor
 				query);
 
 			if ( !hasPair ||
-			     !TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset,
-				     out var resolvedOffset) )
+				 !TryResolveMakerNoteOffset(input, makerNoteOffset, rawOffset,
+					 out var resolvedOffset) )
 			{
 				continue;
 			}
@@ -556,9 +557,9 @@ public partial class TiffEmbeddedPreviewExtractor
 		IfdTagPairQuery query)
 	{
 		if ( !TryReadIfdEntryHeader(input, ifdOffset, blockLength, query.LittleEndian,
-			    out var entryCount, out var entryBytes) )
+				out var entryCount, out var entryBytes) )
 		{
-			return ( false, 0, 0 );
+			return (false, 0, 0);
 		}
 
 		var buf = ArrayPool<byte>.Shared.Rent(entryBytes);
@@ -566,12 +567,12 @@ public partial class TiffEmbeddedPreviewExtractor
 		{
 			if ( !TryReadFull(input, buf, entryBytes) )
 			{
-				return ( false, 0, 0 );
+				return (false, 0, 0);
 			}
 
 			var (candidateOffset, candidateLength) = ExtractTagPairValues(
 				buf.AsSpan(0, entryBytes), entryCount, query);
-			return ( candidateOffset > 0, candidateOffset, candidateLength );
+			return (candidateOffset > 0, candidateOffset, candidateLength);
 		}
 		finally
 		{
@@ -658,7 +659,7 @@ public partial class TiffEmbeddedPreviewExtractor
 			}
 		}
 
-		return ( candidateOffset, candidateLength );
+		return (candidateOffset, candidateLength);
 	}
 
 	internal static bool TryResolveMakerNoteOffset(Stream input, uint makerNoteBase,

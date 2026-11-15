@@ -51,7 +51,7 @@ public sealed class CleanDemoDataService(IServiceScopeFactory serviceScopeFactor
 		var logger = scope.ServiceProvider.GetRequiredService<IWebLogger>();
 
 		if ( appSettings.DemoUnsafeDeleteStorageFolder != true || appSettings.ApplicationType !=
-		    AppSettings.StarskyAppType.WebController )
+			AppSettings.StarskyAppType.WebController )
 		{
 			return false;
 		}
@@ -159,7 +159,7 @@ public sealed class CleanDemoDataService(IServiceScopeFactory serviceScopeFactor
 			var settingsJsonFullPath =
 				Path.Combine(cacheFolder, dir, "_settings.json");
 			if ( !hostStorage.ExistFile(settingsJsonFullPath) &&
-			     !await httpClientHelper.Download(jsonUrl, settingsJsonFullPath) )
+				 !await httpClientHelper.Download(jsonUrl, settingsJsonFullPath) )
 			{
 				webLogger.LogInformation("Skip due not exists: " + settingsJsonFullPath);
 				continue;
@@ -178,7 +178,7 @@ public sealed class CleanDemoDataService(IServiceScopeFactory serviceScopeFactor
 			var baseUrl = jsonUrl.Replace("_settings.json", string.Empty); // ends with slash
 
 			foreach ( var keyValuePairKey in data.Copy.Where(p => p.Value
-				         && p.Key.Contains("1000")).Select(p => p.Key) )
+						 && p.Key.Contains("1000")).Select(p => p.Key) )
 			{
 				var regex = new Regex("\\?.+$",
 					RegexOptions.None, TimeSpan.FromMilliseconds(100));

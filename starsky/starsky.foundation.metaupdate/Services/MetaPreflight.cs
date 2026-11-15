@@ -61,7 +61,7 @@ public class MetaPreflight : IMetaPreflight
 		{
 			// Files that are not on disk
 			if ( _iStorage!.IsFolderOrFile(fileIndexItem.FilePath!) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -71,7 +71,7 @@ public class MetaPreflight : IMetaPreflight
 
 			// Dir is readonly / don't edit
 			if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-			     == FileIndexItem.ExifStatus.ReadOnly )
+				 == FileIndexItem.ExifStatus.ReadOnly )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.ReadOnly,
@@ -87,14 +87,14 @@ public class MetaPreflight : IMetaPreflight
 
 			// this one is good :)
 			if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default
-			    or FileIndexItem.ExifStatus.OkAndSame )
+				or FileIndexItem.ExifStatus.OkAndSame )
 			{
 				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			}
 
 			// Deleted is allowed but the status needs be updated
 			if ( StatusCodesHelper.IsDeletedStatus(fileIndexItem)
-			     == FileIndexItem.ExifStatus.Deleted )
+				 == FileIndexItem.ExifStatus.Deleted )
 			{
 				fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 			}
@@ -109,7 +109,7 @@ public class MetaPreflight : IMetaPreflight
 
 		AddNotFoundInIndexStatus.Update(inputFilePaths, fileIndexUpdateList);
 
-		return ( fileIndexUpdateList, changedFileIndexItemName );
+		return (fileIndexUpdateList, changedFileIndexItemName);
 	}
 
 	/// <summary>
@@ -121,7 +121,7 @@ public class MetaPreflight : IMetaPreflight
 	{
 		// fileIndexItem.Latitude == 0 || fileIndexItem.Longitude == 0
 		if ( Math.Abs(fileIndexItem.Latitude) < 0.000001d ||
-		     Math.Abs(fileIndexItem.Longitude) < 0.000001d )
+			 Math.Abs(fileIndexItem.Longitude) < 0.000001d )
 		{
 			return;
 		}
@@ -150,7 +150,7 @@ public class MetaPreflight : IMetaPreflight
 		int rotateClock)
 	{
 		if ( changedFileIndexItemName == null ||
-		     string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
+			 string.IsNullOrEmpty(collectionsFileIndexItem.FilePath) )
 		{
 			throw new MissingFieldException(nameof(changedFileIndexItemName));
 		}
@@ -166,7 +166,7 @@ public class MetaPreflight : IMetaPreflight
 		collectionsFileIndexItem.LastChanged = comparedNamesList;
 
 		if ( changedFileIndexItemName.TryAdd(collectionsFileIndexItem.FilePath!,
-			    comparedNamesList) )
+				comparedNamesList) )
 		{
 			return;
 		}

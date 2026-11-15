@@ -45,7 +45,7 @@ public sealed class MySqlDatabaseFixes(
 		}
 
 		var query = "ALTER TABLE `" + tableName + "`" +
-		            " CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
+					" CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
 		await ExecuteNonQueryAsync(query);
 		return true;
 	}
@@ -58,7 +58,7 @@ public sealed class MySqlDatabaseFixes(
 		}
 
 		var query = "ALTER DATABASE `" + connection.Database + "` " +
-		            "CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
+					"CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;";
 		await ExecuteNonQueryAsync(query);
 		return true;
 	}
@@ -83,21 +83,21 @@ public sealed class MySqlDatabaseFixes(
 		}
 
 		var query = "SELECT DEFAULT_CHARACTER_SET_NAME, DEFAULT_COLLATION_NAME " +
-		            "FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" +
-		            connection.Database + "'; ";
+					"FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" +
+					connection.Database + "'; ";
 		var command = new MySqlCommand(query, connection);
 
 		var tableNames = await ReadCommand(command);
 
 		var isUtf8 = tableNames.FirstOrDefault()?.Contains("utf8mb4,utf8mb4_general_ci") ==
-		             true;
+					 true;
 		return isUtf8;
 	}
 
 	public async Task OpenConnection()
 	{
 		if ( connection == null ||
-		     appSettings.DatabaseType != AppSettings.DatabaseTypeList.Mysql )
+			 appSettings.DatabaseType != AppSettings.DatabaseTypeList.Mysql )
 		{
 			return;
 		}
@@ -120,7 +120,7 @@ public sealed class MySqlDatabaseFixes(
 	public async Task<bool?> FixAutoIncrement(string tableName, bool dispose = false)
 	{
 		if ( connection == null ||
-		     appSettings.DatabaseType != AppSettings.DatabaseTypeList.Mysql )
+			 appSettings.DatabaseType != AppSettings.DatabaseTypeList.Mysql )
 		{
 			return null;
 		}
@@ -164,12 +164,12 @@ public sealed class MySqlDatabaseFixes(
 		}
 
 		var query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS " +
-		            "WHERE TABLE_NAME = '" + tableName + "' " +
-		            "AND COLUMN_NAME = '" + columnName + "' " +
-		            "AND DATA_TYPE = 'int' " +
-		            "AND COLUMN_DEFAULT IS NULL " +
-		            "AND IS_NULLABLE = 'NO' " +
-		            "AND EXTRA like '%auto_increment%'";
+					"WHERE TABLE_NAME = '" + tableName + "' " +
+					"AND COLUMN_NAME = '" + columnName + "' " +
+					"AND DATA_TYPE = 'int' " +
+					"AND COLUMN_DEFAULT IS NULL " +
+					"AND IS_NULLABLE = 'NO' " +
+					"AND EXTRA like '%auto_increment%'";
 		var command = new MySqlCommand(query, connection);
 
 		var tableNames = await ReadCommand(command);
@@ -204,7 +204,7 @@ public sealed class MySqlDatabaseFixes(
 		}
 
 		var myInsertQuery = "ALTER TABLE `" + tableName + "` MODIFY " + columnName +
-		                    " INTEGER NOT NULL AUTO_INCREMENT;";
+							" INTEGER NOT NULL AUTO_INCREMENT;";
 		return await ExecuteNonQueryAsync(myInsertQuery);
 	}
 }

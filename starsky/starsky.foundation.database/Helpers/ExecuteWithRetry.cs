@@ -64,7 +64,7 @@ public class ExecuteWithRetry(
 		try
 		{
 			var r = await operation(dbCtx);
-			return ( true, r, delayMs, null );
+			return (true, r, delayMs, null);
 		}
 		catch ( ObjectDisposedException )
 		{
@@ -78,14 +78,14 @@ public class ExecuteWithRetry(
 				attempt, maxAttempts, ex.Message);
 			if ( attempt >= maxAttempts )
 			{
-				return ( false, default!, delayMs, ex );
+				return (false, default!, delayMs, ex);
 			}
 
 			await Task.Delay(delayMs);
 			delayMs *= 2;
 			// Return false to indicate the operation did not succeed. On the final attempt this
 			// allows the outer loop to finish and throw the final exhausted exception.
-			return ( false, default!, delayMs, ex );
+			return (false, default!, delayMs, ex);
 		}
 	}
 

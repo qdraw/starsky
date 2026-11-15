@@ -71,8 +71,8 @@ public sealed class MetaUpdateRunner : IMetaUpdateRunner
 
 		// When all items are not found
 		if ( fileIndexResultsList.TrueForAll(p =>
-			    p.Status != FileIndexItem.ExifStatus.Ok
-			    && p.Status != FileIndexItem.ExifStatus.Deleted) )
+				p.Status != FileIndexItem.ExifStatus.Ok
+				&& p.Status != FileIndexItem.ExifStatus.Deleted) )
 		{
 			return new MetaUpdateRunResult(fileIndexResultsList, null);
 		}

@@ -11,7 +11,7 @@ public sealed class StatusCodesHelper(AppSettings appSettings)
 	public FileIndexItem.ExifStatus IsReadOnlyStatus(FileIndexItem fileIndexItem)
 	{
 		if ( fileIndexItem.IsDirectory == true &&
-		     appSettings.IsReadOnly(fileIndexItem.FilePath!) )
+			 appSettings.IsReadOnly(fileIndexItem.FilePath!) )
 		{
 			return FileIndexItem.ExifStatus.DirReadOnly;
 		}
@@ -52,7 +52,7 @@ public sealed class StatusCodesHelper(AppSettings appSettings)
 	public static FileIndexItem.ExifStatus IsDeletedStatus(FileIndexItem? fileIndexItem)
 	{
 		return fileIndexItem?.Tags != null &&
-		       fileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString)
+			   fileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString)
 			? FileIndexItem.ExifStatus.Deleted
 			: FileIndexItem.ExifStatus.Default;
 	}
@@ -60,7 +60,7 @@ public sealed class StatusCodesHelper(AppSettings appSettings)
 	public static FileIndexItem.ExifStatus IsDeletedStatus(DetailView? detailView)
 	{
 		if ( !string.IsNullOrEmpty(detailView?.FileIndexItem?.Tags) &&
-		     detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
+			 detailView.FileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 		{
 			return FileIndexItem.ExifStatus.Deleted;
 		}

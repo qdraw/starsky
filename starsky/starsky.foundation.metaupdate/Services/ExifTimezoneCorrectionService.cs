@@ -118,7 +118,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 		bool collections, IExifTimeCorrectionRequest request)
 	{
 		var fileIndexItems = await _query.GetObjectsByFilePathAsync(
-			[..subPaths], collections);
+			[.. subPaths], collections);
 
 		var results =
 			fileIndexItems.Select(fileIndexItem =>
@@ -231,7 +231,7 @@ public class ExifTimezoneCorrectionService : IExifTimezoneCorrectionService
 
 		// Dir is readonly / don't edit
 		if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-		     == FileIndexItem.ExifStatus.ReadOnly )
+			 == FileIndexItem.ExifStatus.ReadOnly )
 		{
 			fileIndexItem.Status = FileIndexItem.ExifStatus.ReadOnly;
 			result.Error = "Directory is read only";

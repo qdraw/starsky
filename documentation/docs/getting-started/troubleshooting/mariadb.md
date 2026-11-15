@@ -9,14 +9,14 @@ Starsky is compatible with [SQLite 3](sqlite.md) and [MariaDB 10.5.12+](https://
 Official support for MySQL 8 is discontinued as Oracle seems to have stopped shipping new features and enhancements.
 As a result, the testing effort required before each release is no longer feasible.
 
-Our [configuration examples](../docker/docker.md) are usually based on the [current stable version](https://mariadb.com/kb/en/mariadb-server-release-dates/) to take advantage of performance improvements. This does not mean that [older versions](../readme.mdx#databases) are no longer supported and you must upgrade immediately.
+Our [configuration examples](../docker/docker.md) are usually based on the [current stable version](https://mariadb.com/kb/en/mariadb-server-release-dates/) to take advantage of performance improvements. This does not mean that [older versions](../setup.md#databases) are no longer supported and you must upgrade immediately.
 
 We recommend not using the `:latest` tag for the MariaDB Docker image and to upgrade manually by changing the tag once we had a chance to test a new major version, e.g.:
 
 ```yaml
 services:
   mariadb:
-    image: mariadb:10.9
+    image: mariadb:12.3
     # ... etc...
 ```
 
@@ -87,7 +87,7 @@ To enable automatic schema updates, set `MARIADB_AUTO_UPGRADE` to a non-empty va
 ```yaml
 services:
   mariadb:
-    image: mariadb:10.9
+    image: mariadb:12.3
     ...
     environment:
       MARIADB_AUTO_UPGRADE: "1"
@@ -102,7 +102,7 @@ Before starting MariaDB in production mode, the database image entrypoint script
 
 ## Incompatible Schema
 
-If your database does not seem to be compatible with the currently installed version of Starsky, for example because search results are missing or incorrect, first make sure you are using a [supported database](../readme.mdx#databases) and that its internal management schema is up-to-date. How to do that is explained in the [previous section](#version-upgrade).
+If your database does not seem to be compatible with the currently installed version of Starsky, for example because search results are missing or incorrect, first make sure you are using a [supported database](../setup.md#databases) and that its internal management schema is up-to-date. How to do that is explained in the [previous section](#version-upgrade).
 
 
 ### Complete Rescan
@@ -173,7 +173,7 @@ command and restart the `mariadb` service as described above.
 
 When moving MariaDB to another computer, cloud server, or virtual machine:
 
-- [ ] Move the complete *storage* folder along with it and preserve the [file permissions](../docker/docker.md#file-permissions)
+- [ ] Move the complete *storage* folder along with it and preserve the [file permissions](docker.md#file-permissions)
 - [ ] **or** restore your index [from an SQL dump](https://mariadb.com/kb/en/mysqldump/) (backup file)
 - [ ] Perform a [version upgrade](#version-upgrade) if necessary
 - [ ] Make sure that Starsky can access the database on the new host
@@ -199,7 +199,7 @@ docker compose exec -T mariadb mysql -uroot -pinsecure starsky
 
 ## MySQL Errors
 
-Official [support for MySQL 8 is discontinued](../readme.mdx#databases) as Oracle seems to have stopped shipping new features and enhancements.
+Official [support for MySQL 8 is discontinued](../setup.md#databases) as Oracle seems to have stopped shipping new features and enhancements.
 As a result, the testing effort required before each release is no longer feasible.
 
 *[SQLite]: self-contained, serverless SQL database

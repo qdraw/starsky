@@ -1,4 +1,4 @@
-﻿using starsky.foundation.database.Models;
+using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 
 namespace starsky.foundation.metaupdate.Interfaces;

@@ -44,8 +44,8 @@ public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeS
 	private static bool IsSupported(IsOsPlatformDelegate runtimeInformationIsOsPlatform, int width)
 	{
 		return runtimeInformationIsOsPlatform(OSPlatform.OSX) ||
-		       ( runtimeInformationIsOsPlatform(OSPlatform.Windows)
-		         && RuntimeInformation.OSArchitecture == Architecture.X64 && width <= 512 );
+			   ( runtimeInformationIsOsPlatform(OSPlatform.Windows)
+				 && RuntimeInformation.OSArchitecture == Architecture.X64 && width <= 512 );
 	}
 
 	internal bool GeneratePreviewImage(
@@ -53,7 +53,7 @@ public class PreviewImageNativeService(IWebLogger logger) : IPreviewImageNativeS
 		string filePath, string outputPath, int width, int height)
 	{
 		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
-		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
+			 runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) )
 		{
 			return false;
 		}

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -18,13 +18,13 @@ public sealed class QueueItem
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	public int Id { get; set; }
 
-	[MaxLength(64)] [Required] public string QueueName { get; set; } = string.Empty;
+	[MaxLength(64)][Required] public string QueueName { get; set; } = string.Empty;
 
 	[Column(TypeName = "varchar(36)")]
 	[MaxLength(36)]
 	public Guid JobId { get; set; }
 
-	[MaxLength(150)] [Required] public string JobType { get; set; } = string.Empty;
+	[MaxLength(150)][Required] public string JobType { get; set; } = string.Empty;
 
 	[MaxLength(1024)] public string? MetaData { get; set; }
 

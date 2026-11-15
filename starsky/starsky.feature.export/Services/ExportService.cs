@@ -81,7 +81,7 @@ public partial class ExportService : IExport
 			}
 
 			if ( _iStorage.IsFolderOrFile(detailView.FileIndexItem.FilePath) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(detailView.FileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -181,8 +181,8 @@ public partial class ExportService : IExport
 			await _query.GetAllRecursiveAsync(detailView
 				.FileIndexItem?.FilePath!);
 		foreach ( var item in
-		         allFilesInFolder.Where(item =>
-			         item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
+				 allFilesInFolder.Where(item =>
+					 item.FilePath != null && _iStorage.ExistFile(item.FilePath)) )
 		{
 			item.Status = FileIndexItem.ExifStatus.Ok;
 			fileIndexResultsList.Add(item);
@@ -220,7 +220,7 @@ public partial class ExportService : IExport
 		var filePaths = new List<string>();
 
 		foreach ( var item in fileIndexResultsList.Where(p =>
-			         p is { Status: FileIndexItem.ExifStatus.Ok, FileHash: not null }).ToList() )
+					 p is { Status: FileIndexItem.ExifStatus.Ok, FileHash: not null }).ToList() )
 		{
 			if ( thumbnail )
 			{
@@ -249,9 +249,9 @@ public partial class ExportService : IExport
 			// when there is .xmp sidecar file
 			// (but only when file is a RAW file, ignored when for example jpeg)
 			if ( !ExtensionRolesHelper.IsExtensionForceXmp(item.FilePath) ||
-			     !_iStorage.ExistFile(
-				     ExtensionRolesHelper.ReplaceExtensionWithXmp(
-					     item.FilePath)) )
+				 !_iStorage.ExistFile(
+					 ExtensionRolesHelper.ReplaceExtensionWithXmp(
+						 item.FilePath)) )
 			{
 				continue;
 			}
@@ -391,7 +391,7 @@ public partial class ExportService : IExport
 
 			// If there's a directory separator in the relative part, we have subfolders
 			if ( relativePart.Contains(Path.DirectorySeparatorChar) ||
-			     relativePart.Contains(Path.AltDirectorySeparatorChar) )
+				 relativePart.Contains(Path.AltDirectorySeparatorChar) )
 			{
 				return true;
 			}
@@ -459,7 +459,7 @@ public partial class ExportService : IExport
 
 			// Check if this part is the same across all paths at this level
 			if ( allParts.All(parts => parts.Length > i &&
-			                           parts[i].Equals(part, StringComparison.OrdinalIgnoreCase)) )
+									   parts[i].Equals(part, StringComparison.OrdinalIgnoreCase)) )
 			{
 				commonParts.Add(part);
 			}

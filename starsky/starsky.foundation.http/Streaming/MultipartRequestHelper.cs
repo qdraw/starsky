@@ -29,7 +29,7 @@ public static class MultipartRequestHelper
 	public static bool IsMultipartContentType(string? contentType)
 	{
 		return !string.IsNullOrEmpty(contentType)
-		       && contentType.Contains("multipart/", StringComparison.OrdinalIgnoreCase);
+			   && contentType.Contains("multipart/", StringComparison.OrdinalIgnoreCase);
 	}
 
 	public static bool HasFormDataContentDisposition(
@@ -37,21 +37,21 @@ public static class MultipartRequestHelper
 	{
 		// Content-Disposition: form-data; name="key" dot comma
 		return contentDisposition != null
-		       && contentDisposition.DispositionType.Equals("form-data")
-		       && string.IsNullOrEmpty(contentDisposition.FileName
-			       .Value) // For .NET Core <2.0 remove ".Value"
-		       && string.IsNullOrEmpty(contentDisposition.FileNameStar
-			       .Value); // For .NET Core <2.0 remove ".Value"
+			   && contentDisposition.DispositionType.Equals("form-data")
+			   && string.IsNullOrEmpty(contentDisposition.FileName
+				   .Value) // For .NET Core <2.0 remove ".Value"
+			   && string.IsNullOrEmpty(contentDisposition.FileNameStar
+				   .Value); // For .NET Core <2.0 remove ".Value"
 	}
 
 	public static bool HasFileContentDisposition(ContentDispositionHeaderValue? contentDisposition)
 	{
 		// Content-Disposition: form-data; name="myfile1"; filename="Misc 002.jpg"
 		return contentDisposition != null
-		       && contentDisposition.DispositionType.Equals("form-data")
-		       && ( !string.IsNullOrEmpty(contentDisposition.FileName
-			            .Value) // For .NET Core <2.0 remove ".Value"
-		            || !string.IsNullOrEmpty(contentDisposition.FileNameStar
-			            .Value) ); // For .NET Core <2.0 remove ".Value"
+			   && contentDisposition.DispositionType.Equals("form-data")
+			   && ( !string.IsNullOrEmpty(contentDisposition.FileName
+						.Value) // For .NET Core <2.0 remove ".Value"
+					|| !string.IsNullOrEmpty(contentDisposition.FileNameStar
+						.Value) ); // For .NET Core <2.0 remove ".Value"
 	}
 }

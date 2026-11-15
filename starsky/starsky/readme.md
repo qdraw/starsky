@@ -7,6 +7,10 @@
         * [clientapp](../../starsky/starsky/clientapp/readme.md) _react front-end application_
     * [starskyImporterCli](../../starsky/starskyimportercli/readme.md)  _import command line
       interface_
+    * [starskyMountWatcherCli](../../starsky/starskymountwatchercli/readme.md)  _watch sd cards_
+    * [starskyDemoSeedCli](../../starsky/starskydemoseedcli/readme.md)  _demo seed data_
+    * [starskyDependenciesDownloadCli](../../starsky/starskydependenciesdownloadcli/readme.md)
+      _make sure external dependencies are installed_
     * [starskyGeoCli](../../starsky/starskygeocli/readme.md)  _gpx sync and reverse 'geo tagging'_
     * [starskyWebHtmlCli](../../starsky/starskywebhtmlcli/readme.md)  _publish web images to a
       content package_
@@ -17,6 +21,7 @@
       are updated in the database_
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
       generating smaller images_
+    * [starskyThumbnailMetaCli](../../starsky/starskythumbnailmetacli/readme.md)  _create small thumbnails from the embedded preview_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
@@ -40,18 +45,24 @@ You could use machine specific configuration files: appsettings.machinename.json
 machinename with your computer name in lowercase)_
 
 1. You can use `appsettings.json` inside the application folder to set base settings.
-   The order of this files is used to get the values from the appsettings
-    - `/bin/Debug/net10.0/appsettings.patch.json`
-    - `/bin/Debug/net10.0/appsettings.default.json`
-    - `/bin/Debug/net10.0/appsettings.computername.patch.json`
-    - `/bin/Debug/net10.0/appsettings.json`
-    - `/bin/Debug/net10.0/appsettings.computername.json`
+   The files are read in this order, a value in a later file overwrites an earlier one
+   (files that do not exist are skipped):
+    - `appsettings.json`
+    - `appsettings.default.json`
+    - `appsettings.patch.json`
+    - `appsettings.computername.json`
+    - `appsettings.computername.patch.json`
+    - the file set by `app__appsettingspath` (settings saved by the user in the app)
+    - the file set by `app__appsettingslocalpath` (manual settings)
 
 2. Use Environment variables to overwrite those base settings
    For `ThumbnailTempFolder` use `app__ThumbnailTempFolder`
    ([source](https://github.com/aspnet/Configuration/commit/cafd2e53eb71a6d0cecc60a9e38ea1df2dafb916))  
    Dictionaries can be used this way: `app__accountRolesByEmailRegisterOverwrite__test@mail.be`
-3. Command line arguments in the Cli applications to set in-app environment variables
+3. Command line arguments. The Cli applications accept shortcuts such as `--basepath`,
+   `--thumbnailtempfolder`, `--tempfolder`, `--dependencies`, `--appsettingspath` and
+   `--appsettingslocalpath` that set the matching `app__*` environment variable. Run a Cli
+   application with `--help` to see the options it supports
 
 ### Required settings to start
 
@@ -59,6 +70,9 @@ machinename with your computer name in lowercase)_
    `StorageFolder` to a folder on your local machine where the picture should be located.
 
 ### Recommend settings {#recommend-settings}
+
+The defaults below are those of a development build (`./bin/Debug/net10.0/`). In the Docker image
+and the desktop app other locations are used, see the matching getting-started page.
 
 1. `ThumbnailTempFolder` - For storing thumbnails (
    default: `./bin/Debug/net10.0/thumbnailTempFolder`)
@@ -76,19 +90,15 @@ machinename with your computer name in lowercase)_
    project_
 3. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, _defaults a empty list_
 4. `AddMemoryCache` - Enable caching _(default true)_
-   The only 2 build-in exceptions are when there are no accounts or you already logged in _(default
-   false)_
 5. `AddSwagger` - To show a user interface to show al REST-services _(default false)_
 6. `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(
-   default false)_
+   default true)_
 7. `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
    `McpEnabled`, `McpAllowWrite` and `McpMaxItemsPerCall` configure the MCP endpoint for AI agents,
    see [MCP for AI agents](/docs/features/mcp)
-8. `AddLegacyOverwrite`- Read Only value for ("Mono.Runtime") _(default false)_
-9. `Verbose` - show more console logging  _(default false)_
-10. `WebFtp` - ftp path, this is used by starskyWebFtpCli
-11. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish
-    button
+8. `Verbose` - show more console logging  _(default false)_
+9. `PublishProfiles` - settings to configure publish output, used by starskyWebHtmlCli and publish
+    button. The ftp targets used by starskyWebFtpCli are configured with `PublishProfilesRemote`
 12. `ExifToolPath` - A path to Exiftool.exe _to ignore the included ExifTool_
 13. `isAccountRegisterOpen` - Allow everyone to register an account _(default false)_
 14. `AccountRegisterDefaultRole` When a user is new and register an account, give it the role User
@@ -106,7 +116,7 @@ machinename with your computer name in lowercase)_
 21. `UseDiskWatcher` Watch the disk for changes and update the database _default true_
 22. `CheckForUpdates` Check if there are updates on github and notify the user _default true_
 23. `SyncIgnore` Ignore pattern to not include disk items while running sync, uses always unix style
-    and startsWith _default list with: /lost+found_
+    and startsWith _default list with: /lost+found, /.stfolder, /.git_
 24. `ImportIgnore` ImportIgnore filter  _default list with: "lost+found" ".Trashes"_
 25. `MaxDegreesOfParallelism` Number of jobs running in background _default 6_
 26. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
@@ -156,6 +166,46 @@ machinename with your computer name in lowercase)_
     (login, register, health check for updates, geo lookup, search suggest). Turn off when a
     reverse proxy already does this. Use the environment variable `app__UseRateLimiting`
     _(default true)_
+51. `TrustedProxies` - List of IP addresses or CIDR ranges of reverse proxies whose
+    `X-Forwarded-For`/`X-Forwarded-Proto` headers are trusted, for example
+    `app__TrustedProxies__0=172.17.0.1`. When this list (or `TrustedProxiesCloudflare`) is not empty,
+    only these addresses are trusted and the default trust of loopback (`127.0.0.1`/`::1`) is
+    dropped, add them yourself when the proxy runs on the same host. Hostnames are not supported and
+    invalid entries are ignored. See [nginx](/docs/getting-started/proxies/nginx) and
+    [Cloudflare](/docs/getting-started/proxies/cloudflare) _(default empty, only loopback is
+    trusted)_
+52. `TrustedProxiesCloudflare` - Trust the published Cloudflare IP ranges, use this when Cloudflare is
+    your reverse proxy. Can be combined with `TrustedProxies` _(default false)_
+53. `StorageFolderMappings` - Map a sub folder of the storage folder to another location on disk,
+    see [Storage Folder Mappings](/docs/getting-started/configuration/config-options#storage-folder-mappings-example)
+54. `AccountRegisterFirstRoleAdmin` - The first account that is created becomes an administrator, other
+    accounts get `AccountRegisterDefaultRole` _(default true)_
+55. `MaxDegreesOfParallelismThumbnail` - Number of thumbnail jobs running in the background at the same
+    time _(default 3)_
+56. `ThumbnailImageFormat` - Image format of the generated thumbnails: `jpg`, `png` or `webp`
+    _(default webp)_
+57. `UseDiskWatcherIntervalInMilliseconds` - Time to wait before the same disk watcher request is
+    accepted again, to avoid duplicate requests _(default 10000)_
+58. `ImageOptimisationDownloadOnStartup` - Download the image optimisation tools on startup,
+    _recommend to keep this false_ _(default false)_
+59. `EnableCrashReports` - Send anonymous crash reports (unhandled exceptions only, no personal data).
+    Only active when a DSN is available. Disable with `app__EnableCrashReports=false` _(default true)_
+60. `CloudImport` - Automatic import from cloud storage, see
+    [Cloud import](/docs/getting-started/cloud-import/)
+61. `DesktopCollectionsOpen` - Which files are opened when a collection is opened in the desktop
+    editor, see [Open in desktop editor](/docs/getting-started/configuration/desktop-open)
+62. `DesktopEditorAmountBeforeConfirmation` - Number of files that can be opened in the desktop editor
+    before the user needs to confirm _(default not set)_
+63. `TempFolder` - Location of the temp folder, for example used while importing and exporting. The
+    CLI option is `--tempfolder` _(default folder in the application folder)_
+64. `PublishProfilesDefaults` and `PublishProfilesRemote` - Default values for publish profiles and
+    the remote (ftp) targets, see [Publish remote](/docs/features/publish-remote)
+65. `DemoUnsafeDeleteStorageFolder` and `DemoData` - Only for demo environments. When
+    `DemoUnsafeDeleteStorageFolder` is enabled **the storage folder is deleted on every startup**, use
+    it only together with a throwaway `app__storageFolder` _(default false)_. `DemoData` contains the
+    data used to seed the demo
+66. `McpEnabled` _(default false)_, `McpAllowWrite` _(default false)_ and `McpMaxItemsPerCall`
+    _(default 25)_ - see [MCP for AI agents](/docs/features/mcp)
 
 ### Appsettings.json example
 

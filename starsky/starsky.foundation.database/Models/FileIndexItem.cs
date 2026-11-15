@@ -246,7 +246,7 @@ public sealed class FileIndexItem
 
 			_fileName = value;
 			FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory!) +
-			                  PathHelper.PrefixDbSlash(value);
+							  PathHelper.PrefixDbSlash(value);
 		}
 	}
 
@@ -293,7 +293,7 @@ public sealed class FileIndexItem
 
 			_parentDirectory = value;
 			FilePathPrivate = PathHelper.RemoveLatestSlash(value) +
-			                  PathHelper.PrefixDbSlash(FileName!);
+							  PathHelper.PrefixDbSlash(FileName!);
 		}
 	}
 
@@ -838,7 +838,7 @@ public sealed class FileIndexItem
 		_fileName = PathHelper.RemovePrefixDbSlash(_fileName);
 
 		FilePathPrivate = PathHelper.RemoveLatestSlash(ParentDirectory!) +
-		                  PathHelper.PrefixDbSlash(FileName!);
+						  PathHelper.PrefixDbSlash(FileName!);
 	}
 
 	/// <summary>
@@ -903,13 +903,13 @@ public sealed class FileIndexItem
 		foreach ( var propertyInfo in allProperties )
 		{
 			if ( (
-				    propertyInfo.PropertyType == typeof(bool) ||
-				    propertyInfo.PropertyType == typeof(bool?) ||
-				    propertyInfo.PropertyType == typeof(string) ||
-				    propertyInfo.PropertyType == typeof(DateTime) ||
-				    propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) ||
-				    propertyInfo.PropertyType == typeof(ColorClassParser.Color)
-			    ) && propertyInfo.CanRead )
+					propertyInfo.PropertyType == typeof(bool) ||
+					propertyInfo.PropertyType == typeof(bool?) ||
+					propertyInfo.PropertyType == typeof(string) ||
+					propertyInfo.PropertyType == typeof(DateTime) ||
+					propertyInfo.PropertyType == typeof(ExtensionRolesHelper.ImageFormat) ||
+					propertyInfo.PropertyType == typeof(ColorClassParser.Color)
+				) && propertyInfo.CanRead )
 			{
 				fileIndexPropList.Add(propertyInfo.Name);
 			}
@@ -954,7 +954,7 @@ public sealed class FileIndexItem
 		var currentOrientation = _orderRotation.FindIndex(i => i == Orientation);
 
 		if ( currentOrientation >= 0 && currentOrientation + relativeRotation <
-		    _orderRotation.Count && currentOrientation + relativeRotation >= 0 )
+			_orderRotation.Count && currentOrientation + relativeRotation >= 0 )
 		{
 			return _orderRotation[currentOrientation + relativeRotation];
 		}

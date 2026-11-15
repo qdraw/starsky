@@ -54,7 +54,7 @@ public sealed class McpWriteGuard
 		{
 			var user = _httpContextAccessor.HttpContext?.User;
 			return user?.FindFirst(ClaimTypes.NameIdentifier)?.Value ??
-			       user?.Identity?.Name ?? "unknown";
+				   user?.Identity?.Name ?? "unknown";
 		}
 	}
 
@@ -140,14 +140,14 @@ public sealed class McpWriteGuard
 	internal static string? NormalizePath(string? input)
 	{
 		if ( string.IsNullOrWhiteSpace(input) || input.Any(char.IsControl) ||
-		     input.Contains('\\') || input.Contains(';') )
+			 input.Contains('\\') || input.Contains(';') )
 		{
 			return null;
 		}
 
 		var path = PathHelper.RemoveLatestSlash(PathHelper.PrefixDbSlash(input.Trim()));
 		if ( string.IsNullOrEmpty(path) || path == "/" ||
-		     path.Split('/').Contains("..") )
+			 path.Split('/').Contains("..") )
 		{
 			return null;
 		}

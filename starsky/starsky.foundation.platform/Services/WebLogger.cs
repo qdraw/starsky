@@ -8,7 +8,7 @@ using starsky.foundation.platform.Interfaces;
 namespace starsky.foundation.platform.Services;
 
 [SuppressMessage("Usage", "CA2254:The logging message template should not vary between calls to " +
-                          "'LoggerExtensions.LogInformation(ILogger, string?, params object?[])'")]
+						  "'LoggerExtensions.LogInformation(ILogger, string?, params object?[])'")]
 [Service(typeof(IWebLogger), InjectionLifetime = InjectionLifetime.Singleton)]
 public sealed class WebLogger : IWebLogger
 {

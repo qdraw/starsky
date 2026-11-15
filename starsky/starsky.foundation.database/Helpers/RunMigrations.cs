@@ -25,7 +25,7 @@ public static class RunMigrations
 		await dbContext.Database.MigrateAsync();
 
 		if ( appSettings.DatabaseType !=
-		     AppSettings.DatabaseTypeList.Mysql )
+			 AppSettings.DatabaseTypeList.Mysql )
 		{
 			return true;
 		}
@@ -87,9 +87,9 @@ public static class RunMigrations
 			}
 
 			var messageAsString = "[RunMigrations] start migration failed\n " +
-			                      $"Message: {exception.Message} \n" +
-			                      $"Inner: {innerExceptionMessage} \n" +
-			                      "[RunMigrations] end catch-ed";
+								  $"Message: {exception.Message} \n" +
+								  $"Inner: {innerExceptionMessage} \n" +
+								  "[RunMigrations] end catch-ed";
 			logger.LogError(messageAsString);
 		}
 	}

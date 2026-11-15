@@ -65,7 +65,7 @@ public sealed class UserManager : IUserManager
 	public async Task<UserOverviewModel> AllUsersAsync()
 	{
 		if ( IsCacheEnabled() &&
-		     _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
+			 _cache?.TryGetValue(AllUsersCacheKey, out var objectAllUsersResult) == true )
 		{
 			return new UserOverviewModel(( List<User>? ) objectAllUsersResult);
 		}
@@ -308,7 +308,7 @@ public sealed class UserManager : IUserManager
 		var cacheKey = "credentialTypeCode_" + credentialTypeCode;
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(cacheKey,
-			    out var objectCredentialTypeCode) == true )
+				out var objectCredentialTypeCode) == true )
 		{
 			return ( CredentialType? ) objectCredentialTypeCode;
 		}
@@ -344,7 +344,9 @@ public sealed class UserManager : IUserManager
 	{
 		var model = new RegisterViewModel
 		{
-			Email = userName, Password = password, ConfirmPassword = confirmPassword
+			Email = userName,
+			Password = password,
+			ConfirmPassword = confirmPassword
 		};
 
 		var context = new ValidationContext(model, null, null);
@@ -472,7 +474,8 @@ public sealed class UserManager : IUserManager
 		{
 			return new ValidateResult
 			{
-				Success = false, Error = ValidateResultError.CredentialTypeNotFound
+				Success = false,
+				Error = ValidateResultError.CredentialTypeNotFound
 			};
 		}
 
@@ -483,7 +486,8 @@ public sealed class UserManager : IUserManager
 		{
 			return new ValidateResult
 			{
-				Success = false, Error = ValidateResultError.CredentialNotFound
+				Success = false,
+				Error = ValidateResultError.CredentialNotFound
 			};
 		}
 
@@ -496,7 +500,8 @@ public sealed class UserManager : IUserManager
 		{
 			return new ValidateResult
 			{
-				Success = false, Error = ValidateResultError.CredentialNotFound
+				Success = false,
+				Error = ValidateResultError.CredentialNotFound
 			};
 		}
 
@@ -661,11 +666,14 @@ public sealed class UserManager : IUserManager
 
 		// When not exist add it
 		if ( credentialType == null &&
-		     credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
+			 credentialTypeCode.Equals("email", StringComparison.CurrentCultureIgnoreCase) )
 		{
 			credentialType = new CredentialType
 			{
-				Code = "email", Name = "email", Position = 1, Id = 1
+				Code = "email",
+				Name = "email",
+				Position = 1,
+				Id = 1
 			};
 			await _dbContext.CredentialTypes.AddAsync(credentialType);
 			await _dbContext.SaveChangesAsync();
@@ -729,15 +737,15 @@ public sealed class UserManager : IUserManager
 		var roleToAddToUser = _appSettings.AccountRegisterDefaultRole.ToString();
 
 		if ( _appSettings.AccountRegisterFirstRoleAdmin == true &&
-		     !_dbContext.Users.Any(p => p != user) )
+			 !_dbContext.Users.Any(p => p != user) )
 		{
 			return AccountRoles.AppAccountRoles.Administrator.ToString();
 		}
 
 		if ( _appSettings.AccountRolesByEmailRegisterOverwrite != null
-		     && _appSettings.AccountRolesByEmailRegisterOverwrite
-			     .TryGetValue(identifier, out var emailsForConfig) &&
-		     AccountRoles.GetAllRoles().Contains(emailsForConfig) )
+			 && _appSettings.AccountRolesByEmailRegisterOverwrite
+				 .TryGetValue(identifier, out var emailsForConfig) &&
+			 AccountRoles.GetAllRoles().Contains(emailsForConfig) )
 		{
 			return emailsForConfig;
 		}
@@ -767,7 +775,7 @@ public sealed class UserManager : IUserManager
 
 		// Add caching for credentialType
 		if ( IsCacheEnabled() && _cache?.TryGetValue(key,
-			    out var objectCredentialTypeCode) == true )
+				out var objectCredentialTypeCode) == true )
 		{
 			return ( Credential? ) objectCredentialTypeCode;
 		}

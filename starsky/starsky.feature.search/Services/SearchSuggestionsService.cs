@@ -75,10 +75,10 @@ public class SearchSuggestionsService(
 		}
 
 		if ( memoryCache.TryGetValue(nameof(SearchSuggestionsService),
-			    out var objectFileFolders) )
+				out var objectFileFolders) )
 		{
 			return objectFileFolders as List<KeyValuePair<string, int>> ??
-			       [];
+				   [];
 		}
 
 		return await Inflate();
@@ -93,7 +93,7 @@ public class SearchSuggestionsService(
 	public async Task<IEnumerable<string>> SearchSuggest(string query, bool system)
 	{
 		if ( string.IsNullOrEmpty(query) || memoryCache == null ||
-		     appSettings.AddMemoryCache == false )
+			 appSettings.AddMemoryCache == false )
 		{
 			return new List<string>();
 		}
