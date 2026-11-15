@@ -44,6 +44,11 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.10 - _(Unreleased)_ - 2026-?-? {#0.9.10}
 
+- [x] (Security) _Back-end_ `ForwardedHeadersOptions` no longer trusts `X-Forwarded-For`/
+  `X-Forwarded-Proto` from any client; only loopback is trusted by default. The previous
+  `Clear()` call let an attacker spoof their IP to bypass the login/register rate limiter and,
+  when `NoAccountLocalhost` is enabled, the localhost auto-login check. Add `app__TrustedProxies`
+  (or `app__TrustedProxiesCloudflare=true` for Cloudflare) (PR #3492)
 - [x] (Added) _Back-end_ _Front-end_ Support for `.m4a` audio files: recognised by extension and
   `ftyp M4A` header, listed with an audio icon and played in the detail view with an audio player
   (PR #3486)
