@@ -20,7 +20,7 @@ public class RemoveCorruptThumbnail(ISelectorStorage selectorStorage)
 		{
 			return null;
 		}
-		
+
 		if ( _thumbnailStorage.Info(outputFileHashWithExtension).Size > 10 )
 		{
 			return false;

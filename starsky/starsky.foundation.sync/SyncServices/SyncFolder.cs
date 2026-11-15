@@ -177,8 +177,8 @@ public sealed class SyncFolder
 	{
 		var newItems = new List<FileIndexItem>();
 		foreach ( var path in subPaths.Where(path =>
-			         folderList.TrueForAll(p => p.FilePath != path) &&
-			         _subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path)) )
+					 folderList.TrueForAll(p => p.FilePath != path) &&
+					 _subPathStorage.ExistFolder(path) && !_syncIgnoreCheck.Filter(path)) )
 		{
 			var storageInfo = _subPathStorage.Info(path);
 			var newFolder = new FileIndexItem(path)
@@ -209,17 +209,18 @@ public sealed class SyncFolder
 		{
 			var subPathStatus = _subPathStorage.IsFolderOrFile(subPath);
 			var exifStatus = subPathStatus ==
-			                 FolderOrFileModel.FolderOrFileTypeList.Deleted
+							 FolderOrFileModel.FolderOrFileTypeList.Deleted
 				? FileIndexItem.ExifStatus.NotFoundSourceMissing
 				: FileIndexItem.ExifStatus.Ok;
 			// if the status is not found, we assume its a folder, but that can't be checked
 			var isDirectory = subPathStatus ==
-			                  FolderOrFileModel.FolderOrFileTypeList.Folder ||
-			                  exifStatus == FileIndexItem.ExifStatus.NotFoundSourceMissing;
+							  FolderOrFileModel.FolderOrFileTypeList.Folder ||
+							  exifStatus == FileIndexItem.ExifStatus.NotFoundSourceMissing;
 
 			allResults.Add(new FileIndexItem(subPath)
 			{
-				IsDirectory = isDirectory, Status = exifStatus
+				IsDirectory = isDirectory,
+				Status = exifStatus
 			});
 		}
 
@@ -433,7 +434,7 @@ public sealed class SyncFolder
 		if ( _subPathStorage.ExistFolder(item.FilePath!) )
 		{
 			_logger.LogInformation($"[SyncFolder] Aborting RemoveChildItems - " +
-			                       $"folder exists: {item.FilePath}");
+								   $"folder exists: {item.FilePath}");
 			item.Status = FileIndexItem.ExifStatus.Ok;
 			await query.DisposeAsync();
 			return item;

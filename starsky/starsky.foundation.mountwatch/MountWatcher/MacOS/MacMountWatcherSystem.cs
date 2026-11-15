@@ -14,7 +14,7 @@ namespace starsky.foundation.mountwatch.MountWatcher.MacOS;
 	"instead of \'DllImportAttribute\' to " +
 	"generate P/Invoke marshalling code at compile time")]
 [SuppressMessage("Globalization", "CA2101:Specify marshaling " +
-                                  "for P/Invoke string arguments")]
+								  "for P/Invoke string arguments")]
 [SuppressMessage("Usage",
 	"S4200: Make this wrapper for native method less trivial")]
 internal sealed class MacMountWatcherSystem : IMacMountWatcherSystem

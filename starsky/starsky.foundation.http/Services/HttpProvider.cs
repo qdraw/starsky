@@ -46,7 +46,8 @@ public sealed class HttpProvider : IHttpProvider
 
 		var request = new HttpRequestMessage
 		{
-			Method = HttpMethod.Get, RequestUri = new Uri(requestUri)
+			Method = HttpMethod.Get,
+			RequestUri = new Uri(requestUri)
 		};
 		request.Headers.TryAddWithoutValidation("User-Agent", userAgent);
 
@@ -75,7 +76,9 @@ public sealed class HttpProvider : IHttpProvider
 
 		var request = new HttpRequestMessage
 		{
-			Method = HttpMethod.Post, Content = content, RequestUri = new Uri(requestUri)
+			Method = HttpMethod.Post,
+			Content = content,
+			RequestUri = new Uri(requestUri)
 		};
 
 		if ( authenticationHeaderValue != null )

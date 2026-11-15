@@ -29,7 +29,7 @@ public static class EnumerableExtensions
 		var bufferBlock = new BufferBlock<TResult>();
 
 		using ( transformBlock.LinkTo(bufferBlock,
-			       new DataflowLinkOptions { PropagateCompletion = true }) )
+				   new DataflowLinkOptions { PropagateCompletion = true }) )
 		{
 			foreach ( var item in items )
 			{

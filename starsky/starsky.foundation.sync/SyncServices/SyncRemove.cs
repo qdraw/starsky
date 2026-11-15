@@ -90,7 +90,7 @@ public sealed class SyncRemove
 
 		// Add items that are not in the database
 		foreach ( var subPath in subPaths.Where(subPath =>
-			         !toDeleteList.Exists(p => p.FilePath == subPath)) )
+					 !toDeleteList.Exists(p => p.FilePath == subPath)) )
 		{
 			toDeleteList.Add(new FileIndexItem(subPath)
 			{
@@ -156,7 +156,7 @@ public sealed class SyncRemove
 			foreach ( var singleCollectionPath in collectionPath )
 			{
 				if ( !item.FilePath!.StartsWith(singleCollectionPath)
-				     || ExtensionRolesHelper.IsExtensionSidecar(item.FilePath) )
+					 || ExtensionRolesHelper.IsExtensionSidecar(item.FilePath) )
 				{
 					continue;
 				}

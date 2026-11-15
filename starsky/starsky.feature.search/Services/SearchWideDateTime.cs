@@ -36,7 +36,7 @@ public class SearchWideDateTime
 		var afterIndexSearchForOptions =
 			model.SearchForOptions.IndexOf(SearchViewModel.SearchForOptionType.LessThen);
 		if ( beforeIndexSearchForOptions >= 0 &&
-		     afterIndexSearchForOptions >= 0 )
+			 afterIndexSearchForOptions >= 0 )
 		{
 			var beforeDateTime =
 				SearchViewModel.ParseDateTime(model.SearchFor[beforeIndexSearchForOptions]);
@@ -121,8 +121,8 @@ public class SearchWideDateTime
 
 		// Searching for entire day
 		if ( model.SearchForOptions[indexer] != SearchViewModel.SearchForOptionType.Equal ||
-		     dateTime.Hour != 0 || dateTime.Minute != 0 || dateTime.Second != 0 ||
-		     dateTime.Millisecond != 0 )
+			 dateTime.Hour != 0 || dateTime.Minute != 0 || dateTime.Second != 0 ||
+			 dateTime.Millisecond != 0 )
 		{
 			return;
 		}

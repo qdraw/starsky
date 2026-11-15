@@ -28,6 +28,6 @@ public static partial class ValidateLocation
 		var longitudeValue = Math.Round(longitude, 6).ToString(CultureInfo.InvariantCulture);
 
 		return LatitudeRegex().IsMatch(latitudeValue) &&
-		       LongitudeRegex().IsMatch(longitudeValue);
+			   LongitudeRegex().IsMatch(longitudeValue);
 	}
 }

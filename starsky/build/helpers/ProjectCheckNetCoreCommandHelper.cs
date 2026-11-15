@@ -55,8 +55,8 @@ public static partial class ProjectCheckNetCoreCommandHelper
 		if ( missingProjects.Count > 0 )
 		{
 			throw new ArgumentException($"Missing {valueToCheckFor} in: " +
-			                            string.Join(" , ", missingProjects) + " projects  " +
-			                            $"Please add {valueToCheckFor} to the .csproj files");
+										string.Join(" , ", missingProjects) + " projects  " +
+										$"Please add {valueToCheckFor} to the .csproj files");
 		}
 	}
 

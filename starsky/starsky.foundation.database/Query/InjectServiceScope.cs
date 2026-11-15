@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 
 [assembly: InternalsVisibleTo("starskytest"),
-           InternalsVisibleTo("starsky.foundation.settings")]
+		   InternalsVisibleTo("starsky.foundation.settings")]
 
 namespace starsky.foundation.database.Query;
 

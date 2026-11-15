@@ -169,7 +169,7 @@ internal class LinuxMountWatcher(
 
 				// Match the device node (exact match or with partition number variations)
 				if ( device.Equals(deviceNode, StringComparison.OrdinalIgnoreCase) &&
-				     ShouldIncludeMount(mountPath) )
+					 ShouldIncludeMount(mountPath) )
 				{
 					return mountPath;
 				}
@@ -190,7 +190,7 @@ internal class LinuxMountWatcher(
 	{
 		// Include user-mounted filesystems
 		return mountPath.StartsWith("/media", StringComparison.OrdinalIgnoreCase) ||
-		       mountPath.StartsWith("/mnt", StringComparison.OrdinalIgnoreCase) ||
-		       mountPath.StartsWith("/home", StringComparison.OrdinalIgnoreCase);
+			   mountPath.StartsWith("/mnt", StringComparison.OrdinalIgnoreCase) ||
+			   mountPath.StartsWith("/home", StringComparison.OrdinalIgnoreCase);
 	}
 }

@@ -23,7 +23,7 @@ public sealed class QueueProcessorJobHandler(
 		}
 
 		var payload = JsonSerializer.Deserialize<QueueProcessorPayload>(payloadJson) ??
-		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
+					  throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
 		var connector = new SyncWatcherConnector(scopeFactory);
 		await connector.Sync(new Tuple<string, string?, WatcherChangeTypes>(

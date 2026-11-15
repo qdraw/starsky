@@ -31,7 +31,7 @@ public sealed class MetaTimeCorrectBackgroundJobHandler(
 		}
 
 		var payload = JsonSerializer.Deserialize<MetaTimeCorrectBackgroundPayload>(payloadJson)
-		              ?? throw new ArgumentException("Invalid payload");
+					  ?? throw new ArgumentException("Invalid payload");
 		using var scope = scopeFactory.CreateScope();
 		var scopedService =
 			scope.ServiceProvider.GetRequiredService<IExifTimezoneCorrectionService>();
@@ -42,11 +42,11 @@ public sealed class MetaTimeCorrectBackgroundJobHandler(
 		IExifTimeCorrectionRequest request = payload.RequestType switch
 		{
 			"timezone" => JsonSerializer.Deserialize<ExifTimezoneBasedCorrectionRequest>(
-				              payload.RequestJson)
-			              ?? throw new ArgumentException("Invalid timezone request payload"),
+							  payload.RequestJson)
+						  ?? throw new ArgumentException("Invalid timezone request payload"),
 			"offset" => JsonSerializer.Deserialize<ExifCustomOffsetCorrectionRequest>(
-				            payload.RequestJson)
-			            ?? throw new ArgumentException("Invalid offset request payload"),
+							payload.RequestJson)
+						?? throw new ArgumentException("Invalid offset request payload"),
 			_ => throw new ArgumentException("Unknown request type")
 		};
 

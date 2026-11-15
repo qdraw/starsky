@@ -48,7 +48,7 @@ public sealed class Startup
 		if ( !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("app__appsettingspath")) )
 		{
 			Console.WriteLine("app__appSettingsPath: " +
-			                  Environment.GetEnvironmentVariable("app__appsettingspath"));
+							  Environment.GetEnvironmentVariable("app__appsettingspath"));
 		}
 
 		_configuration = SetupAppSettings.AppSettingsToBuilder(args).ConfigureAwait(false)
@@ -176,7 +176,7 @@ public sealed class Startup
 			options.ModelBinderProviders.Insert(0, new DoubleBinderProvider());
 		}).AddApiExplorer().AddAuthorization().AddViews();
 
-		ConfigureForwardedHeaders(services);
+		ConfigureForwardedHeaders(services, _appSettings);
 
 		// Application Insights / Open Telemetry
 		services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -191,19 +191,57 @@ public sealed class Startup
 	}
 
 	/// <summary>
-	///     Respect ForwardedHeaders
+	///     Respect ForwardedHeaders, but only from proxies we actually trust.
 	/// </summary>
-	private static void ConfigureForwardedHeaders(IServiceCollection services)
+	private static void ConfigureForwardedHeaders(IServiceCollection services,
+		AppSettings? appSettings)
 	{
 		// Configure the X-Forwarded-For and X-Forwarded-Proto to use for example an NgInx reverse proxy
 		services.Configure<ForwardedHeadersOptions>(options =>
 		{
 			options.ForwardedHeaders =
 				ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-			// https://medium.com/@laimis/couple-issues-with-https-redirect-asp-net-core-7021cf383e00
-			// Without the explicit Clear() call, it continued to do the infinite redirect.
-			options.KnownIPNetworks.Clear();
+
+			var trustedProxies = appSettings?.TrustedProxies;
+			if ( trustedProxies == null || trustedProxies.Count == 0 )
+			{
+				// No reverse proxy configured: keep the safe default, which only trusts
+				// forwarded headers coming directly from loopback (e.g. NgInx on the same
+				// host, see https://medium.com/@laimis/couple-issues-with-https-redirect-asp-net-core-7021cf383e00).
+				// Do NOT Clear() KnownProxies/KnownIPNetworks here: that would make the app
+				// trust X-Forwarded-For from ANY client, letting an attacker spoof their IP
+				// and bypass the login/register rate limiter (RateLimitPolicies.ClientKey)
+				// and, when NoAccountLocalhost is enabled, the localhost auto-login check
+				// (IsLocalhost.IsHostLocalHost).
+				return;
+			}
+
+			// An explicit list of trusted proxies was configured (e.g. a reverse proxy
+			// running in a different Docker container): only those are trusted.
 			options.KnownProxies.Clear();
+			options.KnownIPNetworks.Clear();
+
+			foreach ( var entry in trustedProxies )
+			{
+				if ( string.IsNullOrWhiteSpace(entry) )
+				{
+					continue;
+				}
+
+				if ( entry.Contains('/', StringComparison.Ordinal) &&
+					 System.Net.IPNetwork.TryParse(entry, out var network) )
+				{
+					options.KnownIPNetworks.Add(network);
+				}
+				else if ( IPAddress.TryParse(entry, out var address) )
+				{
+					options.KnownProxies.Add(address);
+				}
+				else
+				{
+					Console.WriteLine($"app__TrustedProxies: ignoring invalid entry '{entry}'");
+				}
+			}
 		});
 	}
 
@@ -278,7 +316,7 @@ public sealed class Startup
 		app.UseAuthentication();
 		app.UseBasicAuthentication();
 		app.UseNoAccount(_appSettings?.NoAccountLocalhost == true ||
-		                 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
+						 _appSettings?.DemoUnsafeDeleteStorageFolder == true);
 		app.UseCheckIfAccountExist();
 
 		app.UseAuthorization();
@@ -313,7 +351,7 @@ public sealed class Startup
 	internal (bool, bool, bool) SetupStaticFiles(IApplicationBuilder app,
 		string assetsName = "assets")
 	{
-		var result = ( false, false, false );
+		var result = (false, false, false);
 
 		// Allow Current Directory and wwwroot in Base Directory
 		// AppSettings can be null when running tests
@@ -342,19 +380,19 @@ public sealed class Startup
 
 		// Check if clientapp is build and use the assets folder
 		if ( !Directory.Exists(Path.Combine(
-			    _appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
+				_appSettings.BaseDirectoryProject, "clientapp", "build", assetsName)) )
 		{
 			return result;
 		}
 
 		app.UseStaticFiles(new StaticFileOptions
-			{
-				OnPrepareResponse = PrepareResponse,
-				FileProvider = new PhysicalFileProvider(
+		{
+			OnPrepareResponse = PrepareResponse,
+			FileProvider = new PhysicalFileProvider(
 					Path.Combine(_appSettings.BaseDirectoryProject, "clientapp", "build",
 						assetsName)),
-				RequestPath = "/assets"
-			}
+			RequestPath = "/assets"
+		}
 		);
 		result.Item3 = true;
 		return result;

@@ -36,7 +36,7 @@ public class LifetimeDiagnosticsService(IDiagnosticsService diagnosticsService, 
 			DiagnosticsType.ApplicationStoppingLifetimeInMinutes);
 
 		if ( !double.TryParse(item?.Value, NumberStyles.Any,
-			    CultureInfo.InvariantCulture, out var result) )
+				CultureInfo.InvariantCulture, out var result) )
 		{
 			return -1;
 		}

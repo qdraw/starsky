@@ -96,8 +96,8 @@ public class UpdateAppSettingsByPath(
 		Dictionary<string, string> currentMappings)
 	{
 		foreach ( var mapping in
-		         currentMappings.Where(mapping =>
-			         !previousMappings.ContainsKey(mapping.Key)) )
+				 currentMappings.Where(mapping =>
+					 !previousMappings.ContainsKey(mapping.Key)) )
 		{
 			diskWatcher.Watcher(mapping.Value);
 		}

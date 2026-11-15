@@ -8,9 +8,9 @@ public static class ErrorLogItemFullPath
 	internal static string GetErrorLogItemFullPath(string subPath)
 	{
 		return FilenamesHelper.GetParentPath(subPath)
-		       + "/"
-		       + "_"
-		       + Path.GetFileNameWithoutExtension(PathHelper.GetFileName(subPath))
-		       + ".log";
+			   + "/"
+			   + "_"
+			   + Path.GetFileNameWithoutExtension(PathHelper.GetFileName(subPath))
+			   + ".log";
 	}
 }

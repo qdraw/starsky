@@ -48,7 +48,7 @@ public static class SelectBestPreviewHelper
 
 		// Prefer higher resolution preview when dimensions are available; fallback to byte size.
 		return candidatePixels > bestPixels ||
-		       ( candidatePixels == bestPixels && candidate.Length > best.Length );
+			   ( candidatePixels == bestPixels && candidate.Length > best.Length );
 	}
 
 	private static bool ResolveMixedDimensionPreference(

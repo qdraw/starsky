@@ -32,7 +32,8 @@ public partial class Query
 			var toAddRange = nonNullFileHashes.Select(fileHash =>
 				new FileIndexItem
 				{
-					FileHash = fileHash, Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
+					FileHash = fileHash,
+					Status = FileIndexItem.ExifStatus.NotFoundNotInIndex
 				});
 			result.AddRange(toAddRange);
 

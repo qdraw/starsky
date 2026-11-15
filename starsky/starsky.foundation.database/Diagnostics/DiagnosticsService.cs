@@ -40,7 +40,9 @@ public class DiagnosticsService(
 	{
 		return await AddOrUpdateItem(new DiagnosticsItem
 		{
-			Key = Enum.GetName(key) ?? string.Empty, Value = value, LastEdited = DateTime.UtcNow
+			Key = Enum.GetName(key) ?? string.Empty,
+			Value = value,
+			LastEdited = DateTime.UtcNow
 		});
 	}
 

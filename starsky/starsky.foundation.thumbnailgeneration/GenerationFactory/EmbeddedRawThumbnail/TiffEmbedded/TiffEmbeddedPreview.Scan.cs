@@ -97,8 +97,8 @@ public partial class TiffEmbeddedPreviewExtractor
 
 					var soi = ( uint ) ( rangeOffset + scanned + i - 2 );
 					if ( TryBuildScanCandidate(input, soi,
-						    maxScan - ( scanned + i - 2 ),
-						    out var candidate) )
+							maxScan - ( scanned + i - 2 ),
+							out var candidate) )
 					{
 						yield return candidate;
 					}

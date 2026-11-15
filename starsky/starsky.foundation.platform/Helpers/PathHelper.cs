@@ -71,7 +71,7 @@ public static class PathHelper
 
 		// remove latest backslash
 		if ( basePath.Substring(basePath.Length - 1, 1) ==
-		     Path.DirectorySeparatorChar.ToString() )
+			 Path.DirectorySeparatorChar.ToString() )
 		{
 			basePath = basePath.Substring(0, basePath.Length - 1);
 		}
@@ -90,7 +90,7 @@ public static class PathHelper
 
 		// on all platforms the same
 		if ( string.IsNullOrWhiteSpace(basePath) ||
-		     basePath == PathSeparatorAlwaysUnixStyle.ToString() )
+			 basePath == PathSeparatorAlwaysUnixStyle.ToString() )
 		{
 			return string.Empty;
 		}
@@ -120,7 +120,7 @@ public static class PathHelper
 		}
 
 		if ( thumbnailTempFolder.Substring(thumbnailTempFolder.Length - 1,
-			    1) != Path.DirectorySeparatorChar.ToString() )
+				1) != Path.DirectorySeparatorChar.ToString() )
 		{
 			thumbnailTempFolder += Path.DirectorySeparatorChar.ToString();
 		}
@@ -143,7 +143,7 @@ public static class PathHelper
 		var lastLetter = inputFolder.Substring(
 			inputFolder.Length - 1, 1);
 		if ( lastLetter !=
-		     PathSeparatorAlwaysUnixStyle.ToString() )
+			 PathSeparatorAlwaysUnixStyle.ToString() )
 		{
 			inputFolder += PathSeparatorAlwaysUnixStyle.ToString();
 		}
@@ -165,7 +165,7 @@ public static class PathHelper
 		}
 
 		if ( subPath.Substring(0, 1) !=
-		     PathSeparatorAlwaysUnixStyle.ToString() )
+			 PathSeparatorAlwaysUnixStyle.ToString() )
 		{
 			subPath = PathSeparatorAlwaysUnixStyle + subPath;
 		}
@@ -187,7 +187,7 @@ public static class PathHelper
 		}
 
 		if ( subPath.Substring(0, 1) ==
-		     PathSeparatorAlwaysUnixStyle.ToString() )
+			 PathSeparatorAlwaysUnixStyle.ToString() )
 		{
 			subPath = subPath.Remove(0, 1);
 		}

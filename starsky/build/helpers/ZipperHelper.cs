@@ -53,7 +53,7 @@ public sealed class ZipperHelper
 		if ( getRuntimesWithoutGeneric.Count == 0 )
 		{
 			Log.Information("There are no runtime specific items selected\n" +
-			                "So skip ZipRuntimes");
+							"So skip ZipRuntimes");
 			return;
 		}
 
@@ -87,8 +87,8 @@ public sealed class ZipperHelper
 		if ( noUnitTest )
 		{
 			Log.Information(">> ZipHtmlCoverageReport " +
-			                "is disable due the --no-unit-test flag\n" +
-			                "So skip ZipHtmlCoverageReport");
+							"is disable due the --no-unit-test flag\n" +
+							"So skip ZipHtmlCoverageReport");
 			return;
 		}
 

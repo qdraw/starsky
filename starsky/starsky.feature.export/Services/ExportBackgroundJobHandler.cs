@@ -24,7 +24,7 @@ public sealed class ExportBackgroundJobHandler(IExport exportService) : IBackgro
 		}
 
 		var payload = JsonSerializer.Deserialize<ExportBackgroundPayload>(payloadJson)
-		              ?? throw new ArgumentException("Invalid payload");
+					  ?? throw new ArgumentException("Invalid payload");
 		await exportService.CreateZip(payload.FileIndexResultsList, payload.Thumbnail,
 			payload.ZipOutputName);
 	}

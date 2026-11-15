@@ -1,4 +1,4 @@
-﻿namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 
 /// <summary>
 /// Holds parsed state information for a single Image File Directory (IFD) entry

@@ -36,7 +36,7 @@ public class ThumbnailService(
 	private readonly Func<string?, bool> _delegateToCheckIfExtensionIsSupported = e =>
 		ExtensionRolesHelper.IsExtensionSkiaSharpThumbnailSupported(e) ||
 		ExtensionRolesHelper.IsExtensionVideoSupported(e) ||
-		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e) || 
+		ExtensionRolesHelper.IsExtensionRawThumbnailSupported(e) ||
 		ExtensionRolesHelper.IsExtensionNativeSupported(e);
 
 	private readonly FolderToFileList _folderToFileList = new(selectorStorage);
@@ -115,15 +115,15 @@ public class ThumbnailService(
 
 		if ( !success || toAddFilePaths.Count != 1 )
 		{
-			return ( null, ErrorGenerationResultModel
+			return (null, ErrorGenerationResultModel
 				.FailedResult(size, subPath, fileHash, false, imageFormat, true,
-					"File is deleted") );
+					"File is deleted"));
 		}
 
 		var (stream, status) = await GenerateSingleThumbnailAsync(subPath, imageFormat, size);
 		await updateStatusGeneratedThumbnailService.AddOrUpdateStatusAsync([status]);
 
-		return ( stream, status );
+		return (stream, status);
 	}
 
 	/// <summary>
@@ -173,9 +173,9 @@ public class ThumbnailService(
 			await fileHashSubPathStorage.GetHashCodeAsync(singleSubPath, null);
 		if ( !success )
 		{
-			return ( null, ErrorGenerationResultModel
+			return (null, ErrorGenerationResultModel
 				.FailedResult(size, singleSubPath, fileHash,
-					true, thumbnailImageFormat, true, "Invalid fileHash") );
+					true, thumbnailImageFormat, true, "Invalid fileHash"));
 		}
 
 		var generationResult =
@@ -185,6 +185,6 @@ public class ThumbnailService(
 		var stream =
 			new GetThumbnailStream(selectorStorage).GetThumbnail(fileHash, size,
 				thumbnailImageFormat);
-		return ( stream, generationResult );
+		return (stream, generationResult);
 	}
 }

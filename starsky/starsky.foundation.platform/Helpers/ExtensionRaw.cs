@@ -89,8 +89,8 @@ public static class ExtensionRaw
 		var firstIfdOffset = ( int ) ReadUInt32(probe, 4, littleEndian);
 
 		if ( firstIfdOffset < 8 || firstIfdOffset + 2 > probe.Length ||
-		     !TryParseFirstIfDForTags(probe, firstIfdOffset, littleEndian,
-			     out var make, out var hasDngTag) )
+			 !TryParseFirstIfDForTags(probe, firstIfdOffset, littleEndian,
+				 out var make, out var hasDngTag) )
 		{
 			return DetectByMarker(probe);
 		}
@@ -125,7 +125,7 @@ public static class ExtensionRaw
 	private static bool HasX3FHeader(ReadOnlySpan<byte> bytes)
 	{
 		return bytes[0] == ( byte ) 'F' && bytes[1] == ( byte ) 'O' &&
-		       bytes[2] == ( byte ) 'V' && bytes[3] == ( byte ) 'b';
+			   bytes[2] == ( byte ) 'V' && bytes[3] == ( byte ) 'b';
 	}
 
 	private static bool HasRw2Header(ReadOnlySpan<byte> bytes)
@@ -150,7 +150,7 @@ public static class ExtensionRaw
 		}
 
 		return bytes[8] == ( byte ) 'C' && bytes[9] == ( byte ) 'R' &&
-		       bytes[10] == 0x02 && bytes[11] == 0x00;
+			   bytes[10] == 0x02 && bytes[11] == 0x00;
 	}
 
 	private static ExtensionRolesHelper.ImageFormat DetectByMarker(ReadOnlySpan<byte> probe)
@@ -339,11 +339,11 @@ public static class ExtensionRaw
 		if ( littleEndian )
 		{
 			return ( uint ) ( bytes[offset] | ( bytes[offset + 1] << 8 ) |
-			                  ( bytes[offset + 2] << 16 ) | ( bytes[offset + 3] << 24 ) );
+							  ( bytes[offset + 2] << 16 ) | ( bytes[offset + 3] << 24 ) );
 		}
 
 		return ( uint ) ( ( bytes[offset] << 24 ) | ( bytes[offset + 1] << 16 ) |
-		                  ( bytes[offset + 2] << 8 ) | bytes[offset + 3] );
+						  ( bytes[offset + 2] << 8 ) | bytes[offset + 3] );
 	}
 
 	private static ushort ReadUInt16(ReadOnlySpan<byte> bytes, int offset, bool littleEndian)
@@ -369,7 +369,7 @@ public static class ExtensionRaw
 		// Check for HEIC/HEIF using the ExtensionRaw helper (minimal 'ftyp' check)
 		// 'ftyp' box should start at offset 4: [size (4)] 'ftyp' (4)
 		if ( bytes[4] != ( byte ) 'f' || bytes[5] != ( byte ) 't' ||
-		     bytes[6] != ( byte ) 'y' || bytes[7] != ( byte ) 'p' )
+			 bytes[6] != ( byte ) 'y' || bytes[7] != ( byte ) 'p' )
 		{
 			return false;
 		}

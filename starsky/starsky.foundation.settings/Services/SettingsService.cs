@@ -54,7 +54,8 @@ public sealed class SettingsService : ISettingsService
 	{
 		return await AddOrUpdateSetting(new SettingsItem
 		{
-			Key = Enum.GetName(key) ?? string.Empty, Value = value
+			Key = Enum.GetName(key) ?? string.Empty,
+			Value = value
 		});
 	}
 
@@ -98,11 +99,11 @@ public sealed class SettingsService : ISettingsService
 		}
 
 		if ( ( typeof(T) == typeof(DateTime) || typeof(T) == typeof(DateTime?) ) &&
-		     DateTime.TryParseExact(data.Value,
-			     SettingsFormats.DefaultSettingsDateTimeFormat,
-			     CultureInfo.InvariantCulture,
-			     DateTimeStyles.AssumeUniversal,
-			     out var expectDateTime) )
+			 DateTime.TryParseExact(data.Value,
+				 SettingsFormats.DefaultSettingsDateTimeFormat,
+				 CultureInfo.InvariantCulture,
+				 DateTimeStyles.AssumeUniversal,
+				 out var expectDateTime) )
 		{
 			return ( T ) ( object ) expectDateTime;
 		}

@@ -21,7 +21,7 @@ internal static class App1PayloadProcessor
 		using var tiffMs = new MemoryStream(payload, 6, payload.Length - 6, false);
 
 		if ( !TiffEmbeddedPreviewExtractor.TryParseTiffHeader(tiffMs, out var littleEndian,
-			    out var firstIfdOffset) )
+				out var firstIfdOffset) )
 		{
 			return false; // Not a valid TIFF header inside EXIF
 		}
@@ -67,12 +67,12 @@ internal static class App1PayloadProcessor
 	private static bool IsValidExifHeader(byte[] payload)
 	{
 		return !( payload.Length < 6 ||
-		          payload[0] != ( byte ) 'E' ||
-		          payload[1] != ( byte ) 'x' ||
-		          payload[2] != ( byte ) 'i' ||
-		          payload[3] != ( byte ) 'f' ||
-		          payload[4] != 0 ||
-		          payload[5] != 0 );
+				  payload[0] != ( byte ) 'E' ||
+				  payload[1] != ( byte ) 'x' ||
+				  payload[2] != ( byte ) 'i' ||
+				  payload[3] != ( byte ) 'f' ||
+				  payload[4] != 0 ||
+				  payload[5] != 0 );
 	}
 
 	internal static void AddScannedCandidates(Stream? originalStream,
@@ -89,7 +89,7 @@ internal static class App1PayloadProcessor
 				? uint.MaxValue
 				: ( uint ) originalStream.Length;
 			foreach ( var scanCandidate in TiffEmbeddedPreviewExtractor.ScanJpegsInRange(
-				         originalStream, 0, maxLen) )
+						 originalStream, 0, maxLen) )
 			{
 				if ( scanCandidate == null )
 				{
@@ -121,17 +121,17 @@ internal static class App1PayloadProcessor
 	{
 		// only for candidates that don't already have dimensions from TIFF tags
 		foreach ( var c in candidates.Where(c
-			         => c.Width == 0 || c.Height == 0)
-		        )
+					 => c.Width == 0 || c.Height == 0)
+				)
 		{
 			// Try mapped original stream first: payloadStart + 6 + offset
 			if ( originalStream != null )
 			{
 				var mapped = payloadStart + 6 + c.Offset;
 				if ( mapped >= 0 && mapped + c.Length <= originalStream.Length &&
-				     TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(originalStream,
-					     ( uint ) mapped, c.Length,
-					     out var wMapped, out var hMapped) )
+					 TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(originalStream,
+						 ( uint ) mapped, c.Length,
+						 out var wMapped, out var hMapped) )
 				{
 					c.Width = wMapped;
 					c.Height = hMapped;
@@ -140,10 +140,10 @@ internal static class App1PayloadProcessor
 
 				// fallback: treat offset as absolute in the original stream
 				if ( c.Offset < originalStream.Length &&
-				     TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(
-					     originalStream,
-					     c.Offset, c.Length,
-					     out var wAbs, out var hAbs)
+					 TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(
+						 originalStream,
+						 c.Offset, c.Length,
+						 out var wAbs, out var hAbs)
 				   )
 				{
 					c.Width = wAbs;
@@ -154,7 +154,7 @@ internal static class App1PayloadProcessor
 
 			// final fallback: try inside APP1 TIFF memory stream
 			if ( TiffEmbeddedPreviewExtractor.TryGetJpegDimensionsAtOffset(tiffMs, c.Offset,
-				    c.Length, out var w, out var h) )
+					c.Length, out var w, out var h) )
 			{
 				c.Width = w;
 				c.Height = h;
@@ -186,10 +186,11 @@ internal static class App1PayloadProcessor
 		{
 			var preview = new PreviewCandidate
 			{
-				Offset = ( uint ) mappedBest, Length = best.Length
+				Offset = ( uint ) mappedBest,
+				Length = best.Length
 			};
 			if ( ExtractPreview.TryValidateJpegOffset(originalStream, preview.Offset,
-				    preview.Length) )
+					preview.Length) )
 			{
 				return await ExtractPreview
 					.ExtractPreviewToStream(originalStream, preview, outputLarge)
@@ -206,7 +207,7 @@ internal static class App1PayloadProcessor
 		var preview2 =
 			new PreviewCandidate { Offset = best.Offset, Length = best.Length };
 		if ( ExtractPreview.TryValidateJpegOffset(originalStream, preview2.Offset,
-			    preview2.Length) )
+				preview2.Length) )
 		{
 			return await ExtractPreview
 				.ExtractPreviewToStream(originalStream, preview2, outputLarge)

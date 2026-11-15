@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Buffers;
 using System.IO;
 using System.Threading.Tasks;
@@ -13,8 +13,8 @@ public static class ExtractPreview
 	{
 		try
 		{
-			if ( !TryValidateJpegOffset(input, preview.Offset, preview.Length) 
-			     || !StreamPrimitives.TrySeek(input, preview.Offset) )
+			if ( !TryValidateJpegOffset(input, preview.Offset, preview.Length)
+				 || !StreamPrimitives.TrySeek(input, preview.Offset) )
 			{
 				return false;
 			}

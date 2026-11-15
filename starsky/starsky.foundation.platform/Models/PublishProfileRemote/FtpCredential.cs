@@ -45,8 +45,8 @@ public sealed class FtpCredential
 		get
 		{
 			if ( string.IsNullOrEmpty(Host) ||
-			     string.IsNullOrEmpty(Username) ||
-			     string.IsNullOrEmpty(Password) )
+				 string.IsNullOrEmpty(Username) ||
+				 string.IsNullOrEmpty(Password) )
 			{
 				return string.Empty;
 			}

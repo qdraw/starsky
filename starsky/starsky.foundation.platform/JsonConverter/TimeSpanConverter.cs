@@ -24,7 +24,7 @@ public class JsonTimeSpanConverter : JsonConverterFactory
 	{
 		// Don't perform a typeToConvert == null check for performance. Trust our callers will be nice.
 		return typeToConvert == typeof(TimeSpan)
-		       || ( typeToConvert.IsGenericType && IsNullableTimeSpan(typeToConvert) );
+			   || ( typeToConvert.IsGenericType && IsNullableTimeSpan(typeToConvert) );
 	}
 
 	/// <inheritdoc />

@@ -58,7 +58,7 @@ public static class AppSettingsCompareHelper
 		List<string> differenceList)
 	{
 		if ( propertyInfoFromA.PropertyType == typeof(OpenTelemetrySettings) &&
-		     propertyB.PropertyType == typeof(OpenTelemetrySettings) )
+			 propertyB.PropertyType == typeof(OpenTelemetrySettings) )
 		{
 			var oldObjectValue =
 				( OpenTelemetrySettings? ) propertyInfoFromA.GetValue(sourceIndexItem, null);
@@ -131,8 +131,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( propertyInfoFromA.PropertyType ==
-		     typeof(List<AppSettingsDefaultEditorApplication>) &&
-		     propertyB.PropertyType == typeof(List<AppSettingsDefaultEditorApplication>) )
+			 typeof(List<AppSettingsDefaultEditorApplication>) &&
+			 propertyB.PropertyType == typeof(List<AppSettingsDefaultEditorApplication>) )
 		{
 			var oldObjectValue =
 				( List<AppSettingsDefaultEditorApplication>? ) propertyInfoFromA.GetValue(
@@ -146,8 +146,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( propertyInfoFromA.PropertyType ==
-		     typeof(CloudImportSettings) &&
-		     propertyB.PropertyType == typeof(CloudImportSettings) )
+			 typeof(CloudImportSettings) &&
+			 propertyB.PropertyType == typeof(CloudImportSettings) )
 		{
 			var oldCloudImportSettingsValue =
 				( CloudImportSettings? ) propertyInfoFromA.GetValue(
@@ -161,8 +161,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( propertyInfoFromA.PropertyType ==
-		     typeof(AppSettingsPublishProfilesDefaults) &&
-		     propertyB.PropertyType == typeof(AppSettingsPublishProfilesDefaults) )
+			 typeof(AppSettingsPublishProfilesDefaults) &&
+			 propertyB.PropertyType == typeof(AppSettingsPublishProfilesDefaults) )
 		{
 			var oldAppSettingsPublishProfilesDefaultsValue =
 				( AppSettingsPublishProfilesDefaults? ) propertyInfoFromA.GetValue(
@@ -176,8 +176,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( propertyInfoFromA.PropertyType ==
-		     typeof(AppSettingsPublishProfilesRemote) &&
-		     propertyB.PropertyType == typeof(AppSettingsPublishProfilesRemote) )
+			 typeof(AppSettingsPublishProfilesRemote) &&
+			 propertyB.PropertyType == typeof(AppSettingsPublishProfilesRemote) )
 		{
 			var oldAppSettingsPublishProfilesRemoteValue =
 				( AppSettingsPublishProfilesRemote? ) propertyInfoFromA.GetValue(
@@ -198,10 +198,10 @@ public static class AppSettingsCompareHelper
 		List<string> differenceList)
 	{
 		if ( oldQueueModel == null ||
-		     newQueueModel == null ||
-		     JsonSerializer.Serialize(oldQueueModel) == JsonSerializer.Serialize(newQueueModel) ||
-		     JsonSerializer.Serialize(newQueueModel) ==
-		     JsonSerializer.Serialize(new AppSettingsQueueModel()) )
+			 newQueueModel == null ||
+			 JsonSerializer.Serialize(oldQueueModel) == JsonSerializer.Serialize(newQueueModel) ||
+			 JsonSerializer.Serialize(newQueueModel) ==
+			 JsonSerializer.Serialize(new AppSettingsQueueModel()) )
 		{
 			return;
 		}
@@ -218,13 +218,13 @@ public static class AppSettingsCompareHelper
 		List<string> differenceList)
 	{
 		if ( oldMountWatcherModel == null ||
-		     newMountWatcherModel == null ||
-		     // compare lists
-		     JsonSerializer.Serialize(oldMountWatcherModel) ==
-		     JsonSerializer.Serialize(newMountWatcherModel) ||
-		     // default options
-		     JsonSerializer.Serialize(newMountWatcherModel) ==
-		     JsonSerializer.Serialize(new AppSettingsMountWatcherModel()) )
+			 newMountWatcherModel == null ||
+			 // compare lists
+			 JsonSerializer.Serialize(oldMountWatcherModel) ==
+			 JsonSerializer.Serialize(newMountWatcherModel) ||
+			 // default options
+			 JsonSerializer.Serialize(newMountWatcherModel) ==
+			 JsonSerializer.Serialize(new AppSettingsMountWatcherModel()) )
 		{
 			return;
 		}
@@ -239,13 +239,13 @@ public static class AppSettingsCompareHelper
 		AppSettingsImportBackupModel? newImportBackup, List<string> differenceList)
 	{
 		if ( oldImportBackup == null ||
-		     newImportBackup == null ||
-		     // compare lists
-		     JsonSerializer.Serialize(oldImportBackup) ==
-		     JsonSerializer.Serialize(newImportBackup) ||
-		     // default options
-		     JsonSerializer.Serialize(newImportBackup) ==
-		     JsonSerializer.Serialize(new AppSettingsImportBackupModel()) )
+			 newImportBackup == null ||
+			 // compare lists
+			 JsonSerializer.Serialize(oldImportBackup) ==
+			 JsonSerializer.Serialize(newImportBackup) ||
+			 // default options
+			 JsonSerializer.Serialize(newImportBackup) ==
+			 JsonSerializer.Serialize(new AppSettingsImportBackupModel()) )
 		{
 			return;
 		}
@@ -270,14 +270,14 @@ public static class AppSettingsCompareHelper
 
 		// If both are non-null and equal (deep compare via JSON), nothing to do
 		if ( oldCloudImportSettingsValue != null && newCloudImportSettingsValue != null &&
-		     oldCloudImportSettingsJson == newCloudImportSettingsJson )
+			 oldCloudImportSettingsJson == newCloudImportSettingsJson )
 		{
 			return;
 		}
 
 		// If new is default (empty), do nothing
 		if ( newCloudImportSettingsValue != null &&
-		     newCloudImportSettingsJson == JsonSerializer.Serialize(new CloudImportSettings()) )
+			 newCloudImportSettingsJson == JsonSerializer.Serialize(new CloudImportSettings()) )
 		{
 			return;
 		}
@@ -296,7 +296,7 @@ public static class AppSettingsCompareHelper
 	{
 		// If both are null, nothing to compare
 		if ( oldAppSettingsPublishProfilesDefaultsValue == null &&
-		     newAppSettingsPublishProfilesDefaultsValue == null )
+			 newAppSettingsPublishProfilesDefaultsValue == null )
 		{
 			return;
 		}
@@ -308,16 +308,16 @@ public static class AppSettingsCompareHelper
 
 		// If both are non-null and equal (deep compare via JSON), nothing to do
 		if ( oldAppSettingsPublishProfilesDefaultsValue != null &&
-		     newAppSettingsPublishProfilesDefaultsValue != null &&
-		     oldCloudImportSettingsJson == newCloudImportSettingsJson )
+			 newAppSettingsPublishProfilesDefaultsValue != null &&
+			 oldCloudImportSettingsJson == newCloudImportSettingsJson )
 		{
 			return;
 		}
 
 		// If new is default (empty), do nothing
 		if ( newAppSettingsPublishProfilesDefaultsValue != null &&
-		     newCloudImportSettingsJson ==
-		     JsonSerializer.Serialize(new AppSettingsPublishProfilesDefaults()) )
+			 newCloudImportSettingsJson ==
+			 JsonSerializer.Serialize(new AppSettingsPublishProfilesDefaults()) )
 		{
 			return;
 		}
@@ -336,7 +336,7 @@ public static class AppSettingsCompareHelper
 	{
 		// If both are null, nothing to compare
 		if ( oldAppSettingsPublishProfilesRemoteValue == null &&
-		     newAppSettingsPublishProfilesRemoteValue == null )
+			 newAppSettingsPublishProfilesRemoteValue == null )
 		{
 			return;
 		}
@@ -348,16 +348,16 @@ public static class AppSettingsCompareHelper
 
 		// If both are non-null and equal (deep compare via JSON), nothing to do
 		if ( oldAppSettingsPublishProfilesRemoteValue != null &&
-		     newAppSettingsPublishProfilesRemoteValue != null &&
-		     oldCloudImportSettingsJson == newCloudImportSettingsJson )
+			 newAppSettingsPublishProfilesRemoteValue != null &&
+			 oldCloudImportSettingsJson == newCloudImportSettingsJson )
 		{
 			return;
 		}
 
 		// If new is default (empty), do nothing
 		if ( newAppSettingsPublishProfilesRemoteValue != null &&
-		     newCloudImportSettingsJson ==
-		     JsonSerializer.Serialize(new AppSettingsPublishProfilesRemote()) )
+			 newCloudImportSettingsJson ==
+			 JsonSerializer.Serialize(new AppSettingsPublishProfilesRemote()) )
 		{
 			return;
 		}
@@ -377,13 +377,13 @@ public static class AppSettingsCompareHelper
 		ICollection<string> differenceList)
 	{
 		if ( oldKeyValuePairStringStringValue == null ||
-		     newKeyValuePairStringStringValue == null ||
-		     // compare lists
-		     JsonSerializer.Serialize(oldKeyValuePairStringStringValue) ==
-		     JsonSerializer.Serialize(newKeyValuePairStringStringValue) ||
-		     // default options
-		     JsonSerializer.Serialize(newKeyValuePairStringStringValue) ==
-		     JsonSerializer.Serialize(new OpenTelemetrySettings()) )
+			 newKeyValuePairStringStringValue == null ||
+			 // compare lists
+			 JsonSerializer.Serialize(oldKeyValuePairStringStringValue) ==
+			 JsonSerializer.Serialize(newKeyValuePairStringStringValue) ||
+			 // default options
+			 JsonSerializer.Serialize(newKeyValuePairStringStringValue) ==
+			 JsonSerializer.Serialize(new OpenTelemetrySettings()) )
 		{
 			return;
 		}
@@ -400,10 +400,10 @@ public static class AppSettingsCompareHelper
 		List<string> differenceList)
 	{
 		if ( oldKeyValuePairStringStringValue == null ||
-		     newKeyValuePairStringStringValue == null ||
-		     newKeyValuePairStringStringValue.Count == 0 ||
-		     AreListsEqualHelper.AreListsEqual(oldKeyValuePairStringStringValue,
-			     newKeyValuePairStringStringValue) )
+			 newKeyValuePairStringStringValue == null ||
+			 newKeyValuePairStringStringValue.Count == 0 ||
+			 AreListsEqualHelper.AreListsEqual(oldKeyValuePairStringStringValue,
+				 newKeyValuePairStringStringValue) )
 		{
 			return;
 		}
@@ -419,7 +419,7 @@ public static class AppSettingsCompareHelper
 		List<string> differenceList)
 	{
 		if ( propertyInfoFromA.PropertyType == typeof(bool?) &&
-		     propertyB.PropertyType == typeof(bool?) )
+			 propertyB.PropertyType == typeof(bool?) )
 		{
 			var oldBoolValue = ( bool? ) propertyInfoFromA.GetValue(sourceIndexItem, null);
 			var newBoolValue = ( bool? ) propertyB.GetValue(updateObject, null);
@@ -472,13 +472,13 @@ public static class AppSettingsCompareHelper
 		AppSettingsStructureModel? newStructure, List<string> differenceList)
 	{
 		if ( oldStructure == null ||
-		     newStructure == null ||
-		     // compare lists
-		     JsonSerializer.Serialize(oldStructure) ==
-		     JsonSerializer.Serialize(newStructure) ||
-		     // default options
-		     JsonSerializer.Serialize(newStructure) ==
-		     JsonSerializer.Serialize(new AppSettingsStructureModel()) )
+			 newStructure == null ||
+			 // compare lists
+			 JsonSerializer.Serialize(oldStructure) ==
+			 JsonSerializer.Serialize(newStructure) ||
+			 // default options
+			 JsonSerializer.Serialize(newStructure) ==
+			 JsonSerializer.Serialize(new AppSettingsStructureModel()) )
 		{
 			return;
 		}
@@ -493,13 +493,13 @@ public static class AppSettingsCompareHelper
 		AppSettingsImportTransformationModel? newImportTransformation, List<string> differenceList)
 	{
 		if ( oldImportTransformation == null ||
-		     newImportTransformation == null ||
-		     // compare lists
-		     JsonSerializer.Serialize(oldImportTransformation) ==
-		     JsonSerializer.Serialize(newImportTransformation) ||
-		     // default options
-		     JsonSerializer.Serialize(newImportTransformation) ==
-		     JsonSerializer.Serialize(new AppSettingsImportTransformationModel()) )
+			 newImportTransformation == null ||
+			 // compare lists
+			 JsonSerializer.Serialize(oldImportTransformation) ==
+			 JsonSerializer.Serialize(newImportTransformation) ||
+			 // default options
+			 JsonSerializer.Serialize(newImportTransformation) ==
+			 JsonSerializer.Serialize(new AppSettingsImportTransformationModel()) )
 		{
 			return;
 		}
@@ -534,7 +534,7 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( propertyB.PropertyType ==
-		     typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
+			 typeof(Dictionary<string, List<AppSettingsPublishProfiles>>) )
 		{
 			var oldListPublishProfilesValue =
 				( Dictionary<string, List<AppSettingsPublishProfiles>>? )
@@ -564,7 +564,7 @@ public static class AppSettingsCompareHelper
 		Dictionary<string, string>? newDictionaryValue, List<string> differenceList)
 	{
 		if ( oldDictionaryValue == null || newDictionaryValue == null ||
-		     newDictionaryValue.Count == 0 )
+			 newDictionaryValue.Count == 0 )
 		{
 			return;
 		}
@@ -576,8 +576,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( JsonSerializer.Serialize(oldDictionaryValue,
-			    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(merged,
-			    DefaultJsonSerializer.CamelCase) )
+				DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(merged,
+				DefaultJsonSerializer.CamelCase) )
 		{
 			return;
 		}
@@ -594,14 +594,14 @@ public static class AppSettingsCompareHelper
 		List<string> differenceList)
 	{
 		if ( oldKeyValuePairStringStringValue == null ||
-		     newKeyValuePairStringStringValue == null ||
-		     newKeyValuePairStringStringValue.Count == 0 )
+			 newKeyValuePairStringStringValue == null ||
+			 newKeyValuePairStringStringValue.Count == 0 )
 		{
 			return;
 		}
 
 		if ( oldKeyValuePairStringStringValue.Equals(
-			    newKeyValuePairStringStringValue) )
+				newKeyValuePairStringStringValue) )
 		{
 			return;
 		}
@@ -625,7 +625,7 @@ public static class AppSettingsCompareHelper
 		AppSettings.DatabaseTypeList? newDatabaseTypeList, List<string> differenceList)
 	{
 		if ( oldDatabaseTypeList == newDatabaseTypeList ||
-		     newDatabaseTypeList == new AppSettings().DatabaseType )
+			 newDatabaseTypeList == new AppSettings().DatabaseType )
 		{
 			return;
 		}
@@ -649,7 +649,7 @@ public static class AppSettingsCompareHelper
 		CollectionsOpenType.RawJpegMode? newDatabaseTypeList, List<string> differenceList)
 	{
 		if ( oldDatabaseTypeList == newDatabaseTypeList ||
-		     newDatabaseTypeList == CollectionsOpenType.RawJpegMode.Default )
+			 newDatabaseTypeList == CollectionsOpenType.RawJpegMode.Default )
 		{
 			return;
 		}
@@ -678,8 +678,8 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( JsonSerializer.Serialize(oldListStringValue,
-			    DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newListStringValue,
-			    DefaultJsonSerializer.CamelCase) )
+				DefaultJsonSerializer.CamelCase) == JsonSerializer.Serialize(newListStringValue,
+				DefaultJsonSerializer.CamelCase) )
 		{
 			return;
 		}
@@ -768,7 +768,7 @@ public static class AppSettingsCompareHelper
 		}
 
 		if ( oldStringValue == newStringValue ||
-		     string.IsNullOrEmpty(newStringValue) )
+			 string.IsNullOrEmpty(newStringValue) )
 		{
 			return;
 		}

@@ -35,13 +35,13 @@ public class OpenEditorPreflight(
 		fileIndexItemList = GroupByFileCollectionName(fileIndexItemList, collections);
 
 		return fileIndexItemList.Select(fileIndexItem => new PathImageFormatExistsAppPathModel
-			{
-				AppPath = GetDesktopEditorPath(fileIndexItem.ImageFormat),
-				Status = fileIndexItem.Status,
-				ImageFormat = fileIndexItem.ImageFormat,
-				SubPath = fileIndexItem.FilePath!,
-				FullFilePath = appSettings.DatabasePathToFilePath(fileIndexItem.FilePath!)
-			})
+		{
+			AppPath = GetDesktopEditorPath(fileIndexItem.ImageFormat),
+			Status = fileIndexItem.Status,
+			ImageFormat = fileIndexItem.ImageFormat,
+			SubPath = fileIndexItem.FilePath!,
+			FullFilePath = appSettings.DatabasePathToFilePath(fileIndexItem.FilePath!)
+		})
 			.ToList();
 	}
 
@@ -60,7 +60,7 @@ public class OpenEditorPreflight(
 		// Under macOS the ApplicationPath is a .app folder
 		// Under Windows the ApplicationPath is a .exe file
 		if ( _hostFileSystem.IsFolderOrFile(appPath) !=
-		     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+			 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 		{
 			return appPath;
 		}
@@ -80,7 +80,7 @@ public class OpenEditorPreflight(
 		{
 			// Files that are not on disk
 			if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -90,7 +90,7 @@ public class OpenEditorPreflight(
 
 			// Dir is readonly / don't edit
 			if ( new StatusCodesHelper(appSettings).IsReadOnlyStatus(fileIndexItem)
-			     == FileIndexItem.ExifStatus.ReadOnly )
+				 == FileIndexItem.ExifStatus.ReadOnly )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.ReadOnly,
@@ -99,13 +99,13 @@ public class OpenEditorPreflight(
 			}
 
 			if ( fileIndexItem.ImageFormat is ExtensionRolesHelper.ImageFormat.xmp
-			    or ExtensionRolesHelper.ImageFormat.meta_json )
+				or ExtensionRolesHelper.ImageFormat.meta_json )
 			{
 				continue;
 			}
 
 			if ( fileIndexItem.Status is FileIndexItem.ExifStatus.Default
-			    or FileIndexItem.ExifStatus.OkAndSame )
+				or FileIndexItem.ExifStatus.OkAndSame )
 			{
 				fileIndexItem.Status = FileIndexItem.ExifStatus.Ok;
 			}

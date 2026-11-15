@@ -48,8 +48,8 @@ public static class SolveConcurrency
 		OriginalValuesSetValuesDelegate entryOriginalValuesSetValues)
 	{
 		if ( _ is not FileIndexItem &&
-		     _ is not ThumbnailItem &&
-		     _ is not NotificationItem )
+			 _ is not ThumbnailItem &&
+			 _ is not NotificationItem )
 		{
 			throw new NotSupportedException(
 				"[SolveConcurrency] Don't know how to handle concurrency conflicts for "

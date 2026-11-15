@@ -133,7 +133,7 @@ public sealed class SyncMultiFile
 		if ( addParentFolder )
 		{
 			_logger.LogDebug("[SyncMultiFile] Add Parent Folder For: " +
-			                 string.Join(",", dbItems.Select(p => p.FilePath)));
+							 string.Join(",", dbItems.Select(p => p.FilePath)));
 
 			dbItems = await new AddParentList(_subPathStorage, _query).AddParentItems(dbItems);
 		}
@@ -161,9 +161,9 @@ public sealed class SyncMultiFile
 			var dbItemSearched = dbItems[dbItemSearchedIndex];
 
 			if ( dbItemSearched == null! ||
-			     ( dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
-			       // why statusItem.Status?
-			       && statusItem.Status == FileIndexItem.ExifStatus.Ok ) )
+				 ( dbItemSearched.Status == FileIndexItem.ExifStatus.NotFoundNotInIndex
+				   // why statusItem.Status?
+				   && statusItem.Status == FileIndexItem.ExifStatus.Ok ) )
 			{
 				continue;
 			}
@@ -193,7 +193,7 @@ public sealed class SyncMultiFile
 		}
 
 		foreach ( var (isLastEditedSame, isFileHashSame, isSameUpdatedItem) in
-		         isSameUpdatedItemList.Where(p => p.Item1 != true) )
+				 isSameUpdatedItemList.Where(p => p.Item1 != true) )
 		{
 			var updateItemIndex = dbItems.FindIndex(p => p.FilePath == isSameUpdatedItem.FilePath);
 
@@ -218,12 +218,12 @@ public sealed class SyncMultiFile
 		foreach ( var statusItem in statusItems )
 		{
 			foreach ( var item in dbItems.Where(p =>
-				         p.FileCollectionName == statusItem.FileCollectionName
-				         && p.ParentDirectory == statusItem.ParentDirectory
-				         && ExtensionRolesHelper.IsExtensionSidecar(p.FileName) &&
-				         p.Status is FileIndexItem.ExifStatus.Ok
-					         or FileIndexItem.ExifStatus.OkAndSame
-					         or FileIndexItem.ExifStatus.NotFoundNotInIndex) )
+						 p.FileCollectionName == statusItem.FileCollectionName
+						 && p.ParentDirectory == statusItem.ParentDirectory
+						 && ExtensionRolesHelper.IsExtensionSidecar(p.FileName) &&
+						 p.Status is FileIndexItem.ExifStatus.Ok
+							 or FileIndexItem.ExifStatus.OkAndSame
+							 or FileIndexItem.ExifStatus.NotFoundNotInIndex) )
 			{
 				var dbMatchItemSearchedIndex = dbItems.FindIndex(p =>
 					p.ParentDirectory == item.ParentDirectory &&
@@ -231,7 +231,7 @@ public sealed class SyncMultiFile
 
 				dbItems[dbMatchItemSearchedIndex].AddSidecarExtension("xmp");
 				if ( !dbItems[dbMatchItemSearchedIndex].LastChanged
-					    .Contains(nameof(FileIndexItem.SidecarExtensions).ToLowerInvariant()) )
+						.Contains(nameof(FileIndexItem.SidecarExtensions).ToLowerInvariant()) )
 				{
 					dbItems[dbMatchItemSearchedIndex].LastChanged
 						.Add(nameof(FileIndexItem.SidecarExtensions).ToLowerInvariant());

@@ -29,10 +29,10 @@ public sealed class CheckIfAccountExistMiddleware(RequestDelegate next)
 		// be replaced by a new login.
 		var path = context.Request.Path.Value;
 		var isApiCall = !string.IsNullOrEmpty(path) &&
-		                path.Contains("api/", StringComparison.OrdinalIgnoreCase) &&
-		                !path.EndsWith("api/account/login", StringComparison.OrdinalIgnoreCase) &&
-		                !path.EndsWith("api/account/logout", StringComparison.OrdinalIgnoreCase) &&
-		                !path.EndsWith("api/account/register", StringComparison.OrdinalIgnoreCase);
+						path.Contains("api/", StringComparison.OrdinalIgnoreCase) &&
+						!path.EndsWith("api/account/login", StringComparison.OrdinalIgnoreCase) &&
+						!path.EndsWith("api/account/logout", StringComparison.OrdinalIgnoreCase) &&
+						!path.EndsWith("api/account/register", StringComparison.OrdinalIgnoreCase);
 
 		if ( context.User.Identity?.IsAuthenticated == true && isApiCall )
 		{

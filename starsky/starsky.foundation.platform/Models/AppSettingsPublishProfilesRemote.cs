@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using starsky.foundation.platform.Models.PublishProfileRemote;
@@ -80,36 +80,36 @@ public class AppSettingsPublishProfilesRemote
 		var lists = new List<(RemoteCredentialType, string)>();
 
 		foreach ( var webFtp in Default
-			         .Where(p => p.Ftp?.WebFtp != null)
-			         .Select(p => p.Ftp?.WebFtp) )
+					 .Where(p => p.Ftp?.WebFtp != null)
+					 .Select(p => p.Ftp?.WebFtp) )
 		{
-			lists.Add(( RemoteCredentialType.Ftp, webFtp! ));
+			lists.Add((RemoteCredentialType.Ftp, webFtp!));
 		}
 
 		foreach ( var webFtp in
-		         Profiles
-			         .SelectMany(item =>
-				         item.Value)
-			         .Where(p => p.Ftp?.WebFtp != null).Select(p => p.Ftp?.WebFtp) )
+				 Profiles
+					 .SelectMany(item =>
+						 item.Value)
+					 .Where(p => p.Ftp?.WebFtp != null).Select(p => p.Ftp?.WebFtp) )
 		{
-			lists.Add(( RemoteCredentialType.Ftp, webFtp! ));
+			lists.Add((RemoteCredentialType.Ftp, webFtp!));
 		}
 
 		foreach ( var localFs in Default
-			         .Where(p => p.LocalFileSystem?.Path != null)
-			         .Select(p => p.LocalFileSystem?.Path) )
+					 .Where(p => p.LocalFileSystem?.Path != null)
+					 .Select(p => p.LocalFileSystem?.Path) )
 		{
-			lists.Add(( RemoteCredentialType.LocalFileSystem, localFs! ));
+			lists.Add((RemoteCredentialType.LocalFileSystem, localFs!));
 		}
 
 		foreach ( var localFs in
-		         Profiles
-			         .SelectMany(item =>
-				         item.Value)
-			         .Where(p => p.LocalFileSystem?.Path != null)
-			         .Select(p => p.LocalFileSystem?.Path) )
+				 Profiles
+					 .SelectMany(item =>
+						 item.Value)
+					 .Where(p => p.LocalFileSystem?.Path != null)
+					 .Select(p => p.LocalFileSystem?.Path) )
 		{
-			lists.Add(( RemoteCredentialType.LocalFileSystem, localFs! ));
+			lists.Add((RemoteCredentialType.LocalFileSystem, localFs!));
 		}
 
 		return lists;

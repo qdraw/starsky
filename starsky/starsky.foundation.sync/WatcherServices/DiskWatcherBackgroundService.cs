@@ -38,7 +38,7 @@ public sealed class DiskWatcherBackgroundService : BackgroundService
 				? "UseDiskWatcher is enabled"
 				: "UseDiskWatcher is disabled" ) + $" on {Environment.MachineName}");
 		if ( _appSettings.ApplicationType != AppSettings.StarskyAppType.WebController
-		     || _appSettings.UseDiskWatcher == false )
+			 || _appSettings.UseDiskWatcher == false )
 		{
 			return Task.CompletedTask;
 		}

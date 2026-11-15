@@ -19,8 +19,8 @@ public sealed class ContentSecurityPolicyMiddleware
 	internal static bool IsSafeCspHost(string? host)
 	{
 		return string.IsNullOrEmpty(host) || ( host.Length <= 255 &&
-		                                       host.All(c => char.IsAsciiLetterOrDigit(c) ||
-		                                                     c is '.' or '-' or ':' or '[' or ']') );
+											   host.All(c => char.IsAsciiLetterOrDigit(c) ||
+															 c is '.' or '-' or ':' or '[' or ']') );
 	}
 
 	private static string BuildCspHeader(HttpContext httpContext)
@@ -68,7 +68,7 @@ public sealed class ContentSecurityPolicyMiddleware
 
 		// Currently not supported in Firefox and Safari (Edge user agent also includes the word Chrome)
 		if ( httpContext.Request.Headers.UserAgent.Contains("Chrome") ||
-		     httpContext.Request.Headers.UserAgent.Contains("csp-evaluator") )
+			 httpContext.Request.Headers.UserAgent.Contains("csp-evaluator") )
 		{
 			cspHeader += "require-trusted-types-for 'script'; ";
 		}
@@ -92,16 +92,16 @@ public sealed class ContentSecurityPolicyMiddleware
 
 		// @see: https://www.permissionspolicy.com/
 		if ( string.IsNullOrEmpty(
-			    httpContext.Response.Headers["Permissions-Policy"]) )
+				httpContext.Response.Headers["Permissions-Policy"]) )
 		{
 			httpContext.Response.Headers
 				.Append("Permissions-Policy", "autoplay=(self), " +
-				                              "fullscreen=(self), " +
-				                              "geolocation=(self), " +
-				                              "picture-in-picture=(self), " +
-				                              "clipboard-read=(self), " +
-				                              "clipboard-write=(self), " +
-				                              "window-placement=(self)");
+											  "fullscreen=(self), " +
+											  "geolocation=(self), " +
+											  "picture-in-picture=(self), " +
+											  "clipboard-read=(self), " +
+											  "clipboard-write=(self), " +
+											  "window-placement=(self)");
 		}
 
 		if ( string.IsNullOrEmpty(httpContext.Response.Headers["Referrer-Policy"]) )

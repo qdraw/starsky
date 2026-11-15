@@ -22,7 +22,7 @@ public sealed class ManualBackgroundSyncJobHandler(
 		}
 
 		var payload = JsonSerializer.Deserialize<ManualBackgroundSyncPayload>(payloadJson) ??
-		              throw new ArgumentException("Invalid payload", nameof(payloadJson));
+					  throw new ArgumentException("Invalid payload", nameof(payloadJson));
 
 		if ( manualBackgroundSyncService is not ManualBackgroundSyncService concrete )
 		{

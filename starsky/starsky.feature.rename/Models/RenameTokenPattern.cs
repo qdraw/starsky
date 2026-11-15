@@ -146,7 +146,7 @@ public partial class RenameTokenPattern
 		// Check for unescaped braces that don't match known tokens
 		var bracedTokens = BracesTokenRegex().Matches(_pattern);
 		foreach ( var token in bracedTokens.Select(match => match.Value)
-			         .Where(token => !_validBracedTokens.Contains(token)) )
+					 .Where(token => !_validBracedTokens.Contains(token)) )
 		{
 			_errors.Add($"Unknown token: {token}");
 		}

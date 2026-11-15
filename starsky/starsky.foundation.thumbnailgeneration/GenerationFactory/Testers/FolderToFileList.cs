@@ -19,7 +19,7 @@ public class FolderToFileList(ISelectorStorage selectorStorage)
 		switch ( _iStorage.IsFolderOrFile(subPath) )
 		{
 			case FolderOrFileModel.FolderOrFileTypeList.Deleted:
-				return ( false, [] );
+				return (false, []);
 			case FolderOrFileModel.FolderOrFileTypeList.Folder:
 			{
 				var contentOfDir = _iStorage.GetAllFilesInDirectoryRecursive(subPath)
@@ -35,6 +35,6 @@ public class FolderToFileList(ISelectorStorage selectorStorage)
 			}
 		}
 
-		return ( true, toAddFilePaths );
+		return (true, toAddFilePaths);
 	}
 }

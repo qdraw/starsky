@@ -88,7 +88,7 @@ public partial class Query
 
 		return context.FileIndex
 			.Where(p => p.IsDirectory == false &&
-			            normalizedPaths.Contains(p.ParentDirectory ?? string.Empty))
+						normalizedPaths.Contains(p.ParentDirectory ?? string.Empty))
 			.OrderBy(r => r.FileName);
 	}
 }

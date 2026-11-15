@@ -206,16 +206,16 @@ public sealed class AppSettingsPublishProfiles
 	public override string ToString()
 	{
 		return $"ContentType:{ContentType}," +
-		       $"SourceMaxWidth:{SourceMaxWidth}," +
-		       $"OverlayMaxWidth:{OverlayMaxWidth}," +
-		       $"Path:{Path}," +
-		       $"Folder:{Folder}," +
-		       $"Append:{Append}," +
-		       $"Template:{Template}," +
-		       $"Prepend:{Prepend}," +
-		       $"MetaData:{MetaData}," +
-		       $"Copy:{Copy}," +
-		       $"OptimizersCount:{Optimizers.Count},";
+			   $"SourceMaxWidth:{SourceMaxWidth}," +
+			   $"OverlayMaxWidth:{OverlayMaxWidth}," +
+			   $"Path:{Path}," +
+			   $"Folder:{Folder}," +
+			   $"Append:{Append}," +
+			   $"Template:{Template}," +
+			   $"Prepend:{Prepend}," +
+			   $"MetaData:{MetaData}," +
+			   $"Copy:{Copy}," +
+			   $"OptimizersCount:{Optimizers.Count},";
 	}
 }
 

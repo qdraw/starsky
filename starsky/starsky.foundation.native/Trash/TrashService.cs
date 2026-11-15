@@ -53,8 +53,8 @@ public class TrashService : ITrashService
 	{
 		// ReSharper disable once ConvertIfStatementToReturnStatement
 		if ( runtimeInformationIsOsPlatform(OSPlatform.Linux) ||
-		     runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) ||
-		     environmentUserName == "root" || !environmentUserInteractive )
+			 runtimeInformationIsOsPlatform(OSPlatform.FreeBSD) ||
+			 environmentUserName == "root" || !environmentUserInteractive )
 		{
 			return false;
 		}

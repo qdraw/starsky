@@ -152,7 +152,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 		// All entries were detached (rows deleted from DB); nothing to save.
 		if ( concurrencyException.Entries.Count > 0 &&
-		     concurrencyException.Entries.All(e => e.State == EntityState.Detached) )
+			 concurrencyException.Entries.All(e => e.State == EntityState.Detached) )
 		{
 			_logger.LogInformation(
 				"[ThumbnailQuery] all entries detached after DbUpdateConcurrencyException; rows were deleted");
@@ -180,8 +180,8 @@ public class ThumbnailQuery : IThumbnailQuery
 		// uses index IX_Thumbnails_Missing
 		return await context.Thumbnails
 			.Where(p => ( p.ExtraLarge == null
-			              || p.Large == null || p.Small == null )
-			            && !string.IsNullOrEmpty(p.FileHash))
+						  || p.Large == null || p.Small == null )
+						&& !string.IsNullOrEmpty(p.FileHash))
 			.OrderBy(t => t.FileHash) // Ensure a consistent ordering
 			.Skip(pageNumber * pageSize)
 			.Take(pageSize)
@@ -224,7 +224,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 		var updateThumbnailNewItemsList = new List<ThumbnailItem>();
 		foreach ( var item in thumbnailItems
-			         .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
+					 .Where(p => p.FileHash != null).DistinctBy(p => p.FileHash) )
 		{
 			updateThumbnailNewItemsList.Add(new ThumbnailItem(item.FileHash!, item.TinyMeta,
 				item.Small, item.Large, item.ExtraLarge, item.Reasons));
@@ -283,7 +283,7 @@ public class ThumbnailQuery : IThumbnailQuery
 			// MySqlConnector.MySqlException (0x80004005): Duplicate entry for key 'PRIMARY'
 			// https://github.com/qdraw/starsky/issues/1248 https://github.com/qdraw/starsky/issues/1489
 			if ( mySqlException is { ErrorCode: MySqlErrorCode.DuplicateKey }
-			    or { ErrorCode: MySqlErrorCode.DuplicateKeyEntry } )
+				or { ErrorCode: MySqlErrorCode.DuplicateKeyEntry } )
 			{
 				_logger.LogInformation(
 					"[SaveChangesDuplicate] OK Duplicate entry error occurred: " +
@@ -373,7 +373,7 @@ public class ThumbnailQuery : IThumbnailQuery
 		if ( beforeFileHash == null || newFileHash == null )
 		{
 			_logger.LogError($"[ThumbnailQuery] Null " +
-			                 $"beforeFileHash={beforeFileHash}; or newFileHash={newFileHash}; is null");
+							 $"beforeFileHash={beforeFileHash}; or newFileHash={newFileHash}; is null");
 			return false;
 		}
 
@@ -432,7 +432,7 @@ public class ThumbnailQuery : IThumbnailQuery
 
 		if ( nonNullItems.Count == 0 )
 		{
-			return ( [], [], [] );
+			return ([], [], []);
 		}
 
 		var dbThumbnailItems = await context.Thumbnails
@@ -479,9 +479,9 @@ public class ThumbnailQuery : IThumbnailQuery
 			}
 
 			if ( item.TinyMeta == alreadyExists.TinyMeta &&
-			     item.Large == alreadyExists.Large &&
-			     item.Small == alreadyExists.Small &&
-			     item.ExtraLarge == alreadyExists.ExtraLarge )
+				 item.Large == alreadyExists.Large &&
+				 item.Small == alreadyExists.Small &&
+				 item.ExtraLarge == alreadyExists.ExtraLarge )
 			{
 				equalThumbnailItems.Add(alreadyExists);
 				continue;
@@ -490,6 +490,6 @@ public class ThumbnailQuery : IThumbnailQuery
 			updateThumbnailItems.Add(alreadyExists);
 		}
 
-		return ( newThumbnailItems, updateThumbnailItems, equalThumbnailItems );
+		return (newThumbnailItems, updateThumbnailItems, equalThumbnailItems);
 	}
 }

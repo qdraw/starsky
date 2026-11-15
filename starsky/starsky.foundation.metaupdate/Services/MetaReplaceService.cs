@@ -99,7 +99,7 @@ public class MetaReplaceService : IMetaReplaceService
 		{
 			// if folder is deleted
 			if ( _iStorage.IsFolderOrFile(fileIndexItem.FilePath!) ==
-			     FolderOrFileModel.FolderOrFileTypeList.Deleted )
+				 FolderOrFileModel.FolderOrFileTypeList.Deleted )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.NotFoundSourceMissing,
@@ -109,7 +109,7 @@ public class MetaReplaceService : IMetaReplaceService
 
 			// Dir is readonly / don't edit
 			if ( new StatusCodesHelper(_appSettings).IsReadOnlyStatus(fileIndexItem)
-			     == FileIndexItem.ExifStatus.ReadOnly )
+				 == FileIndexItem.ExifStatus.ReadOnly )
 			{
 				StatusCodesHelper.ReturnExifStatusError(fileIndexItem,
 					FileIndexItem.ExifStatus.ReadOnly,
@@ -132,8 +132,8 @@ public class MetaReplaceService : IMetaReplaceService
 
 			// Deleted is allowed but the status need be updated
 			if ( fileIndexItem.Status == FileIndexItem.ExifStatus.Ok &&
-			     StatusCodesHelper.IsDeletedStatus(fileIndexItem) ==
-			     FileIndexItem.ExifStatus.Deleted )
+				 StatusCodesHelper.IsDeletedStatus(fileIndexItem) ==
+				 FileIndexItem.ExifStatus.Deleted )
 			{
 				fileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 			}
@@ -169,11 +169,11 @@ public class MetaReplaceService : IMetaReplaceService
 		string fieldName, string search, string replace)
 	{
 		foreach ( var fileIndexItem in fileIndexResultsList.Where(p => p.Status
-			         is FileIndexItem.ExifStatus.Ok
-			         or FileIndexItem.ExifStatus.Default
-			         or FileIndexItem.ExifStatus.OkAndSame
-			         or FileIndexItem.ExifStatus.Deleted
-			         or FileIndexItem.ExifStatus.DeletedAndSame) )
+					 is FileIndexItem.ExifStatus.Ok
+					 or FileIndexItem.ExifStatus.Default
+					 or FileIndexItem.ExifStatus.OkAndSame
+					 or FileIndexItem.ExifStatus.Deleted
+					 or FileIndexItem.ExifStatus.DeletedAndSame) )
 		{
 			var searchInObject = FileIndexCompareHelper.Get(fileIndexItem, fieldName);
 			var replacedToObject = new object();

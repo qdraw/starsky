@@ -167,7 +167,7 @@ internal class MacOsServiceInstaller(IWebLogger logger) : IOsServiceInstaller
 			running = false;
 		}
 
-		return ( installed, running );
+		return (installed, running);
 	}
 
 	/// <summary>

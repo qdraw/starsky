@@ -34,7 +34,7 @@ public class ThumbnailSocketService(
 		var fileIndexItems = await query.GetObjectsByFilePathAsync(subPath, false);
 
 		if ( fileIndexItems.Count == 1 && fileIndexItems[0].FilePath == subPath
-		                               && fileIndexItems[0].IsDirectory == true )
+									   && fileIndexItems[0].IsDirectory == true )
 		{
 			fileIndexItems = await query.GetAllFilesAsync(subPath);
 		}

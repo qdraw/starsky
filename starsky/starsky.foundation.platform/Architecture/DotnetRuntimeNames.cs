@@ -25,6 +25,6 @@ public static class DotnetRuntimeNames
 		}
 
 		return architectures.Where(p => p !=
-		                                GenericRuntimeName);
+										GenericRuntimeName);
 	}
 }

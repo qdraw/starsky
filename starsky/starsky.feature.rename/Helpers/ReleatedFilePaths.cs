@@ -19,7 +19,7 @@ public class ReleatedFilePaths(IStorage storage)
 		if ( storage.ExistFile(sourceJson) )
 		{
 			var targetJson = JsonSidecarLocation.JsonLocation(targetFilePath);
-			related.Add(( sourceJson, targetJson ));
+			related.Add((sourceJson, targetJson));
 		}
 
 		// Check for XMP sidecar
@@ -35,7 +35,7 @@ public class ReleatedFilePaths(IStorage storage)
 		}
 
 		var targetXmp = ExtensionRolesHelper.ReplaceExtensionWithXmp(targetFilePath);
-		related.Add(( sourceXmp, targetXmp ));
+		related.Add((sourceXmp, targetXmp));
 
 		return related;
 	}

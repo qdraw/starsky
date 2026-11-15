@@ -55,8 +55,8 @@ public class SqlXmlRepository : IXmlRepository
 		catch ( Exception exception )
 		{
 			if ( exception is not RetryLimitExceededException &&
-			     exception is not MySqlException &&
-			     exception is not SqliteException )
+				 exception is not MySqlException &&
+				 exception is not SqliteException )
 			{
 				throw;
 			}
@@ -64,8 +64,8 @@ public class SqlXmlRepository : IXmlRepository
 			// MySqlConnector.MySqlException (0x80004005): Table 'starsky.DataProtectionKeys' doesn't exist
 			// or Microsoft.Data.Sqlite.SqliteException (0x80004005): SQLite Error 1: 'no such table: DataProtectionKeys
 			if ( !exception.Message.Contains("0x80004005") &&
-			     !exception.Message.Contains(
-				     "no such table: DataProtectionKeys") )
+				 !exception.Message.Contains(
+					 "no such table: DataProtectionKeys") )
 			{
 				return new List<XElement>();
 			}
@@ -90,9 +90,9 @@ public class SqlXmlRepository : IXmlRepository
 		catch ( Exception exception )
 		{
 			if ( exception is not DbUpdateException &&
-			     exception is not RetryLimitExceededException &&
-			     exception is not MySqlException &&
-			     exception is not SqliteException )
+				 exception is not RetryLimitExceededException &&
+				 exception is not MySqlException &&
+				 exception is not SqliteException )
 			{
 				throw;
 			}

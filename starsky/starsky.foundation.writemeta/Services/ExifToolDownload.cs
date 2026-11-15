@@ -75,7 +75,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 	public async Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30)
 	{
 		if ( _appSettings.ExiftoolSkipDownloadOnStartup == true || _appSettings is
-			    { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
+			{ AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
 		{
 			var name = _appSettings.ExiftoolSkipDownloadOnStartup == true
 				? "ExiftoolSkipDownloadOnStartup"
@@ -87,15 +87,15 @@ public sealed class ExifToolDownload : IExifToolDownload
 		CreateDirectoryDependenciesFolderIfNotExists();
 
 		if ( isWindows &&
-		     ( !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()) ||
-		       _hostFileSystemStorage.Info(ExeExifToolWindowsFullFilePath()).Size <= minimumSize ) )
+			 ( !_hostFileSystemStorage.ExistFile(ExeExifToolWindowsFullFilePath()) ||
+			   _hostFileSystemStorage.Info(ExeExifToolWindowsFullFilePath()).Size <= minimumSize ) )
 		{
 			return await StartDownloadForWindows();
 		}
 
 		if ( !isWindows &&
-		     ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ||
-		       _hostFileSystemStorage.Info(ExeExifToolUnixFullFilePath()).Size <= minimumSize ) )
+			 ( !_hostFileSystemStorage.ExistFile(ExeExifToolUnixFullFilePath()) ||
+			   _hostFileSystemStorage.Info(ExeExifToolUnixFullFilePath()).Size <= minimumSize ) )
 		{
 			return await StartDownloadForUnix();
 		}
@@ -121,7 +121,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 	{
 		var result = new List<bool>();
 		foreach ( var architecture in
-		         DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures) )
+				 DotnetRuntimeNames.GetArchitecturesNoGenericAndFallback(architectures) )
 		{
 			var isWindows = DotnetRuntimeNames.IsWindows(architecture);
 			result.Add(await DownloadExifTool(isWindows));
@@ -133,13 +133,13 @@ public sealed class ExifToolDownload : IExifToolDownload
 	private void CreateDirectoryDependenciesFolderIfNotExists()
 	{
 		if ( _hostFileSystemStorage.ExistFolder(
-			    _appSettings.DependenciesFolder) )
+				_appSettings.DependenciesFolder) )
 		{
 			return;
 		}
 
 		_logger.LogInformation("[DownloadExifTool] Create Directory: " +
-		                       _appSettings.DependenciesFolder);
+							   _appSettings.DependenciesFolder);
 		_hostFileSystemStorage.CreateDirectory(_appSettings.DependenciesFolder);
 	}
 
@@ -238,7 +238,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		}
 
 		if ( !new CheckSha256Helper(_hostFileSystemStorage).CheckSha256(tarGzArchiveFullFilePath,
-			    getChecksumsFromTextFile) )
+				getChecksumsFromTextFile) )
 		{
 			_logger.LogError($"Checksum for {tarGzArchiveFullFilePath} is not valid");
 			_hostFileSystemStorage.FileDelete(tarGzArchiveFullFilePath);
@@ -401,7 +401,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		string[] getChecksumsFromTextFile)
 	{
 		if ( _hostFileSystemStorage.ExistFile(
-			    ExeExifToolWindowsFullFilePath()) )
+				ExeExifToolWindowsFullFilePath()) )
 		{
 			return true;
 		}
@@ -424,7 +424,7 @@ public sealed class ExifToolDownload : IExifToolDownload
 		}
 
 		if ( !new CheckSha256Helper(_hostFileSystemStorage).CheckSha256(zipArchiveFullFilePath,
-			    getChecksumsFromTextFile) )
+				getChecksumsFromTextFile) )
 		{
 			_logger.LogError($"Checksum for {zipArchiveFullFilePath} is not valid");
 			return false;
