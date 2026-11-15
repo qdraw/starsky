@@ -3744,10 +3744,12 @@
         "tags": [
           "PublishRemote"
         ],
+        "summary": "Check if remote publishing is enabled and the publish profile is valid",
         "parameters": [
           {
             "name": "publishProfileName",
             "in": "query",
+            "description": "name of the remote publish profile",
             "schema": {
               "type": "string"
             }
@@ -3755,7 +3757,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "true or false",
             "content": {
               "application/json": {
                 "schema": {
@@ -3785,7 +3787,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "User unauthorized"
           }
         }
       }
@@ -4767,6 +4769,17 @@
             "$ref": "#/components/schemas/AppAccountRoles"
           },
           "useRateLimiting": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "trustedProxies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "trustedProxiesCloudflare": {
             "type": "boolean",
             "nullable": true
           },

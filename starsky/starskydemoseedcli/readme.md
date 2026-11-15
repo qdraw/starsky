@@ -42,5 +42,5 @@ environment. See `DemoData` and `DemoUnsafeDeleteStorageFolder` in the
 ```
 
 The only options are `--help` and `--verbose`, plus the
-[shortcut arguments](/docs/getting-started/configuration/config-options#command-line-options) that
+[shortcut arguments](/docs/getting-started/configuration/config-options) that
 overwrite settings, such as `--basepath` and `--connection`.

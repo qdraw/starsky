@@ -34,7 +34,7 @@ going through a short list of system requirements.
 | Stable Release      | `qdraw/starsky:latest`          | 
 | MariaDB             | `arm64v8/mariadb:12.3`          | 
 
-Running 64-bit Docker images under Raspbian Linux requires a minimum of technical experience to perform the necessary [configuration changes](#raspberry-pi-os). This is because it is a 32-bit operating system with merely a 64-bit kernel to ensure compatibility with legacy software.  If you don't need compatibility with 32-bit apps, we recommend choosing a standard 64-bit Linux distribution instead as it will save you time and requires less experience:
+Running 64-bit Docker images under Raspbian Linux requires a minimum of technical experience to perform the necessary [configuration changes](#system-requirements). This is because it is a 32-bit operating system with merely a 64-bit kernel to ensure compatibility with legacy software.  If you don't need compatibility with 32-bit apps, we recommend choosing a standard 64-bit Linux distribution instead as it will save you time and requires less experience:
 
 - [Raspberry Pi Debian](https://raspi.debian.net/)
 - [Ubuntu for Raspberry Pi](https://ubuntu.com/raspberry-pi)

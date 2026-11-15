@@ -58,5 +58,5 @@ recursive is enabled by default
   use -v -help to show settings:
 ```
 
-The [shortcut arguments](/docs/getting-started/configuration/config-options#command-line-options)
+The [shortcut arguments](/docs/getting-started/configuration/config-options)
 that overwrite settings, such as `--basepath` and `--connection`, can be used as well.

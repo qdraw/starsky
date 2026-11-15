@@ -44,7 +44,7 @@ for example to implement a feature or enhancement.
 This way you can easily validate if the proposed changes make sense and you avoid conflicts with others.
 
 Releasing imperfect code is not a problem as long as it is 
-[accompanied by automated tests](#code-that-cannot-be-tested-is-flawed). 
+[accompanied by automated tests](#test-automation-guidelines). 
 This makes it easy to refactor later without breaking anything or requiring detailed knowledge of the requirements 
 and a lot of time for manual testing. Be pragmatic. Done is better than perfect.
 
@@ -62,7 +62,7 @@ Don't get carried away implementing unnecessary abstractions and focusing on sca
 optimization before you've even validated the functionality of a feature or component.
 
 Instead of spending a lot of time on something you may not need, 
-focus on user needs and [test automation](#code-that-cannot-be-tested-is-flawed).
+focus on user needs and [test automation](#test-automation-guidelines).
 That way, you'll make sure you're developing the right functionality, 
 and you can [refactor it later](https://martinfowler.com/bliki/DefinitionOfRefactoring.html) for scalability 
 and other non-functional aspects without breaking anything.
@@ -89,7 +89,7 @@ Don't worry that this will take too long. Take your time. It's the fastest and o
 time, which we too often believe to be unaffordable. 
  > — <cite>Niklaus Wirth, [Communications of the ACM](https://dl.acm.org/doi/10.1145/2786.2789), 1985</cite>
 
-## Effectiveness > Efficiency ##
+## Effectiveness > Efficiency ## {#effectiveness-efficiency}
 
 Optimize for effectiveness before efficiency when prioritizing tasks:
 
@@ -105,7 +105,7 @@ In contrast, a feature factory focuses on the quantity of new features rather th
 > **things and doing things right.** There is surely nothing quite so useless as doing with great 
 > efficiency what should not be done at all. — <cite>[Peter Drucker](https://en.wikipedia.org/wiki/Peter_Drucker)</cite>
 
-## Test Automation Guidelines ##
+## Test Automation Guidelines
 
 We strive for [complete test coverage](https://martinfowler.com/bliki/TestCoverage.html) as it is a useful tool for finding
 untested parts of our code base. Test coverage is of limited use as a numerical statement of how good our tests are.

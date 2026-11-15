@@ -190,7 +190,7 @@ Easy, isn't it?
 If your server runs out of memory, the index is frequently locked, or other system resources are
 running low:
 
-- [ ] Try [reducing the number of workers](../configuration/config-options.md#index-workers) by
+- [ ] Try [reducing the number of workers](../../advanced-options/starsky/starsky/readme.md#optional-settings) by
   setting `app__maxDegreesOfParallelism` to a reasonably small value in `docker-compose.yml`,
   depending on the CPU performance and number of cores
 - [ ] Make
