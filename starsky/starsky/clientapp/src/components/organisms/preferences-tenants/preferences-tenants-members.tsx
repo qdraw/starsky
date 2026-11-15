@@ -96,43 +96,44 @@ const PreferencesTenantsMembers: React.FunctionComponent = () => {
   return (
     <div className="preferences preferences--tenant-members" data-test="preferences-tenant-members">
       <div className="content--subheader">{MessageTenantMembers}</div>
-      <table className="preferences-tenant-members__table">
-        <tbody>
-          {members.map((member) => (
-            <tr key={member.userId} data-test={`preferences-tenant-member-${member.userId}`}>
-              <td className="content--text">{member.identifier ?? member.name}</td>
-              <td>
-                <select
-                  className="form-control"
-                  aria-label={MessageRole}
-                  data-test={`preferences-tenant-member-role-${member.userId}`}
-                  value={member.roleCode}
-                  disabled={loading}
-                  onChange={(e) => void changeRole(member, e.target.value)}
-                >
-                  {Roles.map((roleCode) => (
-                    <option key={roleCode} value={roleCode}>
-                      {roleCode}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                <button
-                  className="btn btn--default"
-                  type="button"
-                  data-test={`preferences-tenant-member-remove-${member.userId}`}
-                  disabled={loading}
-                  onClick={() => void removeMember(member)}
-                >
-                  {MessageTenantRemoveMember}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
+      <div className="content--text">
+        <table className="preferences-tenant-members__table">
+          <tbody>
+            {members.map((member) => (
+              <tr key={member.userId} data-test={`preferences-tenant-member-${member.userId}`}>
+                <td className="content--text">{member.identifier ?? member.name}</td>
+                <td>
+                  <select
+                    className="form-control"
+                    aria-label={MessageRole}
+                    data-test={`preferences-tenant-member-role-${member.userId}`}
+                    value={member.roleCode}
+                    disabled={loading}
+                    onChange={(e) => void changeRole(member, e.target.value)}
+                  >
+                    {Roles.map((roleCode) => (
+                      <option key={roleCode} value={roleCode}>
+                        {roleCode}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+                <td>
+                  <button
+                    className="btn btn--default"
+                    type="button"
+                    data-test={`preferences-tenant-member-remove-${member.userId}`}
+                    disabled={loading}
+                    onClick={() => void removeMember(member)}
+                  >
+                    {MessageTenantRemoveMember}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <form
         className="form-inline"
         onSubmit={(e) => {
