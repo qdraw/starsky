@@ -36,7 +36,9 @@ Each cloud import provider can be configured independently:
 * Automatic synchronization at configured intervals
 * Background execution using a hosted service
 * Protection against overlapping executions
-* Manual synchronization trigger via authenticated API endpoint
+* Manual synchronization trigger via authenticated API endpoint (`POST /api/cloud-import/sync`, optionally with `/{providerId}`)
+* Status and last results via `GET /api/cloud-import/status` and `GET /api/cloud-import/last-results`, see the [usage examples](../../getting-started/cloud-import/readme.md#usage)
+* In the web interface the **Preferences** page shows each configured provider with its last sync result and a button to start a sync
 
 ---
 

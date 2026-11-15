@@ -45,7 +45,11 @@ If you'd rather manage the list yourself, add Cloudflare's published edge IP ran
 uses the real visitor IP for rate limiting (`app__UseRateLimiting`) instead of Cloudflare's own
 address.
 
-`appsettings.json`:
+Take the ranges from [cloudflare.com/ips-v4](https://www.cloudflare.com/ips-v4) and
+[cloudflare.com/ips-v6](https://www.cloudflare.com/ips-v6) and add every line as a separate entry
+(the list is not copied here because it changes over time).
+
+`appsettings.json` (shortened, add all ranges):
 
 ```json
 {
@@ -53,26 +57,7 @@ address.
     "TrustedProxies": [
       "173.245.48.0/20",
       "103.21.244.0/22",
-      "103.22.200.0/22",
-      "103.31.4.0/22",
-      "141.101.64.0/18",
-      "108.162.192.0/18",
-      "190.93.240.0/20",
-      "188.114.96.0/20",
-      "197.234.240.0/22",
-      "198.41.128.0/17",
-      "162.158.0.0/15",
-      "104.16.0.0/13",
-      "104.24.0.0/14",
-      "172.64.0.0/13",
-      "131.0.72.0/22",
-      "2400:cb00::/32",
-      "2606:4700::/32",
-      "2803:f800::/32",
-      "2405:b500::/32",
-      "2405:8100::/32",
-      "2a06:98c0::/29",
-      "2c0f:f248::/32"
+      "2400:cb00::/32"
     ]
   }
 }
@@ -83,31 +68,12 @@ Or as environment variables, one per range:
 ```
 app__TrustedProxies__0=173.245.48.0/20
 app__TrustedProxies__1=103.21.244.0/22
-app__TrustedProxies__2=103.22.200.0/22
-app__TrustedProxies__3=103.31.4.0/22
-app__TrustedProxies__4=141.101.64.0/18
-app__TrustedProxies__5=108.162.192.0/18
-app__TrustedProxies__6=190.93.240.0/20
-app__TrustedProxies__7=188.114.96.0/20
-app__TrustedProxies__8=197.234.240.0/22
-app__TrustedProxies__9=198.41.128.0/17
-app__TrustedProxies__10=162.158.0.0/15
-app__TrustedProxies__11=104.16.0.0/13
-app__TrustedProxies__12=104.24.0.0/14
-app__TrustedProxies__13=172.64.0.0/13
-app__TrustedProxies__14=131.0.72.0/22
-app__TrustedProxies__15=2400:cb00::/32
-app__TrustedProxies__16=2606:4700::/32
-app__TrustedProxies__17=2803:f800::/32
-app__TrustedProxies__18=2405:b500::/32
-app__TrustedProxies__19=2405:8100::/32
-app__TrustedProxies__20=2a06:98c0::/29
-app__TrustedProxies__21=2c0f:f248::/32
+app__TrustedProxies__2=2400:cb00::/32
 ```
 
-**These ranges change occasionally.** Don't treat the list above as permanent — check it
-against [cloudflare.com/ips-v4](https://www.cloudflare.com/ips-v4) and
-[cloudflare.com/ips-v6](https://www.cloudflare.com/ips-v6) and update your config when they do.
+**These ranges change occasionally.** Check them against the Cloudflare links above and update your
+config when they do. `TrustedProxiesCloudflare` avoids this, because the ranges are kept up to date
+in Starsky itself.
 
 ## Lock down the origin
 
@@ -118,7 +84,7 @@ bypassing the rate limiter the same way the trusted-proxy check was meant to pre
 
 Pick one of:
 
-- **Firewall the origin** so only Cloudflare's IP ranges (the same list above) may reach the
+- **Firewall the origin** so only Cloudflare's IP ranges (the same ranges as above) may reach the
   port Starsky listens on. Most hosting providers and cloud firewalls support this.
 - **Cloudflare Tunnel** (`cloudflared`) — the origin makes an outbound connection to Cloudflare,
   so it never has a publicly reachable address at all.

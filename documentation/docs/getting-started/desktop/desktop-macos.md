@@ -24,6 +24,7 @@ Op the dmg file from downloads:
 
 - `starsky-mac-arm64-desktop.dmg` - Apple Silicon Macs
 - `starsky-mac-x64-desktop.dmg` - Intel Macs
+- `starsky-mac-universal-desktop.dmg` - works on both (when available for the release)
 
 ![Step 1](../../assets/getting-started-desktop-desktop-macos-install-1.jpg)
 
@@ -37,15 +38,16 @@ Drag the Starsky App into Applications
 
 ![Step 3](../../assets/getting-started-desktop-desktop-macos-install-3.jpg)
 
-## Open Terminal
+## Only if macOS refuses to open the app
 
-Do code signing yourself or and remove from quarantine with the following command:
+Releases are signed with a Developer ID certificate and notarized by Apple, so no extra steps are
+needed. If macOS still reports that the app is damaged or from an unidentified developer (for example
+with an older or self-built version), open Terminal and sign it locally and remove the quarantine
+flag:
 
 ```
 codesign --force --deep -s - /Applications/Starsky.app && xattr -rd com.apple.quarantine /Applications/Starsky.app
 ```
-
-**You need to manually sign the code because we haven't purchased certificates from Apple**
 
 ## Installer is done
 
