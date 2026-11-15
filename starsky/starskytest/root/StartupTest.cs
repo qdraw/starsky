@@ -168,6 +168,24 @@ public sealed class StartupTest
 		Assert.HasCount(1, options.KnownIPNetworks);
 	}
 
+	[TestMethod]
+	public void ConfigureForwardedHeaders_TrustedProxiesCloudflare_AddsCloudflareRanges()
+	{
+		IServiceCollection serviceCollection = new ServiceCollection();
+		IConfiguration configuration =
+			new ConfigurationRoot(new List<IConfigurationProvider>());
+		serviceCollection.AddSingleton(configuration);
+
+		var startup = new Startup(["--app:TrustedProxiesCloudflare=true"]);
+		startup.ConfigureServices(serviceCollection);
+
+		var options = serviceCollection.BuildServiceProvider()
+			.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+		Assert.Contains(n => n.ToString() == "173.245.48.0/20", options.KnownIPNetworks);
+		Assert.Contains(n => n.ToString() == "2400:cb00::/32", options.KnownIPNetworks);
+	}
+
 	[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]
 	private static List<object?>? GetMiddlewareInstance(IApplicationBuilder app)
 	{

@@ -114,6 +114,15 @@ public sealed class Build : NukeBuild
 
 	[Parameter("Is SonarQube Disabled")] readonly bool NoSonar;
 
+	/// <summary>
+	///     --no-cloudflare-check
+	///     Skips checking (and auto-updating) Cloudflare's published IP ranges used by
+	///     CloudflareTrustedProxiesHelper. Needs internet access; the target already skips
+	///     itself (with a warning, not a failure) when Cloudflare's API can't be reached.
+	/// </summary>
+	[Parameter("Skip checking Cloudflare's IP ranges list")]
+	readonly bool NoCloudflareCheck;
+
 	[Parameter(
 		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
 	readonly bool NoTest;
@@ -188,7 +197,27 @@ public sealed class Build : NukeBuild
 		.DependsOn(SonarBuildTest)
 		.DependsOn(BuildNetCoreRuntimeSpecific)
 		.DependsOn(CoverageReport)
+		.DependsOn(CheckCloudflareIpRanges)
 		.DependsOn(Zip);
+
+	/// <summary>
+	///     Checks Cloudflare's published IP ranges against CloudflareTrustedProxiesHelper and
+	///     rewrites that file when they've changed. Never fails the build: skipped (with a
+	///     warning) when there is no internet access or the API can't be reached.
+	/// </summary>
+	Target CheckCloudflareIpRanges => p => p
+		.Executes(() =>
+		{
+			if ( NoCloudflareCheck )
+			{
+				Log.Information(
+					"--no-cloudflare-check flag is used\n so skip CheckCloudflareIpRanges");
+				return;
+			}
+
+			CloudflareIpRangesHelper.CheckAndUpdate(
+				WorkingDirectory.GetSolutionParentFolder());
+		});
 
 	Target SonarBuildTest => p => p
 		.DependsOn(Client)

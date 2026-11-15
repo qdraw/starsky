@@ -547,6 +547,17 @@ public sealed class AppSettings
 	public List<string>? TrustedProxies { get; set; }
 
 	/// <summary>
+	///     Add Cloudflare's published edge IP ranges to TrustedProxies automatically (see
+	///     CloudflareTrustedProxiesHelper for the list), instead of pasting them into
+	///     TrustedProxies by hand. Only enable this when Cloudflare is actually in front of this
+	///     app, and the origin is not otherwise reachable directly (firewall it to Cloudflare's
+	///     IPs, use Cloudflare Tunnel, or Authenticated Origin Pulls) — trusting the header is not
+	///     a substitute for that.
+	///     use env variable: app__TrustedProxiesCloudflare
+	/// </summary>
+	public bool? TrustedProxiesCloudflare { get; set; } = false;
+
+	/// <summary>
 	///     Optional path to a PKCS#12 (.pfx) certificate. When set, new ASP.NET data protection keys
 	///     (used to sign the login cookie) are encrypted with it before they are stored in the
 	///     database. Existing keys stay readable and are replaced by encrypted ones on key rotation.

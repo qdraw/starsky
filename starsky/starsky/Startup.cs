@@ -202,8 +202,8 @@ public sealed class Startup
 			options.ForwardedHeaders =
 				ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 
-			var trustedProxies = appSettings?.TrustedProxies;
-			if ( trustedProxies == null || trustedProxies.Count == 0 )
+			var trustedProxies = CloudflareTrustedProxiesHelper.GetTrustedProxies(appSettings);
+			if ( trustedProxies.Count == 0 )
 			{
 				// No reverse proxy configured: keep the safe default, which only trusts
 				// forwarded headers coming directly from loopback (e.g. NgInx on the same
