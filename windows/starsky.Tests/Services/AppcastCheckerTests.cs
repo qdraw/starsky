@@ -3,6 +3,8 @@ using Starsky.Desktop.Services;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
+[OSCondition(OperatingSystems.Windows)]
 public class AppcastCheckerTests
 {
     private const string Ns = "http://www.andymatuschak.org/xml-namespaces/sparkle";

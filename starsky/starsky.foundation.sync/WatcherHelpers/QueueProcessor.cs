@@ -42,12 +42,14 @@ public sealed class QueueProcessor : IQueueProcessor // not injected
 	{
 		var payload = new QueueProcessorPayload
 		{
-			FilePath = filepath, ToPath = toPath, ChangeTypes = changeTypes
+			FilePath = filepath,
+			ToPath = toPath,
+			ChangeTypes = changeTypes
 		};
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = $"from:{filepath}" +
-			           ( string.IsNullOrEmpty(toPath) ? string.Empty : "_to:" + toPath ),
+					   ( string.IsNullOrEmpty(toPath) ? string.Empty : "_to:" + toPath ),
 			TraceParentId = Activity.Current?.Id,
 			PriorityLane = ProcessTaskQueue.PriorityLaneDiskWatcher,
 			JobType = JobType,

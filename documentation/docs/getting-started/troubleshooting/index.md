@@ -43,7 +43,7 @@ Before reporting a bug, whould you please the following things:
       recommend [configuring a local hostname](../../assets/getting-started-index-pihole-local-dns.png)
       to access other hosts on your network
 - [ ] Note that HTTP security headers will prevent the app from loading in a frame (override them)
-- [ ] Verify your computer meets the [system requirements](../readme.mdx#system-requirements)
+- [ ] Verify your computer meets the [system requirements](../setup.md#system-requirements)
 - [ ] Go through the [checklist for fatal server errors](#fatal-server-errors)
 
 Should MariaDB get stuck in a restart loop and Starsky can't connect to it, this indicates
@@ -100,7 +100,7 @@ be placed in separate folders.
 
 ### MySQL Errors ###
 
-↪ [Official support for MySQL 8 is discontinued](../readme.mdx#databases)
+↪ [Official support for MySQL 8 is discontinued](../setup.md#databases)
 
 ### Bad Performance ###
 
@@ -125,14 +125,14 @@ Fatal errors are often caused by one of the following conditions:
   change [permissions](docker.md))
 - [ ] [Symbolic links](https://en.wikipedia.org/wiki/Symbolic_link) were mounted or used within a
   *storage* folder (replace with actual paths)
-- [ ] The [server is low on memory](../readme.mdx#system-requirements) (add memory)
+- [ ] The [server is low on memory](../setup.md#system-requirements) (add memory)
 - [ ] You didn't [configure at least 4 GB of swap space](docker.md#adding-swap) (add swap)
 - [ ] High-resolution panoramic images require [additional memory](performance.md#memory) above the
   recommended minimum (add more swap or memory)
 - [ ] The server CPU is overheating (improve cooling)
 - [ ] The server has an outdated operating system that is not fully compatible (update)
 - [ ] The server hardware is defective and causes random panics (test on another server)
-- [ ] The [database server](mariadb.md) is not running, [incompatible](../readme.mdx#databases), or
+- [ ] The [database server](mariadb.md) is not running, [incompatible](../setup.md#databases), or
   misconfigured (start, upgrade, or [fix it](mariadb.md))
 - [ ] You've [upgraded the MariaDB server](mariadb.md#version-upgrade) without
   running `mariadb-upgrade`
@@ -189,8 +189,6 @@ connection or the server was started only a few seconds ago. In case this does n
 If you have indexed your library and some images or videos are missing, first check the logs
 In case the application logs don't contain anything helpful:
 
-- [ ] The files exceed
-  the [size limit in megabyte or the resolution limit in megapixels](../configuration/config-options.md#storage)
 - [ ] The files have [bad filesystem permissions or the wrong owner](docker.md), so they cannot be
   opened
 - [ ] The file type is generally unsupported
@@ -230,7 +228,7 @@ If search results are incorrect, for example, in the wrong order or not filtered
   Starsky
 - [ ] Previously [failed migrations must be re-run](mariadb.md#incompatible-schema) to update the
   index schema
-- [ ] The database server is [incompatible or needs to be updated](../readme.mdx#databases)
+- [ ] The database server is [incompatible or needs to be updated](../setup.md#databases)
 
 *It may be a bug if you cannot find any other reasons, such as a local configuration problem or a
 misunderstanding in how the software works. Please note that reports must be reproducible in order

@@ -7,7 +7,7 @@ import { ProgressBar } from "./progress-bar";
 interface IControlsProps {
   scrubberRef: React.RefObject<HTMLSpanElement | null>;
   progressRef: React.RefObject<HTMLProgressElement | null>;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
+  videoRef: React.RefObject<HTMLMediaElement | null>;
   paused: boolean;
   setPaused: React.Dispatch<React.SetStateAction<boolean>>;
   setIsError: React.Dispatch<React.SetStateAction<string>>;

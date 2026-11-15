@@ -18,8 +18,8 @@ internal class RunProcess(IWebLogger logger)
 		var (exitCode, output, error) = await StartAndReadAsync(fileName, arguments);
 
 		var succeeded = exitCode == 0 ||
-		                ( allowedExitCodes != null &&
-		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
+						( allowedExitCodes != null &&
+						  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
 
 		if ( !succeeded && exitCode != 0 )
 		{
@@ -36,8 +36,8 @@ internal class RunProcess(IWebLogger logger)
 		var (exitCode, output, error) = await StartAndReadAsync(fileName, arguments);
 
 		var succeeded = exitCode == 0 ||
-		                ( allowedExitCodes != null &&
-		                  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
+						( allowedExitCodes != null &&
+						  Array.IndexOf(allowedExitCodes, exitCode) >= 0 );
 
 		if ( !succeeded && exitCode != 0 )
 		{
@@ -45,7 +45,7 @@ internal class RunProcess(IWebLogger logger)
 				$"Process {fileName} {arguments} failed with exit code {exitCode}\nOutput: {output}\nError: {error}");
 		}
 
-		return ( succeeded, output, exitCode );
+		return (succeeded, output, exitCode);
 	}
 
 	private static async Task<(int exitCode, string output, string error)> StartAndReadAsync(string fileName, string arguments)

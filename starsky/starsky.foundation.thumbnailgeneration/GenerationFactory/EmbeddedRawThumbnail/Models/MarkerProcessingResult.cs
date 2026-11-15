@@ -1,4 +1,4 @@
-﻿namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
+namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Models;
 
 internal enum MarkerProcessingResult
 {

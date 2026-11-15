@@ -57,8 +57,8 @@ internal static class RestrictedPath
 			: StringComparison.Ordinal;
 
 		return RestrictedExactPaths.Any(restricted => canonical.Equals(restricted, comparison)) ||
-		       RestrictedPaths.Any(restricted =>
-			       canonical.Equals(restricted, comparison) ||
-			       canonical.StartsWith(restricted + Path.DirectorySeparatorChar, comparison));
+			   RestrictedPaths.Any(restricted =>
+				   canonical.Equals(restricted, comparison) ||
+				   canonical.StartsWith(restricted + Path.DirectorySeparatorChar, comparison));
 	}
 }

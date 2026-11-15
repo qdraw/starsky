@@ -2,7 +2,7 @@
   "openapi": "3.0.4",
   "info": {
     "title": "Starsky",
-    "version": "0.9.8.0"
+    "version": "0.9.9.0"
   },
   "servers": [
     {
@@ -3744,10 +3744,12 @@
         "tags": [
           "PublishRemote"
         ],
+        "summary": "Check if remote publishing is enabled and the publish profile is valid",
         "parameters": [
           {
             "name": "publishProfileName",
             "in": "query",
+            "description": "name of the remote publish profile",
             "schema": {
               "type": "string"
             }
@@ -3755,7 +3757,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "true or false",
             "content": {
               "application/json": {
                 "schema": {
@@ -3785,7 +3787,7 @@
             }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "User unauthorized"
           }
         }
       }
@@ -4704,6 +4706,18 @@
             "type": "boolean",
             "nullable": true
           },
+          "mcpEnabled": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "mcpAllowWrite": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "mcpMaxItemsPerCall": {
+            "type": "integer",
+            "format": "int32"
+          },
           "addSwaggerExport": {
             "type": "boolean",
             "nullable": true
@@ -4755,6 +4769,17 @@
             "$ref": "#/components/schemas/AppAccountRoles"
           },
           "useRateLimiting": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "trustedProxies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "trustedProxiesCloudflare": {
             "type": "boolean",
             "nullable": true
           },
@@ -5869,6 +5894,7 @@
           50,
           51,
           52,
+          53,
           60,
           70,
           71,

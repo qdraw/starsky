@@ -102,26 +102,32 @@ Once configured, the sync will run automatically based on your `SyncFrequencyMin
 
 ### Manual Sync
 
-You can trigger a manual sync using the API:
+You can trigger a manual sync using the API. The endpoints use the same authentication as the rest
+of the API (cookie or HTTP Basic authentication; bearer tokens are not supported). Add `/{providerId}`
+to sync a single provider.
 
 ```bash
-curl -X POST https://your-starsky-instance/api/CloudImport/sync \
-  -H "Authorization: Bearer YOUR_AUTH_TOKEN"
+curl -X POST https://your-starsky-instance/api/cloud-import/sync \
+  -u "user@example.com:YOUR_PASSWORD"
 ```
 
 ### Check Status
 
 ```bash
-curl https://your-starsky-instance/api/CloudImport/status \
-  -H "Authorization: Bearer YOUR_AUTH_TOKEN"
+curl https://your-starsky-instance/api/cloud-import/status \
+  -u "user@example.com:YOUR_PASSWORD"
 ```
+
+Use `/api/cloud-import/status/{providerId}` for a single provider.
 
 ### View Last Result
 
 ```bash
-curl https://your-starsky-instance/api/CloudImport/last-result \
-  -H "Authorization: Bearer YOUR_AUTH_TOKEN"
+curl https://your-starsky-instance/api/cloud-import/last-results \
+  -u "user@example.com:YOUR_PASSWORD"
 ```
+
+Use `/api/cloud-import/last-result/{providerId}` for a single provider.
 
 ## Configuration Options
 

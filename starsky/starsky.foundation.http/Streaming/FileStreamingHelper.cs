@@ -118,7 +118,7 @@ public static class FileStreamingHelper
 				section.ContentDisposition, out var contentDisposition);
 
 			if ( hasContentDispositionHeader && contentDisposition != null &&
-			     MultipartRequestHelper.HasFileContentDisposition(contentDisposition) )
+				 MultipartRequestHelper.HasFileContentDisposition(contentDisposition) )
 			{
 				var sourceFileName = contentDisposition.FileName.ToString()
 					.Replace("\"", string.Empty);

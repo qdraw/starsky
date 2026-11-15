@@ -75,7 +75,7 @@ public class EmbeddedRawThumbnailService(IWebLogger logger, ISelectorStorage sel
 		catch ( Exception exception )
 		{
 			logger.LogError($"Failed to extract embedded preview from RAW file: {rawFilePath}. " +
-			                $"Exception: {exception.Message}");
+							$"Exception: {exception.Message}");
 			return false;
 		}
 	}

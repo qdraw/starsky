@@ -42,10 +42,27 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 > Within a version block the top are item is the newest
 
-## version 0.9.9 - _(Unreleased)_ - 2026-?-? {#0.9.9}
+## version 0.9.10 - _(Unreleased)_ - 2026-?-? {#0.9.10}
 
-- [x] (Fixed) _Back-end_ Publish kept spinning because the zip status check only accepted names with letters and digits, (PR #3447)
-- [x] (Fixed) _Back-end_ Infinity and NaN (for example from a corrupt exif value) cannot be stored in the database or written as json (PR #3450)
+- [x] (Security) _Back-end_ `ForwardedHeadersOptions` no longer trusts `X-Forwarded-For`/
+  `X-Forwarded-Proto` from any client; only loopback is trusted by default. The previous
+  `Clear()` call let an attacker spoof their IP to bypass the login/register rate limiter and,
+  when `NoAccountLocalhost` is enabled, the localhost auto-login check. Add `app__TrustedProxies`
+  (or `app__TrustedProxiesCloudflare=true` for Cloudflare) (PR #3492)
+- [x] (Added) _Back-end_ _Front-end_ Support for `.m4a` audio files: recognised by extension and
+  `ftyp M4A` header, listed with an audio icon and played in the detail view with an audio player
+  (PR #3486)
+- [x] (Fixed) _Front-end_ Pasting formatted text (for example a copied link) in the tags field and other
+  text fields failed on the macOS app with a Content-Security-Policy `style-src` error. Paste is now
+  always plain text, so no inline styles are inserted (PR #3486)
+
+## version 0.9.9 - 2026-11-12 {#0.9.9}
+
+- [x] (Changed) _Back-end_ Upgrade to .NET 10.0 - SDK 10.0.404 (Runtime: 10.0.15)
+- [x] (Fixed) _Back-end_ Publish kept spinning because the zip status check only accepted names with
+  letters and digits, (PR #3447)
+- [x] (Fixed) _Back-end_ Infinity and NaN (for example from a corrupt exif value) cannot be stored
+  in the database or written as json (PR #3450)
 
 ## version 0.9.8 - 2026-10-30 {#0.9.8}
 

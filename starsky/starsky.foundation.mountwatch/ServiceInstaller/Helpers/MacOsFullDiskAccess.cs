@@ -43,7 +43,7 @@ public class MacOsFullDiskAccess
 		}
 
 		const string message = "Unable to read /Volumes. " +
-		                       "Mount events may not be visible until Full Disk Access is granted.";
+							   "Mount events may not be visible until Full Disk Access is granted.";
 		_logger.LogError($"{message} Error: {probeException?.Message}");
 
 		if ( OpenFullDiskAccessSettings() )
@@ -56,14 +56,16 @@ public class MacOsFullDiskAccess
 	}
 
 	[SuppressMessage("Usage", "S4036: Make sure the \"PATH\" " +
-	                          "variable only contains fixed, unwriteable directories.")]
+							  "variable only contains fixed, unwriteable directories.")]
 	protected virtual bool OpenFullDiskAccessSettings()
 	{
 		try
 		{
 			Process.Start(new ProcessStartInfo
 			{
-				FileName = OpenCmd, Arguments = MacOsPrivacySettingsUri, UseShellExecute = false
+				FileName = OpenCmd,
+				Arguments = MacOsPrivacySettingsUri,
+				UseShellExecute = false
 			});
 			return true;
 		}

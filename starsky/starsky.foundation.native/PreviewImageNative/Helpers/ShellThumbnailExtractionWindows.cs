@@ -13,8 +13,8 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 	public static bool IsSupported(int width = 512, int height = 512)
 	{
 		return width <= 512 && height <= 512 &&
-		       RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
-		       RuntimeInformation.OSArchitecture == Architecture.X64;
+			   RuntimeInformation.IsOSPlatform(OSPlatform.Windows) &&
+			   RuntimeInformation.OSArchitecture == Architecture.X64;
 	}
 
 	/// <summary>
@@ -29,7 +29,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 		int height)
 	{
 		return IsSupported(width, height) &&
-		       GenerateThumbnailInternal(inputPath, outputBmpPath, width, height);
+			   GenerateThumbnailInternal(inputPath, outputBmpPath, width, height);
 	}
 
 	internal bool GenerateThumbnailInternal(string inputPath, string outputBmpPath,
@@ -78,7 +78,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 	internal static void SaveHBitmapToBmp(BITMAP bmp, string outputPath)
 	{
 		var headerSize = Marshal.SizeOf<BITMAPFILEHEADER>() +
-		                 Marshal.SizeOf<BITMAPINFOHEADER>();
+						 Marshal.SizeOf<BITMAPINFOHEADER>();
 		var pixelDataSize = bmp.bmWidthBytes * bmp.bmHeight;
 		var totalSize = headerSize + pixelDataSize;
 
@@ -179,9 +179,9 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 	[Flags]
 	[SuppressMessage("Usage", "S2346: " +
-	                          "Rename 'SIIGBF_RESIZETOFIT' to 'None'.")]
+							  "Rename 'SIIGBF_RESIZETOFIT' to 'None'.")]
 	[SuppressMessage("Usage", "S2342: " +
-	                          "Enumeration types should comply with a naming convention")]
+							  "Enumeration types should comply with a naming convention")]
 	internal enum SIIGBF
 	{
 		SIIGBF_RESIZETOFIT = 0x00,
@@ -194,7 +194,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 	[StructLayout(LayoutKind.Sequential)]
 	[SuppressMessage("Usage", "S101: Rename class 'SIZE' " +
-	                          "to match pascal case naming rules, consider using 'Size'.")]
+							  "to match pascal case naming rules, consider using 'Size'.")]
 	private struct SIZE
 	{
 		public int cx;
@@ -203,7 +203,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 	[StructLayout(LayoutKind.Sequential)]
 	[SuppressMessage("Usage", "S101: Rename class 'BITMAP' " +
-	                          "to match pascal case naming rules, consider using 'Bitmap'.")]
+							  "to match pascal case naming rules, consider using 'Bitmap'.")]
 	internal struct BITMAP
 	{
 		public int bmType;
@@ -217,7 +217,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	[SuppressMessage("Usage", "S101: Rename class 'BITMAPFILEHEADER' " +
-	                          "to match pascal case naming rules, consider using 'BitmapFileHeader'.")]
+							  "to match pascal case naming rules, consider using 'BitmapFileHeader'.")]
 	private struct BITMAPFILEHEADER
 	{
 		public ushort bfType;
@@ -229,7 +229,7 @@ public class ShellThumbnailExtractionWindows(IWebLogger logger)
 
 	[StructLayout(LayoutKind.Sequential)]
 	[SuppressMessage("Usage", "S101: Rename class 'BITMAPINFOHEADER' " +
-	                          "to match pascal case naming rules, consider using 'BitmapInfoHeader'.")]
+							  "to match pascal case naming rules, consider using 'BitmapInfoHeader'.")]
 	private struct BITMAPINFOHEADER
 	{
 		public uint biSize;

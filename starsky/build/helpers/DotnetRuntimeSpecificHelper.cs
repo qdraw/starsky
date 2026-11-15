@@ -40,7 +40,7 @@ public static class DotnetRuntimeSpecificHelper
 			var runtimeZip = $"{ZipperHelper.ZipPrefix}{runtime}.zip";
 
 			Log.Information("\tRuntimeZip: " + runtimeZip + " exists: " +
-			                File.Exists(runtimeZip));
+							File.Exists(runtimeZip));
 			if ( File.Exists(runtimeZip) )
 			{
 				File.Delete(runtimeZip);
@@ -118,7 +118,7 @@ public static class DotnetRuntimeSpecificHelper
 		configuration, string runtime, bool isReadyToRunEnabled)
 	{
 		Log.Information("> dotnet build next for: solution: " + solution + " runtime: " +
-		                runtime);
+						runtime);
 
 		var readyToRunArgument =
 			RuntimeIdentifier.IsReadyToRunSupported(runtime) && isReadyToRunEnabled
@@ -160,7 +160,7 @@ public static class DotnetRuntimeSpecificHelper
 		foreach ( var publishProject in Build.PublishProjectsList )
 		{
 			Log.Information(">> next publishProject: " +
-			                publishProject + " runtime: " + runtime);
+							publishProject + " runtime: " + runtime);
 
 			var publishProjectFullPath = Path.Combine(
 				WorkingDirectory.GetSolutionParentFolder(),

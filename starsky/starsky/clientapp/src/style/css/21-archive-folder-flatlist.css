@@ -1,5 +1,5 @@
 .folder-flat {
-  padding: 0px !important;
+  padding: 0px;
   border-top: 1px solid #eceff1;
   border-bottom: 1px solid #eceff1;
   margin-top: 15px;
@@ -92,6 +92,9 @@
 }
 .flatlistitem .icon.imageformat-mp4 {
   background-image: url("../images/baseline-file-mp4-24px.svg");
+}
+.flatlistitem .icon.imageformat-m4a {
+  background-image: url("../images/baseline-file-m4a-24px.svg");
 }
 .flatlistitem .icon.imageformat-gpx {
   background-image: url("../images/baseline-file-gpx-24px.svg");

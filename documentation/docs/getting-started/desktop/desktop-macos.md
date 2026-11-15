@@ -24,6 +24,7 @@ Op the dmg file from downloads:
 
 - `starsky-mac-arm64-desktop.dmg` - Apple Silicon Macs
 - `starsky-mac-x64-desktop.dmg` - Intel Macs
+- `starsky-mac-universal-desktop.dmg` - works on both (when available for the release)
 
 ![Step 1](../../assets/getting-started-desktop-desktop-macos-install-1.jpg)
 
@@ -37,15 +38,16 @@ Drag the Starsky App into Applications
 
 ![Step 3](../../assets/getting-started-desktop-desktop-macos-install-3.jpg)
 
-## Open Terminal
+## Only if macOS refuses to open the app
 
-Do code signing yourself or and remove from quarantine with the following command:
+Releases are signed with a Developer ID certificate and notarized by Apple, so no extra steps are
+needed. If macOS still reports that the app is damaged or from an unidentified developer (for example
+with an older or self-built version), open Terminal and sign it locally and remove the quarantine
+flag:
 
 ```
 codesign --force --deep -s - /Applications/Starsky.app && xattr -rd com.apple.quarantine /Applications/Starsky.app
 ```
-
-**You need to manually sign the code because we haven't purchased certificates from Apple**
 
 ## Installer is done
 
@@ -59,6 +61,41 @@ Click on Applications and open the App there
 
 See the [First Steps in the Getting Started Guide](../first-steps.md) for more info on how to setup
 the storage folder
+
+## Connection modes
+
+The macOS app supports two modes, switchable in the connection settings (**Starsky → Connection Settings…**, `Cmd+,`):
+
+- **Local** (default) — starts the bundled Starsky server on a free port on your Mac; no login is required (intended for single-user desktop use)
+- **Remote** — connects to an existing Starsky server URL; the bundled server is not started and full authentication applies. The server must be reachable and answer on `/api/health`
+
+Application settings of the web interface itself are opened with `Cmd+Shift+K`.
+
+## Automatic updates
+
+The app checks for updates on startup (using Sparkle) and prompts you when a new version is available. You can postpone the update; the prompt is suppressed for 4 days after dismissing it. Update checking can be disabled in the connection settings (**Check for updates**). When MountWatcher is enabled it is stopped before an update is installed.
+
+## Keyboard shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Cmd+N` | Open a new window |
+| `Cmd+W` | Close the window |
+| `Cmd+Shift+R` | Reload all windows |
+| `Cmd+E` | Edit the current file in the external editor |
+| `Cmd+,` | Connection settings |
+| `Cmd+Shift+K` | Application settings |
+
+## Data locations
+
+| Purpose | Path |
+|---|---|
+| Settings | `~/Library/Application Support/starsky/settings.json` |
+| Server settings | `~/Library/Application Support/starsky/appsettings.json` and `appsettings.local.json` |
+| Logs | `~/Library/Application Support/starsky/logs/` |
+| Database (local mode) | `~/Library/Application Support/starsky/starsky.db` |
+| Thumbnails (local mode) | `~/Library/Application Support/starsky/thumbnailTempFolder/` |
+| Temp files (local mode) | `~/Library/Caches/starsky/tempFolder/` |
 
 ## MountWatcher (automatic SD card import)
 

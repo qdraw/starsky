@@ -70,12 +70,12 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 		if ( !TryVerifyIsobmffFormat(input, out var containerType) )
 		{
 			logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
-			                $"Not a valid ISOBMFF container");
+							$"Not a valid ISOBMFF container");
 			return false;
 		}
 
 		logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
-		                $"Detected {containerType} container");
+						$"Detected {containerType} container");
 
 		var ok = TryExtractBestJpegByStrictScan(input, output);
 		if ( ok )
@@ -84,7 +84,7 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 		}
 
 		logger.LogDebug($"[ContainerFormatPreviewExtractor] {referenceInfo}: " +
-		                $"No JPEG preview found in container");
+						$"No JPEG preview found in container");
 		return false;
 	}
 
@@ -145,7 +145,7 @@ public class ContainerFormatPreviewExtractor(IWebLogger logger, ISelectorStorage
 			i = end + 1;
 		}
 
-		return ( bestOffset, bestLength );
+		return (bestOffset, bestLength);
 	}
 
 	private static bool IsJpegStart(byte[] bytes, int index)

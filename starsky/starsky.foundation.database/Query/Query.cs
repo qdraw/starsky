@@ -154,8 +154,8 @@ public partial class Query : IQuery
 
 		// if the result is not null return cached value
 		if ( _cache!.TryGetValue(queryHashListCacheName, out var cachedSubPaths)
-		     && ( List<string>? ) cachedSubPaths != null &&
-		     ( ( List<string?> ) cachedSubPaths ).Any(p => p != null) )
+			 && ( List<string>? ) cachedSubPaths != null &&
+			 ( ( List<string?> ) cachedSubPaths ).Any(p => p != null) )
 		{
 			return ( List<string> ) cachedSubPaths;
 		}
@@ -243,7 +243,7 @@ public partial class Query : IQuery
 			// Clone to avoid reference when cache exists
 			CacheUpdateItem(new List<FileIndexItem> { updateStatusContent.Clone() });
 			if ( _appSettings.Verbose == true )
-				// Ef core changes debug
+			// Ef core changes debug
 			{
 				_logger.LogDebug(context.ChangeTracker.DebugView.LongView);
 			}
@@ -349,7 +349,7 @@ public partial class Query : IQuery
 		foreach ( var item in updateStatusContent.ToList() )
 		{
 			if ( item.Status == FileIndexItem.ExifStatus.OkAndSame ||
-			     item.Status == FileIndexItem.ExifStatus.Default )
+				 item.Status == FileIndexItem.ExifStatus.Default )
 			{
 				item.Status = FileIndexItem.ExifStatus.Ok;
 			}
@@ -359,7 +359,7 @@ public partial class Query : IQuery
 				item.ParentDirectory!);
 
 			if ( !_cache.TryGetValue(queryCacheName,
-				    out var objectFileFolders) )
+					out var objectFileFolders) )
 			{
 				skippedCacheItems.Add(item.ParentDirectory!);
 				continue;
@@ -373,14 +373,14 @@ public partial class Query : IQuery
 
 			var obj = displayFileFolders.Find(p => p.FilePath == item.FilePath);
 			if ( obj != null )
-				// remove add again
+			// remove add again
 			{
 				displayFileFolders.Remove(obj);
 			}
 
 			if ( item.Status ==
-			     FileIndexItem.ExifStatus.Ok ) // ExifStatus.default is already changed
-				// Add here item to cached index
+				 FileIndexItem.ExifStatus.Ok ) // ExifStatus.default is already changed
+											   // Add here item to cached index
 			{
 				displayFileFolders.Add(item);
 			}
@@ -604,7 +604,7 @@ public partial class Query : IQuery
 		{
 			return await context.FileIndex.TagWith("QueryGetItemByHashAsync")
 				.Where(p => p.FileHash == fileHash
-				            && p.IsDirectory != true
+							&& p.IsDirectory != true
 				).Select(p => p.FilePath).Cast<string>().ToListAsync();
 		}
 

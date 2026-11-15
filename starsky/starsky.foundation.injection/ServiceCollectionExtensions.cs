@@ -182,7 +182,7 @@ public static class ServiceCollectionExtensions
 				foreach ( var referencedAssembly in assembly.GetReferencedAssemblies() )
 				{
 					if ( IsWildcardMatch(referencedAssembly.Name!, assemblyFilter)
-					     && assemblies.TrueForAll(p => p.FullName != referencedAssembly.FullName) )
+						 && assemblies.TrueForAll(p => p.FullName != referencedAssembly.FullName) )
 					{
 						assemblies.Add(Assembly.Load(referencedAssembly));
 					}
@@ -229,8 +229,8 @@ public static class ServiceCollectionExtensions
 	private static bool IsWildcardMatch(string input, string wildcard)
 	{
 		return input == wildcard || Regex.IsMatch(input, "^" +
-		                                                 Regex.Escape(wildcard).Replace("\\*", ".*")
-			                                                 .Replace("\\?", ".") + "$",
+														 Regex.Escape(wildcard).Replace("\\*", ".*")
+															 .Replace("\\?", ".") + "$",
 			RegexOptions.IgnoreCase,
 			TimeSpan.FromMilliseconds(100));
 	}

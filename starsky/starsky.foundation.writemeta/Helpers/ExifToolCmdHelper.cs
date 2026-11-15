@@ -203,8 +203,8 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.Artist)
-			     .ToLowerInvariant()) &&
-		     !string.IsNullOrEmpty(updateModel.Artist) )
+				 .ToLowerInvariant()) &&
+			 !string.IsNullOrEmpty(updateModel.Artist) )
 		{
 			// ExifTool supports composite tags.
 			// ExifTool will automatically write:
@@ -222,7 +222,7 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( !comparedNames.Contains(nameof(FileIndexItem.SuggestedTags).ToLowerInvariant()) ||
-		     string.IsNullOrWhiteSpace(updateModel.SuggestedTags) )
+			 string.IsNullOrWhiteSpace(updateModel.SuggestedTags) )
 		{
 			return command;
 		}
@@ -237,7 +237,7 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( !comparedNames.Contains(nameof(FileIndexItem.RejectedTags).ToLowerInvariant()) ||
-		     string.IsNullOrWhiteSpace(updateModel.RejectedTags) )
+			 string.IsNullOrWhiteSpace(updateModel.RejectedTags) )
 		{
 			return command;
 		}
@@ -253,8 +253,8 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( !comparedNames.Contains(nameof(FileIndexItem.ImageClassificationModel)
-			     .ToLowerInvariant()) ||
-		     string.IsNullOrWhiteSpace(updateModel.ImageClassificationModel) )
+				 .ToLowerInvariant()) ||
+			 string.IsNullOrWhiteSpace(updateModel.ImageClassificationModel) )
 		{
 			return command;
 		}
@@ -270,8 +270,8 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( !comparedNames.Contains(nameof(FileIndexItem.ImageClassificationGeneratedAt)
-			     .ToLowerInvariant()) ||
-		     updateModel.ImageClassificationGeneratedAt.Year < 2 )
+				 .ToLowerInvariant()) ||
+			 updateModel.ImageClassificationGeneratedAt.Year < 2 )
 		{
 			return command;
 		}
@@ -409,8 +409,8 @@ public sealed class ExifToolCmdHelper
 			{
 				gpsAltitudeRef = "1";
 				gpsAltitude = "-" +
-				              ( updateModel.LocationAltitude * -1 ).ToString(CultureInfo
-					              .InvariantCulture);
+							  ( updateModel.LocationAltitude * -1 ).ToString(CultureInfo
+								  .InvariantCulture);
 			}
 
 			command +=
@@ -465,7 +465,7 @@ public sealed class ExifToolCmdHelper
 
 		var tags = updateModel.Tags.QuotesCommandLineEscape();
 		command += " -sep \", \" \"-xmp:subject\"=\"" + tags
-		                                              + $" \" -Keywords=\"{tags}\""; // space before
+													  + $" \" -Keywords=\"{tags}\""; // space before
 
 		return command;
 	}
@@ -476,7 +476,7 @@ public sealed class ExifToolCmdHelper
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationCity).ToLowerInvariant()) )
 		{
 			command += " -City=\"" + updateModel.LocationCity.QuotesCommandLineEscape()
-			                       + "\" -xmp:City=\"" + updateModel.LocationCity.QuotesCommandLineEscape() + "\"";
+								   + "\" -xmp:City=\"" + updateModel.LocationCity.QuotesCommandLineEscape() + "\"";
 		}
 
 		return command;
@@ -499,8 +499,8 @@ public sealed class ExifToolCmdHelper
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationState).ToLowerInvariant()) )
 		{
 			command += " -State=\"" + updateModel.LocationState.QuotesCommandLineEscape()
-			                        + "\" -Province-State=\"" + updateModel.LocationState.QuotesCommandLineEscape() +
-			                        "\"";
+									+ "\" -Province-State=\"" + updateModel.LocationState.QuotesCommandLineEscape() +
+									"\"";
 		}
 
 		return command;
@@ -512,8 +512,8 @@ public sealed class ExifToolCmdHelper
 		if ( comparedNames.Contains(nameof(FileIndexItem.LocationCountry).ToLowerInvariant()) )
 		{
 			command += " -Country=\"" + updateModel.LocationCountry.QuotesCommandLineEscape()
-			                          + "\" -Country-PrimaryLocationName=\"" +
-			                          updateModel.LocationCountry.QuotesCommandLineEscape() + "\"";
+									  + "\" -Country-PrimaryLocationName=\"" +
+									  updateModel.LocationCountry.QuotesCommandLineEscape() + "\"";
 		}
 
 		return command;
@@ -523,12 +523,12 @@ public sealed class ExifToolCmdHelper
 		string command, List<string> comparedNames, FileIndexItem updateModel)
 	{
 		if ( comparedNames.Contains(
-			    nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()) )
+				nameof(FileIndexItem.LocationCountryCode).ToLowerInvariant()) )
 		{
 			command += " -Country-PrimaryLocationCode=\"" + updateModel.LocationCountryCode.QuotesCommandLineEscape()
-			                                              + "\" -XMP:CountryCode=\"" +
-			                                              updateModel.LocationCountryCode.QuotesCommandLineEscape() +
-			                                              "\"";
+														  + "\" -XMP:CountryCode=\"" +
+														  updateModel.LocationCountryCode.QuotesCommandLineEscape() +
+														  "\"";
 		}
 
 		return command;
@@ -545,9 +545,9 @@ public sealed class ExifToolCmdHelper
 
 		var description = updateModel.Description.QuotesCommandLineEscape();
 		command += " -Caption-Abstract=\"" + description
-		                                   + "\" -Description=\"" +
-		                                   description + "\""
-		                                   + $" \"-xmp-dc:description={description}\"";
+										   + "\" -Description=\"" +
+										   description + "\""
+										   + $" \"-xmp-dc:description={description}\"";
 
 		return command;
 	}
@@ -641,8 +641,8 @@ public sealed class ExifToolCmdHelper
 
 		var title = updateModel.Title.QuotesCommandLineEscape();
 		command += " -ObjectName=\"" + title + "\""
-		           + " \"-title\"=" + "\"" + title + "\""
-		           + $" \"-xmp-dc:title={title}\"";
+				   + " \"-title\"=" + "\"" + title + "\""
+				   + $" \"-xmp-dc:title={title}\"";
 
 		return command;
 	}
@@ -651,15 +651,15 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.ColorClass).ToLowerInvariant()) &&
-		     updateModel.ColorClass != ColorClassParser.Color.DoNotChange )
+			 updateModel.ColorClass != ColorClassParser.Color.DoNotChange )
 		{
 			var intColorClass = ( int ) updateModel.ColorClass;
 
 			var colorDisplayName = EnumHelper.GetDisplayName(updateModel.ColorClass);
 			command += " \"-xmp:Label\"=" + "\"" + colorDisplayName + "\"" + " -ColorClass=\"" +
-			           intColorClass +
-			           "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass +
-			           " Rating:0 FrameNum:0\" ";
+					   intColorClass +
+					   "\" -Prefs=\"Tagged:0 ColorClass:" + intColorClass +
+					   " Rating:0 FrameNum:0\" ";
 		}
 
 		return command;
@@ -670,7 +670,7 @@ public sealed class ExifToolCmdHelper
 	{
 		// // exiftool -Orientation#=5
 		if ( comparedNames.Contains(nameof(FileIndexItem.Orientation).ToLowerInvariant()) &&
-		     updateModel.Orientation != ImageRotation.Rotation.DoNotChange )
+			 updateModel.Orientation != ImageRotation.Rotation.DoNotChange )
 		{
 			var intOrientation = ( int ) updateModel.Orientation;
 			command += " \"-Orientation#=" + intOrientation + "\" ";
@@ -683,7 +683,7 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.DateTime).ToLowerInvariant()) &&
-		     updateModel.DateTime.Year > 2 )
+			 updateModel.DateTime.Year > 2 )
 		{
 			var exifToolDatetimeString = updateModel.DateTime.ToString(
 				"yyyy:MM:dd HH:mm:ss",
@@ -786,11 +786,11 @@ public sealed class ExifToolCmdHelper
 		FileIndexItem updateModel)
 	{
 		if ( comparedNames.Contains(nameof(FileIndexItem.ImageStabilisation)
-			     .ToLowerInvariant()) &&
-		     updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
+				 .ToLowerInvariant()) &&
+			 updateModel.ImageStabilisation != ImageStabilisationType.Unknown )
 		{
 			command += $" -ImageStabilization=\"{updateModel.ImageStabilisation}\" " +
-			           $"-XMP-qdraw:ImageStabilization=\"{updateModel.ImageStabilisation}\" ";
+					   $"-XMP-qdraw:ImageStabilization=\"{updateModel.ImageStabilisation}\" ";
 		}
 
 		return command;

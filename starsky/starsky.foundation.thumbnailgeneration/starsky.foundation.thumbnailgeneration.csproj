@@ -5,7 +5,7 @@
         <!-- SonarQube needs this -->
         <ProjectGuid>{4b3990c9-171b-4d53-a821-f458e8ac072f}</ProjectGuid>
         <DebugType>Full</DebugType>
-        <Version>0.9.8</Version>
+        <Version>0.9.9</Version>
         <Nullable>enable</Nullable>
         <RootNamespace>starsky.foundation.thumbnailgeneration</RootNamespace>
         <ImplicitUsings>disable</ImplicitUsings>
@@ -20,8 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="SkiaSharp" Version="4.154.0"/>
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.154.0"/>
+        <PackageReference Include="SkiaSharp" Version="4.155.0"/>
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.155.0"/>
     </ItemGroup>
 
     <PropertyGroup Condition=" '$(noSonar)' == 'true' ">

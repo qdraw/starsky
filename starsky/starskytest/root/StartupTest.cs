@@ -124,6 +124,68 @@ public sealed class StartupTest
 			serviceCollection);
 	}
 
+	[TestMethod]
+	public void ConfigureForwardedHeaders_NoTrustedProxiesConfigured_DoesNotClearDefaults()
+	{
+		// Guards against regressing to Clear()-ing KnownProxies/KnownIPNetworks, which would make
+		// the app trust X-Forwarded-For from any client (bypasses the login/register rate limiter
+		// and the NoAccountLocalhost check).
+		IServiceCollection serviceCollection = new ServiceCollection();
+		IConfiguration configuration =
+			new ConfigurationRoot(new List<IConfigurationProvider>());
+		serviceCollection.AddSingleton(configuration);
+
+		new Startup().ConfigureServices(serviceCollection);
+
+		var options = serviceCollection.BuildServiceProvider()
+			.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+		Assert.IsNotEmpty(options.KnownProxies,
+			"KnownProxies should keep the safe default (loopback), not be cleared");
+		Assert.IsNotEmpty(options.KnownIPNetworks,
+			"KnownIPNetworks should keep the safe default (loopback), not be cleared");
+	}
+
+	[TestMethod]
+	public void ConfigureForwardedHeaders_TrustedProxiesConfigured_OnlyTrustsThoseEntries()
+	{
+		IServiceCollection serviceCollection = new ServiceCollection();
+		IConfiguration configuration =
+			new ConfigurationRoot(new List<IConfigurationProvider>());
+		serviceCollection.AddSingleton(configuration);
+
+		var startup = new Startup([
+			"--app:TrustedProxies:0=172.17.0.1", "--app:TrustedProxies:1=10.0.0.0/8"
+		]);
+		startup.ConfigureServices(serviceCollection);
+
+		var options = serviceCollection.BuildServiceProvider()
+			.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+		Assert.Contains(p => p.ToString() == "172.17.0.1", options.KnownProxies);
+		Assert.Contains(n => n.ToString() == "10.0.0.0/8", options.KnownIPNetworks);
+		Assert.HasCount(1, options.KnownProxies);
+		Assert.HasCount(1, options.KnownIPNetworks);
+	}
+
+	[TestMethod]
+	public void ConfigureForwardedHeaders_TrustedProxiesCloudflare_AddsCloudflareRanges()
+	{
+		IServiceCollection serviceCollection = new ServiceCollection();
+		IConfiguration configuration =
+			new ConfigurationRoot(new List<IConfigurationProvider>());
+		serviceCollection.AddSingleton(configuration);
+
+		var startup = new Startup(["--app:TrustedProxiesCloudflare=true"]);
+		startup.ConfigureServices(serviceCollection);
+
+		var options = serviceCollection.BuildServiceProvider()
+			.GetRequiredService<IOptions<ForwardedHeadersOptions>>().Value;
+
+		Assert.Contains(n => n.ToString() == "173.245.48.0/20", options.KnownIPNetworks);
+		Assert.Contains(n => n.ToString() == "2400:cb00::/32", options.KnownIPNetworks);
+	}
+
 	[SuppressMessage("ReSharper", "ReturnTypeCanBeEnumerable.Local")]
 	private static List<object?>? GetMiddlewareInstance(IApplicationBuilder app)
 	{
@@ -131,7 +193,7 @@ public sealed class StartupTest
 			"Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware";
 		var appBuilderType = typeof(ApplicationBuilder);
 		const BindingFlags bindingTypes1 = BindingFlags.Instance |
-		                                   BindingFlags.NonPublic;
+										   BindingFlags.NonPublic;
 		var middlewareField = appBuilderType.GetField("_components", bindingTypes1);
 		var components = middlewareField?.GetValue(app);
 
@@ -151,8 +213,8 @@ public sealed class StartupTest
 			{
 				var type = middleware.Target?.GetType();
 				const BindingFlags bindingTypes = BindingFlags.Instance |
-				                                  BindingFlags.NonPublic |
-				                                  BindingFlags.Public;
+												  BindingFlags.NonPublic |
+												  BindingFlags.Public;
 				var privatePropertyInfo = type?.GetField("_args", bindingTypes);
 				var privateFieldValue =
 					privatePropertyInfo?.GetValue(middleware.Target) as object[];

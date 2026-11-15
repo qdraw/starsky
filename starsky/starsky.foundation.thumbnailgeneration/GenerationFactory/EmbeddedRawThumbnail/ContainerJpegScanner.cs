@@ -301,7 +301,7 @@ internal static class ContainerJpegScanner
 
 			var text = Encoding.ASCII.GetString(probe, 0, probeLength);
 			if ( text.Contains("Photoshop 3.0", StringComparison.Ordinal) ||
-			     text.Contains("8BIM", StringComparison.Ordinal) )
+				 text.Contains("8BIM", StringComparison.Ordinal) )
 			{
 				return true;
 			}

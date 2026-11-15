@@ -30,7 +30,7 @@ public static class SkiaImageHelper
 		var info = new SKImageInfo(codec.Info.Width, codec.Info.Height,
 			SKImageInfo.PlatformColorType, SKAlphaType.Premul);
 		var bitmap = SKBitmap.Decode(codec, info) ??
-		             throw new InvalidDataException(ImageCannotBeLoaded);
+					 throw new InvalidDataException(ImageCannotBeLoaded);
 		if ( origin == SKEncodedOrigin.TopLeft )
 		{
 			return bitmap;
@@ -51,7 +51,7 @@ public static class SkiaImageHelper
 		var info = new SKImageInfo(codec.Info.Width, codec.Info.Height,
 			SKImageInfo.PlatformColorType, SKAlphaType.Premul);
 		return SKBitmap.Decode(codec, info) ??
-		       throw new InvalidDataException(ImageCannotBeLoaded);
+			   throw new InvalidDataException(ImageCannotBeLoaded);
 	}
 
 	private static SKCodec CreateCodec(Stream stream)
@@ -160,7 +160,7 @@ public static class SkiaImageHelper
 		// Mipmaps give an area-aware result when scaling down
 		var sampling = new SKSamplingOptions(SKFilterMode.Linear, SKMipmapMode.Linear);
 		return source.Resize(source.Info.WithSize(width, height), sampling) ??
-		       throw new InvalidOperationException("Resize failed");
+			   throw new InvalidOperationException("Resize failed");
 	}
 
 	/// <summary>
@@ -234,7 +234,7 @@ public static class SkiaImageHelper
 	{
 		using var image = SKImage.FromBitmap(bitmap);
 		using var data = image.Encode(format, quality) ??
-		                 throw new InvalidOperationException("Encode failed");
+						 throw new InvalidOperationException("Encode failed");
 		data.SaveTo(output);
 	}
 }

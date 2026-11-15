@@ -62,8 +62,8 @@ public class MetaInfo : IMetaInfo
 			// Check if extension is supported for ExtensionExifToolSupportedList
 			// Not all files are able to write with exifTool
 			if ( !ExtensionRolesHelper.IsExtensionExifToolSupported(detailView.FileIndexItem
-				     .FileName)
-			     && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem.FileName) )
+					 .FileName)
+				 && !ExtensionRolesHelper.IsExtensionSidecar(detailView.FileIndexItem.FileName) )
 			{
 				StatusCodesHelper.ReturnExifStatusError(
 					await new FileIndexItemJsonParser(_iStorage)

@@ -34,15 +34,15 @@ public sealed class NoAccountMiddleware(RequestDelegate next, AppSettings? appSe
 	public async Task Invoke(HttpContext context)
 	{
 		var isHostAllowed = IsLocalhost.IsHostLocalHost(context.Connection.LocalIpAddress,
-			                    context.Connection.RemoteIpAddress) ||
-		                    appSettings?.DemoUnsafeDeleteStorageFolder == true;
+								context.Connection.RemoteIpAddress) ||
+							appSettings?.DemoUnsafeDeleteStorageFolder == true;
 
 		var isApiCall = context.Request.Path.HasValue &&
-		                ( context.Request.Path.Value.StartsWith("/api") ||
-		                  context.Request.Path.Value.StartsWith("/realtime") );
+						( context.Request.Path.Value.StartsWith("/api") ||
+						  context.Request.Path.Value.StartsWith("/realtime") );
 
 		var isFromLogoutCall = context.Request.QueryString.HasValue &&
-		                       context.Request.QueryString.Value.Contains("fromLogout");
+							   context.Request.QueryString.Value.Contains("fromLogout");
 
 		// only the default tenant: this signs in a user that gets a role in the current tenant
 		var isDefaultTenant = context.RequestServices.GetService<ITenantContext>()?.TenantId

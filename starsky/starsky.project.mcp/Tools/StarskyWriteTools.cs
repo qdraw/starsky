@@ -30,9 +30,9 @@ public sealed class StarskyWriteTools(
 	[McpServerTool(Name = MoveToTrashTool, ReadOnly = false, Destructive = true,
 		Idempotent = false, OpenWorld = false)]
 	[Description("Move files to the trash, they can be restored from there. " +
-	             "Two steps: the first call changes nothing and returns a preview with a " +
-	             "confirmToken. Show the preview to the user, and only after they agree call " +
-	             "again with the same arguments and the confirmToken.")]
+				 "Two steps: the first call changes nothing and returns a preview with a " +
+				 "confirmToken. Show the preview to the user, and only after they agree call " +
+				 "again with the same arguments and the confirmToken.")]
 	public async Task<McpWriteOutcome> MoveToTrash(
 		[Description("subPaths of the files, for example `/2024/trip/img_01.jpg`")]
 		string[] paths,
@@ -69,14 +69,14 @@ public sealed class StarskyWriteTools(
 
 	[SuppressMessage("Major Code Smell", "S107:Methods should not have too many parameters",
 		Justification = "Every parameter is an argument of the MCP tool, " +
-		                "the agent sees them as the tool's input schema")]
+						"the agent sees them as the tool's input schema")]
 	[McpServerTool(Name = UpdateMetadataTool, ReadOnly = false, Destructive = true,
 		Idempotent = true, OpenWorld = false)]
 	[Description("Change tags, title, description or color class of files (written to the " +
-	             "file and its sidecar). Omitted or empty fields are not changed, so this can't " +
-	             "clear a field. Two steps: the first call changes nothing and returns the " +
-	             "current values plus a confirmToken. Show the planned change to the user, and " +
-	             "only after they agree call again with the same arguments and the confirmToken.")]
+				 "file and its sidecar). Omitted or empty fields are not changed, so this can't " +
+				 "clear a field. Two steps: the first call changes nothing and returns the " +
+				 "current values plus a confirmToken. Show the planned change to the user, and " +
+				 "only after they agree call again with the same arguments and the confirmToken.")]
 	public async Task<McpWriteOutcome> UpdateMetadata(
 		[Description("subPaths of the files, for example `/2024/trip/img_01.jpg`")]
 		string[] paths,
@@ -87,7 +87,7 @@ public sealed class StarskyWriteTools(
 		[Description("color class 0 (none) to 8, used to mark favorites")]
 		int? colorClass = null,
 		[Description("add the tags, title and description to the existing values " +
-		             "instead of replacing them")]
+					 "instead of replacing them")]
 		bool append = false,
 		[Description("also change files with the same name before the extension")]
 		bool collections = false,
@@ -100,14 +100,14 @@ public sealed class StarskyWriteTools(
 		}
 
 		if ( string.IsNullOrWhiteSpace(tags) && string.IsNullOrWhiteSpace(title) &&
-		     string.IsNullOrWhiteSpace(description) && colorClass == null )
+			 string.IsNullOrWhiteSpace(description) && colorClass == null )
 		{
 			return McpWriteOutcome.Reject("Nothing to change: give tags, title, description " +
-			                              "or colorClass");
+										  "or colorClass");
 		}
 
 		var args = $"tags={tags};title={title};description={description};" +
-		           $"colorClass={colorClass};append={append};collections={collections}";
+				   $"colorClass={colorClass};append={append};collections={collections}";
 		var gate = guard.Gate(UpdateMetadataTool, paths, args, confirmToken);
 		if ( gate.Decision == McpGateDecision.Rejected )
 		{
@@ -154,9 +154,9 @@ public sealed class StarskyWriteTools(
 	[McpServerTool(Name = RenameTool, ReadOnly = false, Destructive = true,
 		Idempotent = false, OpenWorld = false)]
 	[Description("Rename or move one file or folder inside the library. It refuses to " +
-	             "overwrite. Two steps: the first call changes nothing and returns a " +
-	             "confirmToken. Show the planned rename to the user, and only after they " +
-	             "agree call again with the same arguments and the confirmToken.")]
+				 "overwrite. Two steps: the first call changes nothing and returns a " +
+				 "confirmToken. Show the planned rename to the user, and only after they " +
+				 "agree call again with the same arguments and the confirmToken.")]
 	public async Task<McpWriteOutcome> Rename(
 		[Description("subPath of the file or folder, for example `/2024/trip/img_01.jpg`")]
 		string path,

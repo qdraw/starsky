@@ -57,9 +57,9 @@ internal sealed class WindowsMountWatcherSystem : IWindowsMountWatcherSystem
 	public (string eventTypeStr, string rawDriveName) MapEvent(EventArrivedEventArgs arrivedEvent)
 	{
 		var eventTypeStr = arrivedEvent.NewEvent?.Properties?["EventType"]?.Value?.ToString() ??
-		                   "<null>";
+						   "<null>";
 		var rawDriveName = arrivedEvent.NewEvent?.Properties?["DriveName"]?.Value?.ToString() ??
-		                   "<null>";
-		return ( eventTypeStr, rawDriveName );
+						   "<null>";
+		return (eventTypeStr, rawDriveName);
 	}
 }

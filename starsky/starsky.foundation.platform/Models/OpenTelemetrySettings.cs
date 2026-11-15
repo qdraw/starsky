@@ -17,13 +17,13 @@ public class OpenTelemetrySettings
 	public string? MetricsHeader { get; set; }
 
 	public string? LogsEndpoint { get; set; }
-	
+
 	/// <summary>
 	/// The header for the logs endpoint
 	/// use apikey=value for the header name apikey
 	/// </summary>
 	public string? LogsHeader { get; set; }
-	
+
 	/// <summary>
 	/// Overwrite the `deployment.environment` value
 	/// </summary>

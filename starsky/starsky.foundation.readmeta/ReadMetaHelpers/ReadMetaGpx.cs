@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using GeoTimeZone;
@@ -24,6 +25,14 @@ public sealed class ReadMetaGpx
 		"yyyy-MM-ddTHH:mm:sszzz",
 		"yyyy-MM-ddTHH:mm:ss.FFFFFFFzzz"
 	];
+
+	private static readonly Regex DeclaredPrefixRegex =
+		new(@"xmlns:([A-Za-z_][\w.\-]*)\s*=", RegexOptions.Compiled,
+			TimeSpan.FromSeconds(5));
+
+	private static readonly Regex UsedPrefixRegex =
+		new(@"</?([A-Za-z_][\w.\-]*):[A-Za-z_]", RegexOptions.Compiled,
+			TimeSpan.FromSeconds(5));
 
 	private readonly IWebLogger _logger;
 
@@ -147,8 +156,57 @@ public sealed class ReadMetaGpx
 	internal static XmlDocument ParseXml(string fileString)
 	{
 		var gpxDoc = new XmlDocument();
-		gpxDoc.LoadXml(fileString);
-		return gpxDoc;
+		try
+		{
+			gpxDoc.LoadXml(fileString);
+			return gpxDoc;
+		}
+		catch ( XmlException )
+		{
+			// Some apps (e.g. TrailTrackr) use extension prefixes like gpxtpx: without
+			// declaring them. Strict parsers reject that, but the track points are fine.
+			var undeclared = FindUndeclaredPrefixes(fileString);
+			if ( undeclared.Count == 0 )
+			{
+				throw;
+			}
+
+			var nameTable = new NameTable();
+			var nsManager = new XmlNamespaceManager(nameTable);
+			foreach ( var prefix in undeclared )
+			{
+				nsManager.AddNamespace(prefix, $"urn:starsky:undeclared:{prefix}");
+			}
+
+			var context = new XmlParserContext(nameTable, nsManager, null, XmlSpace.None);
+			var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit };
+			using var stringReader = new StringReader(fileString);
+			using var reader = XmlReader.Create(stringReader, settings, context);
+			var retryDoc = new XmlDocument();
+			retryDoc.Load(reader);
+			return retryDoc;
+		}
+	}
+
+	private static HashSet<string> FindUndeclaredPrefixes(string fileString)
+	{
+		var declared = new HashSet<string>(StringComparer.Ordinal) { "xml", "xmlns" };
+		foreach ( Match match in DeclaredPrefixRegex.Matches(fileString) )
+		{
+			declared.Add(match.Groups[1].Value);
+		}
+
+		var undeclared = new HashSet<string>(StringComparer.Ordinal);
+		foreach ( Match match in UsedPrefixRegex.Matches(fileString) )
+		{
+			var prefix = match.Groups[1].Value;
+			if ( !declared.Contains(prefix) )
+			{
+				undeclared.Add(prefix);
+			}
+		}
+
+		return undeclared;
 	}
 
 	/// <summary>

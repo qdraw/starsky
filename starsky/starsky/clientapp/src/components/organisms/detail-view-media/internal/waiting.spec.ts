@@ -10,7 +10,7 @@ describe("Waiting function", () => {
         networkState: 2,
         NETWORK_LOADING: 2
       }
-    } as RefObject<HTMLVideoElement>;
+    } as RefObject<HTMLMediaElement>;
 
     // Create a mock set state function
     const setIsLoadingMock = jest.fn();
@@ -31,7 +31,7 @@ describe("Waiting function", () => {
         networkState: 1,
         NETWORK_LOADING: 2
       }
-    } as RefObject<HTMLVideoElement>;
+    } as RefObject<HTMLMediaElement>;
 
     // Create a mock set state function
     const setIsLoadingMock = jest.fn();

@@ -127,6 +127,30 @@ public sealed class ReadGpxFromFileTest
 	}
 
 	[TestMethod]
+	public async Task ReadGpxFileAsync_UndeclaredExtensionPrefix_StillReadsTrackPoints()
+	{
+		// TrailTrackr/Komoot style: gpxtpx: is used but never declared
+		const string gpx = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+		                   "<gpx version=\"1.1\" creator=\"TrailTrackr\" " +
+		                   "xmlns=\"http://www.topografix.com/GPX/1/1\">" +
+		                   "<trk><name>Wandeling</name><trkseg>" +
+		                   "<trkpt lat=\"51.921321\" lon=\"4.469364\"><ele>-0.8</ele>" +
+		                   "<time>2026-11-09T12:27:22Z</time><extensions>" +
+		                   "<gpxtpx:TrackPointExtension><gpxtpx:speed>0.888</gpxtpx:speed>" +
+		                   "</gpxtpx:TrackPointExtension></extensions></trkpt>" +
+		                   "</trkseg></trk></gpx>";
+
+		var result = await new ReadMetaGpx(new FakeIWebLogger())
+			.ReadGpxFileAsync(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(gpx)));
+
+		Assert.HasCount(1, result);
+		Assert.AreEqual(51.921321, result[0].Latitude, 0.000001);
+		Assert.AreEqual(4.469364, result[0].Longitude, 0.000001);
+		Assert.AreEqual(-0.8, result[0].Altitude, 0.001);
+		Assert.AreEqual("Wandeling", result[0].Title);
+	}
+
+	[TestMethod]
 	public void ParseXml_XXETest()
 	{
 		var xxeExample = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +

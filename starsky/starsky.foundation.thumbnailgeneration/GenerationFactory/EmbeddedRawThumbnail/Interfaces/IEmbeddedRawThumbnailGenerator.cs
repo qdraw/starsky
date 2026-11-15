@@ -1,4 +1,4 @@
-﻿using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators.Interfaces;
+using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators.Interfaces;
 
 namespace starsky.foundation.thumbnailgeneration.GenerationFactory.EmbeddedRawThumbnail.Interfaces;
 

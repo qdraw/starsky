@@ -8,8 +8,8 @@ public static class FilterCommonTempFiles
 	public static bool Filter(string subPath)
 	{
 		return subPath.ToLowerInvariant().EndsWith(".ds_store") ||
-		       subPath.ToLowerInvariant().EndsWith(".tmp") ||
-		       subPath.ToLowerInvariant().EndsWith("desktop.ini");
+			   subPath.ToLowerInvariant().EndsWith(".tmp") ||
+			   subPath.ToLowerInvariant().EndsWith("desktop.ini");
 	}
 
 	public static List<FileIndexItem> DefaultOperationNotSupported(string subPath)

@@ -115,7 +115,7 @@ public partial class Query
 
 		// To know when a file is deleted
 		if ( currentFileIndexItem.Tags != null &&
-		     currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
+			 currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 		{
 			currentFileIndexItem.Status = FileIndexItem.ExifStatus.Deleted;
 		}
@@ -134,7 +134,7 @@ public partial class Query
 		}
 
 		if ( currentFileIndexItem.Tags != null &&
-		     currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
+			 currentFileIndexItem.Tags.Contains(TrashKeyword.TrashKeywordString) )
 		{
 			hideDeleted = false;
 		}

@@ -79,13 +79,13 @@ public partial class Query // For folder displays only
 			subPath);
 
 		if ( !_cache.TryGetValue(queryCacheName,
-			    out var objectFileFolders) )
+				out var objectFileFolders) )
 		{
 			return fallbackResult;
 		}
 
 		var result = ( objectFileFolders as List<FileIndexItem> ??
-		               new List<FileIndexItem>() ).DistinctBy(p => p.FilePath).ToList();
+					   new List<FileIndexItem>() ).DistinctBy(p => p.FilePath).ToList();
 		return new Tuple<bool, List<FileIndexItem>>(true, result);
 	}
 

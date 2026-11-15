@@ -34,7 +34,7 @@ public sealed class Build : NukeBuild
 	///     Link to starskydependenciesdownloadcli.csproj
 	/// </summary>
 	const string DependenciesCliCsproj = "starskydependenciesdownloadcli/" +
-	                                     "starskydependenciesdownloadcli.csproj";
+										 "starskydependenciesdownloadcli.csproj";
 
 	/// <summary>
 	///     Npm and node are required for preflight checks and building frontend code
@@ -103,7 +103,7 @@ public sealed class Build : NukeBuild
 	///     Nuget & NPM dependencies are always installed
 	/// </summary>
 	[Parameter("Skip Dependencies download e.g. exiftool / " +
-	           "geo data, nuget/npm deps are always installed")]
+			   "geo data, nuget/npm deps are always installed")]
 	readonly bool NoDependencies;
 
 	/// <summary>
@@ -113,6 +113,15 @@ public sealed class Build : NukeBuild
 	readonly bool NoPublish;
 
 	[Parameter("Is SonarQube Disabled")] readonly bool NoSonar;
+
+	/// <summary>
+	///     --no-cloudflare-check
+	///     Skips checking (and auto-updating) Cloudflare's published IP ranges used by
+	///     CloudflareTrustedProxiesHelper. Needs internet access; the target already skips
+	///     itself (with a warning, not a failure) when Cloudflare's API can't be reached.
+	/// </summary>
+	[Parameter("Skip checking Cloudflare's IP ranges list")]
+	readonly bool NoCloudflareCheck;
 
 	[Parameter(
 		"Is Unit Test Disabled (same as NoUnitTest, NoUnitTests, NoTest and NoTests)")]
@@ -188,7 +197,27 @@ public sealed class Build : NukeBuild
 		.DependsOn(SonarBuildTest)
 		.DependsOn(BuildNetCoreRuntimeSpecific)
 		.DependsOn(CoverageReport)
+		.DependsOn(CheckCloudflareIpRanges)
 		.DependsOn(Zip);
+
+	/// <summary>
+	///     Checks Cloudflare's published IP ranges against CloudflareTrustedProxiesHelper and
+	///     rewrites that file when they've changed. Never fails the build: skipped (with a
+	///     warning) when there is no internet access or the API can't be reached.
+	/// </summary>
+	Target CheckCloudflareIpRanges => p => p
+		.Executes(() =>
+		{
+			if ( NoCloudflareCheck )
+			{
+				Log.Information(
+					"--no-cloudflare-check flag is used\n so skip CheckCloudflareIpRanges");
+				return;
+			}
+
+			CloudflareIpRangesHelper.CheckAndUpdate(
+				WorkingDirectory.GetSolutionParentFolder());
+		});
 
 	Target SonarBuildTest => p => p
 		.DependsOn(Client)
@@ -334,7 +363,7 @@ public sealed class Build : NukeBuild
 	{
 		var branchName = Branch;
 		if ( !string.IsNullOrEmpty(branchName) &&
-		     branchName.StartsWith("refs/heads/") )
+			 branchName.StartsWith("refs/heads/") )
 		{
 			branchName = branchName.Replace("refs/heads/", "");
 		}
@@ -367,7 +396,7 @@ public sealed class Build : NukeBuild
 			$"Current RID: {RuntimeIdentifier.GetCurrentRuntimeIdentifier()}");
 
 		Log.Information("SolutionParentFolder: " +
-		                WorkingDirectory.GetSolutionParentFolder());
+						WorkingDirectory.GetSolutionParentFolder());
 
 		Log.Information(NoClient
 			? "Client is: disabled"
@@ -382,8 +411,8 @@ public sealed class Build : NukeBuild
 			: "Publish: enabled");
 
 		Log.Information(NoSonar ||
-		                string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
-		                string.IsNullOrEmpty(SonarQube.GetSonarToken())
+						string.IsNullOrEmpty(SonarQube.GetSonarKey()) ||
+						string.IsNullOrEmpty(SonarQube.GetSonarToken())
 			? "Sonarcloud scan: disabled"
 			: "Sonarcloud scan: enabled");
 

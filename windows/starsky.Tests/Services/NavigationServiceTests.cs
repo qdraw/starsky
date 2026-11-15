@@ -5,6 +5,8 @@ using Starsky.Desktop.Services;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
+[OSCondition(OperatingSystems.Windows)]
 public class NavigationServiceTests
 {
     [TestMethod]

@@ -7,7 +7,7 @@ import * as PlayPauseModule from "./play-pause"; // Import the entire module to 
 describe("Controls component", () => {
   let scrubberRef: React.RefObject<HTMLSpanElement>;
   let progressRef: React.RefObject<HTMLProgressElement>;
-  let videoRef: React.RefObject<HTMLVideoElement>;
+  let videoRef: React.RefObject<HTMLMediaElement>;
   let timeRef: React.RefObject<HTMLSpanElement>;
 
   beforeEach(() => {
@@ -26,7 +26,7 @@ describe("Controls component", () => {
     } as React.RefObject<HTMLProgressElement>;
     videoRef = {
       current: document.createElement("video")
-    } as React.RefObject<HTMLVideoElement>;
+    } as React.RefObject<HTMLMediaElement>;
     timeRef = {
       current: document.createElement("span")
     } as React.RefObject<HTMLSpanElement>;

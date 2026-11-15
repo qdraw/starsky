@@ -139,6 +139,12 @@ describe("url-path", () => {
     });
   });
   describe("toggleSelection", () => {
+    it("file name with a comma survives a url round trip", () => {
+      const name = "Arnhem, Gelderland · 25 okt 2026 - trailtrackr.gpx";
+      const url = urlPath.IUrlToString(urlPath.toggleSelection(name, ""));
+      expect(urlPath.getSelect(url)).toStrictEqual([name]);
+    });
+
     it("add", () => {
       const test = urlPath.toggleSelection("test.jpg", "");
       if (!test.select) throw Error("select is null");

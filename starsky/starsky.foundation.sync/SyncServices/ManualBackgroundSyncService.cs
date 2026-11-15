@@ -70,7 +70,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		{
 			SubPath = fileIndexItem.FilePath!
 		};
-		
+
 		await _bgTaskQueue.QueueJobAsync(new BackgroundTaskQueueJob
 		{
 			MetaData = fileIndexItem.FilePath,
@@ -114,7 +114,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		subPath ??= string.Empty;
 
 		_logger.LogInformation($"[ManualBackgroundSyncService] start {subPath} " +
-		                       $"{DateTime.Now.ToShortTimeString()}");
+							   $"{DateTime.Now.ToShortTimeString()}");
 
 		var updatedList = await _synchronize.Sync(subPath, _socketUpdateService.PushToSockets);
 
@@ -123,7 +123,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 		// so you can click on the button again
 		RemoveSyncLock(subPath);
 		_logger.LogInformation($"[ManualBackgroundSyncService] done {subPath} " +
-		                       $"{DateTime.Now.ToShortTimeString()}");
+							   $"{DateTime.Now.ToShortTimeString()}");
 		_logger.LogInformation(
 			$"[ManualBackgroundSyncService] Ok: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.Ok)}" +
 			$" ~ OkAndSame: {updatedList.Count(p => p.Status == FileIndexItem.ExifStatus.OkAndSame)}");

@@ -25,7 +25,7 @@ public class CloudImportService(
 	private readonly Dictionary<string, CloudImportResult> _lastSyncResults = new();
 	private readonly ConcurrentDictionary<string, DateTime> _processedFiles = new();
 	private readonly ConcurrentDictionary<string, SemaphoreSlim> _providerLocks = new();
-	private readonly object _resultsLock = new();
+	private readonly Lock _resultsLock = new();
 
 	public bool IsSyncInProgress { get; private set; }
 

@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace starsky.foundation.database.GeoNamesCities.Interfaces;
 

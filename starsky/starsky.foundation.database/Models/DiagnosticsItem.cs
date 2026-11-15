@@ -12,7 +12,7 @@ public class DiagnosticsItem
 	[Required]
 	public string Key { get; set; } = string.Empty;
 
-	[MaxLength(4096)] [Required] public string Value { get; set; } = string.Empty;
+	[MaxLength(4096)][Required] public string Value { get; set; } = string.Empty;
 
 	public DateTime LastEdited { get; set; }
 }

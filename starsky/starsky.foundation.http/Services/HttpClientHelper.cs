@@ -103,7 +103,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 	public async Task<KeyValuePair<bool, string>> ReadString(Uri sourceHttpUrl)
 	{
 		_logger.LogInformation("[ReadString] HttpClientHelper > "
-		                       + sourceHttpUrl);
+							   + sourceHttpUrl);
 		// allow whitelist and https only
 		if ( !IsAllowed(sourceHttpUrl) )
 		{
@@ -147,7 +147,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		if ( verbose )
 		{
 			_logger.LogInformation("[PostString] HttpClientHelper > "
-			                       + sourceUri.Host + " ~ " + sourceHttpUrl);
+								   + sourceUri.Host + " ~ " + sourceHttpUrl);
 		}
 
 		// // allow whitelist and https only
@@ -160,8 +160,8 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		try
 		{
 			using ( var response = await _httpProvider.PostAsync(sourceHttpUrl,
-				       httpContent,
-				       authenticationHeaderValue) )
+					   httpContent,
+					   authenticationHeaderValue) )
 			using ( var streamToReadFrom = await response.Content.ReadAsStreamAsync() )
 			{
 				var reader = new StreamReader(streamToReadFrom, Encoding.UTF8);
@@ -214,7 +214,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		if ( !IsAllowed(sourceUri) )
 		{
 			_logger.LogInformation(DownloadLogPrefix
-			                       + "skip: domain not whitelisted " + " ~ " + sourceUri.ToString());
+								   + "skip: domain not whitelisted " + " ~ " + sourceUri.ToString());
 			return false;
 		}
 
@@ -232,7 +232,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			if ( response.StatusCode != HttpStatusCode.OK )
 			{
 				_logger.LogInformation(DownloadLogPrefix +
-				                       response.StatusCode + " ~ " + sourceUri.ToString());
+									   response.StatusCode + " ~ " + sourceUri.ToString());
 				return false;
 			}
 
@@ -259,7 +259,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			}
 
 			_logger.LogError(exception, $"[Download] Exception: {sourceUri} " +
-			                            $"{exception.Message}");
+										$"{exception.Message}");
 			return false;
 		}
 	}
@@ -279,7 +279,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		if ( response.Content.Headers.ContentLength > _maxRestrictedDownloadBytes )
 		{
 			_logger.LogInformation(DownloadLogPrefix + "skip: " +
-			                       "content-length too large ~ " + sourceUri.ToString());
+								   "content-length too large ~ " + sourceUri.ToString());
 			return false;
 		}
 
@@ -292,7 +292,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 		catch ( DownloadTooLargeException )
 		{
 			_logger.LogInformation(DownloadLogPrefix + "skip: " +
-			                       "download too large ~ " + sourceUri.ToString());
+								   "download too large ~ " + sourceUri.ToString());
 			_storage!.FileDelete(fullLocalPath);
 			return false;
 		}
@@ -328,7 +328,7 @@ public sealed class HttpClientHelper : IHttpClientHelper
 			if ( !IsAllowed(next) )
 			{
 				_logger.LogInformation(DownloadLogPrefix +
-				                       "skip: redirect target not whitelisted ~ " + next.Host);
+									   "skip: redirect target not whitelisted ~ " + next.Host);
 				return null;
 			}
 

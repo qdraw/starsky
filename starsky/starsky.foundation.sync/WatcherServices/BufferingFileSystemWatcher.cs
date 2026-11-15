@@ -346,14 +346,14 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 			try
 			{
 				if ( _onExistedHandler != null ||
-				     _onAllChangesHandler != null )
+					 _onAllChangesHandler != null )
 				{
 					NotifyExistingFiles();
 				}
 
 				foreach ( var fileSystemEventArgs in
-				         _fileSystemEventBuffer.GetConsumingEnumerable(
-					         _cancellationTokenSource.Token) )
+						 _fileSystemEventBuffer.GetConsumingEnumerable(
+							 _cancellationTokenSource.Token) )
 				{
 					RaiseBufferedEventsUntilCancelledInLoop(
 						fileSystemEventArgs);
@@ -397,7 +397,7 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 		else
 		{
 			foreach ( var fsi in new DirectoryInfo(Path).EnumerateFileSystemInfos(Filter,
-				         searchSubDirectoriesOption) )
+						 searchSubDirectoriesOption) )
 			{
 				var directoryName =
 					System.IO.Path.GetDirectoryName(fsi.FullName);
@@ -425,7 +425,7 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 		}
 
 		if ( _containedFsw.SynchronizingObject != null && _containedFsw
-			    .SynchronizingObject.InvokeRequired )
+				.SynchronizingObject.InvokeRequired )
 		{
 			_containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
 			return true;
@@ -462,7 +462,7 @@ public sealed class BufferingFileSystemWatcher : Component, IFileSystemWatcherWr
 		}
 
 		if ( _containedFsw.SynchronizingObject != null && _containedFsw
-			    .SynchronizingObject.InvokeRequired )
+				.SynchronizingObject.InvokeRequired )
 		{
 			_containedFsw.SynchronizingObject.BeginInvoke(eventHandler, new object[] { this, e });
 			return true;

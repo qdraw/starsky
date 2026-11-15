@@ -64,7 +64,7 @@ public sealed class SyncSingleFile
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebController )
 		{
 			_logger.LogDebug($"[SingleFile/db] info {subPath} " +
-			                 Synchronize.DateTimeDebug());
+							 Synchronize.DateTimeDebug());
 		}
 
 		// ignore all the 'wrong' files
@@ -73,7 +73,7 @@ public sealed class SyncSingleFile
 		if ( statusItems.FirstOrDefault()!.Status != FileIndexItem.ExifStatus.Ok )
 		{
 			_logger.LogDebug("[SingleFile/db] status " +
-			                 "{Status} for {subPath} {Time}",
+							 "{Status} for {subPath} {Time}",
 				statusItems.FirstOrDefault()!.Status, Synchronize.DateTimeDebug());
 			return statusItems;
 		}
@@ -94,7 +94,7 @@ public sealed class SyncSingleFile
 		}
 
 		foreach ( var item in dbItems.Where(item =>
-			         scanItems.TrueForAll(p => p.FilePath != item.FilePath)) )
+					 scanItems.TrueForAll(p => p.FilePath != item.FilePath)) )
 		{
 			scanItems.Add(item);
 		}
@@ -120,8 +120,8 @@ public sealed class SyncSingleFile
 
 		var directoryWithFileIndexItems = ( await
 			_query.GetAllFilesAsync(parentPath) ).Where(p => p.ParentDirectory == parentPath &&
-			                                                 p.FileCollectionName ==
-			                                                 fileNameWithoutExtension).ToList();
+															 p.FileCollectionName ==
+															 fileNameWithoutExtension).ToList();
 
 		await UpdateSidecarFile(xmpSubPath, directoryWithFileIndexItems);
 	}
@@ -144,8 +144,8 @@ public sealed class SyncSingleFile
 			FilenamesHelper.GetFileExtensionWithoutDot(xmpSubPath);
 
 		foreach ( var item in
-		         directoryWithFileIndexItems.Where(item =>
-			         !item.SidecarExtensionsList.Contains(sidecarExt)) )
+				 directoryWithFileIndexItems.Where(item =>
+					 !item.SidecarExtensionsList.Contains(sidecarExt)) )
 		{
 			item.AddSidecarExtension(sidecarExt);
 			await _query.UpdateItemAsync(item);

@@ -1,4 +1,4 @@
-﻿namespace starsky.foundation.database.Extensions;
+namespace starsky.foundation.database.Extensions;
 
 public static class TruncateExtensions
 {

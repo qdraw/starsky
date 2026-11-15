@@ -22,7 +22,7 @@ public static class MacOsNativeMethods
 
 	[DllImport("libc", EntryPoint = "statfs$INODE64", SetLastError = true)]
 	[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
-	                                  "for P/Invoke string arguments")]
+									  "for P/Invoke string arguments")]
 	[SuppressMessage("Interoperability",
 		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
 		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]
@@ -30,7 +30,7 @@ public static class MacOsNativeMethods
 
 	[DllImport("libc", EntryPoint = "statfs", SetLastError = true)]
 	[SuppressMessage("Globalization", "CA2101:Specify marshaling " +
-	                                  "for P/Invoke string arguments")]
+									  "for P/Invoke string arguments")]
 	[SuppressMessage("Interoperability",
 		"SYSLIB1054:Use 'LibraryImportAttribute' instead of " +
 		"'DllImportAttribute' to generate P/Invoke marshalling code at compile time")]

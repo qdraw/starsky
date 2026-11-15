@@ -62,13 +62,13 @@ public partial class Query : IQuery
 			if ( string.IsNullOrEmpty(FilenamesHelper.GetFileExtensionWithoutDot(path)) )
 			{
 				predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path)
-				                    && p.FileName == fileNameWithoutExtension);
+									&& p.FileName == fileNameWithoutExtension);
 				continue;
 			}
 
 			predicates.Add(p => p.ParentDirectory == FilenamesHelper.GetParentPath(path)
-			                    && p.FileName != null
-			                    && p.FileName.StartsWith(fileNameWithoutExtension + "."));
+								&& p.FileName != null
+								&& p.FileName.StartsWith(fileNameWithoutExtension + "."));
 		}
 
 		var predicate = PredicateBuilder.OrLoop(predicates);

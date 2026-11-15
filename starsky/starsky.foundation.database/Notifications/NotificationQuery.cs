@@ -99,8 +99,8 @@ public sealed class NotificationQuery : INotificationQuery
 		if ( data.Count <= 1 )
 		{
 			_logger.LogError($"[NotificationQuery]: {ErrorMessageContentToLong} " +
-			                 $"{stringMessage.Length} - First 3000 chars: {stringMessage[..3000]}" +
-			                 $" so skipping add notification");
+							 $"{stringMessage.Length} - First 3000 chars: {stringMessage[..3000]}" +
+							 $" so skipping add notification");
 			return NewNotificationItem(string.Empty);
 		}
 
@@ -135,8 +135,8 @@ public sealed class NotificationQuery : INotificationQuery
 		}
 
 		_logger.LogError($"[NotificationQuery]: {ErrorMessageContentToLong} " +
-		                 $"{content.Length} - First 3000 chars: {content[..3000]}" +
-		                 $" so skipping add notification");
+						 $"{content.Length} - First 3000 chars: {content[..3000]}" +
+						 $" so skipping add notification");
 		return item;
 
 		async Task<NotificationItem> LocalAddQuery()
@@ -181,21 +181,21 @@ public sealed class NotificationQuery : INotificationQuery
 				}
 			}
 			else if ( updateException.InnerException is MySqlException
-			         {
-				         ErrorCode: MySqlErrorCode.DuplicateKeyEntry
-			         } )
+			{
+				ErrorCode: MySqlErrorCode.DuplicateKeyEntry
+			} )
 			{
 				_logger.LogInformation($"[AddNotification] MySqlException retry next: " +
-				                       $"{updateException.InnerException.Message}");
+									   $"{updateException.InnerException.Message}");
 				return await LocalAddQuery(NewNotificationItem(content));
 			}
 			else if ( updateException.InnerException is SqliteException
-			         {
-				         SqliteErrorCode: 19
-			         } )
+			{
+				SqliteErrorCode: 19
+			} )
 			{
 				_logger.LogInformation($"[AddNotification] SqliteException retry next: " +
-				                       $"{updateException.InnerException.Message}");
+									   $"{updateException.InnerException.Message}");
 
 				item.Id = 0;
 				return await LocalAddQuery(item);

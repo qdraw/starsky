@@ -86,19 +86,19 @@ public class RafPreviewExtractor(IWebLogger logger, ISelectorStorage selectorSto
 	{
 		if ( !StreamPrimitives.TrySeek(input, 0) )
 		{
-			return ( 0, 0 );
+			return (0, 0);
 		}
 
 		Span<byte> header = stackalloc byte[RafHeaderMinBytes];
 		if ( input.Read(header) < RafHeaderMinBytes ||
-		     !header[..RafSignature.Length].SequenceEqual(RafSignature) )
+			 !header[..RafSignature.Length].SequenceEqual(RafSignature) )
 		{
-			return ( 0, 0 );
+			return (0, 0);
 		}
 
 		var offset = ReadUInt32BigEndian(header[RafPreviewOffsetField..]);
 		var length = ReadUInt32BigEndian(header[RafPreviewLengthField..]);
-		return ( offset, length );
+		return (offset, length);
 	}
 
 	private static bool IsValidPreviewRange(Stream input, uint offset, uint length)

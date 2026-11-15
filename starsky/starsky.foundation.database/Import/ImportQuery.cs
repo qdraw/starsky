@@ -212,7 +212,7 @@ public sealed class ImportQuery : IImportQuery
 		catch ( DbUpdateConcurrencyException exception )
 		{
 			_logger.LogInformation("Import [RemoveItemAsync] catch-ed " +
-			                       $"DbUpdateConcurrencyException (retry) {exception.Message}");
+								   $"DbUpdateConcurrencyException (retry) {exception.Message}");
 			await LocalRemoveQueryRetry();
 		}
 
@@ -258,7 +258,7 @@ public sealed class ImportQuery : IImportQuery
 			catch ( AggregateException exception )
 			{
 				_logger.LogInformation("Import [RemoveItemAsync] catch-ed " +
-				                       $"AggregateException (ignored after retry) {exception.Message}");
+									   $"AggregateException (ignored after retry) {exception.Message}");
 			}
 		}
 	}

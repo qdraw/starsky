@@ -546,6 +546,30 @@ public sealed class AppSettings
 	public bool? UseRateLimiting { get; set; } = true;
 
 	/// <summary>
+	///     IP addresses or CIDR networks (e.g. "172.17.0.1" or "10.0.0.0/8") of reverse proxies
+	///     that are trusted to set the X-Forwarded-For / X-Forwarded-Proto headers.
+	///     Leave empty (the default) to trust only loopback, which is enough when the reverse
+	///     proxy connects to this app over localhost (e.g. NgInx on the same host).
+	///     Only set this when the proxy connects from a different host/container (e.g. Docker),
+	///     and only to that proxy's own address — do NOT use this to "trust everyone", that lets
+	///     any client spoof their IP and bypass the login/register rate limiter and the
+	///     NoAccountLocalhost auto-login check.
+	///     use env variable: app__TrustedProxies__0, app__TrustedProxies__1, ...
+	/// </summary>
+	public List<string>? TrustedProxies { get; set; }
+
+	/// <summary>
+	///     Add Cloudflare's published edge IP ranges to TrustedProxies automatically (see
+	///     CloudflareTrustedProxiesHelper for the list), instead of pasting them into
+	///     TrustedProxies by hand. Only enable this when Cloudflare is actually in front of this
+	///     app, and the origin is not otherwise reachable directly (firewall it to Cloudflare's
+	///     IPs, use Cloudflare Tunnel, or Authenticated Origin Pulls) — trusting the header is not
+	///     a substitute for that.
+	///     use env variable: app__TrustedProxiesCloudflare
+	/// </summary>
+	public bool? TrustedProxiesCloudflare { get; set; } = false;
+
+	/// <summary>
 	///     Optional path to a PKCS#12 (.pfx) certificate. When set, new ASP.NET data protection keys
 	///     (used to sign the login cookie) are encrypted with it before they are stored in the
 	///     database. Existing keys stay readable and are replaced by encrypted ones on key rotation.
@@ -566,7 +590,8 @@ public sealed class AppSettings
 	///     Value for AccountRolesDefaultByEmailRegisterOverwrite
 	/// </summary>
 	private Dictionary<string, string>
-		AccountRolesByEmailRegisterOverwritePrivate { get; } =
+		AccountRolesByEmailRegisterOverwritePrivate
+	{ get; } =
 		new();
 
 	/// <summary>
@@ -588,7 +613,7 @@ public sealed class AppSettings
 			}
 
 			foreach ( var singleValue in value.Where(singleValue =>
-				         AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
+						 AccountRoles.GetAllRoles().Contains(singleValue.Value)) )
 			{
 				AccountRolesByEmailRegisterOverwritePrivate.TryAdd(
 					singleValue.Key, singleValue.Value);
@@ -917,7 +942,7 @@ public sealed class AppSettings
 		}
 
 		if ( appSettings.DatabaseType == DatabaseTypeList.Sqlite &&
-		     !string.IsNullOrEmpty(userProfileFolder) )
+			 !string.IsNullOrEmpty(userProfileFolder) )
 		{
 			appSettings.DatabaseConnection =
 				appSettings.DatabaseConnection.Replace(userProfileFolder, "~");
@@ -927,14 +952,14 @@ public sealed class AppSettings
 			appSettings.PublishProfilesRemote.DisplaySecurity(CloneToDisplaySecurityWarning);
 
 		if ( !string.IsNullOrEmpty(appSettings.AppSettingsPath) &&
-		     !string.IsNullOrEmpty(userProfileFolder) )
+			 !string.IsNullOrEmpty(userProfileFolder) )
 		{
 			appSettings.AppSettingsPath =
 				appSettings.AppSettingsPath.Replace(userProfileFolder, "~");
 		}
 
 		if ( !string.IsNullOrEmpty(appSettings.AppSettingsLocalPath) &&
-		     !string.IsNullOrEmpty(userProfileFolder) )
+			 !string.IsNullOrEmpty(userProfileFolder) )
 		{
 			appSettings.AppSettingsLocalPath =
 				appSettings.AppSettingsLocalPath.Replace(userProfileFolder, "~");
@@ -943,8 +968,8 @@ public sealed class AppSettings
 		if ( appSettings.PublishProfiles != null )
 		{
 			foreach ( var value in
-			         appSettings.PublishProfiles.SelectMany(profile =>
-				         profile.Value) )
+					 appSettings.PublishProfiles.SelectMany(profile =>
+						 profile.Value) )
 			{
 				ReplaceAppSettingsPublishProfilesCloneToDisplay(value);
 			}
@@ -1010,7 +1035,7 @@ public sealed class AppSettings
 		AppSettingsPublishProfiles value)
 	{
 		if ( !string.IsNullOrEmpty(value.Path) &&
-		     value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
+			 value.Path != AppSettingsPublishProfiles.GetDefaultPath() )
 		{
 			value.Path = CloneToDisplaySecurityWarning;
 		}
@@ -1033,8 +1058,8 @@ public sealed class AppSettings
 	public string FullPathStorageFolderToDatabaseStyle(string subpath)
 	{
 		foreach ( var mapping in
-		         StorageFolderMappings
-			         .OrderByDescending(m => m.Value.Length) )
+				 StorageFolderMappings
+					 .OrderByDescending(m => m.Value.Length) )
 		{
 			var physicalBase = mapping.Value.TrimEnd('/', '\\');
 			if ( Path.DirectorySeparatorChar == '\\' )
@@ -1043,7 +1068,7 @@ public sealed class AppSettings
 			}
 
 			if ( subpath != physicalBase &&
-			     !subpath.StartsWith(physicalBase + Path.DirectorySeparatorChar) )
+				 !subpath.StartsWith(physicalBase + Path.DirectorySeparatorChar) )
 			{
 				continue;
 			}
@@ -1144,11 +1169,11 @@ public sealed class AppSettings
 	public string DatabasePathToFilePath(string databaseFilePath)
 	{
 		foreach ( var mapping in
-		         StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
+				 StorageFolderMappings.OrderByDescending(m => m.Key.Length) )
 		{
 			var key = mapping.Key.TrimEnd('/');
 			if ( databaseFilePath != key &&
-			     !databaseFilePath.StartsWith(key + "/") )
+				 !databaseFilePath.StartsWith(key + "/") )
 			{
 				continue;
 			}
@@ -1159,8 +1184,8 @@ public sealed class AppSettings
 			var canonical = Path.GetFullPath(combined);
 			var canonicalBase = Path.GetFullPath(physicalBase);
 			if ( canonical != canonicalBase &&
-			     !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
-				     StringComparison.OrdinalIgnoreCase) )
+				 !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
+					 StringComparison.OrdinalIgnoreCase) )
 			{
 				throw new UnauthorizedAccessException(
 					"Path traversal detected: resolved path is outside the mapped root.");
@@ -1190,8 +1215,8 @@ public sealed class AppSettings
 			.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 		var canonical = Path.GetFullPath(filepath);
 		if ( canonical != canonicalBase &&
-		     !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
-			     StringComparison.OrdinalIgnoreCase) )
+			 !canonical.StartsWith(canonicalBase + Path.DirectorySeparatorChar,
+				 StringComparison.OrdinalIgnoreCase) )
 		{
 			throw new UnauthorizedAccessException(
 				"Path traversal detected: resolved path is outside the storage folder.");
@@ -1241,7 +1266,7 @@ public sealed class AppSettings
 	public string SqLiteFullPath(string connectionString, string baseDirectoryProject)
 	{
 		if ( DatabaseType == DatabaseTypeList.Mysql &&
-		     string.IsNullOrWhiteSpace(connectionString) )
+			 string.IsNullOrWhiteSpace(connectionString) )
 		{
 			throw new ArgumentException("The 'DatabaseConnection' field is null or empty");
 		}
@@ -1277,7 +1302,7 @@ public sealed class AppSettings
 		}
 
 		var dataSource = "Data Source=" + baseDirectoryProject +
-		                 Path.DirectorySeparatorChar + databaseFileName;
+						 Path.DirectorySeparatorChar + databaseFileName;
 		return dataSource;
 	}
 
@@ -1306,7 +1331,7 @@ public sealed class AppSettings
 			var destinationProperty = destinationType.GetProperty(sourceProperty.Name);
 
 			if ( destinationProperty == null ||
-			     !destinationProperty.CanWrite )
+				 !destinationProperty.CanWrite )
 			{
 				continue;
 			}

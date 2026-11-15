@@ -7,6 +7,8 @@ using starsky.Tests.Helpers;
 namespace starsky.Tests.Services;
 
 [TestClass]
+[SupportedOSPlatform("windows")]
+[OSCondition(OperatingSystems.Windows)]
 public class BackendServiceTests
 {
     [TestMethod]

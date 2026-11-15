@@ -68,7 +68,7 @@ public partial class Query // QueryCollections
 		{
 			// check if any item is duplicate
 			if ( stackItemsByFileCollectionName.All(p =>
-				    p.FileCollectionName != dbItem.FileCollectionName) )
+					p.FileCollectionName != dbItem.FileCollectionName) )
 			{
 				querySubFolderList.Add(dbItem);
 			}

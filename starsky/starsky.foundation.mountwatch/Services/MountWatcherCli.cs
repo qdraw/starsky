@@ -104,7 +104,7 @@ public class MountWatcherCli
 			ShowHelp();
 		}
 
-		if ( ArgsHelper.NeedHelp(args))
+		if ( ArgsHelper.NeedHelp(args) )
 		{
 			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 			ShowHelp();
@@ -176,7 +176,7 @@ public class MountWatcherCli
 	private static string GetCurrentExecutablePath()
 	{
 		return Environment.ProcessPath
-		       ?? Assembly.GetExecutingAssembly().Location;
+			   ?? Assembly.GetExecutingAssembly().Location;
 	}
 
 	/// <summary>
@@ -303,7 +303,7 @@ public class MountWatcherCli
 				new List<string> { cameraPath },
 				importSettings);
 			_logger.LogInformation($"Import completed for {cameraPath}: " +
-			                       $"{result.Count} items processed");
+								   $"{result.Count} items processed");
 		}
 		catch ( Exception ex )
 		{

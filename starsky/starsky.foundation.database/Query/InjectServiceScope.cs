@@ -6,7 +6,7 @@ using starsky.foundation.database.Data;
 using starsky.foundation.platform.Tenancy;
 
 [assembly: InternalsVisibleTo("starskytest"),
-           InternalsVisibleTo("starsky.foundation.settings")]
+		   InternalsVisibleTo("starsky.foundation.settings")]
 
 namespace starsky.foundation.database.Query;
 

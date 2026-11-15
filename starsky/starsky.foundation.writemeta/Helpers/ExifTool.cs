@@ -113,8 +113,8 @@ public sealed class ExifTool : IExifTool
 			subPath, cancellationToken);
 
 		if ( stream.Length <= 15 &&
-		     ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
-		     .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
+			 ( await StreamToStringHelper.StreamToStringAsync(stream, false) )
+			 .Contains("Fake ExifTool", StringComparison.InvariantCultureIgnoreCase) )
 		{
 			await stream.DisposeAsync();
 			_logger.LogError(
@@ -145,7 +145,7 @@ public sealed class ExifTool : IExifTool
 	{
 		if ( string.IsNullOrEmpty(beforeFileHash) || !isSuccess )
 		{
-			return ( string.Empty, [] );
+			return (string.Empty, []);
 		}
 
 		var fileHashStream = await StreamGetFirstBytes.GetFirstBytesAsync(stream,
@@ -158,17 +158,17 @@ public sealed class ExifTool : IExifTool
 		if ( string.IsNullOrEmpty(newHashCode) )
 		{
 			_logger.LogError($"[RenameThumbnailByStream] No new hashcode: {beforeFileHash}");
-			return ( string.Empty, [] );
+			return (string.Empty, []);
 		}
 
 		if ( beforeFileHash == newHashCode )
 		{
-			return ( newHashCode, [] );
+			return (newHashCode, []);
 		}
 
 		var service = new ThumbnailFileMoveAllSizes(_thumbnailStorage, _appSettings, _logger);
 		var fileMoveResult = service.FileMove(beforeFileHash, newHashCode, reference);
 
-		return ( newHashCode, fileMoveResult );
+		return (newHashCode, fileMoveResult);
 	}
 }

@@ -153,15 +153,15 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--verbose", StringComparison.CurrentCultureIgnoreCase)
-			       || args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) )
-			     && arg + 1 != args.Count
-			     && bool.TryParse(args[arg + 1], out var needDebugParsed) )
+				   || args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) )
+				 && arg + 1 != args.Count
+				 && bool.TryParse(args[arg + 1], out var needDebugParsed) )
 			{
 				needDebug = needDebugParsed;
 			}
 
 			if ( args[arg].Equals("--verbose", StringComparison.CurrentCultureIgnoreCase) ||
-			     args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) )
+				 args[arg].Equals("-v", StringComparison.CurrentCultureIgnoreCase) )
 			{
 				needDebug = true;
 			}
@@ -218,10 +218,10 @@ public sealed class ArgsHelper
 			for ( var arg = 0; arg < args.Count; arg++ )
 			{
 				if ( ( args[arg].Equals(longNameList[i],
-					       StringComparison.CurrentCultureIgnoreCase) ||
-				       args[arg].Equals(shortNameList[i],
-					       StringComparison.CurrentCultureIgnoreCase) ) &&
-				     arg + 1 != args.Count )
+						   StringComparison.CurrentCultureIgnoreCase) ||
+					   args[arg].Equals(shortNameList[i],
+						   StringComparison.CurrentCultureIgnoreCase) ) &&
+					 arg + 1 != args.Count )
 				{
 					Environment.SetEnvironmentVariable(envNameList[i], args[arg + 1]);
 				}
@@ -240,15 +240,15 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--help", StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) ) &&
-			     arg + 1 != args.Count
-			     && bool.TryParse(args[arg + 1], out var needHelp2) && needHelp2 )
+				   args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) ) &&
+				 arg + 1 != args.Count
+				 && bool.TryParse(args[arg + 1], out var needHelp2) && needHelp2 )
 			{
 				needHelp = true;
 			}
 
 			if ( args[arg].Equals("--help", StringComparison.CurrentCultureIgnoreCase) ||
-			     args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) )
+				 args[arg].Equals("-h", StringComparison.CurrentCultureIgnoreCase) )
 			{
 				needHelp = true;
 			}
@@ -279,8 +279,8 @@ public sealed class ArgsHelper
 
 				_console.WriteLine("-t == enable thumbnail (default true)");
 				_console.WriteLine("--path or (short) -p == parameter: (string) ; " +
-				                   "'full path', only child items of the database folder are supported," +
-				                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+								   "'full path', only child items of the database folder are supported," +
+								   "search and replace first part of the filename, '/', use '-p' for current directory ");
 				_console.WriteLine(
 					"--subpath or -s == parameter: (string) ; relative path in the database");
 				_console.WriteLine(
@@ -292,8 +292,8 @@ public sealed class ArgsHelper
 				break;
 			case AppSettings.StarskyAppType.MetaThumbnail:
 				_console.WriteLine("--path or -p == parameter: (string) ; " +
-				                   "'full path', only child items of the database folder are supported," +
-				                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+								   "'full path', only child items of the database folder are supported," +
+								   "search and replace first part of the filename, '/', use '-p' for current directory ");
 				_console.WriteLine(
 					"--subpath or -s == parameter: (string) ; relative path in the database");
 				_console.WriteLine(
@@ -310,7 +310,7 @@ public sealed class ArgsHelper
 			case AppSettings.StarskyAppType.Geo:
 				// When this change please update ./readme.md
 				_console.WriteLine("--path or -p == parameter: (string) ; " +
-				                   "without addition is current directory, full path (all locations are supported) ");
+								   "without addition is current directory, full path (all locations are supported) ");
 				_console.WriteLine(
 					"--subpath or -s == parameter: (string) ; relative path in the database ");
 				_console.WriteLine(
@@ -318,7 +318,7 @@ public sealed class ArgsHelper
 					", use for example '1' to select yesterday. (structure is required)");
 				_console.WriteLine("-p, -s, -g == you need to select one of those tags");
 				_console.WriteLine("--all or -a == overwrite reverse geotag location tags " +
-				                   "(default: false / ignore already taged files) ");
+								   "(default: false / ignore already taged files) ");
 				_console.WriteLine(
 					"--index or -i == parameter: (bool) ; gpx feature to index geo location, default true");
 				break;
@@ -341,14 +341,14 @@ public sealed class ArgsHelper
 				_console.WriteLine(
 					"                can be an folder or file, use '-p' for current directory");
 				_console.WriteLine("                for multiple items use dot comma (;) " +
-				                   "to split and quotes (\") around the input string");
+								   "to split and quotes (\") around the input string");
 				_console.WriteLine("--camera ; scan for camera storages (sd-cards)" +
-				                   "works only when --path is not specified, " +
-				                   "recommend to to specify --recursive ");
+								   "works only when --path is not specified, " +
+								   "recommend to to specify --recursive ");
 				_console.WriteLine(
 					"--move or -m == delete file after importing (default false / copy file)");
 				_console.WriteLine("--recursive or -r == Import Directory recursive " +
-				                   "(default: false / only the selected folder) ");
+								   "(default: false / only the selected folder) ");
 				_console.WriteLine(
 					"--structure == overwrite app-settings with file-directory structure " +
 					"based on exif and filename create datetime; " +
@@ -375,8 +375,8 @@ public sealed class ArgsHelper
 			case AppSettings.StarskyAppType.Sync:
 				// When this change please update ./readme.md
 				_console.WriteLine("--path or -p == parameter: (string) ; " +
-				                   "'full path', only child items of the database folder are supported," +
-				                   "search and replace first part of the filename, '/', use '-p' for current directory ");
+								   "'full path', only child items of the database folder are supported," +
+								   "search and replace first part of the filename, '/', use '-p' for current directory ");
 				_console.WriteLine(
 					"--subpath or -s == parameter: (string) ; relative path in the database");
 				_console.WriteLine(
@@ -425,7 +425,7 @@ public sealed class ArgsHelper
 		_console.WriteLine("AppSettings: " + _appSettings.ApplicationType);
 		_console.WriteLine("Database Type (-d --databasetype) " + _appSettings.DatabaseType);
 		_console.WriteLine("DatabaseConnection (-c --connection) " +
-		                   _appSettings.DatabaseConnection);
+						   _appSettings.DatabaseConnection);
 		_console.WriteLine($"StorageFolder (-b --basepath) {_appSettings.StorageFolder} ");
 		_console.WriteLine(
 			$"ThumbnailTempFolder (-f --thumbnailtempfolder) {_appSettings.ThumbnailTempFolder} ");
@@ -437,9 +437,9 @@ public sealed class ArgsHelper
 		_console.WriteLine($"TempFolder {_appSettings.TempFolder} ");
 		_console.WriteLine($"BaseDirectoryProject {_appSettings.BaseDirectoryProject} ");
 		_console.WriteLine("ExiftoolSkipDownloadOnStartup " +
-		                   _appSettings.ExiftoolSkipDownloadOnStartup);
+						   _appSettings.ExiftoolSkipDownloadOnStartup);
 		_console.WriteLine("GeoFilesSkipDownloadOnStartup " +
-		                   _appSettings.GeoFilesSkipDownloadOnStartup);
+						   _appSettings.GeoFilesSkipDownloadOnStartup);
 
 		_console.WriteLine($"MaxDegreesOfParallelism {_appSettings.MaxDegreesOfParallelism} ");
 
@@ -485,7 +485,7 @@ public sealed class ArgsHelper
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.Importer )
 		{
 			_console.WriteLine("Create xmp on import (ExifToolImportXmpCreate): " +
-			                   _appSettings.ExifToolImportXmpCreate);
+							   _appSettings.ExifToolImportXmpCreate);
 		}
 
 		if ( _appSettings.ApplicationType == AppSettings.StarskyAppType.WebFtp )
@@ -545,16 +545,16 @@ public sealed class ArgsHelper
 					foreach ( var publishProfile in publishProfiles.Value )
 					{
 						_console.WriteLine("--- " +
-						                   $"Path: {publishProfile.Path} " +
-						                   $"Append: {publishProfile.Append} " +
-						                   $"Copy: {publishProfile.Copy} " +
-						                   $"Folder: {publishProfile.Folder} " +
-						                   $"Prepend: {publishProfile.Prepend} " +
-						                   $"Template: {publishProfile.Template} " +
-						                   $"ContentType: {publishProfile.ContentType} " +
-						                   $"MetaData: {publishProfile.MetaData} " +
-						                   $"OverlayMaxWidth: {publishProfile.OverlayMaxWidth} " +
-						                   $"SourceMaxWidth: {publishProfile.SourceMaxWidth} ");
+										   $"Path: {publishProfile.Path} " +
+										   $"Append: {publishProfile.Append} " +
+										   $"Copy: {publishProfile.Copy} " +
+										   $"Folder: {publishProfile.Folder} " +
+										   $"Prepend: {publishProfile.Prepend} " +
+										   $"Template: {publishProfile.Template} " +
+										   $"ContentType: {publishProfile.ContentType} " +
+										   $"MetaData: {publishProfile.MetaData} " +
+										   $"OverlayMaxWidth: {publishProfile.OverlayMaxWidth} " +
+										   $"SourceMaxWidth: {publishProfile.SourceMaxWidth} ");
 					}
 				}
 
@@ -571,9 +571,9 @@ public sealed class ArgsHelper
 		var version = RuntimeInformation.FrameworkDescription;
 		_console.WriteLine($".NET Version - {version}");
 		_console.WriteLine($"Starsky Version - {_appSettings.AppVersion} " +
-		                   "- build at: " +
-		                   DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(
-			                   new CultureInfo("nl-NL")));
+						   "- build at: " +
+						   DateAssembly.GetBuildDate(Assembly.GetExecutingAssembly()).ToString(
+							   new CultureInfo("nl-NL")));
 	}
 
 	/// <summary>
@@ -589,9 +589,9 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--index", StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-i", StringComparison.CurrentCultureIgnoreCase) )
-			     && arg + 1 != args.Count
-			     && bool.TryParse(args[arg + 1], out var isIndexMode2) )
+				   args[arg].Equals("-i", StringComparison.CurrentCultureIgnoreCase) )
+				 && arg + 1 != args.Count
+				 && bool.TryParse(args[arg + 1], out var isIndexMode2) )
 			{
 				isIndexMode = isIndexMode2;
 			}
@@ -627,7 +627,7 @@ public sealed class ArgsHelper
 
 		// To use only with -p or --path > current directory
 		if ( ( args.Contains("-p") || args.Contains(PathCommandLineArgLong) ) &&
-		     ( path == string.Empty || path[0] == "-"[0] ) )
+			 ( path == string.Empty || path[0] == "-"[0] ) )
 		{
 			path = Directory.GetCurrentDirectory();
 		}
@@ -655,9 +655,9 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals(PathCommandLineArgLong,
-				       StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) &&
-			     arg + 1 != args.Count )
+					   StringComparison.CurrentCultureIgnoreCase) ||
+				   args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) &&
+				 arg + 1 != args.Count )
 			{
 				path = args[arg + 1];
 			}
@@ -677,8 +677,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--password", StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) &&
-			     arg + 1 != args.Count )
+				   args[arg].Equals("-p", StringComparison.CurrentCultureIgnoreCase) ) &&
+				 arg + 1 != args.Count )
 			{
 				path = args[arg + 1];
 			}
@@ -698,7 +698,7 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].Equals("--output", StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
@@ -721,8 +721,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--name", StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-n", StringComparison.CurrentCultureIgnoreCase) ) &&
-			     arg + 1 != args.Count )
+				   args[arg].Equals("-n", StringComparison.CurrentCultureIgnoreCase) ) &&
+				 arg + 1 != args.Count )
 			{
 				name = args[arg + 1];
 			}
@@ -756,7 +756,7 @@ public sealed class ArgsHelper
 
 		// To use only with -p or --path > current directory
 		if ( ( args.Contains("-p") || args.Contains(PathCommandLineArgLong) ) &&
-		     ( path == string.Empty || path[0] == "-"[0] ) )
+			 ( path == string.Empty || path[0] == "-"[0] ) )
 		{
 			var currentDirectory = Directory.GetCurrentDirectory();
 			if ( currentDirectory != _appSettings.BaseDirectoryProject )
@@ -789,8 +789,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--subpath", StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) &&
-			     arg + 1 != args.Count )
+				   args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) &&
+				 arg + 1 != args.Count )
 			{
 				subPath = args[arg + 1];
 			}
@@ -817,9 +817,9 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--subpathrelative",
-				       StringComparison.InvariantCultureIgnoreCase) ||
-			       args[arg].Equals("-g", StringComparison.InvariantCultureIgnoreCase) ) &&
-			     arg + 1 != args.Count )
+					   StringComparison.InvariantCultureIgnoreCase) ||
+				   args[arg].Equals("-g", StringComparison.InvariantCultureIgnoreCase) ) &&
+				 arg + 1 != args.Count )
 			{
 				subPathRelative = args[arg + 1];
 			}
@@ -853,9 +853,9 @@ public sealed class ArgsHelper
 	{
 		// To use only with -p or --path > current directory
 		if ( args.Any(arg =>
-			    arg.Equals(PathCommandLineArgLong,
-				    StringComparison.CurrentCultureIgnoreCase) ||
-			    arg.Equals("-p", StringComparison.CurrentCultureIgnoreCase)) )
+				arg.Equals(PathCommandLineArgLong,
+					StringComparison.CurrentCultureIgnoreCase) ||
+				arg.Equals("-p", StringComparison.CurrentCultureIgnoreCase)) )
 		{
 			return false;
 		}
@@ -864,8 +864,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--subpath", StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) &&
-			     arg + 1 != args.Count )
+				   args[arg].Equals("-s", StringComparison.CurrentCultureIgnoreCase) ) &&
+				 arg + 1 != args.Count )
 			{
 				return true;
 			}
@@ -912,9 +912,9 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--thumbnail", StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-t", StringComparison.CurrentCultureIgnoreCase) )
-			     && arg + 1 != args.Count &&
-			     bool.TryParse(args[arg + 1], out var isThumbnail2) )
+				   args[arg].Equals("-t", StringComparison.CurrentCultureIgnoreCase) )
+				 && arg + 1 != args.Count &&
+				 bool.TryParse(args[arg + 1], out var isThumbnail2) )
 			{
 				isThumbnail = isThumbnail2;
 			}
@@ -935,10 +935,10 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--orphanfolder",
-				       StringComparison.CurrentCultureIgnoreCase) ||
-			       args[arg].Equals("-o", StringComparison.CurrentCultureIgnoreCase) )
-			     && arg + 1 != args.Count &&
-			     bool.TryParse(args[arg + 1], out var isOrphanFolderCheck2) )
+					   StringComparison.CurrentCultureIgnoreCase) ||
+				   args[arg].Equals("-o", StringComparison.CurrentCultureIgnoreCase) )
+				 && arg + 1 != args.Count &&
+				 bool.TryParse(args[arg + 1], out var isOrphanFolderCheck2) )
 			{
 				isOrphanFolderCheck = isOrphanFolderCheck2;
 			}
@@ -964,16 +964,16 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( ( args[arg].Equals("--move", StringComparison.CurrentCultureIgnoreCase)
-			       || args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) )
-			     && arg + 1 != args.Count &&
-			     bool.TryParse(args[arg + 1], out var getMove2) )
+				   || args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) )
+				 && arg + 1 != args.Count &&
+				 bool.TryParse(args[arg + 1], out var getMove2) )
 			{
 				getMove = getMove2;
 				continue;
 			}
 
 			if ( args[arg].Equals("--move", StringComparison.CurrentCultureIgnoreCase) ||
-			     args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) )
+				 args[arg].Equals("-m", StringComparison.CurrentCultureIgnoreCase) )
 			{
 				getMove = true;
 			}
@@ -995,22 +995,22 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( args[arg].Equals("--all", StringComparison.CurrentCultureIgnoreCase) ||
-			     args[arg].Equals("-a", StringComparison.CurrentCultureIgnoreCase) )
+				 args[arg].Equals("-a", StringComparison.CurrentCultureIgnoreCase) )
 			{
 				getAll = true;
 			}
 
 			if ( ( !args[arg].Equals("--all",
-				       StringComparison.CurrentCultureIgnoreCase) &&
-			       !args[arg].Equals("-a",
-				       StringComparison.CurrentCultureIgnoreCase) ) ||
-			     arg + 1 == args.Count )
+					   StringComparison.CurrentCultureIgnoreCase) &&
+				   !args[arg].Equals("-a",
+					   StringComparison.CurrentCultureIgnoreCase) ) ||
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
 
 			if ( args[arg + 1].Equals("false",
-				    StringComparison.CurrentCultureIgnoreCase) )
+					StringComparison.CurrentCultureIgnoreCase) )
 			{
 				getAll = false;
 			}
@@ -1063,8 +1063,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].Equals("--colorclass",
-				     StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+					 StringComparison.CurrentCultureIgnoreCase) ||
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
@@ -1090,8 +1090,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].Equals("--origin",
-				     StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+					 StringComparison.CurrentCultureIgnoreCase) ||
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
@@ -1115,8 +1115,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].Equals("--provider",
-				     StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+					 StringComparison.CurrentCultureIgnoreCase) ||
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
@@ -1140,8 +1140,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].Equals("--profile",
-				     StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+					 StringComparison.CurrentCultureIgnoreCase) ||
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
@@ -1165,8 +1165,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].Equals("--importindex-export-json",
-				     StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+					 StringComparison.CurrentCultureIgnoreCase) ||
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
@@ -1189,8 +1189,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].Equals("--importindex-import-json",
-				     StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+					 StringComparison.CurrentCultureIgnoreCase) ||
+				 arg + 1 == args.Count )
 			{
 				continue;
 			}
@@ -1211,8 +1211,8 @@ public sealed class ArgsHelper
 		for ( var arg = 0; arg < args.Count; arg++ )
 		{
 			if ( !args[arg].StartsWith(runtimeDash,
-				     StringComparison.CurrentCultureIgnoreCase) ||
-			     arg + 1 == args.Count )
+					 StringComparison.CurrentCultureIgnoreCase) ||
+				 arg + 1 == args.Count )
 			{
 				if ( args[arg].Contains(runtimeDashAndSpace) ) // and space
 				{

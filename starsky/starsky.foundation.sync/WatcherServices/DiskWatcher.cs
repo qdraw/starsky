@@ -102,9 +102,9 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		wrapper.Filter = "*";
 		wrapper.IncludeSubdirectories = true;
 		wrapper.NotifyFilter = NotifyFilters.FileName
-		                       | NotifyFilters.DirectoryName
-		                       | NotifyFilters.Size
-		                       | NotifyFilters.LastWrite;
+							   | NotifyFilters.DirectoryName
+							   | NotifyFilters.Size
+							   | NotifyFilters.LastWrite;
 
 		// handle many file system events quickly
 		wrapper.InternalBufferSize = 64 * 1024; // 64 KB - default = 4096 / 4 KB
@@ -168,7 +168,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 		int numberOfTries = 20, int milliSecondsTimeout = 5000)
 	{
 		_webLogger.LogInformation("[DiskWatcher] next retry " +
-		                          $"{DateTimeDebug()}");
+								  $"{DateTimeDebug()}");
 		var path = _fileSystemWatcherWrapper.Path;
 
 		_fileSystemWatcherWrapper.Dispose();
@@ -233,14 +233,14 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	internal void OnChanged(FileSystemEventArgs e, string tenantId)
 	{
 		if ( e.FullPath.EndsWith(".tmp") ||
-		     !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
+			 !ExtensionRolesHelper.IsExtensionSyncSupported(e.FullPath) )
 		{
 			return;
 		}
 
 		_webLogger.LogDebug($"[DiskWatcher] " +
-		                    $"{e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
-		                    DateTimeDebug());
+							$"{e.FullPath} OnChanged ChangeType is: {e.ChangeType} " +
+							DateTimeDebug());
 
 		QueueAsTenant(tenantId, () => _queueProcessor.QueueJob(e.FullPath, null, e.ChangeType));
 		// Specify what is done when a file is changed, created, or deleted.
@@ -287,7 +287,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 	internal void OnRenamed(RenamedEventArgs e, string tenantId)
 	{
 		_webLogger.LogInformation($"[DiskWatcher] {e.OldFullPath} OnRenamed to: {e.FullPath}" +
-		                          DateTimeDebug());
+								  DateTimeDebug());
 
 		var fileAttributes = GetFileAttributes(e.FullPath);
 		var isDirectory = fileAttributes == FileAttributes.Directory;
@@ -296,7 +296,7 @@ public sealed class DiskWatcher : IDiskWatcher, IDisposable
 			e.OldFullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
 			|| e.OldFullPath.EndsWith(".tmp");
 		var isNewFullPathTempFile = e.FullPath.Contains(Path.DirectorySeparatorChar + "tmp.{")
-		                            || e.FullPath.EndsWith(".tmp");
+									|| e.FullPath.EndsWith(".tmp");
 		if ( !isDirectory && isOldFullPathTempFile )
 		{
 			QueueAsTenant(tenantId,

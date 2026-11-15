@@ -23,7 +23,7 @@ public sealed class MetaReplaceBackgroundJobHandler(IServiceScopeFactory scopeFa
 		}
 
 		var payload = JsonSerializer.Deserialize<MetaReplaceBackgroundPayload>(payloadJson)
-		              ?? throw new ArgumentException("Invalid payload");
+					  ?? throw new ArgumentException("Invalid payload");
 
 		using var scope = scopeFactory.CreateScope();
 		var metaUpdateService = scope.ServiceProvider

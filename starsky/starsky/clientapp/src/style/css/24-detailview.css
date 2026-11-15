@@ -219,6 +219,10 @@
   background-image: url("../images/baseline-file-mp4-24px.svg");
 }
 
+.detailview .main.main--m4a {
+  background-image: url("../images/baseline-file-m4a-24px.svg");
+}
+
 .gpx-controls {
   position: fixed;
   z-index: 499;
