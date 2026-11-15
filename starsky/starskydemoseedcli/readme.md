@@ -21,6 +21,7 @@
       are updated in the database_
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
       generating smaller images_
+    * [starskyThumbnailMetaCli](../../starsky/starskythumbnailmetacli/readme.md)  _create small thumbnails from the embedded preview_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
@@ -28,3 +29,18 @@
 * [Starsky Desktop](../../readme-desktop.md) _Desktop Application_
     * [Download Desktop App](https://docs.qdraw.nl/download/) _Windows and macOS version_
 * [Changelog](../../history.md) _Release notes and history_
+
+## starskyDemoSeedCli docs
+
+Downloads the demo photos into the storage folder (`StorageFolder`) and then runs a sync of the
+whole storage folder, so the files are available in the database. Use this to set up a demo
+environment. See `DemoData` and `DemoUnsafeDeleteStorageFolder` in the
+[web application settings](../../starsky/starsky/readme.md#recommend-settings).
+
+```sh
+./starskydemoseedcli --help
+```
+
+The only options are `--help` and `--verbose`, plus the
+[shortcut arguments](/docs/getting-started/configuration/config-options#command-line-options) that
+overwrite settings, such as `--basepath` and `--connection`.

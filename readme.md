@@ -16,6 +16,7 @@
       updated in the database_
     * [starskyThumbnailCli](starsky/starskythumbnailcli/readme.md)  _speed web performance by
       generating smaller images_
+    * [starskyThumbnailMetaCli](starsky/starskythumbnailmetacli/readme.md)  _create small thumbnails from the embedded preview_
     * [Starsky Business Logic](starsky/starskybusinesslogic/readme.md) _business logic libraries (
       .NET)_
     * [starskyTest](starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_

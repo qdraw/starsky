@@ -30,7 +30,24 @@ See the [Advanced options](../../advanced-options/starsky/readme.md) for more in
 
 Add the command line argument `--help` option to see all available options.
 The options are configured in `appsettings.json` and environment variables and command line
-arguments.
+arguments. The shortcut arguments below set the matching `app__*` environment variable:
+
+| Argument | Short | Environment variable |
+|---|---|---|
+| `--databasetype` | `-d` | `app__DatabaseType` |
+| `--connection` | `-c` | `app__DatabaseConnection` |
+| `--basepath` | `-b` | `app__StorageFolder` |
+| `--thumbnailtempfolder` | `-f` | `app__ThumbnailTempFolder` |
+| `--exiftoolpath` | `-e` | `app__ExifToolPath` |
+| `--structure` | `-u` | `app__Structure__DefaultPattern` |
+| `--subpathrelative` | `-g` | `app__subpathrelative` |
+| `--clean` | `-x` | `app__ExifToolImportXmpCreate` |
+| `--tempfolder` | `-tf` | `app__TempFolder` |
+| `--dependencies` | `-dep` | `app__DependenciesFolder` |
+| `--appsettingspath` | `-asp` | `app__appsettingspath` |
+| `--appsettingslocalpath` | `-aspl` | `app__appsettingslocalpath` |
+
+Not every command line application supports every argument, run it with `--help` for the exact list.
 
 ## Manual Overwrite settings for Desktop
 
@@ -104,3 +121,11 @@ When enabled, imported files are copied to the configured storage folder using a
 
 For more details see the Import documentation: [Import Backup](../../features/import/import.md#import-backup)
 
+## Other settings
+
+- `CloudImport`: see [Cloud import](../cloud-import/readme.md) for the provider settings.
+- `McpEnabled`, `McpAllowWrite` and `McpMaxItemsPerCall`: see [MCP for AI agents](../../features/mcp.md).
+- `ReadOnlyFolders`: list of folders that can never be edited, for example
+  `app__ReadOnlyFolders__0=/archive`. The default is an empty list.
+- `TrustedProxies` and `TrustedProxiesCloudflare`: see [Proxies](../proxies/nginx.md).
+- All other settings are listed in the [web application settings](../../advanced-options/starsky/starsky/readme.md#recommend-settings).

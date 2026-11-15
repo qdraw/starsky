@@ -17,9 +17,9 @@ and you’ll feel as if you’re in the shell of a [Linux VM](https://www.linux.
 - `ghcr.io/qdraw/starsky:latest` is the latest same version on [GitHub Container Registry](https://github.com/qdraw/starsky/pkgs/container/starsky/versions?filters%5Bversion_type%5D=tagged)
 
 ## By version
-On Docker Hub you can find tags by version number, for example `qdraw/starsky:v0.5.6`
+On Docker Hub you can find tags by version number, for example `qdraw/starsky:v0.9.9`
 or on [GitHub Container Registry](https://github.com/qdraw/starsky/pkgs/container/starsky/versions?filters%5Bversion_type%5D=tagged)
-This is on GitHub Container Registry: `ghcr.io/qdraw/starsky:v0.5.7-beta.0`
+This is on GitHub Container Registry: `ghcr.io/qdraw/starsky:v0.9.9`
 
 ## Unstable test version:
 - `ghcr.io/qdraw/starsky:master` is the latest unstable image from the master branch, you can find it on GitHub Container Registry

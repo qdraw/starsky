@@ -7,8 +7,8 @@
     putting Starsky behind Cloudflare without any config at all is still safe — Starsky simply
     falls back to trusting loopback only, so forwarded headers from Cloudflare are ignored and
     rate limiting keys on Cloudflare's own edge IP instead of the real visitor. The downside is
-    every visitor then shares one rate-limit bucket (Cloudflare's edge IP), so configure
-    `TrustedProxies` to get accurate per-visitor rate limiting and `NoAccountLocalhost` behavior.
+    every visitor then shares one rate-limit bucket (Cloudflare's edge IP), so set
+    `TrustedProxiesCloudflare` (or `TrustedProxies`) to get accurate per-visitor rate limiting and `NoAccountLocalhost` behavior.
 
 ## `TrustedProxiesCloudflare` setting (recommended)
 
@@ -28,6 +28,15 @@ Or as an environment variable: `app__TrustedProxiesCloudflare=true`.
 This has the same effect as listing every range below under `TrustedProxies` manually, but it's
 kept up to date in code instead of your config, and you can still add your own entries to
 `TrustedProxies` alongside it (e.g. an internal load balancer in front of Cloudflare).
+
+> **Warning** <br/>
+    As soon as `TrustedProxiesCloudflare` is enabled or `TrustedProxies` contains any entry, **only**
+    the listed addresses are trusted. The default trust of loopback (`127.0.0.1`/`::1`) is dropped.
+    If a `cloudflared` tunnel or a reverse proxy runs on the same host as Starsky, add `127.0.0.1`
+    and `::1` to `TrustedProxies` yourself (`app__TrustedProxies__0=127.0.0.1`,
+    `app__TrustedProxies__1=::1`).
+    Entries must be IP addresses or CIDR ranges; hostnames are not supported. Invalid entries are
+    skipped and only logged to the console (`app__TrustedProxies: ignoring invalid entry`).
 
 ## `TrustedProxies` setting (manual list)
 

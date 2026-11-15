@@ -29,3 +29,10 @@ when this is not the case the disk watcher will not work.
 
 ![Meta data usage](../assets/realtime_disk_watcher_v050.gif)
 _Realtime updates from your hard disk_
+
+## Missed updates
+
+When the browser was disconnected for a moment (for example a phone that went to sleep), the user
+interface can ask for the notifications it missed with `GET /api/notification/notification`. Use
+`dateTime` with a UTC date time (`2022-04-16T17:33:10.323974Z`) or a number of hours back (`1` is the
+last hour). Requests for more than one day back are rejected.

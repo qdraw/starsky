@@ -21,6 +21,7 @@
       changes are updated in the database__
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
       generating smaller images_
+    * [starskyThumbnailMetaCli](../../starsky/starskythumbnailmetacli/readme.md)  _create small thumbnails from the embedded preview_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
@@ -87,6 +88,9 @@ Starksy Sync Cli ~ Help:
 --subpathrelative or -g == Overwrite subpath to use relative days to select a folder, use for example '1' to select yesterday. (structure is required)
 -p, -s, -g == you need to select one of those tags
 --index or -i == parameter: (bool) ; enable indexing, default true
+--thumbnail or -t == parameter: (bool) ; enable thumbnail, default false
+--clean or -x == parameter: (bool) ; enable checks in thumbnail-temp-folder if thumbnails are needed, delete unused files
+--orphanfolder or -o == To delete files without a parent folder (heavy cpu usage), default false
 --verbose or -v == verbose, more detailed info
 --databasetype or -d == Overwrite EnvironmentVariable for DatabaseType
 --basepath or -b == Overwrite EnvironmentVariable for StorageFolder

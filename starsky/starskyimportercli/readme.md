@@ -21,6 +21,7 @@
       are updated in the database_
     * [starskyThumbnailCli](../../starsky/starskythumbnailcli/readme.md)  _speed web performance by
       generating smaller images_
+    * [starskyThumbnailMetaCli](../../starsky/starskythumbnailmetacli/readme.md)  _create small thumbnails from the embedded preview_
     * [Starsky Business Logic](../../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     * [starskyTest](../../starsky/starskytest/readme.md)  _mstest unit tests (for .NET)_
@@ -119,12 +120,17 @@ Starksy Importer Cli ~ Help:
 --path or -p == parameter: (string) ; full path
                 can be an folder or file, use '-p' for current directory
                 for multiple items use dot comma (;) to split and quotes (") around the input string
+--camera ; scan for camera storages (sd-cards) works only when --path is not specified, recommend to to specify --recursive
 --move or -m == delete file after importing (default false / copy file)
 --recursive or -r == Import Directory recursive (default: false / only the selected folder)
---structure == overwrite appsettings with filedirectory structure based on exif and filename create datetime
+--structure == overwrite app-settings with file-directory structure based on exif and filename create datetime; set structure rules to empty to disable
 --index or -i == parameter: (bool) ; indexing, false is always copy, true is check if exist in db, default true
 --clean or -x == true is to add a xmp sidecar file for raws, default true
---colorclass == update colorclass to this number value, default don't change
+--colorclass == update color-class to this number value, default don't change
+--origin == overwrite origin, Don't use with --structure. Used to reference structure settings and select a setting from this
+--provider place-here-id-from-config ; use cloud import and select a provider within CloudImport Providers, used for example with Dropbox, skips local import
+--importindex-export-json == parameter: (string) ; full path of output json file
+--importindex-import-json == parameter: (string) ; full path of input json file
 --verbose or -v == verbose, more detailed info
   use -v -help to show settings:
 ```

@@ -16,7 +16,7 @@ We recommend not using the `:latest` tag for the MariaDB Docker image and to upg
 ```yaml
 services:
   mariadb:
-    image: mariadb:10.9
+    image: mariadb:12.3
     # ... etc...
 ```
 
@@ -87,7 +87,7 @@ To enable automatic schema updates, set `MARIADB_AUTO_UPGRADE` to a non-empty va
 ```yaml
 services:
   mariadb:
-    image: mariadb:10.9
+    image: mariadb:12.3
     ...
     environment:
       MARIADB_AUTO_UPGRADE: "1"

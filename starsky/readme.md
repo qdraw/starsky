@@ -6,6 +6,9 @@
     - [starsky](../starsky/starsky/readme.md) _web api application / interface_
         - [clientapp](../starsky/starsky/clientapp/readme.md) _react front-end application_
     - [starskyImporterCli](../starsky/starskyimportercli/readme.md) _import command line interface_
+    - [starskyMountWatcherCli](../starsky/starskymountwatchercli/readme.md) _watch sd cards_
+    - [starskyDemoSeedCli](../starsky/starskydemoseedcli/readme.md) _demo seed data_
+    - [starskyDependenciesDownloadCli](../starsky/starskydependenciesdownloadcli/readme.md) _make sure external dependencies are installed_
     - [starskyGeoCli](../starsky/starskygeocli/readme.md) _gpx sync and reverse 'geo tagging'_
     - [starskyWebHtmlCli](../starsky/starskywebhtmlcli/readme.md) _publish web images to a content
       package_
@@ -16,6 +19,7 @@
       updated in the database_
     - [starskyThumbnailCli](../starsky/starskythumbnailcli/readme.md) _speed web performance by
       generating smaller images_
+    - [starskyThumbnailMetaCli](../starsky/starskythumbnailmetacli/readme.md) _create small thumbnails from the embedded preview_
     - [Starsky Business Logic](../starsky/starskybusinesslogic/readme.md) _business logic
       libraries (.NET)_
     - [starskyTest](../starsky/starskytest/readme.md) _mstest unit tests (for .NET)_
@@ -42,9 +46,9 @@ to compile the application for development
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. Get the `dotnet` 10.0.302 SDK. To get the 'Build apps - SDK' .NET Core
+2. Get the `dotnet` 10.0.404 SDK. To get the 'Build apps - SDK' .NET Core
    from https://www.microsoft.com/net/download or https://versionsof.net/
-3. Get a recent version of node.js (20.x or newer)
+3. Get a recent version of node.js (24.x or newer)
 
 4. Make a build of all the projects and run the tests
    from the root folder of the repository
@@ -128,7 +132,7 @@ steps to setup:
 git clone "https://github.com/qdraw/starsky.git"
 ```
 
-2. On your laptop (x86/x64 machine). Get the `dotnet` 6.0 or newer SDK. To get the 'Build apps -
+2. On your laptop (x86/x64 machine). Get the `dotnet` 10.0 SDK (see `global.json` for the exact version). To get the 'Build apps -
    SDK' .NET Core from https://www.microsoft.com/net/download
 
 3. Compile the Starsky-installation on your x86/x64 machine first. The Nuke build script with
