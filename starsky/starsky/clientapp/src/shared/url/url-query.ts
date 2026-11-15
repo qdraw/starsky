@@ -284,9 +284,8 @@ export class UrlQuery {
     if (emptySelectQuery && url.select && url.select?.length >= 1) {
       url.select = [];
     }
-    return document.location.pathname.includes(this.prefix)
-      ? `${this.prefix}/${new URLPath().IUrlToString(url)}`
-      : `/${new URLPath().IUrlToString(url)}`;
+    // without the base path (development server) the tenant of the page stays in the url
+    return `${this.PagePrefix()}/${new URLPath().IUrlToString(url)}`;
   }
 
   /**

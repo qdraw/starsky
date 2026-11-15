@@ -176,6 +176,7 @@ public sealed class Startup
 		services.AddMvcCore(options =>
 		{
 			options.ModelBinderProviders.Insert(0, new DoubleBinderProvider());
+			options.Filters.Add<AntiforgeryFailureFilter>();
 		}).AddApiExplorer().AddAuthorization().AddViews();
 
 		ConfigureForwardedHeaders(services, _appSettings);

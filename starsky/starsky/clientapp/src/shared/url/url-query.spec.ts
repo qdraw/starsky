@@ -205,6 +205,16 @@ describe("url-query", () => {
   });
 
   describe("updateFilePath", () => {
+    it("keeps the tenant of the page without the base path (development server)", () => {
+      globalThis.history.pushState({}, "", "/t/test/");
+      try {
+        const test = new UrlQuery().updateFilePathHash("?f=/", "/folder");
+        expect(test).toStrictEqual("/t/test/?f=/folder");
+      } finally {
+        globalThis.history.pushState({}, "", "/");
+      }
+    });
+
     it("default", () => {
       const test = urlQuery.updateFilePathHash("?f=test", "test1");
       expect(test).toStrictEqual("/?f=test1");

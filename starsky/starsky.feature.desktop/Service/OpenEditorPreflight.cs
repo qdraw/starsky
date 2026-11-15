@@ -119,7 +119,28 @@ public class OpenEditorPreflight(
 			fileIndexList.Add(fileIndexItem);
 		}
 
+		AddFoldersNotInIndex(inputFilePaths, resultFileIndexItemsList, fileIndexList);
 		return fileIndexList.DistinctBy(p => p.FilePath).ToList();
+	}
+
+	/// <summary>
+	///     A folder is opened on disk, so it does not need an index entry: a tenant that was
+	///     just created has none until its first sync
+	/// </summary>
+	private void AddFoldersNotInIndex(IEnumerable<string> inputFilePaths,
+		List<FileIndexItem> indexed, List<FileIndexItem> result)
+	{
+		foreach ( var path in inputFilePaths.Where(path =>
+			         !indexed.Exists(p => p.FilePath == path) &&
+			         _iStorage.IsFolderOrFile(path) == FolderOrFileModel.FolderOrFileTypeList.Folder) )
+		{
+			result.Add(new FileIndexItem(path)
+			{
+				IsDirectory = true,
+				ImageFormat = ExtensionRolesHelper.ImageFormat.directory,
+				Status = FileIndexItem.ExifStatus.Ok
+			});
+		}
 	}
 
 	internal List<FileIndexItem> GroupByFileCollectionName(

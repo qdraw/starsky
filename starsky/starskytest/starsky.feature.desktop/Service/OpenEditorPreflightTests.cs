@@ -39,6 +39,33 @@ public class OpenEditorPreflightTests
 	}
 
 	[TestMethod]
+	public async Task PreflightAsync_FolderNotInIndex_IsStillOpened()
+	{
+		var storageStub = new FakeIStorage(["/"], []);
+		var openEditorPreflight = new OpenEditorPreflight(new FakeIQuery([]), new AppSettings(),
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+
+		var result = await openEditorPreflight.PreflightAsync(["/"], true);
+
+		Assert.HasCount(1, result);
+		Assert.AreEqual("/", result[0].SubPath);
+		Assert.AreEqual(FileIndexItem.ExifStatus.Ok, result[0].Status);
+		Assert.AreEqual(ExtensionRolesHelper.ImageFormat.directory, result[0].ImageFormat);
+	}
+
+	[TestMethod]
+	public async Task PreflightAsync_FileNotInIndex_IsNotOpened()
+	{
+		var storageStub = new FakeIStorage([], ["/test.jpg"]);
+		var openEditorPreflight = new OpenEditorPreflight(new FakeIQuery([]), new AppSettings(),
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+
+		var result = await openEditorPreflight.PreflightAsync(["/test.jpg"], true);
+
+		Assert.IsEmpty(result);
+	}
+
+	[TestMethod]
 	public async Task PreflightAsync_AppPathSet_ButNotFound()
 	{
 		// Arrange

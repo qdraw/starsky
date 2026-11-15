@@ -173,6 +173,9 @@ public sealed class AccountController(
 		await userManager.SignIn(HttpContext, validateResult.User, model.RememberMe);
 		if ( User.Identity?.IsAuthenticated == true )
 		{
+			// the token of the login page was made for an anonymous user: without a new one every
+			// POST/PUT/DELETE fails the antiforgery check until the page is reloaded
+			new AntiForgeryCookie(antiForgery).SetAntiForgeryCookie(HttpContext);
 			return Json("Login Success");
 		}
 

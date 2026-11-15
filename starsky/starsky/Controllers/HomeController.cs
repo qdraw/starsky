@@ -198,6 +198,8 @@ public sealed class HomeController : Controller
 			return Redirect(AppendPathBasePrefix(Request.PathBase.Value, "/preferences"));
 		}
 
+		// tenants, members and the account use POST/PUT/DELETE from this page
+		new AntiForgeryCookie(_antiForgery).SetAntiForgeryCookie(HttpContext);
 		return PhysicalFile(_clientApp, TextHtmlMimeType);
 	}
 
