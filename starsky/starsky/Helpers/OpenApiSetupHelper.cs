@@ -82,7 +82,8 @@ public sealed class OpenApiSetupHelper(AppSettings appSettings)
 				// the path is bound only to satisfy the route analyzer; every swagger url
 				// goes to the same place
 				endpoints.MapGet("/swagger/{**path}", (HttpContext context, string? path) =>
-					Results.Redirect($"{context.Request.PathBase}/scalar/"));
+					Results.Redirect($"{context.Request.PathBase}/scalar/{path}"));
+				
 				endpoints.MapScalarApiReference(options =>
 				{
 					options.WithTitle(appSettings.Name);
