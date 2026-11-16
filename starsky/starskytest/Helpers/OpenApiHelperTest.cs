@@ -47,6 +47,7 @@ public sealed class OpenApiHelperTest
 			Name = "starskyOpenApiOutput",
 			AddOpenApi = true,
 			AddOpenApiExport = true,
+			AddScalar = true,
 			TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!
 		};
 	}
@@ -65,7 +66,9 @@ public sealed class OpenApiHelperTest
 
 		var hostBuilder = WebApplication.CreateBuilder();
 		hostBuilder.WebHost.UseUrls("http://localhost:5051");
-		hostBuilder.Services.AddMvcCore().AddApiExplorer();
+		// the starsky controllers cover the ApiExplorer visibility convention
+		hostBuilder.Services.AddMvcCore().AddApiExplorer()
+			.AddApplicationPart(typeof(OpenApiSetupHelper).Assembly);
 		new OpenApiSetupHelper(_appSettings).Add01OpenApiHelper(hostBuilder.Services);
 		var app = hostBuilder.Build();
 
@@ -95,5 +98,10 @@ public sealed class OpenApiHelperTest
 		Console.WriteLine("openApiFileContent " + openApiFileContent);
 
 		Assert.Contains($"\"title\": \"{_appSettings.Name}\"", openApiFileContent);
+		Assert.Contains("\"scheme\": \"basic\"", openApiFileContent);
+		// attribute routed action on a controller that does not use [ApiController]
+		Assert.Contains("\"/api/account/status\"", openApiFileContent);
+		// opt-out with IgnoreApi
+		Assert.DoesNotContain("MetricsDebug", openApiFileContent);
 	}
 }
