@@ -78,11 +78,10 @@ public sealed class OpenApiSetupHelper(AppSettings appSettings)
 				}
 
 				// bookmarks and links to the former Swagger UI
-				endpoints.MapGet("/swagger/{**path}", context =>
-				{
-					context.Response.Redirect($"{context.Request.PathBase}/scalar/");
-					return Task.CompletedTask;
-				});
+				// the path is bound only to satisfy the route analyzer; every swagger url
+				// goes to the same place
+				endpoints.MapGet("/swagger/{**path}", (HttpContext context, string? path) =>
+					Results.Redirect($"{context.Request.PathBase}/scalar/"));
 				endpoints.MapScalarApiReference(options =>
 				{
 					options.WithTitle(appSettings.Name);
