@@ -124,6 +124,8 @@ public sealed class OpenApiHelperTest
 		var client = app.GetTestClient();
 		var response = await client.GetAsync("/openapi/starskyscalaronly.json",
 			TestContext.CancellationTokenSource.Token);
+		var swaggerResponse = await client.GetAsync("/swagger/index.html",
+			TestContext.CancellationTokenSource.Token);
 		// controllers (with [Authorize]) must not run in the docs endpoint block
 		var controllerResponse = await client.GetAsync("/api/account/status",
 			TestContext.CancellationTokenSource.Token);
@@ -131,5 +133,7 @@ public sealed class OpenApiHelperTest
 
 		Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
 		Assert.AreEqual(System.Net.HttpStatusCode.NotFound, controllerResponse.StatusCode);
+		Assert.AreEqual(System.Net.HttpStatusCode.Redirect, swaggerResponse.StatusCode);
+		Assert.AreEqual("/scalar/", swaggerResponse.Headers.Location?.ToString());
 	}
 }

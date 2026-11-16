@@ -67,7 +67,8 @@ public sealed class OpenApiSetupHelper(AppSettings appSettings)
 		// including controllers, and those need the authorization middleware that comes later
 		app.UseWhen(context =>
 				context.Request.Path.StartsWithSegments("/openapi") ||
-				context.Request.Path.StartsWithSegments("/scalar"),
+				context.Request.Path.StartsWithSegments("/scalar") ||
+				context.Request.Path.StartsWithSegments("/swagger"),
 			branch => branch.UseEndpoints(endpoints =>
 			{
 				endpoints.MapOpenApi();
@@ -77,6 +78,12 @@ public sealed class OpenApiSetupHelper(AppSettings appSettings)
 					return;
 				}
 
+				// bookmarks and links to the former Swagger UI
+				endpoints.MapGet("/swagger/{**path}", context =>
+				{
+					context.Response.Redirect($"{context.Request.PathBase}/scalar/");
+					return Task.CompletedTask;
+				});
 				endpoints.MapScalarApiReference(options =>
 				{
 					options.WithTitle(appSettings.Name);
