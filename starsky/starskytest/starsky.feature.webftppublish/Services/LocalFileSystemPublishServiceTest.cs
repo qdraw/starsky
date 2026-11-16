@@ -539,20 +539,6 @@ public class LocalFileSystemPublishServiceTest
 			{
 				Directory.Delete(tempDir, true);
 			}
-
-			// Cleanup any leftover temp folders
-			var tempFolders = Directory.GetDirectories(Path.GetTempPath(), "starsky-webftp*");
-			foreach ( var folder in tempFolders )
-			{
-				try
-				{
-					Directory.Delete(folder, true);
-				}
-				catch
-				{
-					// Ignore cleanup errors
-				}
-			}
 		}
 	}
 
