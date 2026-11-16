@@ -14,6 +14,7 @@ using starsky.foundation.thumbnailgeneration.GenerationFactory.Skia;
 using starskytest.FakeCreateAn;
 using starskytest.FakeCreateAn.CreateAnImageWithThumbnail;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.webhtmlpublish.Services;
 
@@ -233,7 +234,7 @@ public sealed class OverlayImagePublishTest
 				consoleWrapper, selectorStorage, new FakeIWebLogger()),
 			selectorStorage, appSettings, new FakeExifTool(storage, appSettings),
 			new OverlayImageSkia(selectorStorage, appSettings), consoleWrapper, new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService());
+			new FakeIThumbnailService(selectorStorage), new FakeImageOptimisationService(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var result = new Dictionary<string, byte[]>();
 		var publishProfiles = new PublishPreflight(appSettings, consoleWrapper,

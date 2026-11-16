@@ -28,9 +28,9 @@ public class ImportThumbnailController : Controller
 
 	public ImportThumbnailController(AppSettings appSettings,
 		ISelectorStorage selectorStorage, IThumbnailQuery thumbnailQuery,
-		IImportThumbnailService importThumbnailService, ITenantSettings? tenantSettings = null)
+		IImportThumbnailService importThumbnailService, ITenantSettings tenantSettings)
 	{
-		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = tenantSettings;
 		_appSettings = appSettings;
 		_selectorStorage = selectorStorage;
 		_thumbnailQuery = thumbnailQuery;

@@ -24,6 +24,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.trash.Services;
 
@@ -34,6 +35,8 @@ public class MoveToTrashServiceTest
 	{
 		var serviceProvider = new ServiceCollection()
 			.AddSingleton<AppSettings>()
+			.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()))
 			.AddSingleton<ITrashService, FakeITrashService>()
 			.AddSingleton<IQuery, FakeIQuery>()
 			.AddSingleton<IUpdateBackgroundTaskQueue, FakeIUpdateBackgroundTaskQueue>()
@@ -62,7 +65,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(scopeFactory),
 				new FakeIMetaUpdateService(),
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		await moveToTrashService.CreateEvent([path], true);
 
@@ -99,7 +102,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(scopeFactory),
 				new FakeIMetaUpdateService(),
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		await moveToTrashService.CreateEvent([dirPath], true);
 
@@ -125,7 +128,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				new FakeIMetaUpdateService(),
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -146,7 +149,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				new FakeIMetaUpdateService(),
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -167,7 +170,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				metaUpdate,
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -191,7 +194,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				metaUpdate,
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -214,7 +217,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				metaUpdate,
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -272,7 +275,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				metaUpdate,
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, new TrashService()));
+				new SystemTrashMover(appSettings, new TrashService(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -337,7 +340,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				metaUpdate,
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, new TrashService()));
+				new SystemTrashMover(appSettings, new TrashService(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -364,7 +367,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				new FakeIMetaUpdateService(),
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(new AppSettings(), trashService));
+				new SystemTrashMover(new AppSettings(), trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings())));
 
 		// used for end-to-end test to enable / disable the trash
 		var result = moveToTrashService.DetectToUseSystemTrash();
@@ -385,7 +388,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				metaUpdate,
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var (fileIndexResultsList, _) = await moveToTrashService.AppendChildItemsToTrashList(
 			[new FileIndexItem("")],
@@ -425,7 +428,7 @@ public class MoveToTrashServiceTest
 				new FakeIUpdateBackgroundTaskQueue(),
 				new FakeIMetaUpdateService(),
 				new FakeITrashConnectionService(),
-				new SystemTrashMover(appSettings, trashService));
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var payload = new MoveToTrashPayload
 		{
@@ -463,7 +466,7 @@ public class MoveToTrashServiceTest
 					new FakeIUpdateBackgroundTaskQueue(),
 					new FakeIMetaUpdateService(),
 					new FakeITrashConnectionService(),
-					new SystemTrashMover(appSettings, trashService));
+					new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 			var payload = new MoveToTrashPayload
 			{
@@ -501,7 +504,7 @@ public class MoveToTrashServiceTest
 					new FakeIUpdateBackgroundTaskQueue(),
 					fakeMetaUpdate,
 					new FakeITrashConnectionService(),
-					new SystemTrashMover(appSettings, trashService));
+					new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 			var payload = new MoveToTrashPayload
 			{

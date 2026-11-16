@@ -28,7 +28,7 @@ public class NativePreviewThumbnailGenerator(
 	AppSettings appSettings,
 	IReadMetaSubPathStorage readMeta,
 	IFullFilePathExistsService existsService,
-	ITenantSettings? tenantSettings = null)
+	ITenantSettings tenantSettings)
 	: INativePreviewThumbnailGenerator
 {
 	private readonly IStorage _storage =

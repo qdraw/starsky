@@ -20,11 +20,11 @@ public class PublishRemoteController(
 	IPublishPreflight publishPreflight,
 	AppSettings appSettings,
 	IRemotePublishService remotePublishService,
-	ITenantSettings? tenantSettings = null) : Controller
+	ITenantSettings tenantSettings) : Controller
 {
 	// the zip is in the temp folder of the tenant that created it
 	private readonly ITenantSettings _tenantSettings =
-		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		tenantSettings;
 
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);

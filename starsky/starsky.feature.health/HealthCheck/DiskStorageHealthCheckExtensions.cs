@@ -24,4 +24,24 @@ public static class DiskStorageHealthCheckExtensions
 				new DiskStorageHealthCheck(options,
 					sp.GetRequiredService<IWebLogger>()), failureStatus, tags, timeout));
 	}
+
+	/// <summary>
+	///     The options are made on every run, so they can depend on the tenant of the request
+	/// </summary>
+	public static IHealthChecksBuilder AddTenantDiskStorageHealthCheck(
+		this IHealthChecksBuilder builder,
+		Action<IServiceProvider, DiskStorageOptions> setup,
+		string name,
+		HealthStatus? failureStatus = null,
+		IEnumerable<string>? tags = null,
+		TimeSpan? timeout = null)
+	{
+		return builder.Add(new HealthCheckRegistration(name,
+			sp =>
+			{
+				var options = new DiskStorageOptions();
+				setup(sp, options);
+				return new DiskStorageHealthCheck(options, sp.GetRequiredService<IWebLogger>());
+			}, failureStatus, tags, timeout));
+	}
 }

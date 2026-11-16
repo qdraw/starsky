@@ -15,10 +15,10 @@ public class RemoveTempAndParentStreamFolderHelper
 	///     the temp folder of the tenant: the staging folder of another tenant is not touched
 	/// </param>
 	public RemoveTempAndParentStreamFolderHelper(IStorage hostFileSystemStorage,
-		AppSettings appSettings, ITenantSettings? tenantSettings = null)
+		AppSettings appSettings, ITenantSettings tenantSettings)
 	{
 		_hostFileSystemStorage = hostFileSystemStorage;
-		_tempFolder = (tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)).TempFolder;
+		_tempFolder = (tenantSettings).TempFolder;
 	}
 
 	/// <summary>

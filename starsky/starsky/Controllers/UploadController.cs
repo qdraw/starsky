@@ -53,10 +53,10 @@ public sealed class UploadController : Controller
 		IRealtimeConnectionsService realtimeService, IWebLogger logger,
 		IMetaExifThumbnailService metaExifThumbnailService,
 		IMetaUpdateStatusThumbnailService metaUpdateStatusThumbnailService,
-		ITenantSettings? tenantSettings = null)
+		ITenantSettings tenantSettings)
 	{
 		// staging of the upload: in the temp folder of the tenant
-		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = tenantSettings;
 		_appSettings = appSettings;
 		_import = import;
 		_query = query;

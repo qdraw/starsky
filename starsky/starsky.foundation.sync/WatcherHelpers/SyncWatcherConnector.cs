@@ -65,8 +65,7 @@ public sealed class SyncWatcherConnector
 		_synchronize = _serviceScope.ServiceProvider.GetRequiredService<ISynchronize>();
 		_appSettings = _serviceScope.ServiceProvider.GetRequiredService<AppSettings>();
 		// the storage folder of the tenant of this job: the watcher gives full paths
-		_tenantSettings = _serviceScope.ServiceProvider.GetService<ITenantSettings>() ??
-		                  new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings);
+		_tenantSettings = _serviceScope.ServiceProvider.GetRequiredService<ITenantSettings>();
 		_connectionsService = _serviceScope.ServiceProvider
 			.GetRequiredService<IWebSocketConnectionsService>();
 		var query = _serviceScope.ServiceProvider.GetRequiredService<IQuery>();

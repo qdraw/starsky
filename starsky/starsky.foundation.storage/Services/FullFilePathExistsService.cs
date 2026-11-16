@@ -14,12 +14,12 @@ namespace starsky.foundation.storage.Services;
 public class FullFilePathExistsService(
 	ISelectorStorage selectorStorage,
 	AppSettings appSettings,
-	ITenantSettings? tenantSettings = null)
+	ITenantSettings tenantSettings)
 	: IFullFilePathExistsService
 {
 	// the folders of the tenant of this request, not the (default) process wide ones
 	private readonly ITenantSettings _tenantSettings =
-		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		tenantSettings;
 
 	private readonly IStorage _hostStorage =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);

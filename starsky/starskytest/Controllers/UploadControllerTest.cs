@@ -26,6 +26,7 @@ using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.Controllers;
 
@@ -114,7 +115,7 @@ public sealed class UploadControllerTest
 				new FakeSelectorStorage(new FakeIStorage()), _query,
 				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService(),
-				new FakeIMetaUpdateStatusThumbnailService())
+				new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};
@@ -130,7 +131,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -160,7 +161,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile(CreateAnImageColorClass.Bytes.ToArray())
 		};
@@ -192,7 +193,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -242,7 +243,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -274,7 +275,7 @@ public sealed class UploadControllerTest
 				new FakeSelectorStorage(_iStorage), _query,
 				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService(),
-				new FakeIMetaUpdateStatusThumbnailService())
+				new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = RequestWithFile()
 			};
@@ -292,7 +293,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -314,7 +315,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = controllerContext
 		};
@@ -332,7 +333,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = controllerContext
 		};
@@ -350,7 +351,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = controllerContext
 		};
@@ -370,7 +371,7 @@ public sealed class UploadControllerTest
 				new FakeSelectorStorage(_iStorage), _query,
 				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService(),
-				new FakeIMetaUpdateStatusThumbnailService())
+				new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = controllerContext
 			};
@@ -400,7 +401,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithSidecar()
 		};
@@ -425,7 +426,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithSidecar()
 		};
@@ -448,7 +449,7 @@ public sealed class UploadControllerTest
 			new AppSettings { UseDiskWatcher = false },
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { UseDiskWatcher = false }))
 		{
 			ControllerContext = RequestWithSidecar()
 		};
@@ -475,7 +476,7 @@ public sealed class UploadControllerTest
 		var controller = new UploadController(_import, _appSettings,
 			new FakeSelectorStorage(_iStorage), _query,
 			new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
-			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService())
+			new FakeIMetaExifThumbnailService(), new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile() // < - - - - - - this is not a xml
 		};
@@ -498,7 +499,7 @@ public sealed class UploadControllerTest
 				new FakeSelectorStorage(_iStorage), _query,
 				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService(),
-				new FakeIMetaUpdateStatusThumbnailService())
+				new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = RequestWithFile()
 			};
@@ -518,7 +519,7 @@ public sealed class UploadControllerTest
 				new FakeSelectorStorage(new FakeIStorage()), _query,
 				new FakeIRealtimeConnectionsService(), new FakeIWebLogger(),
 				new FakeIMetaExifThumbnailService(),
-				new FakeIMetaUpdateStatusThumbnailService())
+				new FakeIMetaUpdateStatusThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = { HttpContext = new DefaultHttpContext() }
 			};

@@ -7,6 +7,7 @@ using starsky.foundation.platform.Enums;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.desktop.Service;
 
@@ -26,7 +27,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
@@ -43,7 +44,7 @@ public class OpenEditorPreflightTests
 	{
 		var storageStub = new FakeIStorage(["/"], []);
 		var openEditorPreflight = new OpenEditorPreflight(new FakeIQuery([]), new AppSettings(),
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var result = await openEditorPreflight.PreflightAsync(["/"], true);
 
@@ -58,7 +59,7 @@ public class OpenEditorPreflightTests
 	{
 		var storageStub = new FakeIStorage([], ["/test.jpg"]);
 		var openEditorPreflight = new OpenEditorPreflight(new FakeIQuery([]), new AppSettings(),
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var result = await openEditorPreflight.PreflightAsync(["/test.jpg"], true);
 
@@ -95,7 +96,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
@@ -139,7 +140,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		var result = await openEditorPreflight.PreflightAsync(inputFilePaths, collections);
 
@@ -165,7 +166,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		// Act
 		var result =
@@ -195,7 +196,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		// Act
 		var result =
@@ -223,7 +224,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		// Act
 		var result =
@@ -253,7 +254,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		// Act
 		var result =
@@ -292,7 +293,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		// Act
 		var result =
@@ -325,7 +326,7 @@ public class OpenEditorPreflightTests
 		const bool collections = false;
 
 		var openEditorPreflight = new OpenEditorPreflight(queryStub, appSettingsStub,
-			new FakeSelectorStorage(storageStub), new FakeIWebLogger());
+			new FakeSelectorStorage(storageStub), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettingsStub));
 
 		// Act
 		var result =
@@ -347,7 +348,7 @@ public class OpenEditorPreflightTests
 		var iStorage = new FakeIStorage();
 		var preflight =
 			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -384,7 +385,7 @@ public class OpenEditorPreflightTests
 		var iStorage = new FakeIStorage();
 		var preflight =
 			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -435,7 +436,7 @@ public class OpenEditorPreflightTests
 		var iStorage = new FakeIStorage();
 		var preflight =
 			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -472,7 +473,7 @@ public class OpenEditorPreflightTests
 		var iStorage = new FakeIStorage();
 		var preflight =
 			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -509,7 +510,7 @@ public class OpenEditorPreflightTests
 		var iStorage = new FakeIStorage();
 		var preflight =
 			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var fileIndexList = new List<FileIndexItem>
 		{
@@ -549,7 +550,7 @@ public class OpenEditorPreflightTests
 		var iStorage = new FakeIStorage();
 		var preflight =
 			new OpenEditorPreflight(query, appSettings, new FakeSelectorStorage(iStorage),
-				new FakeIWebLogger());
+				new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var fileIndexList = new List<FileIndexItem>
 		{

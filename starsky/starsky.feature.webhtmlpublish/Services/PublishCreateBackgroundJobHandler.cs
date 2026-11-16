@@ -17,10 +17,10 @@ public sealed class PublishCreateBackgroundJobHandler(
 	IWebHtmlPublishService publishService,
 	AppSettings appSettings,
 	IWebLogger logger,
-	ITenantSettings? tenantSettings = null) : IBackgroundJobHandler
+	ITenantSettings tenantSettings) : IBackgroundJobHandler
 {
 	private readonly ITenantSettings _tenantSettings =
-		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		tenantSettings;
 
 	public const string JobTypeValue = "Publish.Create.v1";
 	public string JobType { get; } = JobTypeValue;

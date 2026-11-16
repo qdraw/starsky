@@ -60,9 +60,9 @@ public class WebHtmlPublishService : IWebHtmlPublishService
 		IOverlayImage overlayImage, IConsole console, IWebLogger logger,
 		IThumbnailService thumbnailService,
 		IImageOptimisationService imageOptimisationService,
-		ITenantSettings? tenantSettings = null)
+		ITenantSettings tenantSettings)
 	{
-		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = tenantSettings;
 		_publishPreflight = publishPreflight;
 		_subPathStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
 		_thumbnailStorage = selectorStorage.Get(SelectorStorage.StorageServices.Thumbnail);

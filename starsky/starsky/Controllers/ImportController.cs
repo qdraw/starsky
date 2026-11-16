@@ -47,9 +47,9 @@ public sealed class ImportController : Controller
 	public ImportController(IImport import, AppSettings appSettings,
 		IUpdateBackgroundTaskQueue queue,
 		IHttpClientHelper httpClientHelper, ISelectorStorage selectorStorage, IWebLogger logger,
-		ITenantSettings? tenantSettings = null)
+		ITenantSettings tenantSettings)
 	{
-		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = tenantSettings;
 		_appSettings = appSettings;
 		_import = import;
 		_bgTaskQueue = queue;

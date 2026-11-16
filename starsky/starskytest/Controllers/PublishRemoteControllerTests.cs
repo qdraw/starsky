@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.Controllers;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.Controllers;
 
@@ -22,7 +23,7 @@ public class PublishRemoteControllerTests
 		var fakePublishService = new FakeIRemotePublishService();
 
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakePublishService);
+			new FakeIPublishPreflight(), appSettings, fakePublishService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var actionResult = await controller.PublishRemoteAsync("test",
 			"test") as JsonResult;
@@ -39,7 +40,7 @@ public class PublishRemoteControllerTests
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
 		var fakePublishSelector = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 		var actionResult =
 			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
@@ -55,7 +56,7 @@ public class PublishRemoteControllerTests
 		var fakePublishSelector = new FakeIRemotePublishService();
 		// Use isOk = false to simulate invalid profile
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(isOk: false), appSettings, fakePublishSelector);
+			new FakeIPublishPreflight(isOk: false), appSettings, fakePublishSelector, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult =
 			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
@@ -68,7 +69,7 @@ public class PublishRemoteControllerTests
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
 		var fakePublishSelector = new FakeIRemotePublishService { RunResult = false };
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult =
 			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
@@ -82,7 +83,7 @@ public class PublishRemoteControllerTests
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
 		var fakePublishSelector = new FakeIRemotePublishService { ManifestResult = null };
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult =
 			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
@@ -96,7 +97,7 @@ public class PublishRemoteControllerTests
 		var storage = new FakeIStorage([], []);
 		var fakePublishSelector = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult =
 			await controller.PublishRemoteAsync("test", "test") as NotFoundObjectResult;
 		Assert.AreEqual(404, actionResult?.StatusCode);
@@ -114,7 +115,7 @@ public class PublishRemoteControllerTests
 		var fakePublishSelector = new FakeIRemotePublishService();
 
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var actionResult = await controller.PublishRemoteAsync("test",
 			"test") as JsonResult;
@@ -130,7 +131,7 @@ public class PublishRemoteControllerTests
 		var storage = new FakeIStorage([], [Path.DirectorySeparatorChar + "test.zip"]);
 		var fakePublishSelector = new FakeIRemotePublishService(false);
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			new FakeIPublishPreflight(), appSettings, fakePublishSelector);
+			new FakeIPublishPreflight(), appSettings, fakePublishSelector, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult =
 			await controller.PublishRemoteAsync("test", "test") as BadRequestObjectResult;
 		Assert.AreEqual(400, actionResult?.StatusCode);
@@ -145,7 +146,7 @@ public class PublishRemoteControllerTests
 		var fakePublishPreflight = new FakeIPublishPreflight(isOk: true);
 		var fakePublishService = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			fakePublishPreflight, appSettings, fakePublishService);
+			fakePublishPreflight, appSettings, fakePublishService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult = controller.Status("test") as JsonResult;
 		Assert.IsNotNull(actionResult);
 		Assert.IsTrue(( bool? )  actionResult.Value );
@@ -159,7 +160,7 @@ public class PublishRemoteControllerTests
 		var fakePublishPreflight = new FakeIPublishPreflight(isOk: true);
 		var fakePublishService = new FakeIRemotePublishService(false);
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			fakePublishPreflight, appSettings, fakePublishService);
+			fakePublishPreflight, appSettings, fakePublishService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult = controller.Status("test") as JsonResult;
 		Assert.IsNotNull(actionResult);
 		Assert.IsFalse(( bool? )  actionResult.Value );
@@ -173,7 +174,7 @@ public class PublishRemoteControllerTests
 		var fakePublishPreflight = new FakeIPublishPreflight(isOk: false);
 		var fakePublishService = new FakeIRemotePublishService();
 		var controller = new PublishRemoteController(new FakeSelectorStorage(storage),
-			fakePublishPreflight, appSettings, fakePublishService);
+			fakePublishPreflight, appSettings, fakePublishService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var actionResult = controller.Status("test") as JsonResult;
 		Assert.IsNotNull(actionResult);
 		Assert.IsFalse(( bool? )  actionResult.Value );

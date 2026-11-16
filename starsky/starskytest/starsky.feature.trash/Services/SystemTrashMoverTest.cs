@@ -19,7 +19,7 @@ public sealed class SystemTrashMoverTest
 	public void IsEnabled_NeedsToggleAndSupport(bool toggle, bool supported, bool expected)
 	{
 		var mover = new SystemTrashMover(new AppSettings { UseSystemTrash = toggle },
-			new FakeITrashService(supported));
+			new FakeITrashService(supported), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { UseSystemTrash = toggle }));
 
 		Assert.AreEqual(expected, mover.IsEnabled());
 		Assert.AreEqual(supported, mover.DetectToUseSystemTrash());
@@ -48,7 +48,7 @@ public sealed class SystemTrashMoverTest
 		var trashService = new FakeITrashService();
 		var appSettings = new AppSettings();
 
-		new SystemTrashMover(appSettings, trashService).Trash([new FileIndexItem("/a/b.jpg")]);
+		new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)).Trash([new FileIndexItem("/a/b.jpg")]);
 
 		Assert.AreEqual(appSettings.StorageFolder + "/a/b.jpg".Replace('/', Path.DirectorySeparatorChar),
 			trashService.InTrash.Single());

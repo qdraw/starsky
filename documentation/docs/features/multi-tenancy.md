@@ -100,6 +100,7 @@ free again.
 * Process-wide settings (`/api/env`) and the cache overview are for platform administrators once there is more
   than one tenant; the host folders are hidden from other users.
 * Every log line of a request has the scope `TenantId`.
+* The health check (`/api/health/details`) checks the folders of the tenant in the url.
 * The command line tools do not support a full `--path` with `--tenant` (use `--subpath`). The publish command
   line tool does not support `--tenant` at all. The geo command line tool works on a `--subpath` (or `-g`
   relative days) in the storage of the tenant.

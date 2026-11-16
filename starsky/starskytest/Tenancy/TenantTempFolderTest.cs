@@ -126,7 +126,7 @@ public sealed class TenantTempFolderTest
 			"/tmp/acme-thumbs", "/tmp/acme-temp");
 
 		var defaultExport = new ExportService(new FakeIQuery(), appSettings,
-			new FakeSelectorStorage(storage), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(storage), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var acmeExport = new ExportService(new FakeIQuery(), appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger(), new FakeIThumbnailService(),
 			acme);

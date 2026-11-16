@@ -84,7 +84,7 @@ public sealed class ImportBackgroundJobHandler(
 		{
 			// the job runs as its tenant: the scoped settings are the ones of that tenant
 			new RemoveTempAndParentStreamFolderHelper(hostFileSystemStorage, appSettings,
-					scope.ServiceProvider.GetService<ITenantSettings>())
+					scope.ServiceProvider.GetRequiredService<ITenantSettings>())
 				.RemoveTempAndParentStreamFolder(toDelPath);
 		}
 

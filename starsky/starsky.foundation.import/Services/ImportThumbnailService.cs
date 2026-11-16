@@ -24,7 +24,7 @@ public class ImportThumbnailService : IImportThumbnailService
 	private readonly IStorage _thumbnailStorage;
 
 	public ImportThumbnailService(ISelectorStorage selectorStorage, IWebLogger logger,
-		AppSettings appSettings, ITenantSettings? tenantSettings = null)
+		AppSettings appSettings, ITenantSettings tenantSettings)
 	{
 		_logger = logger;
 		_appSettings = appSettings;

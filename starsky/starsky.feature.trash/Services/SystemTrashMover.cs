@@ -15,12 +15,11 @@ public class SystemTrashMover : ISystemTrashMover
 	private readonly ITenantSettings _tenantSettings;
 
 	public SystemTrashMover(AppSettings appSettings, ITrashService systemTrashService,
-		ITenantSettings? tenantSettings = null)
+		ITenantSettings tenantSettings)
 	{
 		_appSettings = appSettings;
 		_systemTrashService = systemTrashService;
-		_tenantSettings = tenantSettings ??
-		                  new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = tenantSettings;
 	}
 
 	public bool IsEnabled()

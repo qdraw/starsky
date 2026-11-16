@@ -38,10 +38,10 @@ public sealed class PublishController : Controller
 	public PublishController(AppSettings appSettings, IPublishPreflight publishPreflight, IMetaInfo metaInfo,
 		ISelectorStorage selectorStorage,
 		IUpdateBackgroundTaskQueue queue, IWebLogger webLogger,
-		ITenantSettings? tenantSettings = null)
+		ITenantSettings tenantSettings)
 	{
 		// published zips are in the temp folder of the tenant: not shared with other tenants
-		_tenantSettings = tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = tenantSettings;
 		_publishPreflight = publishPreflight;
 		_metaInfo = metaInfo;
 		_hostStorage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);

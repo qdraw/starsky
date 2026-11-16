@@ -25,6 +25,7 @@ using starsky.foundation.worker.Metrics;
 using starsky.foundation.worker.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.Controllers;
 
@@ -82,7 +83,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(new FakeIImport(fakeStorageSelector),
 			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -102,7 +103,7 @@ public sealed class ImportControllerTest
 		// Use the FakeIImport which returns FileError items in Preflight
 		var importController = new ImportController(new FakeIImport(fakeStorageSelector),
 			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, fakeLogger)
+			_bgTaskQueue, null!, fakeStorageSelector, fakeLogger, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile(CreateAnExifToolTar.Bytes)
 		};
@@ -123,7 +124,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(fakeImport,
 			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -149,7 +150,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(fakeImport,
 			_appSettings,
-			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger())
+			_bgTaskQueue, null!, fakeStorageSelector, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 		{
 			ControllerContext = RequestWithFile()
 		};
@@ -169,7 +170,7 @@ public sealed class ImportControllerTest
 	{
 		var importController = new ImportController(_import, _appSettings,
 			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()),
-			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings)) { ControllerContext = RequestWithFile() };
 		var actionResult =
 			await importController.FromUrl("", "../../path-injection.dll", null!) as
 				BadRequestResult;
@@ -181,7 +182,7 @@ public sealed class ImportControllerTest
 	{
 		var importController = new ImportController(_import, _appSettings,
 			_bgTaskQueue, null!, new FakeSelectorStorage(new FakeIStorage()),
-			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings)) { ControllerContext = RequestWithFile() };
 		importController.ModelState.AddModelError("Key", "ErrorMessage");
 
 		var result =
@@ -198,7 +199,7 @@ public sealed class ImportControllerTest
 		var importController = new ImportController(_import, _appSettings,
 			_bgTaskQueue, new FakeIHttpClientHelper(new FakeIStorage(), new()),
 			new FakeSelectorStorage(new FakeIStorage()),
-			new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings)) { ControllerContext = RequestWithFile() };
 
 		var result = await importController.FromUrl(url, "example.tiff", null!);
 
@@ -221,7 +222,7 @@ public sealed class ImportControllerTest
 			serviceProvider.GetRequiredService<IServiceScopeFactory>(), new FakeIWebLogger());
 
 		var importController = new ImportController(_import, _appSettings,
-			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(new FakeIStorage()), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings)) { ControllerContext = RequestWithFile() };
 		// download.geoNames is in the FakeHttpMessageHandler always a 404
 		var actionResult =
 			await importController.FromUrl("https://download.geonames.org", "example.tiff",
@@ -247,7 +248,7 @@ public sealed class ImportControllerTest
 
 		var importController = new ImportController(
 			new FakeIImport(new FakeSelectorStorage(storageProvider)), _appSettings,
-			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider), new FakeIWebLogger()) { ControllerContext = RequestWithFile() };
+			_bgTaskQueue, httpClientHelper, new FakeSelectorStorage(storageProvider), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings)) { ControllerContext = RequestWithFile() };
 
 		var actionResult =
 			await importController.FromUrl("https://qdraw.nl", "example_image.tiff", null!) as

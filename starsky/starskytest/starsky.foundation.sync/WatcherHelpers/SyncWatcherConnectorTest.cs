@@ -17,6 +17,7 @@ using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.sync.WatcherHelpers;
 using starskytest.Controllers;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.sync.WatcherHelpers;
 
@@ -281,6 +282,8 @@ public sealed class SyncWatcherConnectorTest
 
 		services.AddSingleton<ISynchronize, FakeISynchronize>();
 		services.AddSingleton<AppSettings>();
+		services.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 		services.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
 		services.AddSingleton<IQuery, FakeIQuery>();
 		services.AddSingleton<IWebLogger, FakeIWebLogger>();

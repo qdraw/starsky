@@ -25,11 +25,11 @@ public class NativePreviewHelper(
 	IFullFilePathExistsService existsService,
 	IReadMetaSubPathStorage readMeta,
 	IWebLogger logger,
-	ITenantSettings? tenantSettings = null)
+	ITenantSettings tenantSettings)
 {
 	// the preview is written to the temp folder of the tenant: it is read and deleted there
 	private readonly ITenantSettings _tenantSettings =
-		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		tenantSettings;
 
 	internal const string ErrorFileDoesNotExist = "File does not exist";
 	internal const string ErrorNativeServiceNotSupported = "Native service not supported";

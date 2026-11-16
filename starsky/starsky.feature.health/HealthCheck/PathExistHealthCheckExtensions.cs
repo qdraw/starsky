@@ -22,4 +22,24 @@ public static class PathExistHealthCheckExtensions
 		return builder.Add(new HealthCheckRegistration(name ?? "pathexist", sp =>
 			new PathExistHealthCheck(options, logger), failureStatus, tags, timeout));
 	}
+
+	/// <summary>
+	///     The options are made on every run, so they can depend on the tenant of the request
+	/// </summary>
+	public static IHealthChecksBuilder AddTenantPathExistHealthCheck(
+		this IHealthChecksBuilder builder,
+		Action<IServiceProvider, PathExistOptions> setup,
+		IWebLogger logger,
+		string name,
+		HealthStatus? failureStatus = null,
+		IEnumerable<string>? tags = null,
+		TimeSpan? timeout = null)
+	{
+		return builder.Add(new HealthCheckRegistration(name, sp =>
+		{
+			var options = new PathExistOptions();
+			setup(sp, options);
+			return new PathExistHealthCheck(options, logger);
+		}, failureStatus, tags, timeout));
+	}
 }

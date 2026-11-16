@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.export.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.export.Services;
 
@@ -26,7 +27,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -57,7 +58,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -98,7 +99,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -128,7 +129,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string> { Path.Combine("C:", "data", "testcontent", "photo.jpg") };
 
@@ -150,7 +151,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -175,7 +176,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -209,7 +210,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolderNoTrail = Path.Combine("C:", "data", "testcontent");
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolderNoTrail },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolderNoTrail }));
 
 		var filePaths = new List<string>
 		{
@@ -231,9 +232,10 @@ public class ExportServicePreserveSubfolderTest
 	public async Task FilePathToFileNameAsync_EmptyList_ReturnsEmptyList()
 	{
 		// Arrange
-		var exportService = new ExportService(new FakeIQuery(),
-			new AppSettings { StorageFolder = @"C:\data\testcontent\" },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+		var appSettings = new AppSettings { StorageFolder = @"C:\data\testcontent\" };
+		var exportService = new ExportService(new FakeIQuery(), appSettings,
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(),
+			new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		// Act
 		var fileNames = await exportService.FilePathToFileNameAsync([], false);
@@ -251,7 +253,7 @@ public class ExportServicePreserveSubfolderTest
 		// Arrange
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = null! },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = null! }));
 
 		var filePaths = new List<string>
 		{
@@ -276,7 +278,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -304,7 +306,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -336,7 +338,7 @@ public class ExportServicePreserveSubfolderTest
 			"C:/data/testcontent/".Replace('/', Path.DirectorySeparatorChar);
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolderNormalized },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolderNormalized }));
 
 		var filePaths = new List<string>
 		{
@@ -367,7 +369,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent");
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -397,7 +399,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent");
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -429,7 +431,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent");
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -459,7 +461,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -487,7 +489,7 @@ public class ExportServicePreserveSubfolderTest
 		var storageFolder = Path.Combine("C:", "data", "testcontent") + Path.DirectorySeparatorChar;
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = storageFolder },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = storageFolder }));
 
 		var filePaths = new List<string>
 		{
@@ -515,7 +517,7 @@ public class ExportServicePreserveSubfolderTest
 	{
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { StorageFolder = string.Empty },
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { StorageFolder = string.Empty }));
 
 		Assert.IsEmpty(exportService.GetRelativePathFromStorage(null!));
 	}

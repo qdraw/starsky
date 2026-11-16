@@ -21,12 +21,12 @@ public class OpenEditorPreflight(
 	AppSettings appSettings,
 	ISelectorStorage selectorStorage,
 	IWebLogger logger,
-	ITenantSettings? tenantSettings = null)
+	ITenantSettings tenantSettings)
 	: IOpenEditorPreflight
 {
 	// the file to open is in the storage folder of the tenant of this request
 	private readonly ITenantSettings _tenantSettings =
-		tenantSettings ?? new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		tenantSettings;
 
 	private readonly IStorage _hostFileSystem =
 		selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);

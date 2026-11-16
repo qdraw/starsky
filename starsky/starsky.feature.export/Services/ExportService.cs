@@ -46,11 +46,10 @@ public partial class ExportService : IExport
 
 	public ExportService(IQuery query, AppSettings appSettings,
 		ISelectorStorage selectorStorage, IWebLogger logger, IThumbnailService thumbnailService,
-		ITenantSettings? tenantSettings = null)
+		ITenantSettings tenantSettings)
 	{
 		// the folders of the tenant of this request
-		_tenantSettings = tenantSettings ??
-		                  new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+		_tenantSettings = tenantSettings;
 		_appSettings = appSettings;
 		_query = query;
 		_iStorage = selectorStorage.Get(SelectorStorage.StorageServices.SubPath);
