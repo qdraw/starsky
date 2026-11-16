@@ -17,9 +17,10 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "app__useDiskWatcher": "true",
         "app__UseRealtime": "true",
-        "app__AddSwagger": "true",
-        "app__AddSwaggerExport": "true",
-        "app__AddSwaggerExportExitAfter": "false",
+        "app__AddOpenApi": "true",
+        "app__AddScalar": "true",
+        "app__AddOpenApiExport": "true",
+        "app__AddOpenApiExportExitAfter": "false",
         "app__NoAccountLocalhost": "false",
         "app__IsAccountRegisterOpen": "true",
         "app__SyncOnStartup": "false",
@@ -61,7 +62,7 @@
     "IIS": {
       "commandName": "IIS",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "scalar",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

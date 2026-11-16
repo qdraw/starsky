@@ -337,22 +337,22 @@ public sealed class ExifToolDownloadTest
 	}
 
 	[TestMethod]
-	public async Task DownloadExifTool_Skip_AddSwaggerExportExitAfter()
+	public async Task DownloadExifTool_Skip_AddOpenApiExportExitAfter()
 	{
 		var httpClientHelper = new HttpClientHelper(new FakeIHttpProvider(),
 			_serviceScopeFactory, new FakeIWebLogger());
 
 		var appSettings = new AppSettings
 		{
-			AddSwaggerExport = true, AddSwaggerExportExitAfter = true
+			AddOpenApiExport = true, AddOpenApiExportExitAfter = true
 		};
 		var logger = new FakeIWebLogger();
 		var result = await new ExifToolDownload(httpClientHelper, appSettings, logger)
 			.DownloadExifTool(true);
 		Assert.IsFalse(result);
 		Assert.IsTrue(logger.TrackedInformation[0].Item2?.Contains(
-			"Skipped due true of AddSwaggerExport " +
-			"and AddSwaggerExportExitAfter setting"));
+			"Skipped due true of AddOpenApiExport " +
+			"and AddOpenApiExportExitAfter setting"));
 	}
 
 	[TestMethod]

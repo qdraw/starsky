@@ -44,11 +44,11 @@ public class ImageOptimisationToolDownload(
 		int retryInSeconds = 15)
 	{
 		if ( appSettings.ImageOptimisationDownloadOnStartup == true
-		     || appSettings is { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
+		     || appSettings is { AddOpenApiExport: true, AddOpenApiExportExitAfter: true } )
 		{
 			var name = appSettings.ImageOptimisationDownloadOnStartup == true
 				? "ImageOptimisationDownloadOnStartup"
-				: "AddSwaggerExport and AddSwaggerExportExitAfter";
+				: "AddOpenApiExport and AddOpenApiExportExitAfter";
 			logger.LogInformation(
 				$"[ImageOptimisationToolDownload] Skipped due true of {name} setting");
 			return ImageOptimisationDownloadStatus.SettingsDisabled;

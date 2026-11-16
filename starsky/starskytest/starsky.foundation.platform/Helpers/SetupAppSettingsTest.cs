@@ -112,16 +112,16 @@ public sealed class SetupAppSettingsTest
 
 		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 			"{\n  \"app\": {\n   " +
-			" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
+			" \"StorageFolder\": \"/data/test\",\n \"addOpenApi\": \"true\" " +
 			" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 
 		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
-			"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
+			"{\n  \"app\": {\n  \"addOpenApi\": \"false\" " +
 			" }\n}\n"), Path.Combine(testDir, "appsettings.patch.json"));
 
 		var result = await SetupAppSettings.MergeJsonFiles(testDir);
 		Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
-		Assert.IsFalse(result.AddSwagger);
+		Assert.IsFalse(result.AddOpenApi);
 	}
 
 	[TestMethod]
@@ -137,17 +137,17 @@ public sealed class SetupAppSettingsTest
 
 		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 			"{\n  \"app\": {\n   " +
-			" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
+			" \"StorageFolder\": \"/data/test\",\n \"addOpenApi\": \"true\" " +
 			" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 
 		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
-				"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
+				"{\n  \"app\": {\n  \"addOpenApi\": \"false\" " +
 				" }\n}\n"),
 			Path.Combine(testDir, $"{SetupAppSettings.AppSettingsMachineNameWithDot()}json"));
 
 		var result = await SetupAppSettings.MergeJsonFiles(testDir);
 		Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
-		Assert.IsFalse(result.AddSwagger);
+		Assert.IsFalse(result.AddOpenApi);
 	}
 
 	[TestMethod]
@@ -159,11 +159,11 @@ public sealed class SetupAppSettingsTest
 
 		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
 			"{\n  \"app\": {\n   " +
-			" \"StorageFolder\": \"/data/test\",\n \"addSwagger\": \"true\" " +
+			" \"StorageFolder\": \"/data/test\",\n \"addOpenApi\": \"true\" " +
 			" }\n}\n"), Path.Combine(testDir, "appsettings.json"));
 
 		await _hostStorage.WriteStreamAsync(StringToStreamHelper.StringToStream(
-			"{\n  \"app\": {\n  \"addSwagger\": \"false\" " +
+			"{\n  \"app\": {\n  \"addOpenApi\": \"false\" " +
 			" }\n}\n"), Path.Combine(testDir, "appsettings_ref_patch.json"));
 
 		Environment.SetEnvironmentVariable("app__appsettingspath",
@@ -171,7 +171,7 @@ public sealed class SetupAppSettingsTest
 
 		var result = await SetupAppSettings.MergeJsonFiles(testDir);
 		Assert.AreEqual(PathHelper.AddBackslash("/data/test"), result.StorageFolder);
-		Assert.IsFalse(result.AddSwagger);
+		Assert.IsFalse(result.AddOpenApi);
 
 		Environment.SetEnvironmentVariable("app__appsettingspath", null);
 	}

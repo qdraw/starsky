@@ -30,8 +30,8 @@
     "/2004"
   ],
   "addMemoryCache": true,
-  "addSwagger": false,
-  "addSwaggerExport": false,
+  "addOpenApi": false,
+  "addOpenApiExport": false,
   "addLegacyOverwrite": false,
   "storageFolderAllowEdit": true,
   "defaultDesktopEditor": [],

@@ -86,7 +86,7 @@ public class FfMpegDownloadTest
 
 	[TestMethod]
 	[DataRow("FfmpegSkipDownloadOnStartup")]
-	[DataRow("AddSwaggerExportAndAddSwaggerExportExitAfter")]
+	[DataRow("AddOpenApiExportAndAddOpenApiExportExitAfter")]
 	public async Task DownloadFfMpeg_ShouldSkipDueToSettings(string settingName)
 	{
 		var appSettings = new AppSettings();
@@ -95,9 +95,9 @@ public class FfMpegDownloadTest
 			case "FfmpegSkipDownloadOnStartup":
 				appSettings.FfmpegSkipDownloadOnStartup = true;
 				break;
-			case "AddSwaggerExportAndAddSwaggerExportExitAfter":
-				appSettings.AddSwaggerExport = true;
-				appSettings.AddSwaggerExportExitAfter = true;
+			case "AddOpenApiExportAndAddOpenApiExportExitAfter":
+				appSettings.AddOpenApiExport = true;
+				appSettings.AddOpenApiExportExitAfter = true;
 				break;
 		}
 

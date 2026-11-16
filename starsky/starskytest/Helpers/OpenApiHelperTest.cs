@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,16 +16,15 @@ using starsky.foundation.storage.Helpers;
 using starsky.Helpers;
 using starskytest.Controllers;
 using starskytest.FakeMocks;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace starskytest.Helpers;
 
 [TestClass]
-public sealed class SwaggerHelperTest
+public sealed class OpenApiHelperTest
 {
 	private readonly AppSettings _appSettings;
 
-	public SwaggerHelperTest()
+	public OpenApiHelperTest()
 	{
 		var builderDb = new DbContextOptionsBuilder<ApplicationDbContext>();
 		builderDb.UseInMemoryDatabase(nameof(ExportControllerTest));
@@ -44,9 +44,9 @@ public sealed class SwaggerHelperTest
 		// Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
 		_appSettings = new AppSettings
 		{
-			Name = "starskySwaggerOutput",
-			AddSwagger = true,
-			AddSwaggerExport = true,
+			Name = "starskyOpenApiOutput",
+			AddOpenApi = true,
+			AddOpenApiExport = true,
 			TempFolder = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location)!
 		};
 	}
@@ -54,9 +54,9 @@ public sealed class SwaggerHelperTest
 	public TestContext TestContext { get; set; }
 
 	[TestMethod]
-	public async Task SwaggerTest_Integration_Test()
+	public async Task OpenApiTest_Integration_Test()
 	{
-		var swaggerFilePath = Path.Join(_appSettings.TempFolder,
+		var openApiFilePath = Path.Join(_appSettings.TempFolder,
 			_appSettings.Name.ToLowerInvariant() + ".json");
 
 		var storage = new FakeIStorage();
@@ -66,36 +66,34 @@ public sealed class SwaggerHelperTest
 		var hostBuilder = WebApplication.CreateBuilder();
 		hostBuilder.WebHost.UseUrls("http://localhost:5051");
 		hostBuilder.Services.AddMvcCore().AddApiExplorer();
-		hostBuilder.Services.AddSwaggerGen();
-		new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(hostBuilder.Services);
+		new OpenApiSetupHelper(_appSettings).Add01OpenApiHelper(hostBuilder.Services);
 		var app = hostBuilder.Build();
 
 		app.UseRouting();
 		app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-		new SwaggerSetupHelper(_appSettings).Add02AppUseSwaggerAndUi(app);
+		new OpenApiSetupHelper(_appSettings).Add02AppUseOpenApiAndScalar(app);
 
 		using ( var serviceScope = app.Services
 			       .GetRequiredService<IServiceScopeFactory>()
 			       .CreateScope() )
 		{
-			var swaggerProvider =
-				( ISwaggerProvider ) serviceScope.ServiceProvider.GetRequiredService(
-					typeof(ISwaggerProvider));
-			new SwaggerExportHelper(null!).Add03AppExport(_appSettings,
-				fakeSelectorStorage, swaggerProvider);
+			var documentProvider = serviceScope.ServiceProvider
+				.GetRequiredKeyedService<IOpenApiDocumentProvider>(_appSettings.Name.ToLowerInvariant());
+			await new OpenApiExportHelper(null!).Add03AppExport(_appSettings,
+				fakeSelectorStorage, documentProvider);
 		}
 
 		await app.StartAsync(TestContext.CancellationTokenSource.Token);
 		await app.StopAsync(TestContext.CancellationTokenSource.Token);
 
-		Assert.IsTrue(storage.ExistFile(swaggerFilePath));
+		Assert.IsTrue(storage.ExistFile(openApiFilePath));
 
-		var swaggerFileContent =
+		var openApiFileContent =
 			await StreamToStringHelper.StreamToStringAsync(
-				storage.ReadStream(swaggerFilePath));
+				storage.ReadStream(openApiFilePath));
 
-		Console.WriteLine("swaggerFileContent " + swaggerFileContent);
+		Console.WriteLine("openApiFileContent " + openApiFileContent);
 
-		Assert.Contains($"\"title\": \"{_appSettings.Name}\"", swaggerFileContent);
+		Assert.Contains($"\"title\": \"{_appSettings.Name}\"", openApiFileContent);
 	}
 }

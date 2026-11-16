@@ -723,7 +723,7 @@ public static class AppSettingsCompareHelper
 	/// <summary>
 	///     Compare bool type
 	/// </summary>
-	/// <param name="propertyName">name of property e.g. AddSwagger</param>
+	/// <param name="propertyName">name of property e.g. AddOpenApi</param>
 	/// <param name="sourceIndexItem">source object</param>
 	/// <param name="oldBoolValue">oldBoolValue to compare with newBoolValue</param>
 	/// <param name="newBoolValue">oldBoolValue to compare with newBoolValue</param>

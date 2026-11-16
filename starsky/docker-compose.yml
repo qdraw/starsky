@@ -56,7 +56,8 @@ services:
       - app__verbose=true
       - app__databaseType=mysql
       - app__IsAccountRegisterOpen=true
-      - app__addSwagger=true
+      - app__addOpenApi=true
+      - app__addScalar=true
       - app__DemoUnsafeDeleteStorageFolder=false
       - app__useDiskWatcher=false
       - app__storageFolder=/app/pictures
