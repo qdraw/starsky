@@ -88,7 +88,7 @@ public sealed class OpenApiExportHelper : BackgroundService
 
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 		storage.FileDelete(openApiJsonFullPath);
-		storage.WriteStream(StringToStreamHelper.StringToStream(openApiJsonText),
+		await storage.WriteStreamAsync(StringToStreamHelper.StringToStream(openApiJsonText),
 			openApiJsonFullPath);
 
 		_logger?.LogInformation($"app__addOpenApiExport {openApiJsonFullPath}");
