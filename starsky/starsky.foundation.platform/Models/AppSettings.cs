@@ -403,7 +403,7 @@ public sealed class AppSettings
 	public bool? AddOpenApi { get; set; } = false;
 
 	/// <summary>
-	///     Show the Scalar API reference at `/scalar`. Needs AddOpenApi
+	///     Show the Scalar API reference at `/scalar`. Implies AddOpenApi
 	/// </summary>
 	[PackageTelemetry]
 	public bool? AddScalar { get; set; } = false;

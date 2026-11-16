@@ -90,7 +90,7 @@ and the desktop app other locations are used, see the matching getting-started p
    project_
 3. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, _defaults a empty list_
 4. `AddMemoryCache` - Enable caching _(default true)_
-5. `AddOpenApi` - To expose the OpenAPI document of all REST-services at `/openapi/starsky.json` _(default false)_. Use `AddScalar` to show the Scalar user interface at `/scalar` _(default false)_
+5. `AddOpenApi` - To expose the OpenAPI document of all REST-services at `/openapi/starsky.json` _(default false)_. Use `AddScalar` to show the Scalar user interface at `/scalar`, this also enables `AddOpenApi` _(default false)_
 6. `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(
    default true)_
 7. `AddOpenApiExport` - To Export the OpenAPI definitions on startup _(default false)_

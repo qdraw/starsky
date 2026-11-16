@@ -56,27 +56,33 @@ public sealed class OpenApiSetupHelper(AppSettings appSettings)
 	{
 		// Use OpenApi only when enabled, default false
 		// recommend to disable in production
-		if ( appSettings.AddOpenApi != true )
+		// AddScalar implies AddOpenApi, the UI is useless without the document
+		if ( appSettings.AddOpenApi != true && appSettings.AddScalar != true )
 		{
 			return;
 		}
 
-		// Own endpoint block, so the docs are served before the account/auth middleware
-		app.UseEndpoints(endpoints =>
-		{
-			endpoints.MapOpenApi();
-
-			if ( appSettings.AddScalar != true )
+		// Own endpoint block, so the docs are served before the account/auth middleware.
+		// Limited to the docs paths: the first UseEndpoints runs every matched endpoint,
+		// including controllers, and those need the authorization middleware that comes later
+		app.UseWhen(context =>
+				context.Request.Path.StartsWithSegments("/openapi") ||
+				context.Request.Path.StartsWithSegments("/scalar"),
+			branch => branch.UseEndpoints(endpoints =>
 			{
-				return;
-			}
+				endpoints.MapOpenApi();
 
-			endpoints.MapScalarApiReference(options =>
-			{
-				options.WithTitle(appSettings.Name);
-				options.AddDocument(appSettings.Name.ToLowerInvariant());
-			});
-		});
+				if ( appSettings.AddScalar != true )
+				{
+					return;
+				}
+
+				endpoints.MapScalarApiReference(options =>
+				{
+					options.WithTitle(appSettings.Name);
+					options.AddDocument(appSettings.Name.ToLowerInvariant());
+				});
+			}));
 	}
 
 	/// <summary>

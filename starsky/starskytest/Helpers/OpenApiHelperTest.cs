@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -103,5 +104,32 @@ public sealed class OpenApiHelperTest
 		Assert.Contains("\"/api/account/status\"", openApiFileContent);
 		// opt-out with IgnoreApi
 		Assert.DoesNotContain("MetricsDebug", openApiFileContent);
+	}
+
+	[TestMethod]
+	public async Task AddScalar_ImpliesAddOpenApi()
+	{
+		var appSettings = new AppSettings { Name = "starskyscalaronly", AddScalar = true };
+
+		var builder = WebApplication.CreateBuilder();
+		builder.WebHost.UseTestServer();
+		builder.Services.AddMvcCore().AddApiExplorer()
+			.AddApplicationPart(typeof(OpenApiSetupHelper).Assembly);
+		new OpenApiSetupHelper(appSettings).Add01OpenApiHelper(builder.Services);
+		var app = builder.Build();
+		app.UseRouting();
+		new OpenApiSetupHelper(appSettings).Add02AppUseOpenApiAndScalar(app);
+
+		await app.StartAsync(TestContext.CancellationTokenSource.Token);
+		var client = app.GetTestClient();
+		var response = await client.GetAsync("/openapi/starskyscalaronly.json",
+			TestContext.CancellationTokenSource.Token);
+		// controllers (with [Authorize]) must not run in the docs endpoint block
+		var controllerResponse = await client.GetAsync("/api/account/status",
+			TestContext.CancellationTokenSource.Token);
+		await app.StopAsync(TestContext.CancellationTokenSource.Token);
+
+		Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+		Assert.AreEqual(System.Net.HttpStatusCode.NotFound, controllerResponse.StatusCode);
 	}
 }
