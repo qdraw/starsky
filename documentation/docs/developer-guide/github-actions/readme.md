@@ -23,7 +23,7 @@ Build, test, and deploy your code right from GitHub.
 4. [Auto upgrade .NET SDK version](#auto-upgrade-net-sdk-version)
 5. [Application Version Auto update](#application-version-auto-update)
 6. [Auto update Nuget packages list](#auto-update-nuget-packages-list)
-7. [Auto Update Swagger](#auto-update-swagger)
+7. [Auto Update OpenAPI](#auto-update-openapi)
 8. [Auto clientapp create Vite upgrade](#auto-clientapp-create-vite-upgrade)
 9. [Auto Documentation create Docusaurus upgrade](#auto-documentation-create-docusaurus-upgrade)
 10. [ClientApp React Linux CI](#clientapp-react-linux-ci)
@@ -90,24 +90,24 @@ npm run nuget-package-list
 
 > [webapp-update-nuget-packages-list.yml](https://github.com/qdraw/starsky/actions/workflows/webapp-update-nuget-packages-list.yml)
 
-## Auto Update Swagger
+## Auto Update OpenAPI
 
-Update json file with the latest swagger file
+Update json file with the latest OpenAPI file
 
-[![webapp-update-swagger-dotnet](https://github.com/qdraw/starsky/actions/workflows/webapp-update-swagger-dotnet.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/webapp-update-swagger-dotnet.yml)
+[![webapp-update-openapi-dotnet](https://github.com/qdraw/starsky/actions/workflows/webapp-update-openapi-dotnet.yml/badge.svg)](https://github.com/qdraw/starsky/actions/workflows/webapp-update-openapi-dotnet.yml)
 
 ```bash
 cd starsky/starsky
-export app__AddSwagger="true"
-export app__AddSwaggerExport="true"
-export app__AddSwaggerExportExitAfter="true"
+export app__AddOpenApi="true"
+export app__AddOpenApiExport="true"
+export app__AddOpenApiExportExitAfter="true"
 dotnet run --no-launch-profile
 cd ../../
 cd starsky-tools/build-tools/
 npm run nuget-package-list
 ```
 
-> [webapp-update-swagger-dotnet.yml](https://github.com/qdraw/starsky/actions/workflows/webapp-update-swagger-dotnet.yml)
+> [webapp-update-openapi-dotnet.yml](https://github.com/qdraw/starsky/actions/workflows/webapp-update-openapi-dotnet.yml)
 
 ## Auto clientapp create Vite upgrade
 

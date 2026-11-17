@@ -144,8 +144,8 @@ public sealed class Startup
 			RateLimitPolicies.AddRateLimiting(services);
 		}
 
-		// to add support for swagger
-		new SwaggerSetupHelper(_appSettings).Add01SwaggerGenHelper(services);
+		// to add support for OpenAPI documents
+		new OpenApiSetupHelper(_appSettings).Add01OpenApiHelper(services);
 
 		// Model Context Protocol for AI agents (only when McpEnabled)
 		services.AddStarskyMcp(_appSettings);
@@ -319,7 +319,7 @@ public sealed class Startup
 			app.UseRateLimiter();
 		}
 
-		new SwaggerSetupHelper(_appSettings!).Add02AppUseSwaggerAndUi(app);
+		new OpenApiSetupHelper(_appSettings!).Add02AppUseOpenApiAndScalar(app);
 
 		app.UseContentSecurityPolicy();
 
@@ -369,7 +369,7 @@ public sealed class Startup
 
 		// Allow Current Directory and wwwroot in Base Directory
 		// AppSettings can be null when running tests
-		if ( _appSettings?.AddSwaggerExportExitAfter != true )
+		if ( _appSettings?.AddOpenApiExportExitAfter != true )
 		{
 			app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = PrepareResponse });
 			result.Item1 = true;

@@ -1,4 +1,4 @@
-name: 'WebApp Update Swagger definitions'
+name: 'WebApp Update OpenAPI definitions'
 permissions:
   contents: write
 
@@ -12,12 +12,12 @@ on:
     - '**.sln'
     - '**.cake'
     - '**.json'
-    - '.github/workflows/webapp-update-swagger-dotnet.yml'
+    - '.github/workflows/webapp-update-openapi-dotnet.yml'
     - 'starsky-tools/build-tools/app-version-update.js'    
   pull_request:
     branches: [ master ]
     paths:
-    - '.github/workflows/auto-update-swagger-dotnet.yml'
+    - '.github/workflows/webapp-update-openapi-dotnet.yml'
     - 'documentation/static/openapi/openapi.json'
  
 jobs:
@@ -46,9 +46,9 @@ jobs:
       shell: bash
       working-directory: ./starsky/starsky
       env: 
-        app__AddSwagger: "true"
-        app__AddSwaggerExport: "true"
-        app__AddSwaggerExportExitAfter: "true"
+        app__AddOpenApi: "true"
+        app__AddOpenApiExport: "true"
+        app__AddOpenApiExportExitAfter: "true"
         app__SyncOnStartup: "false"
         app__thumbnailGenerationIntervalInMinutes: 0
         app__EnablePackageTelemetry: "false"
@@ -62,7 +62,7 @@ jobs:
       shell: bash
       run: cp starsky/starsky/bin/Debug/net*.0/temp/starsky.json documentation/static/openapi/openapi.json
 
-    - name: Generate swagger
+    - name: Generate OpenAPI
       shell: bash
       working-directory: ./documentation
       run: node scripts/openapi.js
@@ -85,20 +85,20 @@ jobs:
     - name: Create Pull Request ${{ steps.files_changed.outputs.CHANGED }}
       id: cpr
       if: steps.files_changed.outputs.CHANGED == 'true' && github.event_name != 'pull_request'
-      uses: peter-evans/create-pull-request@3afad46a91e1234a4e2800ffa47bd6c2a6b66b6c
+      uses: peter-evans/create-pull-request@3ffccacd46053766916f087ce41d627c0b8cf2d1
       with:
         token: ${{ secrets.WORKFLOW_GITHUB }}
-        commit-message: 'WebApp Update Swagger .NET'
+        commit-message: 'WebApp Update OpenAPI .NET'
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
         add-paths: |
           *
-        branch: feature/webapp_update_swagger_dotnet
+        branch: feature/webapp_update_openapi_dotnet
         delete-branch: true
-        title: 'WebApp Update Swagger .NET'
+        title: 'WebApp Update OpenAPI .NET'
         body: |
-          ## WebApp Update Swagger .NET
+          ## WebApp Update OpenAPI .NET
           - todo: test!         
         labels: |
           documentation

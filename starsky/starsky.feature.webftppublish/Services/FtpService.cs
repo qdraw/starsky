@@ -79,47 +79,54 @@ public class FtpService : IFtpService
 			return new PublishServiceResultModel(false, resultModel.IsError.ToString());
 		}
 
-		var settings =
-			_appSettings.PublishProfilesRemote.GetFtpById(profileId);
-
-		foreach ( var setting in settings )
+		try
 		{
-			var thisDirectories = CreateListOfRemoteDirectories(setting,
-				resultModel.FullFileFolderPath, slug,
-				copyContent);
-			foreach ( var thisDirectory in thisDirectories )
+			var settings =
+				_appSettings.PublishProfilesRemote.GetFtpById(profileId);
+
+			foreach ( var setting in settings )
 			{
-				_console.Write(",");
-				if ( DoesFtpDirectoryExist(setting, thisDirectory) )
+				var thisDirectories = CreateListOfRemoteDirectories(setting,
+					resultModel.FullFileFolderPath, slug,
+					copyContent);
+				foreach ( var thisDirectory in thisDirectories )
 				{
-					continue;
+					_console.Write(",");
+					if ( DoesFtpDirectoryExist(setting, thisDirectory) )
+					{
+						continue;
+					}
+
+					if ( CreateFtpDirectory(setting, thisDirectory) )
+					{
+						continue;
+					}
+
+					_console.WriteLine($"Fail > create directory => {setting.WebFtpNoLogin}");
 				}
 
-				if ( CreateFtpDirectory(setting, thisDirectory) )
+				// content of the publication folder
+				var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
+				if ( !MakeUpload(setting, resultModel.FullFileFolderPath, slug,
+					    copyThisFilesSubPaths) )
 				{
-					continue;
+					return new PublishServiceResultModel(false, "make upload failed");
 				}
 
-				_console.WriteLine($"Fail > create directory => {setting.WebFtpNoLogin}");
+				_console.Write("\n");
 			}
 
-			// content of the publication folder
-			var copyThisFilesSubPaths = CreateListOfRemoteFiles(copyContent);
-			if ( !MakeUpload(setting, resultModel.FullFileFolderPath, slug, copyThisFilesSubPaths) )
-			{
-				return new PublishServiceResultModel(false, "make upload failed");
-			}
-
+			return new PublishServiceResultModel(true,
+				string.Empty, parentDirectoryOrZipFile);
+		}
+		finally
+		{
+			// after all settings, also on failure or exceptions
 			if ( resultModel.RemoveFolderAfterwards )
 			{
 				_hostStorage.FolderDelete(resultModel.FullFileFolderPath);
 			}
-
-			_console.Write("\n");
 		}
-
-		return new PublishServiceResultModel(true,
-			string.Empty, parentDirectoryOrZipFile);
 	}
 
 	/// <summary>

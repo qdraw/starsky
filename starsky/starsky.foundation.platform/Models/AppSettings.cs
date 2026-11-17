@@ -409,10 +409,16 @@ public sealed class AppSettings
 	public bool? AddMemoryCache { get; set; } = true;
 
 	/// <summary>
-	///     Display swagger pages
+	///     Expose the OpenAPI document at `/openapi/{Name}.json`
 	/// </summary>
 	[PackageTelemetry]
-	public bool? AddSwagger { get; set; } = false;
+	public bool? AddOpenApi { get; set; } = false;
+
+	/// <summary>
+	///     Show the Scalar API reference at `/scalar`. Implies AddOpenApi
+	/// </summary>
+	[PackageTelemetry]
+	public bool? AddScalar { get; set; } = false;
 
 	/// <summary>
 	///     Expose the Model Context Protocol (MCP) endpoint for AI agents at `/starsky/mcp`
@@ -434,17 +440,17 @@ public sealed class AppSettings
 	public int McpMaxItemsPerCall { get; set; } = 25;
 
 	/// <summary>
-	///     Export swagger pages (use AddSwagger and AddSwaggerExport to export)
+	///     Export the OpenAPI document (use AddOpenApi and AddOpenApiExport to export)
 	/// </summary>
 	[PackageTelemetry]
-	public bool? AddSwaggerExport { get; set; } = false;
+	public bool? AddOpenApiExport { get; set; } = false;
 
 	/// <summary>
-	///     Stop application after swagger Export.
-	///     Need to set AddSwagger and AddSwaggerExport also to true to take effect
+	///     Stop application after OpenAPI export.
+	///     Need to set AddOpenApi and AddOpenApiExport also to true to take effect
 	/// </summary>
 	[PackageTelemetry]
-	public bool? AddSwaggerExportExitAfter { get; set; } = false;
+	public bool? AddOpenApiExportExitAfter { get; set; } = false;
 
 	/// <summary>
 	///     Set Meta Thumbnails on import

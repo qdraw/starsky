@@ -90,10 +90,10 @@ and the desktop app other locations are used, see the matching getting-started p
    project_
 3. `ReadOnlyFolders` - Accepts a list of folders that never may be edited, _defaults a empty list_
 4. `AddMemoryCache` - Enable caching _(default true)_
-5. `AddSwagger` - To show a user interface to show al REST-services _(default false)_
+5. `AddOpenApi` - To expose the OpenAPI document of all REST-services at `/openapi/starsky.json` _(default false)_. Use `AddScalar` to show the Scalar user interface at `/scalar`, this also enables `AddOpenApi` _(default false)_
 6. `ExifToolImportXmpCreate` - is used to create at import time a xmp file based on the raw image _(
    default true)_
-7. `AddSwaggerExport` - To Export Swagger definitions on startup _(default false)_
+7. `AddOpenApiExport` - To Export the OpenAPI definitions on startup _(default false)_
    `McpEnabled`, `McpAllowWrite` and `McpMaxItemsPerCall` configure the MCP endpoint for AI agents,
    see [MCP for AI agents](/docs/features/mcp)
 8. `Verbose` - show more console logging  _(default false)_
@@ -122,8 +122,8 @@ and the desktop app other locations are used, see the matching getting-started p
 26. `MetaThumbnailOnImport` Create small thumbnails after import, is very fast _default true_
 27. `EnablePackageTelemetry` Telemetry is send for service improvement _default true_
 28. `EnablePackageTelemetryDebug` Debug Telemetry _default false_
-29. `AddSwaggerExportExitAfter` Quit application after exporting swagger files, should
-    have `AddSwagger` and `AddSwaggerExport` enabled _default false_
+29. `AddOpenApiExportExitAfter` Quit application after exporting the OpenAPI file, should
+    have `AddOpenApi` and `AddOpenApiExport` enabled _default false_
 30. `NoAccountLocalhost` No login needed when on localhost, used in Desktop App
 31. `VideoUseLocalTime` Use localtime by Camera make and model instead of UTC
 32. `SyncOnStartup` Sync Database on changes since latest start _default true_
@@ -407,28 +407,29 @@ __All text (not number or date) driven search queries use a contain search__
 
 ### Rest API documentation
 
-Starsky has a Json restful API. There is a Swagger documentation available at `/swagger/index.html`
+Starsky has a Json restful API. There is a Scalar API reference available at `/scalar`
 and in the documentation there is a API chapter
 
 > Tip: Breaking changes are documented in `./history.md`
 
-### Swagger / OpenAPI
+### OpenAPI / Scalar
 
-Swagger is an open-source software framework backed by a large ecosystem
-of tools that helps developers design, build, document, and consume RESTful Web services.
-There is an swagger definition. You could enable this by setting the following values:
+There is an OpenAPI definition, shown with [Scalar](https://scalar.com/).
+You could enable this by setting the following values:
 
-By default this feature is disabled, please use the `AddSwagger` definition in the AppSettings or
-use the following environment variable:
-
-```
-app__AddSwagger=true
-```
-
-This is the default location of the swagger documentation
+By default this feature is disabled, please use the `AddOpenApi` and `AddScalar` definitions in
+the AppSettings or use the following environment variables:
 
 ```
-http://localhost:4000/swagger
+app__AddOpenApi=true
+app__AddScalar=true
+```
+
+This is the default location of the Scalar API reference and the OpenAPI document
+
+```
+http://localhost:4000/scalar
+http://localhost:4000/openapi/starsky.json
 ```
 
 ### Known 'There are critical errors in the following components:'

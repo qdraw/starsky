@@ -50,9 +50,9 @@ public sealed class StartupTest
 		var serviceCollection = new ServiceCollection();
 		serviceCollection.AddRouting();
 		serviceCollection.AddSingleton<AppSettings, AppSettings>();
-		// the Swagger UI middleware asks for this service while configuring the pipeline
+		// the OpenAPI middleware asks for this service while configuring the pipeline
 		serviceCollection.AddSingleton<IWebHostEnvironment, FakeIWebHostEnvironment>();
-		serviceCollection.AddSwaggerGen();
+		serviceCollection.AddOpenApi();
 		serviceCollection.AddSingleton<IWebLogger, FakeIWebLogger>();
 		serviceCollection
 			.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();
@@ -94,7 +94,7 @@ public sealed class StartupTest
 		serviceCollection.AddRouting();
 		serviceCollection.AddSingleton<AppSettings, AppSettings>();
 		serviceCollection.AddSingleton<IWebHostEnvironment, FakeIWebHostEnvironment>();
-		serviceCollection.AddSwaggerGen();
+		serviceCollection.AddOpenApi();
 		serviceCollection.AddSingleton<IWebLogger, FakeIWebLogger>();
 		serviceCollection
 			.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>();

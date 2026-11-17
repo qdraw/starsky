@@ -75,11 +75,11 @@ public sealed class ExifToolDownload : IExifToolDownload
 	public async Task<bool> DownloadExifTool(bool isWindows, int minimumSize = 30)
 	{
 		if ( _appSettings.ExiftoolSkipDownloadOnStartup == true || _appSettings is
-			{ AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
+			{ AddOpenApiExport: true, AddOpenApiExportExitAfter: true } )
 		{
 			var name = _appSettings.ExiftoolSkipDownloadOnStartup == true
 				? "ExiftoolSkipDownloadOnStartup"
-				: "AddSwaggerExport and AddSwaggerExportExitAfter";
+				: "AddOpenApiExport and AddOpenApiExportExitAfter";
 			_logger.LogInformation($"[DownloadExifTool] Skipped due true of {name} setting");
 			return false;
 		}

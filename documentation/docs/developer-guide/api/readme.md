@@ -15,6 +15,8 @@ This document is auto generated
 | __/api/account/logout__                           | POST  | Logout the current HttpContext out                                              |
 | __/account/logout__                               | GET   | Logout the current HttpContext and redirect to login                            |
 | __/api/account/change-secret__                    | POST  | Update password for current user                                                |
+| _Parameters: Password (Password before change), ChangedPassword (The new password), ChangedConfirmPassword (The new                       _ |
+| _ password confirmed)                                                                                                                     _ |
 | __/api/account/register__                         | POST  | Create a new user (you need a AF-token first)                                   |
 | __/api/account/register/status__                  | GET   | Is the register form open                                                       |
 | __/api/account/permissions__                      | GET   | List of current permissions                                                     |
@@ -35,12 +37,6 @@ This document is auto generated
 | __/api/cache/list__                               | GET   | Get Database Cache (only the cache)                                             |
 | __/api/remove-cache__                             | GET   | Delete Database Cache (only the cache)                                          |
 | __/api/remove-cache__                             | POST  | Delete Database Cache (only the cache)                                          |
-| __/api/cloud-import/status__                      | GET   | Get current Cloud Import status for all providers                               |
-| __/api/cloud-import/status/\{providerId\}__       | GET   | Get status for a specific provider                                              |
-| __/api/cloud-import/sync__                        | POST  | Trigger a manual sync for all enabled providers                                 |
-| __/api/cloud-import/sync/\{providerId\}__         | POST  | Trigger a manual sync for a specific provider                                   |
-| __/api/cloud-import/last-results__                | GET   | Get the last sync results for all providers                                     |
-| __/api/cloud-import/last-result/\{providerId\}__  | GET   | Get the last sync result for a specific provider                                |
 | __/api/delete__                                   | DELETE| Remove files from the disk, but the file must contain the !delete!(TrashKeywo...|
 | _Parameters: f (subPaths, separated by dot comma), collections (true is to update files with the same name before                         _ |
 | _ the extenstion)                                                                                                                         _ |
@@ -66,11 +62,11 @@ This document is auto generated
 | __/api/geo-location-name/city-timezone__          | GET   | Search for a city's timezone for a given date/time                              |
 | __/api/geo-reverse-lookup__                       | GET   | Reverse geo lookup                                                              |
 | __/api/geo-reverse-nominatim__                    | GET   | Reverse geo lookup with OpenStreetMap NominatimThis API does not allow BATCH ...|
+| __/api/health/check-for-updates__                 | GET   | Check if Client/App version has a match with the API-version                    |
+| __/api/health/release-info__                      | GET   | Get more info to show about the release                                         |
 | __/api/health__                                   | GET   | Check if the service has any known errors and return only a stringPublic API    |
 | __/api/health/details__                           | GET   | Check if the service has any known errorsFor Authorized Users only              |
 | __/api/health/version__                           | POST  | Check if Client/App version has a match with the API-versionthe parameter 've...|
-| __/api/health/check-for-updates__                 | GET   | Check if Client/App version has a match with the API-version                    |
-| __/api/health/release-info__                      | GET   | Get more info to show about the release                                         |
 | __/search__                                       | POST  | Redirect to search GET page (HTML)                                              |
 | __/search__                                       | GET   | Search GET page (HTML)                                                          |
 | __/trash__                                        | GET   | Trash page (HTML)                                                               |
@@ -98,14 +94,23 @@ This document is auto generated
 | __/api/meta-time-correct/offset-preview__         | POST  | Preview custom offset correction for batch of images (dry-run)Uses custom tim...|
 | __/api/meta-time-correct/offset-execute__         | POST  | Execute custom offset correction for batch of imagesUses custom time/date off...|
 | __/api/update__                                   | POST  | Update Exif and Rotation API                                                    |
-| _Parameters: Id, FilePath, FileName, FileHash, FileCollectionName, ParentDirectory, IsDirectory, Tags, Status, Description,               _ |
-| _Title, DateTime, AddToDatabase, LastEdited, Latitude, Longitude, LocationAltitude, LocationCity, LocationState,                          _ |
-| _LocationCountry, LocationCountryCode, ColorClass, Orientation, ImageWidth, ImageHeight, ImageFormat, CollectionPaths,                    _ |
-| _SidecarExtensions, SidecarExtensionsList, Aperture, ShutterSpeed, IsoSpeed, Software, MakeModel, Make, Model, LensModel,                 _ |
-| _MakeCameraSerial, FocalLength, Size, ImageStabilisation, LastChanged, Artist, SuggestedTags, RejectedTags, ImageClassificationModel,     _ |
-| _ImageClassificationGeneratedAt, f (subPath filepath to file, split by dot comma (;)), append (only for stings, add                       _ |
-| _update to existing items), collections (StackCollections bool, default true), rotateClock (relative orientation                          _ |
-| _ -1 or 1)                                                                                                                                _ |
+| _Parameters: Id (Unique database Id, not used and Json Ignored due the fact that files that are moved could have                          _ |
+| _The parent directory in subPath style), IsDirectory (Gets or sets a value indicating whether this instance is directory.                 _ |
+| _`true` if this instance is directory; otherwise (then is a file), `false`.), Tags (Get/Set a comma separated string                      _ |
+| _The display file status. (eg. NotFoundNotInIndex, Ok).), Description (Gets or sets the iptc:Caption-Abstract or                          _ |
+| _The longitude value), LocationAltitude (Location altitude in meters. How how difference there is relative to WGS84                       _ |
+| _The image format as enum item), CollectionPaths (To show location of files with the same Filename without extension                      _ |
+| _The collection paths, relative to the database (subPath style)), SidecarExtensions (Database string to store sidecar                     _ |
+| _paths), SidecarExtensionsList (List of Sidecar files), Aperture (Gets or sets the aperture. (round to 5 decimals)                        _ |
+| _The iso speed.), Software (Edited with this program), MakeModel (Camera Make, Model and Lens (saved pipe separated                       _ |
+| _Camera brand and type (incl. lens)), Make (Get the Make (Camera Brand) of the _makeModel), Model (Get the Model                          _ |
+| _(Camera Model) of the _makeModel), LensModel (Get the Lens info (from MakeModel)), MakeCameraSerial (Get the Serial                      _ |
+| _of the _makeModel), FocalLength (The Zoom of the camera (that is currently used)), Size (Size of the file in bytes                       _ |
+| _Currently Sony only), LastChanged (Fields that are changed in the last request), Artist (IPTC field for artist/creator),                 _ |
+| _Stored as comma separated string.), ImageClassificationModel (Name/version of the model that generated AI metadata.),                    _ |
+| _ImageClassificationGeneratedAt (Datetime when AI metadata was generated.), f (subPath filepath to file, split by                         _ |
+| _dot comma (;)), append (only for stings, add update to existing items), collections (StackCollections bool, default                      _ |
+| _ true), rotateClock (relative orientation -1 or 1)                                                                                       _ |
 | __/api/notification/notification__                | GET   | Get recent notificationsUse dateTime 2022-04-16T17:33:10.323974Z to get the l...|
 | __/api/publish__                                  | GET   | Get all publish profilesTo see the entire config check appSettings              |
 | __/api/publish/create__                           | POST  | Publish                                                                         |
@@ -138,3 +143,9 @@ This document is auto generated
 | __/api/trash/detect-to-use-system-trash__         | GET   | Is the system trash supportedUsed in End2End tests to enable or disable the t...|
 | __/api/upload__                                   | POST  | Upload to specific folder (does not check if already has been imported)Use th...|
 | __/api/upload-sidecar__                           | POST  | Upload sidecar file to specific folder (does not check if already has been im...|
+| __/api/cloud-import/status__                      | GET   | Get current Cloud Import status for all providers                               |
+| __/api/cloud-import/status/\{providerId\}__       | GET   | Get status for a specific provider                                              |
+| __/api/cloud-import/sync__                        | POST  | Trigger a manual sync for all enabled providers                                 |
+| __/api/cloud-import/sync/\{providerId\}__         | POST  | Trigger a manual sync for a specific provider                                   |
+| __/api/cloud-import/last-results__                | GET   | Get the last sync results for all providers                                     |
+| __/api/cloud-import/last-result/\{providerId\}__  | GET   | Get the last sync result for a specific provider                                |

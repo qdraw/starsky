@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,32 +16,35 @@ using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Storage;
 using starsky.Helpers;
 using starskytest.FakeMocks;
-using Swashbuckle.AspNetCore.Swagger;
 
 namespace starskytest.Helpers;
 
-public sealed class FakeISwaggerProvider : ISwaggerProvider
+public sealed class FakeIOpenApiDocumentProvider : IOpenApiDocumentProvider
 {
-	public OpenApiDocument GetSwagger(string documentName, string host, string basePath)
+	public Task<OpenApiDocument> GetOpenApiDocumentAsync(
+		CancellationToken cancellationToken = default)
 	{
-		return new OpenApiDocument { Components = new OpenApiComponents { Links = null } };
+		return Task.FromResult(new OpenApiDocument
+		{
+			Components = new OpenApiComponents { Links = null }
+		});
 	}
 }
 
 [TestClass]
-public sealed class SwaggerExportHelperTest
+public sealed class OpenApiExportHelperTest
 {
 	private readonly ServiceProvider _serviceProvider;
 	private readonly IServiceScopeFactory _serviceScopeFactory;
 
-	public SwaggerExportHelperTest()
+	public OpenApiExportHelperTest()
 	{
 		var services = new ServiceCollection();
 		var dict = new Dictionary<string, string?>
 		{
 			{ "App:Verbose", "true" },
-			{ "App:AddSwagger", "true" },
-			{ "App:AddSwaggerExport", "true" },
+			{ "App:AddOpenApi", "true" },
+			{ "App:AddOpenApiExport", "true" },
 			{ "App:TempFolder", Path.DirectorySeparatorChar.ToString() },
 			{ "App:Name", "starsky_test_name" }
 		};
@@ -51,7 +57,8 @@ public sealed class SwaggerExportHelperTest
 		// inject config as object to a service
 		services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
 		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
-		services.AddScoped<ISwaggerProvider, FakeISwaggerProvider>();
+		services.AddKeyedScoped<IOpenApiDocumentProvider, FakeIOpenApiDocumentProvider>(
+			"starsky_test_name");
 		services.AddScoped<IHostApplicationLifetime, FakeIApplicationLifetime>();
 
 		_serviceProvider = services.BuildServiceProvider();
@@ -59,65 +66,65 @@ public sealed class SwaggerExportHelperTest
 	}
 
 	[TestMethod]
-	public void GenerateSwagger_NullInput()
+	public async Task GenerateOpenApi_NullInput()
 	{
-		Assert.AreEqual(string.Empty, SwaggerExportHelper.GenerateSwagger(null!, null!));
+		Assert.AreEqual(string.Empty, await OpenApiExportHelper.GenerateOpenApi(null));
 	}
 
 	[TestMethod]
-	public void Add03AppExport_disabled_AddSwagger()
+	public async Task Add03AppExport_disabled_AddOpenApi()
 	{
-		var appSettings = new AppSettings { AddSwagger = true, AddSwaggerExport = false };
-		var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
-		var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null!);
+		var appSettings = new AppSettings { AddOpenApi = true, AddOpenApiExport = false };
+		var export = new OpenApiExportHelper(null!, new FakeIWebLogger());
+		var result = await export.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
 
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
-	public void Add04SwaggerExportExitAfter_True()
+	public void Add04OpenApiExportExitAfter_True()
 	{
 		var appSettings = new AppSettings
 		{
-			AddSwagger = true, AddSwaggerExport = true, AddSwaggerExportExitAfter = true
+			AddOpenApi = true, AddOpenApiExport = true, AddOpenApiExportExitAfter = true
 		};
-		var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
+		var export = new OpenApiExportHelper(null!, new FakeIWebLogger());
 		var appLifeTime = new FakeIApplicationLifetime();
-		var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
+		var result = export.Add04OpenApiExportExitAfter(appSettings, appLifeTime);
 
 		Assert.IsTrue(result);
 	}
 
 	[TestMethod]
-	public void Add04SwaggerExportExitAfter_False()
+	public void Add04OpenApiExportExitAfter_False()
 	{
 		var appSettings = new AppSettings
 		{
-			AddSwagger = true, AddSwaggerExport = false, AddSwaggerExportExitAfter = false
+			AddOpenApi = true, AddOpenApiExport = false, AddOpenApiExportExitAfter = false
 		};
-		var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
+		var export = new OpenApiExportHelper(null!, new FakeIWebLogger());
 		var appLifeTime = new FakeIApplicationLifetime();
-		var result = swagger.Add04SwaggerExportExitAfter(appSettings, appLifeTime);
+		var result = export.Add04OpenApiExportExitAfter(appSettings, appLifeTime);
 
 		Assert.IsFalse(result);
 	}
 
 	[TestMethod]
-	public void Add03AppExport_null_ArgumentException()
+	public async Task Add03AppExport_null_ArgumentException()
 	{
-		var appSettings = new AppSettings { AddSwagger = true, AddSwaggerExport = true };
-		var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
+		var appSettings = new AppSettings { AddOpenApi = true, AddOpenApiExport = true };
+		var export = new OpenApiExportHelper(null!, new FakeIWebLogger());
 
-		Assert.ThrowsExactly<ArgumentException>(() =>
-			swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null!));
+		await Assert.ThrowsExactlyAsync<ArgumentException>(() =>
+			export.Add03AppExport(appSettings, new FakeSelectorStorage(), null));
 	}
 
 	[TestMethod]
-	public void Add03AppExport_disabled_AddSwaggerExport()
+	public async Task Add03AppExport_disabled_AddOpenApiExport()
 	{
-		var appSettings = new AppSettings { AddSwagger = false, AddSwaggerExport = true };
-		var swagger = new SwaggerExportHelper(null!, new FakeIWebLogger());
-		var result = swagger.Add03AppExport(appSettings, new FakeSelectorStorage(), null!);
+		var appSettings = new AppSettings { AddOpenApi = false, AddOpenApiExport = true };
+		var export = new OpenApiExportHelper(null!, new FakeIWebLogger());
+		var result = await export.Add03AppExport(appSettings, new FakeSelectorStorage(), null);
 
 		Assert.IsFalse(result);
 	}
@@ -125,9 +132,9 @@ public sealed class SwaggerExportHelperTest
 
 	[TestMethod]
 	[SuppressMessage("Usage", "MSTEST0049:Flow TestContext.CancellationToken to async operations")]
-	public void ExecuteAsync_ShouldWrite()
+	public async Task ExecuteAsync_ShouldWrite()
 	{
-		new SwaggerExportHelper(_serviceScopeFactory).ExecuteAsync();
+		await new OpenApiExportHelper(_serviceScopeFactory).ExecuteAsync();
 		var selectorStorage = _serviceProvider.GetRequiredService<ISelectorStorage>();
 		var storage = selectorStorage.Get(SelectorStorage.StorageServices.HostFilesystem);
 

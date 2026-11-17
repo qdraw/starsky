@@ -71,9 +71,30 @@ describe("Collections / stacked files (80)", () => {
     });
   }
 
+  // The mp4 can drop out of the index between the upload test and the UI tests
+  // (seen on CI: API listed it, the UI never did). Re-check and re-upload before each UI test.
+  function ensureStackIndexed() {
+    cy.request({
+      url: config.urlApiCollectionsFalse,
+      method: "GET",
+      headers: { "Content-Type": "text/plain" },
+    }).then((response) => {
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      if (!items.some((i) => i.filePath === filePathJpg)) {
+        cy.fileRequest(fileNameJpg, "/starsky-end2end-test", "image/jpeg");
+      }
+      if (!items.some((i) => i.filePath === filePathMp4)) {
+        cy.fileRequest(fileNameMp4, "/starsky-end2end-test", "video/mp4");
+      }
+      waitUntilBothIndexed(0);
+      waitUntilCollectionReady(0);
+    });
+  }
+
   it("Archive view (collections=true): only the jpg appears, mp4 is hidden in the stack (80)", () => {
     if (!config.isEnabled) return;
 
+    ensureStackIndexed();
     cy.visit(config.url);
 
     cy.get(`[data-filepath="${filePathJpg}"]`).should("exist");
@@ -83,6 +104,7 @@ describe("Collections / stacked files (80)", () => {
   it("Archive view (collections=false): both jpg and mp4 appear as separate items (80)", () => {
     if (!config.isEnabled) return;
 
+    ensureStackIndexed();
     cy.visit(config.urlCollectionsFalse);
 
     cy.get(`[data-filepath="${filePathJpg}"]`).should("exist");
@@ -92,6 +114,7 @@ describe("Collections / stacked files (80)", () => {
   it("Detail view: opening the jpg shows both files in the collection sidebar (80)", () => {
     if (!config.isEnabled) return;
 
+    ensureStackIndexed();
     cy.visit(`${config.url}/${fileNameJpg}`);
 
     // Open the labels / details panel to reveal the sidebar
@@ -111,6 +134,7 @@ describe("Collections / stacked files (80)", () => {
   it("Detail view: clicking the mp4 collection entry navigates to the mp4 (80)", () => {
     if (!config.isEnabled) return;
 
+    ensureStackIndexed();
     cy.visit(`${config.url}/${fileNameJpg}`);
     cy.get("[data-test=menu-detail-view-labels]").click();
 
