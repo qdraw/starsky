@@ -134,6 +134,6 @@ public sealed class OpenApiHelperTest
 		Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
 		Assert.AreEqual(System.Net.HttpStatusCode.NotFound, controllerResponse.StatusCode);
 		Assert.AreEqual(System.Net.HttpStatusCode.Redirect, swaggerResponse.StatusCode);
-		Assert.AreEqual("/scalar/", swaggerResponse.Headers.Location?.ToString());
+		Assert.AreEqual("/scalar/index.html", swaggerResponse.Headers.Location?.ToString());
 	}
 }
