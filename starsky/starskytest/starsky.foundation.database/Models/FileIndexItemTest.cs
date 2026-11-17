@@ -638,4 +638,21 @@ public sealed class FileIndexItemTest
 		// must not throw
 		Assert.IsFalse(string.IsNullOrEmpty(System.Text.Json.JsonSerializer.Serialize(item)));
 	}
+
+	[TestMethod]
+	[DataRow("_latitude")]
+	[DataRow("_longitude")]
+	[DataRow("_locationAltitude")]
+	[DataRow("_focalLength")]
+	[DataRow("_aperture")]
+	public void NonFiniteBackingField_SetByDatabase_IsSerializable(string fieldName)
+	{
+		// EF Core fills the backing fields directly and bypasses the setters
+		var item = new FileIndexItem();
+		typeof(FileIndexItem).GetField(fieldName,
+				System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!
+			.SetValue(item, double.PositiveInfinity);
+
+		Assert.IsFalse(string.IsNullOrEmpty(System.Text.Json.JsonSerializer.Serialize(item)));
+	}
 }

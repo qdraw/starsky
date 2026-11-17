@@ -11,6 +11,10 @@
 
 * For more detailed information on submitting a bug report and creating an issue, please use the templates
 
+#### **Issues vs. Discussions**
+
+Open an issue for bugs. For questions and ideas use [GitHub Discussions](https://github.com/qdraw/starsky/discussions).
+
 #### **Did you write a patch that fixes a bug?**
 
 * Open a new GitHub pull request with the patch.
