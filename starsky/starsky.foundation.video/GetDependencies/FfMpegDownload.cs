@@ -53,11 +53,11 @@ public class FfMpegDownload : IFfMpegDownload
 	public async Task<FfmpegDownloadStatus> DownloadFfMpeg(string? architecture = null)
 	{
 		if ( _appSettings.FfmpegSkipDownloadOnStartup == true
-		     || _appSettings is { AddSwaggerExport: true, AddSwaggerExportExitAfter: true } )
+		     || _appSettings is { AddOpenApiExport: true, AddOpenApiExportExitAfter: true } )
 		{
 			var name = _appSettings.FfmpegSkipDownloadOnStartup == true
 				? "FFMpegSkipDownloadOnStartup"
-				: "AddSwaggerExport and AddSwaggerExportExitAfter";
+				: "AddOpenApiExport and AddOpenApiExportExitAfter";
 			_logger.LogInformation($"[DownloadFFMpeg] Skipped due true of {name} setting");
 			return FfmpegDownloadStatus.SettingsDisabled;
 		}

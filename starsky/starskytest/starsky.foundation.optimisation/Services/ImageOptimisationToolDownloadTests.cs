@@ -83,8 +83,8 @@ public class ImageOptimisationToolDownloadTests
 		};
 		if ( !imageOptimisationDownloadOnStartup )
 		{
-			appSettings.AddSwaggerExport = true;
-			appSettings.AddSwaggerExportExitAfter = true;
+			appSettings.AddOpenApiExport = true;
+			appSettings.AddOpenApiExportExitAfter = true;
 		}
 
 		var storage = new FakeIStorage();

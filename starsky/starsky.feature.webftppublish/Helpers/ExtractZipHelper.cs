@@ -43,7 +43,10 @@ public class ExtractZipHelper(IStorage storage, IWebLogger logger)
 				};
 		}
 
-		var parentFolderTempPath = Path.Combine(Path.GetTempPath(), tempFolderPrefix,
+		// one unique top-level folder per extraction; no shared parent folder that
+		// other runs (or tests in parallel) could delete or scan
+		var parentFolderTempPath = Path.Combine(Path.GetTempPath(),
+			tempFolderPrefix + "_" +
 			Path.GetFileNameWithoutExtension(parentDirectoryOrZipFile) + "_" +
 			Guid.NewGuid().ToString("N"));
 		storage.CreateDirectory(parentFolderTempPath);
@@ -61,6 +64,7 @@ public class ExtractZipHelper(IStorage storage, IWebLogger logger)
 		}
 
 		logger.LogError($"Zip extract failed {parentDirectoryOrZipFile}");
+		storage.FolderDelete(parentFolderTempPath);
 		return new ExtractZipResultModel
 		{
 			FullFileFolderPath = parentDirectoryOrZipFile, IsError = true, IsFromZipFile = true

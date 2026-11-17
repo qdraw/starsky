@@ -220,8 +220,8 @@ public sealed class WebFtpCliTest
 		var hostStorage = new StorageHostFullPathFilesystem(logger);
 		var fakeSelectorStorage = new FakeSelectorStorage(hostStorage);
 
-		var tempRoot = Path.Combine(Path.GetTempPath(), "starsky-webftp-test",
-			Guid.NewGuid().ToString("N"));
+		var tempRoot = Path.Combine(Path.GetTempPath(),
+			"starsky-webftp-test-" + Guid.NewGuid().ToString("N"));
 		Directory.CreateDirectory(tempRoot);
 
 		try

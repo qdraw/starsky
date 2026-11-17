@@ -2,11 +2,11 @@
 
 Start starsky with envs: 
 
-app__AddSwaggerExport=true
-app__AddSwagger=true
+app__AddOpenApiExport=true
+app__AddOpenApi=true
 
 and copy this file
->      app__addSwaggerExport ....../bin/Debug/netcoreapp3.1/temp/starsky.json
+>      app__addOpenApiExport ....../bin/Debug/netcoreapp3.1/temp/starsky.json
 
 */
 

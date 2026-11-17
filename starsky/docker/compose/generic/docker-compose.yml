@@ -46,7 +46,8 @@ services:
       PORT: 6470
       app__databaseType: "mysql"
       app__IsAccountRegisterOpen: "false"
-      app__addSwagger: "false"
+      app__addOpenApi: "false"
+      app__addScalar: "false"
       app__useDiskWatcher: "false"
       app__storageFolder: "/app/pictures"
       DOTNET_USE_POLLING_FILE_WATCHER: "true"

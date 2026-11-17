@@ -24,6 +24,8 @@ public sealed class ProgramTest
 	private static string? _geoFilesSkipDownloadOnStartup;
 	private static string? _exiftoolSkipDownloadOnStartup;
 	private static string? _ffmpegSkipDownloadOnStartup;
+	private static string? _preDotnetEnvironment;
+	private static string? _preAspNetEnvironment;
 
 	public ProgramTest()
 	{
@@ -39,6 +41,15 @@ public sealed class ProgramTest
 			Environment.GetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup");
 		_ffmpegSkipDownloadOnStartup =
 			Environment.GetEnvironmentVariable("app__ffmpegSkipDownloadOnStartup");
+
+		_preDotnetEnvironment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT");
+		_preAspNetEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+		// In the Development environment the host validates every [Service] found in the
+		// loaded assemblies on build; the test assembly also loads starsky.project.mcp, which
+		// needs an IHttpContextAccessor that this CLI host (without mcp) never registers.
+		Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", "Production");
+		Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Production");
 
 		Environment.SetEnvironmentVariable("app__GeoFilesSkipDownloadOnStartup", "true");
 		Environment.SetEnvironmentVariable("app__ExiftoolSkipDownloadOnStartup", "true");
@@ -122,6 +133,8 @@ public sealed class ProgramTest
 	[ClassCleanup]
 	public static void CleanEnvsAfterwards()
 	{
+		Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", _preDotnetEnvironment);
+		Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", _preAspNetEnvironment);
 		Environment.SetEnvironmentVariable("PORT", _prePort);
 		Environment.SetEnvironmentVariable("ASPNETCORE_URLS", _preAspNetUrls);
 		Environment.SetEnvironmentVariable("app__useDiskWatcher", _diskWatcherSetting);

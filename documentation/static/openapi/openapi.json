@@ -4702,7 +4702,7 @@
             "type": "boolean",
             "nullable": true
           },
-          "addSwagger": {
+          "addOpenApi": {
             "type": "boolean",
             "nullable": true
           },
@@ -4718,11 +4718,11 @@
             "type": "integer",
             "format": "int32"
           },
-          "addSwaggerExport": {
+          "addOpenApiExport": {
             "type": "boolean",
             "nullable": true
           },
-          "addSwaggerExportExitAfter": {
+          "addOpenApiExportExitAfter": {
             "type": "boolean",
             "nullable": true
           },

@@ -44,6 +44,12 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.10 - _(Unreleased)_ - 2026-?-? {#0.9.10}
 
+- [x] (Breaking change) _Back-end_ Swagger (Swashbuckle) is replaced by Scalar and
+  `Microsoft.AspNetCore.OpenApi`. The UI moved from `/swagger` to `/scalar`, the document from
+  `/swagger/starsky/swagger.json` to `/openapi/starsky.json`. Settings are renamed:
+  `app__AddSwagger` is `app__AddOpenApi`, `app__AddSwaggerExport` is `app__AddOpenApiExport`,
+  `app__AddSwaggerExportExitAfter` is `app__AddOpenApiExportExitAfter`, and the UI needs the
+  new `app__AddScalar=true`
 - [x] (Security) _Back-end_ `ForwardedHeadersOptions` no longer trusts `X-Forwarded-For`/
   `X-Forwarded-Proto` from any client; only loopback is trusted by default. The previous
   `Clear()` call let an attacker spoof their IP to bypass the login/register rate limiter and,

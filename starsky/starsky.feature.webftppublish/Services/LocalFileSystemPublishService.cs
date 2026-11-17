@@ -49,35 +49,42 @@ public class LocalFileSystemPublishService(
 			return new PublishServiceResultModel(false);
 		}
 
-		var settings =
-			appSettings.PublishProfilesRemote.GetLocalFileSystemById(profileId);
-
-		if ( settings.Count == 0 )
+		try
 		{
-			var errorMessage = $"No local file system settings found for profile: {profileId}";
-			logger.LogError(errorMessage);
-			return new PublishServiceResultModel(false, errorMessage);
-		}
+			var settings =
+				appSettings.PublishProfilesRemote.GetLocalFileSystemById(profileId);
 
-		foreach ( var setting in settings )
-		{
-			if ( !CopyToLocalFileSystem(setting,
-				    resultModel.FullFileFolderPath, slug,
-				    copyContent) )
+			if ( settings.Count == 0 )
 			{
-				return new PublishServiceResultModel(false);
+				var errorMessage =
+					$"No local file system settings found for profile: {profileId}";
+				logger.LogError(errorMessage);
+				return new PublishServiceResultModel(false, errorMessage);
 			}
 
+			foreach ( var setting in settings )
+			{
+				if ( !CopyToLocalFileSystem(setting,
+					    resultModel.FullFileFolderPath, slug,
+					    copyContent) )
+				{
+					return new PublishServiceResultModel(false);
+				}
+
+				console.Write("\n");
+			}
+
+			return new PublishServiceResultModel(true,
+				string.Empty, parentDirectoryOrZipFile);
+		}
+		finally
+		{
+			// after all settings, also on failure or exceptions
 			if ( resultModel.RemoveFolderAfterwards )
 			{
 				_hostStorage.FolderDelete(resultModel.FullFileFolderPath);
 			}
-
-			console.Write("\n");
 		}
-
-		return new PublishServiceResultModel(true,
-			string.Empty, parentDirectoryOrZipFile);
 	}
 
 	/// <summary>

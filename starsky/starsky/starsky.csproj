@@ -61,9 +61,10 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.15" />
         <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.15" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="10.3.1"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
+        <PackageReference Include="Scalar.AspNetCore" Version="2.21.0" />
     </ItemGroup>
-    <!-- generate xml file for swagger -->
+    <!-- generate xml file for OpenAPI descriptions -->
     <PropertyGroup>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <NoWarn>$(NoWarn);1591</NoWarn>
