@@ -22,6 +22,7 @@ import { MenuOptionSelectionAll } from "../../molecules/menu-option-selection-al
 import { MenuOptionSelectionUndo } from "../../molecules/menu-option-selection-undo/menu-option-selection-undo";
 import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-count";
 import ModalForceDelete from "../modal-force-delete/modal-force-delete";
+import TenantSwitcher from "../../molecules/tenant-switcher/tenant-switcher";
 import NavContainer from "../nav-container/nav-container";
 
 interface IMenuTrashProps {
@@ -179,6 +180,8 @@ const MenuTrash: React.FunctionComponent<IMenuTrashProps> = ({ state, dispatch }
           <NavContainer hamburgerMenu={hamburgerMenu}>
             <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
           </NavContainer>
+
+          <TenantSwitcher />
         </div>
       </header>
     </>
