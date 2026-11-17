@@ -4,11 +4,6 @@
     "title": "Starsky",
     "version": "0.9.9.0"
   },
-  "servers": [
-    {
-      "url": "/"
-    }
-  ],
   "paths": {
     "/api/account/status": {
       "get": {
@@ -56,9 +51,6 @@
                 }
               }
             }
-          },
-          "409": {
-            "description": "The Current User does not exist in database"
           }
         }
       }
@@ -81,13 +73,17 @@
             "name": "fromLogout",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Login form page"
+            "description": "Login form page",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       },
@@ -108,13 +104,17 @@
             "name": "fromLogout",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Login form page"
+            "description": "Login form page",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       }
@@ -129,19 +129,15 @@
           {
             "name": "Email",
             "in": "query",
-            "required": true,
             "schema": {
-              "type": "string",
-              "format": "email"
+              "type": "string"
             }
           },
           {
             "name": "Password",
             "in": "query",
-            "required": true,
             "schema": {
-              "type": "string",
-              "format": "password"
+              "type": "string"
             }
           },
           {
@@ -182,12 +178,6 @@
                 }
               }
             }
-          },
-          "423": {
-            "description": "Login failed due lock"
-          },
-          "500": {
-            "description": "Login failed due signIn errors"
           }
         }
       }
@@ -223,10 +213,7 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
-          },
-          "302": {
-            "description": "redirect to return url"
+            "description": "Redirect to login page"
           }
         }
       }
@@ -241,30 +228,29 @@
           {
             "name": "Password",
             "in": "query",
+            "description": "Password before change",
             "schema": {
               "maxLength": 100,
               "minLength": 8,
-              "type": "string",
-              "format": "password"
+              "type": "string"
             }
           },
           {
             "name": "ChangedPassword",
             "in": "query",
-            "required": true,
+            "description": "The new password",
             "schema": {
               "maxLength": 100,
               "minLength": 8,
-              "type": "string",
-              "format": "password"
+              "type": "string"
             }
           },
           {
             "name": "ChangedConfirmPassword",
             "in": "query",
+            "description": "The new password confirmed",
             "schema": {
-              "type": "string",
-              "format": "password"
+              "type": "string"
             }
           }
         ],
@@ -312,15 +298,14 @@
           {
             "name": "Email",
             "in": "query",
-            "required": true,
             "schema": {
-              "type": "string",
-              "format": "email"
+              "type": "string"
             }
           },
           {
             "name": "Name",
             "in": "query",
+            "description": "Name",
             "schema": {
               "type": "string"
             }
@@ -328,20 +313,17 @@
           {
             "name": "Password",
             "in": "query",
-            "required": true,
             "schema": {
               "maxLength": 100,
               "minLength": 8,
-              "type": "string",
-              "format": "password"
+              "type": "string"
             }
           },
           {
             "name": "ConfirmPassword",
             "in": "query",
             "schema": {
-              "type": "string",
-              "format": "password"
+              "type": "string"
             }
           }
         ],
@@ -415,9 +397,6 @@
                 }
               }
             }
-          },
-          "202": {
-            "description": "open, but you are the first user"
           }
         }
       }
@@ -476,7 +455,6 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "uniqueItems": true,
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -484,9 +462,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "please login first"
           }
         }
       }
@@ -503,7 +478,6 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "uniqueItems": true,
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -511,9 +485,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "please login first"
           }
         }
       }
@@ -554,9 +525,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "please log in first"
           }
         }
       }
@@ -628,7 +596,8 @@
             "name": "Verbose",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           },
           {
@@ -642,21 +611,24 @@
             "name": "UseSystemTrash",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           },
           {
             "name": "UseLocalDesktop",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           },
           {
             "name": "UseRateLimiting",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           },
           {
@@ -775,11 +747,12 @@
                 "$ref": "#/components/schemas/BatchRenameRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of BatchRenameMapping preview results.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -834,11 +807,12 @@
                 "$ref": "#/components/schemas/BatchRenameRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of FileIndexItem results.",
             "content": {
               "text/plain": {
                 "schema": {
@@ -880,24 +854,25 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifCustomOffsetCorrectionRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifCustomOffsetCorrectionRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifCustomOffsetCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of FilenameDatetimeRepairMapping preview results showing before/after filenames",
             "content": {
               "text/plain": {
                 "schema": {
@@ -939,24 +914,25 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifCustomOffsetCorrectionRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifCustomOffsetCorrectionRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifCustomOffsetCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of FileIndexItem results with updated file paths",
             "content": {
               "text/plain": {
                 "schema": {
@@ -998,24 +974,25 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifTimezoneBasedCorrectionRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifTimezoneBasedCorrectionRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifTimezoneBasedCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of FilenameDatetimeRepairMapping preview results showing before/after filenames",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1057,24 +1034,25 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifTimezoneBasedCorrectionRequest"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifTimezoneBasedCorrectionRequest"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest"
+                "$ref": "#/components/schemas/FilenameDatetimeRepairRequestOfExifTimezoneBasedCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "OK",
+            "description": "List of FileIndexItem results with updated file paths",
             "content": {
               "text/plain": {
                 "schema": {
@@ -1125,15 +1103,6 @@
         "responses": {
           "200": {
             "description": "when json\""
-          },
-          "412": {
-            "description": "\"cache disabled in config\""
-          },
-          "400": {
-            "description": "ignored, please check if the 'f' path exist or use a folder string to clear\nthe cache"
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -1167,9 +1136,6 @@
           },
           "302": {
             "description": "redirect back to the url"
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       },
@@ -1201,120 +1167,6 @@
           },
           "302": {
             "description": "redirect back to the url"
-          },
-          "401": {
-            "description": "User unauthorized"
-          }
-        }
-      }
-    },
-    "/api/cloud-import/status": {
-      "get": {
-        "tags": [
-          "CloudImport"
-        ],
-        "summary": "Get current Cloud Import status for all providers",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/cloud-import/status/{providerId}": {
-      "get": {
-        "tags": [
-          "CloudImport"
-        ],
-        "summary": "Get status for a specific provider",
-        "parameters": [
-          {
-            "name": "providerId",
-            "in": "path",
-            "description": "id of provider",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/cloud-import/sync": {
-      "post": {
-        "tags": [
-          "CloudImport"
-        ],
-        "summary": "Trigger a manual sync for all enabled providers",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/cloud-import/sync/{providerId}": {
-      "post": {
-        "tags": [
-          "CloudImport"
-        ],
-        "summary": "Trigger a manual sync for a specific provider",
-        "parameters": [
-          {
-            "name": "providerId",
-            "in": "path",
-            "description": "which provider",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/cloud-import/last-results": {
-      "get": {
-        "tags": [
-          "CloudImport"
-        ],
-        "summary": "Get the last sync results for all providers",
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/cloud-import/last-result/{providerId}": {
-      "get": {
-        "tags": [
-          "CloudImport"
-        ],
-        "summary": "Get the last sync result for a specific provider",
-        "parameters": [
-          {
-            "name": "providerId",
-            "in": "path",
-            "description": "which provider",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           }
         }
       }
@@ -1370,9 +1222,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -1441,10 +1290,10 @@
             }
           },
           "401": {
-            "description": "User unauthorized"
-          },
-          "404": {
-            "description": "subPath not found in the database"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -1477,10 +1326,16 @@
             }
           },
           "401": {
-            "description": "User unauthorized"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -1623,9 +1478,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -1656,9 +1508,6 @@
           },
           "400": {
             "description": "Bad Request"
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -1706,9 +1555,6 @@
           },
           "500": {
             "description": "\"Thumbnail generation failed\""
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -1725,14 +1571,32 @@
             "in": "query",
             "description": "to add the status code to the response",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "enum": [
+                    null
+                  ],
+                  "nullable": true
+                }
+              ],
+              "format": "int32",
+              "nullable": true
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Any Error html page",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       }
@@ -1826,10 +1690,16 @@
         ],
         "responses": {
           "200": {
-            "description": "if json is true return 'OK', else the zip file"
+            "description": "if json is true return 'OK', else the zip file",
+            "content": {
+              "application/json": { }
+            }
           },
           "206": {
-            "description": "Not ready generating the zip, please wait"
+            "description": "Not ready generating the zip, please wait",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -1930,9 +1800,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -1955,7 +1822,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Data with object"
+            "description": "Data with object",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -1986,7 +1856,10 @@
         ],
         "responses": {
           "200": {
-            "description": "Data with object"
+            "description": "Data with object",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -2003,7 +1876,15 @@
             "in": "query",
             "description": "Latitude coordinate in Decimal Degree (DD)",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           },
@@ -2012,14 +1893,25 @@
             "in": "query",
             "description": "Longitude coordinate in DD",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Data with object"
+            "description": "Data with object",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -2036,7 +1928,15 @@
             "in": "query",
             "description": "Latitude coordinate in Decimal Degree (DD)",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           },
@@ -2045,14 +1945,77 @@
             "in": "query",
             "description": "Longitude coordinate in DD",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "Data with object"
+            "description": "Data with object",
+            "content": {
+              "application/json": { }
+            }
+          }
+        }
+      }
+    },
+    "/api/health/check-for-updates": {
+      "get": {
+        "tags": [
+          "HealthCheckForUpdates"
+        ],
+        "summary": "Check if Client/App version has a match with the API-version",
+        "parameters": [
+          {
+            "name": "currentVersion",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Current Version Is Latest",
+            "content": {
+              "application/json": { }
+            }
+          }
+        }
+      }
+    },
+    "/api/health/release-info": {
+      "get": {
+        "tags": [
+          "HealthCheckForUpdates"
+        ],
+        "summary": "Get more info to show about the release",
+        "parameters": [
+          {
+            "name": "v",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": ""
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "result",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -2143,7 +2106,10 @@
             }
           },
           "401": {
-            "description": "Login first"
+            "description": "Login first",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -2166,70 +2132,6 @@
         "responses": {
           "200": {
             "description": "Ok"
-          },
-          "202": {
-            "description": "Version mismatch"
-          },
-          "400": {
-            "description": "Missing x-api-version header OR bad formatted version in header"
-          }
-        }
-      }
-    },
-    "/api/health/check-for-updates": {
-      "get": {
-        "tags": [
-          "HealthCheckForUpdates"
-        ],
-        "summary": "Check if Client/App version has a match with the API-version",
-        "parameters": [
-          {
-            "name": "currentVersion",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "default": ""
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Current Version Is Latest"
-          },
-          "208": {
-            "description": "Feature disabled"
-          },
-          "400": {
-            "description": "http request error or version number is not valid"
-          },
-          "206": {
-            "description": "There are no releases found"
-          },
-          "202": {
-            "description": "Need To Update"
-          }
-        }
-      }
-    },
-    "/api/health/release-info": {
-      "get": {
-        "tags": [
-          "HealthCheckForUpdates"
-        ],
-        "summary": "Get more info to show about the release",
-        "parameters": [
-          {
-            "name": "v",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "default": ""
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "result"
           }
         }
       }
@@ -2255,7 +2157,15 @@
             "in": "query",
             "description": "page number",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -2263,10 +2173,16 @@
         ],
         "responses": {
           "301": {
-            "description": "redirect to get page"
+            "description": "redirect to get page",
+            "content": {
+              "text/html": { }
+            }
           },
           "401": {
-            "description": "Login first"
+            "description": "Login first",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       },
@@ -2290,7 +2206,15 @@
             "in": "query",
             "description": "page number",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -2298,16 +2222,28 @@
         ],
         "responses": {
           "200": {
-            "description": "client app HTML"
+            "description": "client app HTML",
+            "content": {
+              "text/html": { }
+            }
           },
           "301": {
-            "description": "Is Case Sensitive Redirect"
+            "description": "Is Case Sensitive Redirect",
+            "content": {
+              "text/html": { }
+            }
           },
           "400": {
-            "description": "input is not allowed"
+            "description": "input is not allowed",
+            "content": {
+              "text/html": { }
+            }
           },
           "401": {
-            "description": "Login first"
+            "description": "Login first",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       }
@@ -2324,7 +2260,15 @@
             "in": "query",
             "description": "page number",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -2332,13 +2276,22 @@
         ],
         "responses": {
           "200": {
-            "description": "client app HTML"
+            "description": "client app HTML",
+            "content": {
+              "text/html": { }
+            }
           },
           "301": {
-            "description": "Is Case Sensitive Redirect"
+            "description": "Is Case Sensitive Redirect",
+            "content": {
+              "text/html": { }
+            }
           },
           "401": {
-            "description": "Login first"
+            "description": "Login first",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       }
@@ -2351,10 +2304,16 @@
         "summary": "Import page (HTML)",
         "responses": {
           "200": {
-            "description": "client app html"
+            "description": "client app html",
+            "content": {
+              "text/html": { }
+            }
           },
           "301": {
-            "description": "Is Case Sensitive Redirect"
+            "description": "Is Case Sensitive Redirect",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       }
@@ -2367,10 +2326,16 @@
         "summary": "Preferences page (HTML)",
         "responses": {
           "200": {
-            "description": "client app html"
+            "description": "client app html",
+            "content": {
+              "text/html": { }
+            }
           },
           "301": {
-            "description": "Is Case Sensitive Redirect"
+            "description": "Is Case Sensitive Redirect",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       }
@@ -2393,7 +2358,10 @@
         ],
         "responses": {
           "200": {
-            "description": "successful Register-page"
+            "description": "successful Register-page",
+            "content": {
+              "text/html": { }
+            }
           }
         }
       }
@@ -2507,10 +2475,16 @@
             }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Bad Request",
+            "content": {
+              "application/json": { }
+            }
           },
           "404": {
-            "description": "the file url is not found or the domain is not whitelisted"
+            "description": "the file url is not found or the domain is not whitelisted",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -2637,10 +2611,16 @@
             }
           },
           "404": {
-            "description": "subPath not found in the database"
+            "description": "subPath not found in the database",
+            "content": {
+              "application/json": { }
+            }
           },
           "401": {
-            "description": "User unauthorized"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -2653,7 +2633,7 @@
         "summary": "View data from the memory cache - use to debug",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": ""
           }
         }
       }
@@ -2722,9 +2702,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -2804,9 +2781,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -2831,7 +2805,8 @@
             "in": "query",
             "description": "Include collections or not",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           }
         ],
@@ -2853,11 +2828,15 @@
                 "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "Preview results with corrections that would be applied"
+            "description": "Preview results with corrections that would be applied",
+            "content": {
+              "application/json": { }
+            }
           },
           "400": {
             "description": "Invalid parameters or file paths",
@@ -2868,9 +2847,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -2895,7 +2871,8 @@
             "in": "query",
             "description": "Include collections or not",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           }
         ],
@@ -2917,11 +2894,15 @@
                 "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "Correction results with success/error status per file"
+            "description": "Correction results with success/error status per file",
+            "content": {
+              "application/json": { }
+            }
           },
           "400": {
             "description": "Invalid parameters or file paths",
@@ -2932,9 +2913,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -2959,7 +2937,8 @@
             "in": "query",
             "description": "Include collections or not",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           }
         ],
@@ -2981,11 +2960,15 @@
                 "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "Preview results with corrections that would be applied"
+            "description": "Preview results with corrections that would be applied",
+            "content": {
+              "application/json": { }
+            }
           },
           "400": {
             "description": "Invalid parameters or file paths",
@@ -2996,9 +2979,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -3023,7 +3003,8 @@
             "in": "query",
             "description": "Include collections or not",
             "schema": {
-              "type": "boolean"
+              "type": "boolean",
+              "nullable": true
             }
           }
         ],
@@ -3045,11 +3026,15 @@
                 "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "Correction results with success/error status per file"
+            "description": "Correction results with success/error status per file",
+            "content": {
+              "application/json": { }
+            }
           },
           "400": {
             "description": "Invalid parameters or file paths",
@@ -3060,9 +3045,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -3077,14 +3059,24 @@
           {
             "name": "Id",
             "in": "query",
+            "description": "Unique database Id, not used and Json Ignored due the fact that files that are moved could have\na new Id\nThe identifier.",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32"
             }
           },
           {
             "name": "FilePath",
             "in": "query",
+            "description": "Get a concatenated subPath style filepath to find the location\nThe file path.",
             "schema": {
               "maxLength": 380,
               "type": "string"
@@ -3093,52 +3085,66 @@
           {
             "name": "FileName",
             "in": "query",
+            "description": "Get or Set FileName with extension\nWithout first slash or path\nThe name of the file with extension",
             "schema": {
               "maxLength": 190,
               "type": "string"
-            }
+            },
+            "example": "/folder/image.jpg"
           },
           {
             "name": "FileHash",
             "in": "query",
+            "description": "Base32 hash to identify this file. Gets or sets the file hash.\nThe file hash.",
             "schema": {
               "maxLength": 190,
               "type": "string"
-            }
+            },
+            "example": "OZHCK4I47QPHOT53QBRE7Z4RLI"
           },
           {
             "name": "FileCollectionName",
             "in": "query",
+            "description": "GetFileNameWithoutExtension (only a getter)\nThe name of the file collection.",
             "schema": {
               "type": "string"
-            }
+            },
+            "example": "filenameWithoutExtension"
           },
           {
             "name": "ParentDirectory",
             "in": "query",
+            "description": "Get/Set Relative path of the parent Directory\nThe parent directory in subPath style",
             "schema": {
               "maxLength": 190,
               "type": "string"
-            }
+            },
+            "example": "/folder"
           },
           {
             "name": "IsDirectory",
             "in": "query",
+            "description": "Gets or sets a value indicating whether this instance is directory.\n`true` if this instance is directory; otherwise (then is a file), `false`.",
             "schema": {
-              "type": "boolean"
-            }
+              "type": "boolean",
+              "nullable": true
+            },
+            "example": true
           },
           {
             "name": "Tags",
             "in": "query",
+            "description": "Get/Set a comma separated string of unique tags.\nDuplicate keywords are case sensitive removed\nThe tags.",
             "schema": {
               "maxLength": 1024,
               "type": "string"
-            }
+            },
+            "example": "tag1, tag2"
           },
           {
             "name": "Status",
             "in": "query",
+            "description": "Gets or sets the display file status. (eg. NotFoundNotInIndex, Ok)\nThe display file status. (eg. NotFoundNotInIndex, Ok).",
             "schema": {
               "$ref": "#/components/schemas/ExifStatus"
             }
@@ -3146,6 +3152,7 @@
           {
             "name": "Description",
             "in": "query",
+            "description": "Gets or sets the iptc:Caption-Abstract or xmp:description.\nThe description as string",
             "schema": {
               "type": "string"
             }
@@ -3153,6 +3160,7 @@
           {
             "name": "Title",
             "in": "query",
+            "description": "Gets or sets the iptc:Object Name or xmp:title.\nThe title as string",
             "schema": {
               "type": "string"
             }
@@ -3160,6 +3168,7 @@
           {
             "name": "DateTime",
             "in": "query",
+            "description": "Date/Time Digitized or Date/Time Original\nAssumes localTime\nThe DateTime object",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -3168,6 +3177,7 @@
           {
             "name": "AddToDatabase",
             "in": "query",
+            "description": "Datetime of when this item is added to the database\nThe add to database DateTime value",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -3176,6 +3186,7 @@
           {
             "name": "LastEdited",
             "in": "query",
+            "description": "Datetime of the last change to this object\nThe last edited DateTime value",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -3184,30 +3195,58 @@
           {
             "name": "Latitude",
             "in": "query",
+            "description": "Latitude as decimal degrees using WGS84 (stored as double)\nThe latitude value",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           },
           {
             "name": "Longitude",
             "in": "query",
+            "description": "Longitude  as decimal degrees using WGS84 (stored as double)\nThe longitude value",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           },
           {
             "name": "LocationAltitude",
             "in": "query",
+            "description": "Location altitude in meters. How how difference there is relative to WGS84 round earth.\n(This might be different than meters above sea level)\nThe location altitude.",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           },
           {
             "name": "LocationCity",
             "in": "query",
+            "description": "The name of the nearest city\nThe location city.",
             "schema": {
               "maxLength": 40,
               "type": "string"
@@ -3216,6 +3255,7 @@
           {
             "name": "LocationState",
             "in": "query",
+            "description": "The name of the nearest state or province (Max length is 40 chars)\nThe state of the location.",
             "schema": {
               "maxLength": 40,
               "type": "string"
@@ -3224,6 +3264,7 @@
           {
             "name": "LocationCountry",
             "in": "query",
+            "description": "The name of the nearest country (Max length is 40 chars)\nThe location country.",
             "schema": {
               "maxLength": 40,
               "type": "string"
@@ -3232,6 +3273,7 @@
           {
             "name": "LocationCountryCode",
             "in": "query",
+            "description": "ISO-3166-1 alpha-3 (for example NLD for The Netherlands)\n@see: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3",
             "schema": {
               "maxLength": 3,
               "type": "string"
@@ -3240,6 +3282,7 @@
           {
             "name": "ColorClass",
             "in": "query",
+            "description": "Gets or sets the color class.\nAlways display int, because the Update api uses ints to parse\nThe color class.",
             "schema": {
               "$ref": "#/components/schemas/Color"
             }
@@ -3247,6 +3290,7 @@
           {
             "name": "Orientation",
             "in": "query",
+            "description": "Gets or sets the image orientation.\nThe orientation as enum item",
             "schema": {
               "$ref": "#/components/schemas/Rotation"
             }
@@ -3254,22 +3298,41 @@
           {
             "name": "ImageWidth",
             "in": "query",
+            "description": "Gets or sets the width of the image. (saved as ushort 0-65535)\nSide effect: when rotating; this may not be updated\nThe width of the image.",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "format": "uint16"
             }
           },
           {
             "name": "ImageHeight",
             "in": "query",
+            "description": "Gets or sets the height of the image. (saved as ushort 0-65535)\nSide effect: when rotating; this may not be updated\nThe height of the image.",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "format": "uint16"
             }
           },
           {
             "name": "ImageFormat",
             "in": "query",
+            "description": "Gets or sets the image format. (eg: jpg, tiff)\nThere are types for: notfound = -1, and\tunknown = 0,\nThe image format as enum item",
             "schema": {
               "$ref": "#/components/schemas/ImageFormat"
             }
@@ -3277,6 +3340,7 @@
           {
             "name": "CollectionPaths",
             "in": "query",
+            "description": "To show location of files with the same Filename without extension\nThe collection paths, relative to the database (subPath style)",
             "schema": {
               "type": "array",
               "items": {
@@ -3287,6 +3351,7 @@
           {
             "name": "SidecarExtensions",
             "in": "query",
+            "description": "Database string to store sidecar paths",
             "schema": {
               "type": "string"
             }
@@ -3294,8 +3359,8 @@
           {
             "name": "SidecarExtensionsList",
             "in": "query",
+            "description": "List of Sidecar files",
             "schema": {
-              "uniqueItems": true,
               "type": "array",
               "items": {
                 "type": "string"
@@ -3305,14 +3370,24 @@
           {
             "name": "Aperture",
             "in": "query",
+            "description": "Gets or sets the aperture. (round to 5 decimals)\nThe aperture.",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           },
           {
             "name": "ShutterSpeed",
             "in": "query",
+            "description": "Shutter speed as string so '1/2' or '1'\nThe shutter speed as string",
             "schema": {
               "maxLength": 20,
               "type": "string"
@@ -3321,14 +3396,24 @@
           {
             "name": "IsoSpeed",
             "in": "query",
+            "description": "Gets or sets the iso speed used by cameras  (saved as ushort 0-65535)\nThe iso speed.",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "format": "uint16"
             }
           },
           {
             "name": "Software",
             "in": "query",
+            "description": "Edited with this program",
             "schema": {
               "maxLength": 40,
               "type": "string"
@@ -3337,6 +3422,7 @@
           {
             "name": "MakeModel",
             "in": "query",
+            "description": "Camera Make, Model and Lens (saved pipe separated string)\nCamera brand and type (incl. lens)",
             "schema": {
               "type": "string"
             }
@@ -3344,6 +3430,7 @@
           {
             "name": "Make",
             "in": "query",
+            "description": "Get the Make (Camera Brand) of the _makeModel",
             "schema": {
               "type": "string"
             }
@@ -3351,6 +3438,7 @@
           {
             "name": "Model",
             "in": "query",
+            "description": "Get the Model (Camera Model) of the _makeModel",
             "schema": {
               "type": "string"
             }
@@ -3358,6 +3446,7 @@
           {
             "name": "LensModel",
             "in": "query",
+            "description": "Get the Lens info (from MakeModel)",
             "schema": {
               "type": "string"
             }
@@ -3365,6 +3454,7 @@
           {
             "name": "MakeCameraSerial",
             "in": "query",
+            "description": "Get the Serial of the _makeModel",
             "schema": {
               "type": "string"
             }
@@ -3372,22 +3462,41 @@
           {
             "name": "FocalLength",
             "in": "query",
+            "description": "The Zoom of the camera (that is currently used)",
             "schema": {
-              "type": "number",
+              "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "double"
             }
           },
           {
             "name": "Size",
             "in": "query",
+            "description": "Size of the file in bytes (BigInt)",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int64"
             }
           },
           {
             "name": "ImageStabilisation",
             "in": "query",
+            "description": "Is ImageStabilisation unknown, on or off\nCurrently Sony only",
             "schema": {
               "$ref": "#/components/schemas/ImageStabilisationType"
             }
@@ -3395,6 +3504,7 @@
           {
             "name": "LastChanged",
             "in": "query",
+            "description": "Fields that are changed in the last request",
             "schema": {
               "type": "array",
               "items": {
@@ -3405,6 +3515,7 @@
           {
             "name": "Artist",
             "in": "query",
+            "description": "IPTC field for artist/creator",
             "schema": {
               "maxLength": 200,
               "type": "string"
@@ -3413,6 +3524,7 @@
           {
             "name": "SuggestedTags",
             "in": "query",
+            "description": "AI generated tags that should be suggested to the user.\nStored as comma separated string.",
             "schema": {
               "maxLength": 1024,
               "type": "string"
@@ -3421,6 +3533,7 @@
           {
             "name": "RejectedTags",
             "in": "query",
+            "description": "AI generated tags rejected by the user.\nStored as comma separated string.",
             "schema": {
               "maxLength": 1024,
               "type": "string"
@@ -3429,6 +3542,7 @@
           {
             "name": "ImageClassificationModel",
             "in": "query",
+            "description": "Name/version of the model that generated AI metadata.",
             "schema": {
               "maxLength": 200,
               "type": "string"
@@ -3437,6 +3551,7 @@
           {
             "name": "ImageClassificationGeneratedAt",
             "in": "query",
+            "description": "Datetime when AI metadata was generated.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -3472,7 +3587,15 @@
             "in": "query",
             "description": "relative orientation -1 or 1",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -3514,9 +3637,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -3538,13 +3658,10 @@
         ],
         "responses": {
           "200": {
-            "description": "list of recent items"
-          },
-          "400": {
-            "description": "Longer than 1 dag ago requested, or null"
-          },
-          "401": {
-            "description": "User unauthorized"
+            "description": "list of recent items",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -3557,10 +3674,10 @@
         "summary": "Get all publish profiles\nTo see the entire config check appSettings",
         "responses": {
           "200": {
-            "description": "list of all publish profiles in the _appSettings scope"
-          },
-          "401": {
-            "description": "User unauthorized"
+            "description": "list of all publish profiles in the _appSettings scope",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -3641,7 +3758,10 @@
             }
           },
           "401": {
-            "description": "User unauthorized"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -3673,7 +3793,10 @@
             }
           },
           "401": {
-            "description": "User unauthorized"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -3734,7 +3857,10 @@
             }
           },
           "401": {
-            "description": "User unauthorized"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -3787,7 +3913,10 @@
             }
           },
           "401": {
-            "description": "User unauthorized"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -3804,7 +3933,15 @@
             "in": "query",
             "description": "how many days ago",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32"
             }
           },
@@ -3820,10 +3957,16 @@
         ],
         "responses": {
           "200": {
-            "description": "(if json is true) the subPath of the folder"
+            "description": "(if json is true) the subPath of the folder",
+            "content": {
+              "application/json": { }
+            }
           },
           "301": {
-            "description": "(if json is false) redirect to folder"
+            "description": "(if json is false) redirect to folder",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -3848,7 +3991,15 @@
             "in": "query",
             "description": "page number",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -3905,7 +4056,15 @@
             "in": "query",
             "description": "pageNumber (search query)",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -3946,7 +4105,15 @@
             "in": "query",
             "description": "page number",
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -4005,7 +4172,10 @@
             }
           },
           "401": {
-            "description": "User unauthorized"
+            "description": "User unauthorized",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -4063,7 +4233,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StringInt32KeyValuePair"
+                  "$ref": "#/components/schemas/KeyValuePairOfstringAndint"
                 }
               }
             }
@@ -4158,9 +4328,6 @@
           },
           "404": {
             "description": "item not found on disk"
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -4190,16 +4357,13 @@
             "description": "Thumbnail is not ready yet"
           },
           "210": {
-            "description": "Success"
+            "description": ""
           },
           "400": {
             "description": "string (f) input not allowed to avoid path injection attacks"
           },
           "404": {
             "description": "no thumbnails yet"
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -4274,9 +4438,6 @@
           },
           "404": {
             "description": "item not found on disk"
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -4303,7 +4464,15 @@
             "description": "zoom factor?",
             "required": true,
             "schema": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32",
               "default": 0
             }
@@ -4330,9 +4499,6 @@
           },
           "210": {
             "description": "Conflict, you did try get for example a thumbnail of a raw file"
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -4354,10 +4520,10 @@
         ],
         "responses": {
           "200": {
-            "description": "give start signal"
-          },
-          "404": {
-            "description": "folder not found"
+            "description": "give start signal",
+            "content": {
+              "application/json": { }
+            }
           }
         }
       }
@@ -4423,9 +4589,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -4446,9 +4609,6 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "User unauthorized"
           }
         }
       }
@@ -4570,73 +4730,180 @@
           }
         }
       }
+    },
+    "/api/cloud-import/status": {
+      "get": {
+        "tags": [
+          "CloudImport"
+        ],
+        "summary": "Get current Cloud Import status for all providers",
+        "responses": {
+          "200": {
+            "description": "get status"
+          }
+        }
+      }
+    },
+    "/api/cloud-import/status/{providerId}": {
+      "get": {
+        "tags": [
+          "CloudImport"
+        ],
+        "summary": "Get status for a specific provider",
+        "parameters": [
+          {
+            "name": "providerId",
+            "in": "path",
+            "description": "id of provider",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status"
+          }
+        }
+      }
+    },
+    "/api/cloud-import/sync": {
+      "post": {
+        "tags": [
+          "CloudImport"
+        ],
+        "summary": "Trigger a manual sync for all enabled providers",
+        "responses": {
+          "200": {
+            "description": "result of sync"
+          }
+        }
+      }
+    },
+    "/api/cloud-import/sync/{providerId}": {
+      "post": {
+        "tags": [
+          "CloudImport"
+        ],
+        "summary": "Trigger a manual sync for a specific provider",
+        "parameters": [
+          {
+            "name": "providerId",
+            "in": "path",
+            "description": "which provider",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status"
+          }
+        }
+      }
+    },
+    "/api/cloud-import/last-results": {
+      "get": {
+        "tags": [
+          "CloudImport"
+        ],
+        "summary": "Get the last sync results for all providers",
+        "responses": {
+          "200": {
+            "description": "status"
+          }
+        }
+      }
+    },
+    "/api/cloud-import/last-result/{providerId}": {
+      "get": {
+        "tags": [
+          "CloudImport"
+        ],
+        "summary": "Get the last sync result for a specific provider",
+        "parameters": [
+          {
+            "name": "providerId",
+            "in": "path",
+            "description": "which provider",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "status"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
       "AppAccountRoles": {
         "enum": [
-          0,
-          1
-        ],
-        "type": "integer",
-        "format": "int32"
+          "User",
+          "Administrator"
+        ]
       },
       "AppSettings": {
         "type": "object",
         "properties": {
           "baseDirectoryProject": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "Root of the project with replaced value",
+            "nullable": true
           },
           "applicationType": {
             "$ref": "#/components/schemas/StarskyAppType"
           },
           "appVersion": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "Get the Application Version of Starsky",
+            "nullable": true
           },
           "appVersionBuildDateTime": {
             "type": "string",
-            "format": "date-time",
-            "readOnly": true
+            "format": "date-time"
           },
           "appVersionCommitHash": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "Get the git commit hash of the current build (if available).",
+            "nullable": true
           },
           "storageFolder": {
             "type": "string",
-            "nullable": true
+            "description": "Main Storage provider on disk"
           },
           "storageFolderAllowEdit": {
             "type": "boolean",
-            "readOnly": true
+            "description": "Allow overwriting this name in AppSettingsController"
           },
           "storageFolderMappings": {
             "type": "object",
             "additionalProperties": {
               "type": "string"
             },
-            "nullable": true
+            "description": "Maps virtual subPaths to physical paths outside StorageFolder.\nKey: subPath (e.g. \"/2024\"), Value: physical OS path (e.g. \"/data/archive/2024\").\nLonger keys take precedence over shorter ones."
           },
           "verbose": {
             "type": "boolean",
             "nullable": true
           },
           "name": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "databaseType": {
             "$ref": "#/components/schemas/DatabaseTypeList"
           },
           "databaseConnection": {
             "type": "string",
-            "nullable": true
+            "description": "Connection string for the database"
           },
           "structure": {
             "$ref": "#/components/schemas/AppSettingsStructureModel"
@@ -4655,83 +4922,106 @@
           },
           "cameraTimeZone": {
             "type": "string",
-            "nullable": true
+            "description": "Used for syncing gpx files"
           },
           "thumbnailTempFolder": {
             "type": "string",
-            "nullable": true
+            "description": "Location of storage of Thumbnails"
           },
           "thumbnailImageFormat": {
             "$ref": "#/components/schemas/ThumbnailImageFormat"
           },
           "tempFolder": {
             "type": "string",
-            "nullable": true
+            "description": "Location of temp folder"
           },
           "dependenciesFolder": {
             "type": "string",
-            "nullable": true
+            "description": "Location of dependencies folder"
           },
           "appSettingsPath": {
             "type": "string",
-            "nullable": true
+            "description": "To store the settings by user in the AppData folder\nUsed by the Desktop App\nSee also AppSettingsLocalPath"
           },
           "appSettingsLocalPath": {
             "type": "string",
-            "nullable": true
+            "description": "To store the settings by user in the AppData folder\nUsed by the Desktop App\nSee also AppSettingsPath"
           },
           "isWindows": {
             "type": "boolean",
-            "readOnly": true
+            "description": "Is the host of the Application Windows"
           },
           "exifToolPath": {
             "type": "string",
-            "nullable": true
+            "description": "Location of ExifTool.exe"
           },
           "exifToolImportXmpCreate": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Create xmp when importing"
           },
           "readOnlyFolders": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "nullable": true
+            "description": "fallback in constructor\nuse env variable: app__ReadOnlyFolders__0 - value"
           },
           "addMemoryCache": {
             "type": "boolean",
+            "description": "Use Memory Cache to speed up the application",
             "nullable": true
           },
           "addOpenApi": {
             "type": "boolean",
+            "description": "Expose the OpenAPI document at `/openapi/{Name}.json`",
+            "nullable": true
+          },
+          "addScalar": {
+            "type": "boolean",
+            "description": "Show the Scalar API reference at `/scalar`. Implies AddOpenApi",
             "nullable": true
           },
           "mcpEnabled": {
             "type": "boolean",
+            "description": "Expose the Model Context Protocol (MCP) endpoint for AI agents at `/starsky/mcp`\nOnly read-only tools unless McpAllowWrite is true",
             "nullable": true
           },
           "mcpAllowWrite": {
             "type": "boolean",
+            "description": "Register the tools that change files (move to trash) in the MCP endpoint\nEach call needs a confirmation step. Requires McpEnabled",
             "nullable": true
           },
           "mcpMaxItemsPerCall": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Maximum number of files that a single MCP write call may touch",
             "format": "int32"
           },
           "addOpenApiExport": {
             "type": "boolean",
+            "description": "Export the OpenAPI document (use AddOpenApi and AddOpenApiExport to export)",
             "nullable": true
           },
           "addOpenApiExportExitAfter": {
             "type": "boolean",
+            "description": "Stop application after OpenAPI export.\nNeed to set AddOpenApi and AddOpenApiExport also to true to take effect",
             "nullable": true
           },
           "metaThumbnailOnImport": {
             "type": "boolean",
+            "description": "Set Meta Thumbnails on import",
             "nullable": true
           },
           "demoUnsafeDeleteStorageFolder": {
             "type": "boolean",
+            "description": "When enabled the storage folder is deleted on startup\nShould use: app__storageFolder environment variable",
             "nullable": true
           },
           "demoData": {
@@ -4739,7 +5029,7 @@
             "items": {
               "$ref": "#/components/schemas/AppSettingsKeyValue"
             },
-            "nullable": true
+            "description": "Data for the demo mode"
           },
           "publishProfiles": {
             "type": "object",
@@ -4749,6 +5039,7 @@
                 "$ref": "#/components/schemas/AppSettingsPublishProfiles"
               }
             },
+            "description": "Publishing profiles used within the publishing module (Order by Key)",
             "nullable": true
           },
           "publishProfilesDefaults": {
@@ -4759,10 +5050,12 @@
           },
           "isAccountRegisterOpen": {
             "type": "boolean",
+            "description": "Set this value to `true` to keep `/account/register` open for everyone. (Security Issue)\nThis setting is by default false. The only 2 build in exceptions are when there are no\naccounts, or you already logged in",
             "nullable": true
           },
           "noAccountLocalhost": {
             "type": "boolean",
+            "description": "Used for Desktop App, to allow localhost logins without password and use default account",
             "nullable": true
           },
           "accountRegisterDefaultRole": {
@@ -4770,6 +5063,7 @@
           },
           "useRateLimiting": {
             "type": "boolean",
+            "description": "Limit the requests per client IP on the endpoints that work without a login\n(login, register, health check for updates, geo lookup, search suggest).\nTurn off when a reverse proxy already does this.\nuse env variable: app__UseRateLimiting\nCan be switched at runtime when the limiter was enabled at startup (end-to-end tests)",
             "nullable": true
           },
           "trustedProxies": {
@@ -4777,10 +5071,12 @@
             "items": {
               "type": "string"
             },
+            "description": "IP addresses or CIDR networks (e.g. \"172.17.0.1\" or \"10.0.0.0/8\") of reverse proxies\nthat are trusted to set the X-Forwarded-For / X-Forwarded-Proto headers.\nLeave empty (the default) to trust only loopback, which is enough when the reverse\nproxy connects to this app over localhost (e.g. NgInx on the same host).\nOnly set this when the proxy connects from a different host/container (e.g. Docker),\nand only to that proxy's own address — do NOT use this to \"trust everyone\", that lets\nany client spoof their IP and bypass the login/register rate limiter and the\nNoAccountLocalhost auto-login check.\nuse env variable: app__TrustedProxies__0, app__TrustedProxies__1, ...",
             "nullable": true
           },
           "trustedProxiesCloudflare": {
             "type": "boolean",
+            "description": "Add Cloudflare's published edge IP ranges to TrustedProxies automatically (see\nCloudflareTrustedProxiesHelper for the list), instead of pasting them into\nTrustedProxies by hand. Only enable this when Cloudflare is actually in front of this\napp, and the origin is not otherwise reachable directly (firewall it to Cloudflare's\nIPs, use Cloudflare Tunnel, or Authenticated Origin Pulls) — trusting the header is not\na substitute for that.\nuse env variable: app__TrustedProxiesCloudflare",
             "nullable": true
           },
           "accountRolesByEmailRegisterOverwrite": {
@@ -4788,38 +5084,61 @@
             "additionalProperties": {
               "type": "string"
             },
+            "description": "Overwrite when registering a new account to give the account a specific role\nFirst key is the identifier e.g. \"demo@qdraw.nl\"\nand the second key is the role name e.g. \"Administrator\" or \"User\"",
             "nullable": true
           },
           "accountRegisterFirstRoleAdmin": {
             "type": "boolean",
+            "description": "Add the default account as admin, other accounts as AccountRegisterDefaultRole",
             "nullable": true
           },
           "maxDegreesOfParallelism": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "format": "int32"
           },
           "maxDegreesOfParallelismThumbnail": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "format": "int32"
           },
           "useHttpsRedirection": {
             "type": "boolean",
+            "description": "Set to false when running on http-only service.\nYou should enable this when going to production\nIgnored in Debug/Develop mode",
             "nullable": true
           },
           "httpsOn": {
             "type": "boolean",
+            "description": "Set to false when running on http-only service.\nYou should enable this when going to production\nIgnored in Debug/Develop mode",
             "nullable": true
           },
           "useRealtime": {
             "type": "boolean",
+            "description": "Use WebSockets to update the UI realtime",
             "nullable": true
           },
           "useDiskWatcher": {
             "type": "boolean",
+            "description": "Watch the fileSystem for changes",
             "nullable": true
           },
           "checkForUpdates": {
             "type": "boolean",
+            "description": "Check if there are updates",
             "nullable": true
           },
           "syncIgnore": {
@@ -4827,10 +5146,11 @@
             "items": {
               "type": "string"
             },
-            "nullable": true
+            "description": "Ignore the directories when running sync\nuse env variable: app__SyncIgnore__0 - value\nUse always UNIX style"
           },
           "syncOnStartup": {
             "type": "boolean",
+            "description": "Auto Sync on Startup",
             "nullable": true
           },
           "importIgnore": {
@@ -4838,17 +5158,19 @@
             "items": {
               "type": "string"
             },
-            "nullable": true
+            "description": "Ignore this part of a path while importing\nuse env variable: app__importIgnore__0 - value\nUse always UNIX style\nIgnore folders"
           },
           "videoUseLocalTime": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/CameraMakeModel"
             },
+            "description": "According to Phil Harvey (exiftool's creator),\nQuicktime timestamps are supposed to be set to UTC time as per the standard.\nBut it seems a lot of cameras don't do this\nWe assume that the standard is followed,\nand for Camera brands that don't follow the specs use\nthis setting.",
             "nullable": true
           },
           "useLocalDesktop": {
             "type": "boolean",
+            "description": "Disable logout buttons in UI\nAnd hides server specific features that are strange on a local desktop\nEnable Desktop based features",
             "nullable": true
           },
           "defaultDesktopEditor": {
@@ -4856,87 +5178,176 @@
             "items": {
               "$ref": "#/components/schemas/AppSettingsDefaultEditorApplication"
             },
-            "nullable": true
+            "description": "Editor by imageFormat"
           },
           "desktopCollectionsOpen": {
             "$ref": "#/components/schemas/RawJpegMode"
           },
           "desktopEditorAmountBeforeConfirmation": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Number of files to open before confirmation",
             "format": "int32",
             "nullable": true
           },
           "enablePackageTelemetry": {
             "type": "boolean",
+            "description": "Helps us improve the software\nPlease keep this enabled",
             "nullable": true
           },
           "enablePackageTelemetryDebug": {
             "type": "boolean",
+            "description": "Show what is sent in console/logger",
             "nullable": true
           },
           "useDiskWatcherIntervalInMilliseconds": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Time to wait to avoid duplicate requests in the UseDiskWatcher API",
             "format": "double"
           },
           "syncAlwaysUpdateLastEditedTime": {
             "type": "boolean",
+            "description": "When sync update last edited time in db, you disable it when you share a database between\nmultiple computers",
             "nullable": true
           },
           "useSystemTrash": {
             "type": "boolean",
+            "description": "Use the system trash (if available)\nThis system trash is not supported on all platforms\nor when running as a Windows service it's not supported\nPlease check IMoveToTrashService.IsEnabled() instead",
             "nullable": true
           },
           "cpuUsageMaxPercentage": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "For background task with lower priority e.g. thumbnails\nit skips the current task if the current process is too busy",
             "format": "double"
           },
           "thumbnailGenerationIntervalInMinutes": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Background Task to run when the CPU is not busy",
             "format": "int32",
             "nullable": true
           },
           "thumbnailCleanupSkipOnStartup": {
             "type": "boolean",
+            "description": "Clean non referenced thumbnails on startup\nRecommended to keep false",
             "nullable": true
           },
           "geoFilesSkipDownloadOnStartup": {
             "type": "boolean",
+            "description": "Skip download GeoFiles on startup\nRecommended to keep false",
             "nullable": true
           },
           "exiftoolSkipDownloadOnStartup": {
             "type": "boolean",
+            "description": "Skip download ExifTool on startup\nRecommended to keep false",
             "nullable": true
           },
           "ffmpegSkipDownloadOnStartup": {
             "type": "boolean",
+            "description": "Skip download Ffmpeg on startup\nRecommended to keep false",
             "nullable": true
           },
           "ffmpegSkipPreflightCheck": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Skip a preflight check for ffmpeg"
           },
           "imageOptimisationDownloadOnStartup": {
             "type": "boolean",
+            "description": "Skip download ImageOptimisation on startup\nRecommended to keep false",
             "nullable": true
           },
           "ffmpegPath": {
             "type": "string",
+            "description": "Exe path to Ffmpeg",
             "nullable": true
           },
           "cloudImport": {
-            "$ref": "#/components/schemas/CloudImportSettings"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/CloudImportSettings"
+              }
+            ]
           },
           "openTelemetry": {
-            "$ref": "#/components/schemas/OpenTelemetrySettings"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/OpenTelemetrySettings"
+              }
+            ]
           },
           "enableCrashReports": {
             "type": "boolean",
+            "description": "Send anonymous crash reports (unhandled exceptions only, no personal data)\nOnly active when a DSN is available\nDisable with: app__EnableCrashReports=false",
             "nullable": true
           },
           "sentry": {
-            "$ref": "#/components/schemas/SentrySettings"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/SentrySettings"
+              }
+            ]
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsDefaultEditorApplication": {
         "type": "object",
@@ -4946,14 +5357,14 @@
             "items": {
               "$ref": "#/components/schemas/ImageFormat"
             },
-            "nullable": true
+            "description": "For what type of files"
           },
           "applicationPath": {
             "type": "string",
+            "description": "Path to .exe on Windows and .app on macOS\nNo check if exists here\nNull Or Empty string means using default app",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsImportBackupModel": {
         "type": "object",
@@ -4965,8 +5376,7 @@
             "type": "string",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsImportTransformationModel": {
         "type": "object",
@@ -4975,34 +5385,29 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/TransformationRule"
-            },
-            "nullable": true
+            }
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsKeyValue": {
         "type": "object",
         "properties": {
           "key": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "value": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsMountWatcherModel": {
         "type": "object",
         "properties": {
           "deleteAfter": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Delete the source image after successful import"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsPublishProfiles": {
         "type": "object",
@@ -5011,48 +5416,67 @@
             "$ref": "#/components/schemas/TemplateContentType"
           },
           "sourceMaxWidth": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "The size of the main image after resizing",
             "format": "int32"
           },
           "overlayMaxWidth": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Size of the overlay Image / logo",
             "format": "int32"
           },
           "path": {
             "type": "string",
-            "nullable": true
+            "description": "used for template url or overlay image"
           },
           "folder": {
             "type": "string",
-            "nullable": true
+            "description": "To copy folder"
           },
           "append": {
             "type": "string",
-            "nullable": true
+            "description": "do not add slash check, used for _kl"
           },
           "template": {
             "type": "string",
-            "nullable": true
+            "description": "index.cshtml for example"
           },
           "prepend": {
             "type": "string",
-            "nullable": true
+            "description": "To add before"
           },
           "metaData": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Include Exif Data"
           },
           "copy": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "For the ftp client to ignore some directories"
           },
           "optimizers": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Optimizer"
             },
-            "nullable": true
+            "description": "Optional profile-level optimizer settings.\nIf empty, PublishProfilesDefaults.Optimizers are used."
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsPublishProfilesDefaults": {
         "type": "object",
@@ -5065,10 +5489,9 @@
             "items": {
               "$ref": "#/components/schemas/Optimizer"
             },
-            "nullable": true
+            "description": "List of optimizers to apply by default for new publish profiles."
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsPublishProfilesRemote": {
         "type": "object",
@@ -5081,17 +5504,17 @@
                 "$ref": "#/components/schemas/RemoteCredentialWrapper"
               }
             },
-            "nullable": true
+            "description": "Key: publish profile id, Value: list of remote credential wrappers (targets)"
           },
           "default": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/RemoteCredentialWrapper"
             },
-            "nullable": true
+            "description": "Default/fallback remote credentials if a profile id is not found."
           }
         },
-        "additionalProperties": false
+        "description": "Represents the remote Publish profiles configuration, allowing multiple remote targets per\nprofile ID."
       },
       "AppSettingsQueueModel": {
         "type": "object",
@@ -5104,43 +5527,53 @@
             "additionalProperties": {
               "$ref": "#/components/schemas/QueueBackendType"
             },
-            "nullable": true
+            "description": "Per queue backend selection.\nKeys should match queue name constants used by queue implementations."
           },
           "rabbitMq": {
             "$ref": "#/components/schemas/AppSettingsRabbitMqModel"
           },
           "databasePollIntervalInMilliseconds": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "format": "int32"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsRabbitMqModel": {
         "type": "object",
         "properties": {
           "host": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "port": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "format": "int32"
           },
           "username": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "virtualHost": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "AppSettingsStructureModel": {
         "type": "object",
@@ -5153,19 +5586,15 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/StructureRule"
-            },
-            "nullable": true
+            }
           },
           "errors": {
-            "uniqueItems": true,
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           }
-        },
-        "additionalProperties": false
+        }
       },
       "ArchiveViewModel": {
         "type": "object",
@@ -5174,34 +5603,39 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/FileIndexItem"
-            },
-            "nullable": true
+            }
           },
           "breadcrumb": {
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           },
           "relativeObjects": {
             "$ref": "#/components/schemas/RelativeObjects"
           },
           "searchQuery": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "pageType": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
-          },
-          "subPath": {
-            "type": "string",
+            "description": "Used PageType by react client",
             "nullable": true
           },
+          "subPath": {
+            "type": "string"
+          },
           "collectionsCount": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Count the number of files (collection setting is ignored for this value)",
             "format": "int32"
           },
           "isReadOnly": {
@@ -5212,52 +5646,63 @@
             "items": {
               "$ref": "#/components/schemas/Color"
             },
-            "nullable": true
+            "description": "Display only the current filter selection of ColorClasses"
           },
           "colorClassUsage": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/Color"
             },
-            "nullable": true
+            "description": "Give back a list of all colorClasses that are used in this specific folder"
           },
           "collections": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "For display only"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "BatchRenameMapping": {
         "type": "object",
         "properties": {
           "sourceFilePath": {
             "type": "string",
-            "nullable": true
+            "description": "Original file path (subPath style, e.g., /folder/filename.jpg)"
           },
           "targetFilePath": {
             "type": "string",
-            "nullable": true
+            "description": "New file path (subPath style)"
           },
           "relatedFilePaths": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/StringStringValueTuple"
+              "$ref": "#/components/schemas/ValueTupleOfstringAndstring"
             },
-            "nullable": true
+            "description": "List of related file paths that will be renamed together (e.g., XMP sidecars)"
           },
           "sequenceNumber": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Sequence number assigned to handle duplicate formatted dates",
             "format": "int32"
           },
           "hasError": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if this mapping has any validation errors"
           },
           "errorMessage": {
             "type": "string",
+            "description": "Error message if mapping validation failed",
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "description": "Represents a single file rename mapping in a batch rename operation"
       },
       "BatchRenameRequest": {
         "type": "object",
@@ -5266,74 +5711,88 @@
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           },
           "pattern": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "collections": {
             "type": "boolean"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "CameraMakeModel": {
         "type": "object",
         "properties": {
           "make": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "model": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "CloudImportProviderSettings": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string",
-            "nullable": true
+            "description": "Unique identifier for this provider configuration"
           },
           "enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Enable or disable this Cloud Import provider"
           },
           "provider": {
             "type": "string",
-            "nullable": true
+            "description": "Cloud storage provider (e.g., \"Dropbox\")"
           },
           "remoteFolder": {
             "type": "string",
-            "nullable": true
+            "description": "Remote folder path to sync from"
           },
           "syncFrequencyMinutes": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Sync frequency in minutes (if &gt; 0, this takes priority)",
             "format": "double"
           },
           "syncFrequencyHours": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Sync frequency in hours (used if SyncFrequencyMinutes is 0)",
             "format": "int32"
           },
           "deleteAfterImport": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Whether to delete files from cloud storage after successful import"
           },
           "extensions": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "nullable": true
+            "description": "If used, only files with these extensions will be imported\n(Does NOT check actual imageFormat)\nIf empty or null, all files are imported"
           },
           "credentials": {
             "$ref": "#/components/schemas/CloudProviderCredentials"
           }
         },
-        "additionalProperties": false
+        "description": "Configuration for a single Cloud Import provider"
       },
       "CloudImportSettings": {
         "type": "object",
@@ -5343,175 +5802,200 @@
             "items": {
               "$ref": "#/components/schemas/CloudImportProviderSettings"
             },
-            "nullable": true
+            "description": "List of Cloud Import provider configurations"
           }
         },
-        "additionalProperties": false
+        "description": "Configuration for Cloud Import providers"
       },
       "CloudProviderCredentials": {
         "type": "object",
         "properties": {
           "refreshToken": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "appKey": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "appSecret": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "Color": {
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          -1
-        ],
-        "type": "integer",
-        "format": "int32"
+        "type": "integer"
       },
       "DatabaseTypeList": {
         "enum": [
-          1,
-          2,
-          3
+          "Mysql",
+          "Sqlite",
+          "InMemoryDatabase"
         ],
-        "type": "integer",
-        "format": "int32"
+        "description": "The available database types"
       },
       "ExifCustomOffsetCorrectionRequest": {
         "type": "object",
         "properties": {
           "year": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Custom offset: Years to add/subtract (can be negative)",
             "format": "int32",
             "nullable": true
           },
           "month": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Custom offset: Months to add/subtract (can be negative)",
             "format": "int32",
             "nullable": true
           },
           "day": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Custom offset: Days to add/subtract (can be negative)",
             "format": "int32",
             "nullable": true
           },
           "hour": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Custom offset: Hours to add/subtract (can be negative)",
             "format": "int32",
             "nullable": true
           },
           "minute": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Custom offset: Minutes to add/subtract (can be negative)",
             "format": "int32",
             "nullable": true
           },
           "second": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              }
+            ],
+            "description": "Custom offset: Seconds to add/subtract (can be negative)",
             "format": "int32",
             "nullable": true
           },
           "hasAnyOffset": {
             "type": "boolean",
-            "readOnly": true
+            "description": "Check if at least one offset value is provided"
           }
         },
-        "additionalProperties": false
-      },
-      "ExifCustomOffsetCorrectionRequestFilenameDatetimeRepairRequest": {
-        "required": [
-          "correctionRequest",
-          "filePaths"
-        ],
-        "type": "object",
-        "properties": {
-          "filePaths": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "collections": {
-            "type": "boolean"
-          },
-          "correctionRequest": {
-            "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequest"
-          }
-        },
-        "additionalProperties": false
+        "description": "Request model for custom offset EXIF correction\nUses custom time/date offsets (years, months, days, hours, minutes, seconds)"
       },
       "ExifStatus": {
         "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          9,
-          10,
-          11
+          "Default",
+          "ExifWriteNotSupported",
+          "NotFoundNotInIndex",
+          "NotFoundSourceMissing",
+          "OperationNotSupported",
+          "DirReadOnly",
+          "ReadOnly",
+          "Unauthorized",
+          "Ok",
+          "Deleted",
+          "OkAndSame",
+          "DeletedAndSame"
         ],
-        "type": "integer",
-        "format": "int32"
+        "description": "Used to display file status (eg. NotFoundNotInIndex, Ok)"
       },
       "ExifTimezoneBasedCorrectionRequest": {
         "required": [
-          "correctTimezoneId",
-          "recordedTimezoneId"
+          "recordedTimezoneId",
+          "correctTimezoneId"
         ],
         "type": "object",
         "properties": {
           "recordedTimezoneId": {
             "type": "string",
-            "nullable": true
+            "description": "The timezone the camera thought it was in (source offset)\nIANA timezone ID (e.g., \"Europe/Amsterdam\", \"America/New_York\")"
           },
           "correctTimezoneId": {
             "type": "string",
-            "nullable": true
+            "description": "The actual timezone where the photo was taken (target offset)\nIANA timezone ID (e.g., \"Europe/Amsterdam\", \"America/New_York\")"
           }
         },
-        "additionalProperties": false
-      },
-      "ExifTimezoneBasedCorrectionRequestFilenameDatetimeRepairRequest": {
-        "required": [
-          "correctionRequest",
-          "filePaths"
-        ],
-        "type": "object",
-        "properties": {
-          "filePaths": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            },
-            "nullable": true
-          },
-          "collections": {
-            "type": "boolean"
-          },
-          "correctionRequest": {
-            "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequest"
-          }
-        },
-        "additionalProperties": false
+        "description": "Request model for timezone-based EXIF correction\nUses IANA timezone IDs to calculate offset differences (DST-aware)"
       },
       "FileIndexItem": {
         "type": "object",
@@ -5519,90 +6003,138 @@
           "filePath": {
             "maxLength": 380,
             "type": "string",
+            "description": "Get a concatenated subPath style filepath to find the location\nThe file path.",
             "nullable": true
           },
           "fileName": {
             "maxLength": 190,
             "type": "string",
-            "nullable": true
+            "description": "Get or Set FileName with extension\nWithout first slash or path\nThe name of the file with extension",
+            "nullable": true,
+            "example": "/folder/image.jpg"
           },
           "fileHash": {
             "maxLength": 190,
             "type": "string",
-            "nullable": true
+            "description": "Base32 hash to identify this file. Gets or sets the file hash.\nThe file hash.",
+            "nullable": true,
+            "example": "OZHCK4I47QPHOT53QBRE7Z4RLI"
           },
           "fileCollectionName": {
             "type": "string",
+            "description": "GetFileNameWithoutExtension (only a getter)\nThe name of the file collection.",
             "nullable": true,
-            "readOnly": true
+            "example": "filenameWithoutExtension"
           },
           "parentDirectory": {
             "maxLength": 190,
             "type": "string",
-            "nullable": true
+            "description": "Get/Set Relative path of the parent Directory\nThe parent directory in subPath style",
+            "nullable": true,
+            "example": "/folder"
           },
           "isDirectory": {
             "type": "boolean",
-            "nullable": true
+            "description": "Gets or sets a value indicating whether this instance is directory.\n`true` if this instance is directory; otherwise (then is a file), `false`.",
+            "nullable": true,
+            "example": true
           },
           "tags": {
             "maxLength": 1024,
             "type": "string",
-            "nullable": true
+            "description": "Get/Set a comma separated string of unique tags.\nDuplicate keywords are case sensitive removed\nThe tags.",
+            "nullable": true,
+            "example": "tag1, tag2"
           },
           "status": {
             "$ref": "#/components/schemas/ExifStatus"
           },
           "description": {
             "type": "string",
+            "description": "Gets or sets the iptc:Caption-Abstract or xmp:description.\nThe description as string",
             "nullable": true
           },
           "title": {
             "type": "string",
+            "description": "Gets or sets the iptc:Object Name or xmp:title.\nThe title as string",
             "nullable": true
           },
           "dateTime": {
             "type": "string",
+            "description": "Date/Time Digitized or Date/Time Original\nAssumes localTime\nThe DateTime object",
             "format": "date-time"
           },
           "addToDatabase": {
             "type": "string",
+            "description": "Datetime of when this item is added to the database\nThe add to database DateTime value",
             "format": "date-time"
           },
           "lastEdited": {
             "type": "string",
+            "description": "Datetime of the last change to this object\nThe last edited DateTime value",
             "format": "date-time"
           },
           "latitude": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Latitude as decimal degrees using WGS84 (stored as double)\nThe latitude value",
             "format": "double"
           },
           "longitude": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Longitude  as decimal degrees using WGS84 (stored as double)\nThe longitude value",
             "format": "double"
           },
           "locationAltitude": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Location altitude in meters. How how difference there is relative to WGS84 round earth.\n(This might be different than meters above sea level)\nThe location altitude.",
             "format": "double"
           },
           "locationCity": {
             "maxLength": 40,
             "type": "string",
+            "description": "The name of the nearest city\nThe location city.",
             "nullable": true
           },
           "locationState": {
             "maxLength": 40,
             "type": "string",
+            "description": "The name of the nearest state or province (Max length is 40 chars)\nThe state of the location.",
             "nullable": true
           },
           "locationCountry": {
             "maxLength": 40,
             "type": "string",
+            "description": "The name of the nearest country (Max length is 40 chars)\nThe location country.",
             "nullable": true
           },
           "locationCountryCode": {
             "maxLength": 3,
             "type": "string",
+            "description": "ISO-3166-1 alpha-3 (for example NLD for The Netherlands)\n@see: https://en.wikipedia.org/wiki/ISO_3166-1_alpha-3",
             "nullable": true
           },
           "colorClass": {
@@ -5612,12 +6144,30 @@
             "$ref": "#/components/schemas/Rotation"
           },
           "imageWidth": {
-            "type": "integer",
-            "format": "int32"
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Gets or sets the width of the image. (saved as ushort 0-65535)\nSide effect: when rotating; this may not be updated\nThe width of the image.",
+            "format": "uint16"
           },
           "imageHeight": {
-            "type": "integer",
-            "format": "int32"
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Gets or sets the height of the image. (saved as ushort 0-65535)\nSide effect: when rotating; this may not be updated\nThe height of the image.",
+            "format": "uint16"
           },
           "imageFormat": {
             "$ref": "#/components/schemas/ImageFormat"
@@ -5627,65 +6177,103 @@
             "items": {
               "type": "string"
             },
-            "nullable": true
+            "description": "To show location of files with the same Filename without extension\nThe collection paths, relative to the database (subPath style)"
           },
           "sidecarExtensionsList": {
-            "uniqueItems": true,
             "type": "array",
             "items": {
               "type": "string"
             },
-            "nullable": true,
-            "readOnly": true
+            "description": "List of Sidecar files",
+            "nullable": true
           },
           "aperture": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Gets or sets the aperture. (round to 5 decimals)\nThe aperture.",
             "format": "double"
           },
           "shutterSpeed": {
             "maxLength": 20,
             "type": "string",
+            "description": "Shutter speed as string so '1/2' or '1'\nThe shutter speed as string",
             "nullable": true
           },
           "isoSpeed": {
-            "type": "integer",
-            "format": "int32"
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Gets or sets the iso speed used by cameras  (saved as ushort 0-65535)\nThe iso speed.",
+            "format": "uint16"
           },
           "software": {
             "maxLength": 40,
             "type": "string",
+            "description": "Edited with this program",
             "nullable": true
           },
           "makeModel": {
             "type": "string",
+            "description": "Camera Make, Model and Lens (saved pipe separated string)\nCamera brand and type (incl. lens)",
             "nullable": true
           },
           "make": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "Get the Make (Camera Brand) of the _makeModel",
+            "nullable": true
           },
           "model": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "Get the Model (Camera Model) of the _makeModel",
+            "nullable": true
           },
           "lensModel": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "Get the Lens info (from MakeModel)",
+            "nullable": true
           },
           "makeCameraSerial": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "Get the Serial of the _makeModel",
+            "nullable": true
           },
           "focalLength": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "The Zoom of the camera (that is currently used)",
             "format": "double"
           },
           "size": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Size of the file in bytes (BigInt)",
             "format": "int64"
           },
           "imageStabilisation": {
@@ -5696,157 +6284,236 @@
             "items": {
               "type": "string"
             },
-            "nullable": true
+            "description": "Fields that are changed in the last request"
           },
           "artist": {
             "maxLength": 200,
             "type": "string",
+            "description": "IPTC field for artist/creator",
             "nullable": true
           },
           "suggestedTags": {
             "maxLength": 1024,
             "type": "string",
+            "description": "AI generated tags that should be suggested to the user.\nStored as comma separated string.",
             "nullable": true
           },
           "rejectedTags": {
             "maxLength": 1024,
             "type": "string",
+            "description": "AI generated tags rejected by the user.\nStored as comma separated string.",
             "nullable": true
           },
           "imageClassificationModel": {
             "maxLength": 200,
             "type": "string",
+            "description": "Name/version of the model that generated AI metadata.",
             "nullable": true
           },
           "imageClassificationGeneratedAt": {
             "type": "string",
+            "description": "Datetime when AI metadata was generated.",
             "format": "date-time"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "FilenameDatetimeRepairMapping": {
         "type": "object",
         "properties": {
           "sourceFilePath": {
             "type": "string",
-            "nullable": true
+            "description": "Source file path"
           },
           "detectedPatternDescription": {
             "type": "string",
-            "nullable": true
+            "description": "Detected datetime pattern in filename (e.g., YYYYMMDD_HHMMSS)"
           },
           "originalDateTime": {
             "type": "string",
+            "description": "Original datetime extracted from filename",
             "format": "date-time",
             "nullable": true
           },
           "correctedDateTime": {
             "type": "string",
+            "description": "Corrected datetime after applying offset",
             "format": "date-time",
             "nullable": true
           },
           "targetFilePath": {
             "type": "string",
-            "nullable": true
+            "description": "Target file path with corrected datetime in filename"
           },
           "relatedFilePaths": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/StringStringValueTuple"
+              "$ref": "#/components/schemas/ValueTupleOfstringAndstring"
             },
-            "nullable": true
+            "description": "Related file paths (sidecars)"
           },
           "offsetHours": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Time offset applied (in hours)",
             "format": "double"
           },
           "hasError": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Indicates if there was an error"
           },
           "errorMessage": {
             "type": "string",
+            "description": "Error message if HasError is true",
             "nullable": true
           },
           "warning": {
             "type": "string",
+            "description": "Warning message (e.g., day rollover)",
             "nullable": true
           },
           "fileIndexItem": {
-            "$ref": "#/components/schemas/FileIndexItem"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/FileIndexItem"
+              }
+            ]
           }
         },
-        "additionalProperties": false
+        "description": "Result model for filename datetime repair preview"
+      },
+      "FilenameDatetimeRepairRequestOfExifCustomOffsetCorrectionRequest": {
+        "required": [
+          "filePaths",
+          "correctionRequest"
+        ],
+        "type": "object",
+        "properties": {
+          "filePaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of file paths to process"
+          },
+          "collections": {
+            "type": "boolean",
+            "description": "Include related sidecar files (XMP, etc.)"
+          },
+          "correctionRequest": {
+            "$ref": "#/components/schemas/ExifCustomOffsetCorrectionRequest"
+          }
+        },
+        "description": "Request model for filename datetime repair operations"
+      },
+      "FilenameDatetimeRepairRequestOfExifTimezoneBasedCorrectionRequest": {
+        "required": [
+          "filePaths",
+          "correctionRequest"
+        ],
+        "type": "object",
+        "properties": {
+          "filePaths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "List of file paths to process"
+          },
+          "collections": {
+            "type": "boolean",
+            "description": "Include related sidecar files (XMP, etc.)"
+          },
+          "correctionRequest": {
+            "$ref": "#/components/schemas/ExifTimezoneBasedCorrectionRequest"
+          }
+        },
+        "description": "Request model for filename datetime repair operations"
       },
       "FtpCredential": {
         "type": "object",
         "properties": {
           "host": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "path": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "password": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "username": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "webFtp": {
             "type": "string",
-            "nullable": true
+            "description": "FTP URL including credentials.\nCredentials are percent-encoded."
           },
           "scheme": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "webFtpNoLogin": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "FTP URL without credentials.",
+            "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "GeoCacheStatus": {
         "type": "object",
         "properties": {
           "total": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "format": "int32"
           },
           "current": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "format": "int32"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "HealthEntry": {
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
-          "duration": {
-            "type": "string",
-            "format": "date-span"
-          },
+          "duration": { },
           "isHealthy": {
             "type": "boolean"
           },
           "description": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "HealthView": {
         "type": "object",
@@ -5858,85 +6525,60 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/HealthEntry"
-            },
-            "nullable": true
+            }
           },
-          "totalDuration": {
-            "type": "string",
-            "format": "date-span"
-          }
-        },
-        "additionalProperties": false
+          "totalDuration": { }
+        }
       },
       "ImageFormat": {
-        "enum": [
-          0,
-          10,
-          12,
-          13,
-          14,
-          15,
-          16,
-          17,
-          20,
-          21,
-          22,
-          23,
-          24,
-          25,
-          26,
-          27,
-          28,
-          29,
-          32,
-          40,
-          41,
-          50,
-          51,
-          52,
-          53,
-          60,
-          70,
-          71,
-          1000,
-          -1
-        ],
         "type": "integer",
-        "format": "int32"
+        "description": "ImageFormat based on first bytes, so read first bytes"
       },
       "ImageStabilisationType": {
         "enum": [
-          0,
-          1,
-          2
-        ],
-        "type": "integer",
-        "format": "int32"
+          "Unknown",
+          "On",
+          "Off"
+        ]
       },
       "ImportIndexItem": {
         "type": "object",
         "properties": {
           "fileHash": {
             "type": "string",
+            "description": "FileHash before importing\nWhen using a -ColorClass=1 overwrite the fileHash changes during the import process",
             "nullable": true
           },
           "filePath": {
             "type": "string",
+            "description": "The location where the image should be stored.\nWhen the user move an item this field is NOT updated",
             "nullable": true
           },
           "addToDatabase": {
             "type": "string",
+            "description": "UTC DateTime when the file is imported",
             "format": "date-time"
           },
           "dateTime": {
             "type": "string",
+            "description": "DateTime of the photo/or when it is originally is made",
             "format": "date-time"
           },
           "status": {
             "$ref": "#/components/schemas/ImportStatus"
           },
           "fileIndexItem": {
-            "$ref": "#/components/schemas/FileIndexItem"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/FileIndexItem"
+              }
+            ]
           },
           "makeModel": {
             "type": "string",
@@ -5948,7 +6590,8 @@
             "nullable": true
           },
           "dateTimeFromFileName": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Is the Exif DateTime parsed from the fileName"
           },
           "colorClass": {
             "$ref": "#/components/schemas/Color"
@@ -5957,43 +6600,76 @@
             "$ref": "#/components/schemas/ImageFormat"
           },
           "size": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Size of the file in bytes",
             "format": "int64"
           },
           "origin": {
             "maxLength": 100,
             "type": "string",
-            "nullable": true
+            "description": "Where the file is imported from"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "ImportStatus": {
         "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7
+          "Default",
+          "Ok",
+          "IgnoredAlreadyImported",
+          "FileError",
+          "NotFound",
+          "Ignore",
+          "ParentDirectoryNotFound",
+          "ReadOnlyFileSystem"
         ],
-        "type": "integer",
-        "format": "int32"
+        "description": "Used to display file status (eg. NotFoundNotInIndex, Ok)"
+      },
+      "KeyValuePairOfstringAndint": {
+        "required": [
+          "key",
+          "value"
+        ],
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "nullable": true
+          },
+          "value": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "format": "int32"
+          }
+        }
       },
       "LocalFileSystemCredential": {
         "type": "object",
         "properties": {
           "path": {
             "type": "string",
-            "nullable": true
+            "description": "Gets or sets the destination path on the local file system."
           },
           "copyAllContent": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Overwrite CopyContent in PublishProfile\ntrue is to copy all files in the list\nfalse is to respect the Copy flag in PublishProfile"
           }
         },
-        "additionalProperties": false
+        "description": "Local file system credential details for a publish target."
       },
       "OpenTelemetrySettings": {
         "type": "object",
@@ -6004,6 +6680,7 @@
           },
           "serviceName": {
             "type": "string",
+            "description": "Which container is the logging stored",
             "nullable": true
           },
           "tracesEndpoint": {
@@ -6028,14 +6705,15 @@
           },
           "logsHeader": {
             "type": "string",
+            "description": "The header for the logs endpoint\nuse apikey=value for the header name apikey",
             "nullable": true
           },
           "environmentName": {
             "type": "string",
+            "description": "Overwrite the `deployment.environment` value",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "Optimization": {
         "type": "object",
@@ -6043,8 +6721,7 @@
           "enabled": {
             "type": "boolean"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "Optimizer": {
         "type": "object",
@@ -6054,41 +6731,47 @@
             "items": {
               "$ref": "#/components/schemas/ImageFormat"
             },
-            "nullable": true
+            "description": "Image formats that this optimizer should be applied to by default for new publish profiles."
           },
           "id": {
             "type": "string",
-            "nullable": true
+            "description": "Unique identifier for the optimizer, used to reference it in publish profiles."
           },
           "enabled": {
-            "type": "boolean"
+            "type": "boolean",
+            "description": "Enable or disable this optimizer by default for new publish profiles."
           },
           "options": {
             "$ref": "#/components/schemas/OptimizerOptions"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "OptimizerOptions": {
         "type": "object",
         "properties": {
           "quality": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Quality level for image optimization (0-100).\nHigher values result in better quality but larger file sizes.",
             "format": "int32"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "PathImageFormatExistsAppPathModel": {
         "type": "object",
         "properties": {
           "subPath": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "fullFilePath": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "imageFormat": {
             "$ref": "#/components/schemas/ImageFormat"
@@ -6097,11 +6780,9 @@
             "$ref": "#/components/schemas/ExifStatus"
           },
           "appPath": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "ProfileFeatures": {
         "type": "object",
@@ -6109,63 +6790,49 @@
           "optimization": {
             "$ref": "#/components/schemas/Optimization"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "QueueBackendType": {
         "enum": [
           "InMemory",
           "Database",
           "RabbitMq"
-        ],
-        "type": "string"
+        ]
       },
       "RawJpegMode": {
-        "enum": [
-          0,
-          1,
-          2
-        ],
-        "type": "integer",
-        "format": "int32"
+        "type": "integer"
       },
       "RelativeObjects": {
         "type": "object",
         "properties": {
           "nextFilePath": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "prevFilePath": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "nextHash": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "prevHash": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "args": {
             "type": "object",
             "additionalProperties": {
               "type": "string"
             },
-            "nullable": true
+            "description": "Prevent overwrites with null args"
           }
         },
-        "additionalProperties": false
+        "description": "In DetailView there are values added for handling Args"
       },
       "RemoteCredentialType": {
         "enum": [
-          0,
-          1,
-          2
-        ],
-        "type": "integer",
-        "format": "int32"
+          "Unknown",
+          "Ftp",
+          "LocalFileSystem"
+        ]
       },
       "RemoteCredentialWrapper": {
         "type": "object",
@@ -6174,24 +6841,43 @@
             "$ref": "#/components/schemas/RemoteCredentialType"
           },
           "ftp": {
-            "$ref": "#/components/schemas/FtpCredential"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/FtpCredential"
+              }
+            ]
           },
           "localFileSystem": {
-            "$ref": "#/components/schemas/LocalFileSystemCredential"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/LocalFileSystemCredential"
+              }
+            ]
           }
         },
-        "additionalProperties": false
+        "description": "Wrapper for a remote credential target (e.g., FTP, S3, etc.)."
       },
       "Rotation": {
         "enum": [
-          1,
-          3,
-          6,
-          8,
-          -1
+          "Horizontal",
+          "Rotate180",
+          "Rotate90Cw",
+          "Rotate270Cw",
+          "DoNotChange"
         ],
-        "type": "integer",
-        "format": "int32"
+        "description": "Exit Rotation values"
       },
       "SearchForOptionType": {
         "enum": [
@@ -6200,7 +6886,7 @@
           "Equal",
           "Not"
         ],
-        "type": "string"
+        "description": "The search for types"
       },
       "SearchViewModel": {
         "type": "object",
@@ -6210,6 +6896,7 @@
             "items": {
               "$ref": "#/components/schemas/FileIndexItem"
             },
+            "description": "Items on the page",
             "nullable": true
           },
           "breadcrumb": {
@@ -6217,135 +6904,164 @@
             "items": {
               "type": "string"
             },
-            "nullable": true
+            "description": "Full location specification"
           },
           "searchQuery": {
             "type": "string",
+            "description": "Where to search for",
             "nullable": true
           },
           "pageNumber": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Current page number (index=0)",
             "format": "int32"
           },
           "lastPageNumber": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "The last page (index=0)",
             "format": "int32"
           },
           "searchCount": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Number of search results",
             "format": "int32"
           },
           "collectionsCount": {
-            "type": "integer",
-            "format": "int32",
-            "readOnly": true
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Number of search results (Different name)",
+            "format": "int32"
           },
           "searchIn": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "nullable": true,
-            "readOnly": true
+            "description": "Contains an list of Database fields to search in."
           },
           "searchFor": {
             "type": "array",
             "items": {
               "type": "string"
             },
-            "nullable": true,
-            "readOnly": true
+            "description": "The values to search for, to know which field use the same indexer in _searchIn",
+            "nullable": true
           },
           "searchForOptions": {
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/SearchForOptionType"
             },
-            "nullable": true,
-            "readOnly": true
+            "description": "Search Options eg &gt;, &lt;, =. (greater than sign, less than sign, equal sign)\nto know which field use the same indexer in _searchIn or _searchFor",
+            "nullable": true
           },
           "pageType": {
             "type": "string",
-            "nullable": true,
-            "readOnly": true
+            "description": "The type of page returns, (Search or Trash)",
+            "nullable": true
           },
           "elapsedSeconds": {
-            "type": "number",
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Know in seconds how much time a database query is. Rounded by 3 decimals",
             "format": "double"
           },
           "offset": {
-            "type": "number",
-            "format": "double",
-            "readOnly": true
+            "pattern": "^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Used to know how old the search query is\nUsed to know if a page is cached",
+            "format": "double"
           },
           "searchOperatorOptions": {
             "type": "array",
             "items": {
               "type": "boolean"
             },
-            "nullable": true,
-            "readOnly": true
+            "description": "Search Operator, eg. || &amp;&amp;",
+            "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
       },
       "SentrySettings": {
         "type": "object",
         "properties": {
           "dsn": {
             "type": "string",
+            "description": "Public ingest key, normally baked into Release builds.\nUse this to overwrite it (app__Sentry__Dsn)",
             "nullable": true
           },
           "environment": {
             "type": "string",
+            "description": "Overwrite the environment value",
             "nullable": true
           }
         },
-        "additionalProperties": false
+        "description": "Crash report settings, only unhandled exceptions are reported"
       },
       "SortType": {
-        "enum": [
-          0,
-          1
-        ],
-        "type": "integer",
-        "format": "int32"
+        "type": "integer"
       },
       "StarskyAppType": {
         "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8,
-          10,
-          11,
-          12
+          "WebController",
+          "Importer",
+          "Sync",
+          "WebHtml",
+          "Geo",
+          "WebFtp",
+          "Admin",
+          "Thumbnail",
+          "MetaThumbnail",
+          "DemoSeed",
+          "DependenciesDownload",
+          "MountWatcher"
         ],
-        "type": "integer",
-        "format": "int32"
-      },
-      "StringInt32KeyValuePair": {
-        "type": "object",
-        "properties": {
-          "key": {
-            "type": "string",
-            "nullable": true
-          },
-          "value": {
-            "type": "integer",
-            "format": "int32"
-          }
-        },
-        "additionalProperties": false
-      },
-      "StringStringValueTuple": {
-        "type": "object",
-        "additionalProperties": false
+        "description": "What is the type of the application that is running different CLI types or Web"
       },
       "StructureRule": {
         "type": "object",
@@ -6354,18 +7070,15 @@
             "$ref": "#/components/schemas/StructureRuleConditions"
           },
           "pattern": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "errors": {
             "type": "array",
             "items": {
               "type": "string"
-            },
-            "nullable": true
+            }
           }
-        },
-        "additionalProperties": false
+        }
       },
       "StructureRuleConditions": {
         "type": "object",
@@ -6374,52 +7087,43 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ImageFormat"
-            },
-            "nullable": true
+            }
           },
           "origin": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "SyncViewModel": {
         "type": "object",
         "properties": {
           "filePath": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           },
           "status": {
             "$ref": "#/components/schemas/ExifStatus"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "TemplateContentType": {
         "enum": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          6,
-          7,
-          8
-        ],
-        "type": "integer",
-        "format": "int32"
+          "None",
+          "Html",
+          "Jpeg",
+          "MoveSourceFiles",
+          "PublishContent",
+          "PublishManifest",
+          "OnlyFirstJpeg",
+          "PublishRemote"
+        ]
       },
       "ThumbnailImageFormat": {
         "enum": [
-          0,
-          1,
-          2,
-          3
-        ],
-        "type": "integer",
-        "format": "int32"
+          "unknown",
+          "jpg",
+          "png",
+          "webp"
+        ]
       },
       "TransformationConditions": {
         "type": "object",
@@ -6428,15 +7132,12 @@
             "type": "array",
             "items": {
               "$ref": "#/components/schemas/ImageFormat"
-            },
-            "nullable": true
+            }
           },
           "origin": {
-            "type": "string",
-            "nullable": true
+            "type": "string"
           }
-        },
-        "additionalProperties": false
+        }
       },
       "TransformationRule": {
         "type": "object",
@@ -6445,16 +7146,33 @@
             "$ref": "#/components/schemas/TransformationConditions"
           },
           "colorClass": {
-            "$ref": "#/components/schemas/Color"
+            "oneOf": [
+              {
+                "enum": [
+                  null
+                ],
+                "nullable": true
+              },
+              {
+                "$ref": "#/components/schemas/Color"
+              }
+            ]
           }
-        },
-        "additionalProperties": false
+        }
       },
       "UserIdentifierStatusModel": {
         "type": "object",
         "properties": {
           "id": {
-            "type": "integer",
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
             "format": "int32"
           },
           "name": {
@@ -6475,7 +7193,15 @@
           "credentialTypeIds": {
             "type": "array",
             "items": {
-              "type": "integer",
+              "pattern": "^-?(?:0|[1-9]\\d*)$",
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "string"
+                }
+              ],
               "format": "int32"
             },
             "nullable": true
@@ -6484,8 +7210,10 @@
             "type": "string",
             "nullable": true
           }
-        },
-        "additionalProperties": false
+        }
+      },
+      "ValueTupleOfstringAndstring": {
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -6523,9 +7251,6 @@
       "name": "CacheIndex"
     },
     {
-      "name": "CloudImport"
-    },
-    {
       "name": "Delete"
     },
     {
@@ -6556,10 +7281,10 @@
       "name": "GeoReverseNominatim"
     },
     {
-      "name": "Health"
+      "name": "HealthCheckForUpdates"
     },
     {
-      "name": "HealthCheckForUpdates"
+      "name": "Health"
     },
     {
       "name": "Home"
@@ -6623,6 +7348,9 @@
     },
     {
       "name": "Upload"
+    },
+    {
+      "name": "CloudImport"
     }
   ]
 }
