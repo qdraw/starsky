@@ -117,8 +117,9 @@ Security issues: see [SECURITY.md](SECURITY.md).
 ## About
 
 Starsky is built and maintained by Dion ([@qdraw](https://github.com/qdraw)),
-[qdraw.nl](https://qdraw.nl/contact.html). It started as a personal tool to manage a
-photo archive and grew into a multi-platform application.
+[qdraw.nl](https://qdraw.nl/contact.html). It started as a personal tool for a growing photo
+archive: fast search, no lock-in, import from an SD card, and geotagging from a GPX track
+recorded on a phone. It grew into a multi-platform application.
 
 Licensed under the [MIT License](LICENSE).
 

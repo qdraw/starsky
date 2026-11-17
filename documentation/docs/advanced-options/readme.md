@@ -5,7 +5,7 @@ reference: https://github.com/qdraw/starsky/tree/master/starsky
 
 # Advanced options
 
-Overview of advanced configuration and usage of Web API and CLI tools that are incluced
+Overview of advanced configuration and usage of Web API and CLI tools that are included
 
 ## Architecture overview
 

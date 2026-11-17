@@ -44,6 +44,10 @@ Semantic Versioning 2.0.0 is from version 0.1.6+
 
 ## version 0.9.10 - _(Unreleased)_ - 2026-?-? {#0.9.10}
 
+- [x] (Fixed) _Back-end_ Folder listing failed with a JSON error when the database already contained
+  Infinity or NaN for latitude, longitude, altitude, focal length or aperture. EF Core fills the
+  backing fields directly and skipped the setter check, so the values are now also made finite when
+  read
 - [x] (Breaking change) _Back-end_ Swagger (Swashbuckle) is replaced by Scalar and
   `Microsoft.AspNetCore.OpenApi`. The UI moved from `/swagger` to `/scalar`, the document from
   `/swagger/starsky/swagger.json` to `/openapi/starsky.json`. Settings are renamed:

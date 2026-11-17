@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "docs",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["--prefix", "documentation", "docusaurus", "serve", "documentation", "--port", "3003", "--no-open"],
+      "port": 3003
+    }
+  ]
+}

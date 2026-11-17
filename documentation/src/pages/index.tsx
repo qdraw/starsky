@@ -21,6 +21,10 @@ function HomepageHeader() {
           <Link className="button button--secondary button--lg" to="/download">
             Download ⬇️
           </Link>
+          &nbsp;&nbsp;
+          <Link className="button button--secondary button--lg" to="https://demo.qdraw.nl">
+            Live demo
+          </Link>
         </div>
       </div>
     </header>
