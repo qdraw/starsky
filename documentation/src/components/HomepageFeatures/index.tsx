@@ -26,7 +26,7 @@ const FeatureListRow1: FeatureItem[] = [
     ),
   },
   {
-    title: "100% Compatable and privacy by design 🔒",
+    title: "No lock-in, privacy by design 🔒",
     ImageUrl: "https://media.qdraw.nl/log/de-7-dingen-die-ik-miste-bij-het-beheren-van-mijn-foto-collectie/1000/07_exiftool_starsky_v042_kl1k.jpg",
     description: (
       <>

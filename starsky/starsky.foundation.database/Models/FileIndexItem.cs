@@ -443,7 +443,7 @@ public sealed class FileIndexItem
 	/// </value>
 	public double Latitude
 	{
-		get => _latitude;
+		get => FiniteOrZero(_latitude);
 		set => _latitude = FiniteOrZero(value);
 	}
 
@@ -455,7 +455,7 @@ public sealed class FileIndexItem
 	/// </value>
 	public double Longitude
 	{
-		get => _longitude;
+		get => FiniteOrZero(_longitude);
 		set => _longitude = FiniteOrZero(value);
 	}
 
@@ -468,7 +468,7 @@ public sealed class FileIndexItem
 	/// </value>
 	public double LocationAltitude // in meters
 	{
-		get => _locationAltitude;
+		get => FiniteOrZero(_locationAltitude);
 		set => _locationAltitude = FiniteOrZero(value);
 	}
 
@@ -600,7 +600,7 @@ public sealed class FileIndexItem
 	/// </value>
 	public double Aperture
 	{
-		get => Math.Round(_aperture, 5);
+		get => Math.Round(FiniteOrZero(_aperture), 5);
 		set => _aperture = Math.Round(FiniteOrZero(value), 5);
 	}
 
@@ -752,7 +752,7 @@ public sealed class FileIndexItem
 	/// </summary>
 	public double FocalLength
 	{
-		get => _focalLength;
+		get => FiniteOrZero(_focalLength);
 		set => _focalLength = FiniteOrZero(value);
 	}
 

@@ -26,7 +26,7 @@ if (process.env.GTAG) {
 
 const config: Config = {
   title: "Starsky",
-  tagline: "Photo-management done right",
+  tagline: "Self-hosted photo manager that keeps your metadata in your files",
   favicon: "img/favicon.ico",
 
   headTags: [

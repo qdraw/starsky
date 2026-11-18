@@ -4,16 +4,15 @@ sidebar_position: 1
 
 # Overview of features
 
-Get a overview of the features of the application
+An overview of everything Starsky can do.
 
 ## Application key features
 
-Are you looking for an easy way to find and organize your photos?
-Starsky is a search tool for your photos.
-Starsky makes photo organization simple by automatically grouping similar photos together
-and putting them on albums by date, location, or even face--all within seconds.
+Starsky indexes the photos in your folders and makes them searchable by tag, description,
+date, location and camera data. Metadata is stored in the files themselves, so nothing is locked in.
+RAW and JPEG files with the same name are grouped into one stack.
 
-Here below there is a list of key features:
+Key features:
 
 - [Account Management, only useful for server version](accountmanagement.md)
 - [Publish to FTP and local targets](publish-remote.md)

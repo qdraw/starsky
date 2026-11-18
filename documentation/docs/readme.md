@@ -4,38 +4,34 @@ sidebar_position: 1
 
 import Button from "@site/src/components/button";
 
-# Why should you use this tool?
+# What is Starsky?
 
-Are you tired of sifting through cluttered folders and endless streams of unorganized photos? 
-Say goodbye to the headache of finding the perfect picture and hello to a streamlined, 
-efficient way to publish, sort, and label your content. 
-Our app makes it easy to keep track of all your photos in one convenient location, 
-so you can quickly find exactly what you're looking for. 
-Whether you're a professional photographer or just looking to keep your personal collection organized, 
-our app has the tools you need to succeed. Try it out today and see just how much time and energy you'll save!
+Starsky is a free, self-hosted photo manager. It runs on your own computer, NAS or server, and
+indexes the photos and videos you already have in normal folders. Search, tag, rename, geotag
+and publish them from a web interface or from the macOS and Windows desktop apps.
 
-# What is Starsky? (an introduction)
-
-Starsky is a free photo-management tool, which runs on your server or web-space. 
-Installing is a matter of running the application. 
-It acts as an accelerator to find and organize images driven by meta information. 
-Browse and search images in your own cloud. 
-Starsky is the name of the Starsky DAM (Digital asset management) system that runs as a desktop application and web service.
-You could add how to add users, set up your archives, upload content, control metadata, share content and more.
-
-## Accelerator for self-hosted photo-management
-
-Starsky helps you get more value from creative digital assets like images and videos by making them easy to organize, 
-access and distribute. The focus of the application is an individual’s digital file library or a photographer’s photo database. 
-The goal is to have a application that store, organize, find, retrieve and share digital content.
+Photos are never moved into a proprietary library. Tags, descriptions and locations are written
+into the files themselves (EXIF/XMP), so you can switch to another tool at any time.
 
 <Button href="getting-started" color="#25c2a0">
-  Read more about how to get started
+  Get started
 </Button>
 
-## Demo app
+## Why it exists
 
-There is a online demo of the Starsky Application. Please have **some patience** before the app warms up.
+Starsky started as a personal tool for a growing photo archive. The things that were missing
+elsewhere became its features:
+
+- **Fast search** on keywords, dates, descriptions and camera data
+- **No lock-in**: all metadata lives in the files
+- **Works offline**, for example on a Raspberry Pi at home, without a cloud service
+- **Automated import** from an SD card, sorted into folders by date
+- **Geotagging** photos from a GPX track recorded on a phone
+- **Publishing** a selection of photos as a web page with a watermark
+
+## Try it
+
+There is an online demo of the Starsky application. Please have **some patience** while it warms up.
 
 <Button href="https://demo.qdraw.nl" color="#25c2a0">
   See the online demo
@@ -43,13 +39,13 @@ There is a online demo of the Starsky Application. Please have **some patience**
 <br />
 <br />
 
-> Azure quits the application after 30 minutes of inactivity.
+> The demo is hosted on Azure, which stops the application after 30 minutes of inactivity.
 
 > Content changes in the demo environment are not stored.
 
-## Say Goodbye to Digital Clutter.
+## Where to go next
 
-An organized flow is a smooth flow. 
-Why shouldn’t photo management be the same? With Starsky’s unrivalled 
-Digital Asset Management (DAM), you’ll find a powerful, 
-versatile, and easy to use system that will leave your files feeling seen and adored.
+- [Getting started](getting-started/readme.mdx): install the desktop app or run the Docker image
+- [Features](features/readme.md): everything Starsky can do
+- [Developer guide](developer-guide/readme.md): architecture, conventions and how to contribute
+- [Source code on GitHub](https://github.com/qdraw/starsky)
