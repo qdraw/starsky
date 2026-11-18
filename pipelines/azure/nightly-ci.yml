@@ -42,24 +42,9 @@ steps:
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
-      name: "starskydesktop_outdated"
-      displayName: 'starskydesktop outdated check'
-      targetFolder: "$(Build.SourcesDirectory)/starskydesktop"
-      action: 'outdated'
-      depth: 0
-      
-  - template: /pipelines/azure/steps/audit_npm.yml
-    parameters:
       name: "clientapp_license"
       displayName: 'ClientApp license check'
       targetFolder: "$(Build.SourcesDirectory)/starsky/starsky/clientapp"
-      action: 'check-licenses'
-
-  - template: /pipelines/azure/steps/audit_npm.yml
-    parameters:
-      name: "starskydesktop_license"
-      displayName: 'starskydesktop license check'
-      targetFolder: "$(Build.SourcesDirectory)/starskydesktop"
       action: 'check-licenses'
 
   # documentation
@@ -72,13 +57,6 @@ steps:
       action: 'find-vulnerabilities'
 
   # Tools
-
-  - template: /pipelines/azure/steps/audit_npm.yml
-    parameters:
-      name: "starsky_tools_dropbox_import_vulnerabilities"
-      displayName: 'Tools/Dropbox Import vulnerabilities check'
-      targetFolder: "$(Build.SourcesDirectory)/starsky-tools/dropbox-import"
-      action: 'find-vulnerabilities'
 
   - template: /pipelines/azure/steps/audit_npm.yml
     parameters:
