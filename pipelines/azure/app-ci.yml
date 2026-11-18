@@ -54,11 +54,7 @@ stages:
       clean: true
       fetchDepth: 1
 
-    - task: Bash@3
-      displayName: 'Free disk space (remove Android SDK)'
-      inputs:
-        targetType: 'inline'
-        script: sudo rm -rf /usr/local/lib/android
+    - template: /pipelines/azure/steps/free_disk_space.yml
 
     - template: /pipelines/azure/steps/use_dotnet_version.yml
 

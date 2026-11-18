@@ -1,0 +1,11 @@
+# Hosted ubuntu agents ship large preinstalled toolchains that Starsky does not use;
+# removing them avoids "No space left on device" during the multi-runtime build.
+steps:
+- task: Bash@3
+  displayName: 'Free disk space (remove unused preinstalled toolchains)'
+  inputs:
+    targetType: 'inline'
+    script: |
+      df -h /
+      sudo rm -rf /usr/local/lib/android /opt/ghc /usr/local/.ghcup /opt/hostedtoolcache/CodeQL /usr/share/swift
+      df -h /

@@ -71,6 +71,8 @@ stages:
     - checkout: self
       # fetchDepth: 1 - disable for sonarqube
 
+    - template: /pipelines/azure/steps/free_disk_space.yml
+
     - template: /pipelines/azure/steps/use_jdk_powershell.yml
 
     - template: /pipelines/azure/steps/use_dotnet_version.yml

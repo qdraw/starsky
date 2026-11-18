@@ -41,6 +41,8 @@ steps:
   clean: true
   fetchDepth: 1
 
+- template: /pipelines/azure/steps/free_disk_space.yml
+
 - template: /pipelines/azure/steps/use_dotnet_version.yml
 
 - template: /pipelines/azure/steps/build_clientapp.yml
