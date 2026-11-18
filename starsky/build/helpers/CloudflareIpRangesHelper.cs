@@ -16,7 +16,11 @@ namespace helpers;
 /// </summary>
 public static class CloudflareIpRangesHelper
 {
+#pragma warning disable S1075 // the public Cloudflare API endpoint is intentionally fixed
 	const string ApiUrl = "https://api.cloudflare.com/client/v4/ips";
+#pragma warning restore S1075
+
+	static readonly TimeSpan RegexTimeout = TimeSpan.FromSeconds(5);
 
 	const string TargetRelativePath =
 		"starsky.foundation.platform/Helpers/CloudflareTrustedProxiesHelper.cs";
@@ -118,14 +122,15 @@ public static class CloudflareIpRangesHelper
 	{
 		var match = Regex.Match(content,
 			Regex.Escape(BeginMarker) + "(.*?)" + Regex.Escape(EndMarker),
-			RegexOptions.Singleline);
+			RegexOptions.Singleline, RegexTimeout);
 
 		if ( !match.Success )
 		{
 			return null;
 		}
 
-		return Regex.Matches(match.Groups[1].Value, "\"([^\"]+)\"")
+		return Regex.Matches(match.Groups[1].Value, "\"([^\"]+)\"",
+				RegexOptions.None, RegexTimeout)
 			.Select(m => m.Groups[1].Value)
 			.ToList();
 	}
@@ -141,13 +146,15 @@ public static class CloudflareIpRangesHelper
 
 		var updated = Regex.Replace(content,
 			Regex.Escape(BeginMarker) + ".*?" + Regex.Escape(EndMarker),
-			replacement.Replace("$", "$$"), RegexOptions.Singleline);
+			replacement.Replace("$", "$$"), RegexOptions.Singleline, RegexTimeout);
 
 		var today = DateTime.UtcNow.ToString("yyyy-MM-dd");
 		updated = Regex.Replace(updated,
-			@"LastChecked: \d{4}-\d{2}-\d{2}", $"LastChecked: {today}");
+			@"LastChecked: \d{4}-\d{2}-\d{2}", $"LastChecked: {today}",
+			RegexOptions.None, RegexTimeout);
 		updated = Regex.Replace(updated,
-			@"Last checked: \d{4}-\d{2}-\d{2}\.", $"Last checked: {today}.");
+			@"Last checked: \d{4}-\d{2}-\d{2}\.", $"Last checked: {today}.",
+			RegexOptions.None, RegexTimeout);
 
 		return updated;
 	}
