@@ -12,6 +12,7 @@ using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.worker.Helpers;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.sync.SyncServices;
 
@@ -54,7 +55,7 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 			return FileIndexItem.ExifStatus.NotFoundNotInIndex;
 		}
 
-		if ( _cache.TryGetValue(ManualSyncCacheName + subPath, out _) )
+		if ( _cache.TryGetValue(TenantCacheKey.Prefix(ManualSyncCacheName + subPath), out _) )
 		{
 			// also used in removeCache
 			_query.RemoveCacheParentItem(subPath);
@@ -84,13 +85,13 @@ public sealed class ManualBackgroundSyncService : IManualBackgroundSyncService
 
 	internal void CreateSyncLock(string subPath)
 	{
-		_cache.Set(ManualSyncCacheName + subPath, true,
+		_cache.Set(TenantCacheKey.Prefix(ManualSyncCacheName + subPath), true,
 			new TimeSpan(0, 2, 0));
 	}
 
 	private void RemoveSyncLock(string subPath)
 	{
-		_cache.Remove(ManualSyncCacheName + subPath);
+		_cache.Remove(TenantCacheKey.Prefix(ManualSyncCacheName + subPath));
 	}
 
 	internal async Task BackgroundTaskExceptionWrapper(string subPath)

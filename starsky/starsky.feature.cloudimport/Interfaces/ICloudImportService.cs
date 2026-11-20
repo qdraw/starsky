@@ -8,6 +8,11 @@ public interface ICloudImportService
 	bool IsSyncInProgress { get; }
 
 	/// <summary>
+	///     Is a sync running for a provider that imports into this tenant
+	/// </summary>
+	bool IsSyncInProgressForTenant(string tenantId);
+
+	/// <summary>
 	///     Get the last sync results for all providers
 	/// </summary>
 	Dictionary<string, CloudImportResult> LastSyncResults { get; }
@@ -18,6 +23,12 @@ public interface ICloudImportService
 	/// <param name="triggerType">Whether this sync was manually triggered or scheduled</param>
 	/// <returns>List of results for each provider</returns>
 	Task<List<CloudImportResult>> SyncAllAsync(CloudImportTriggerType triggerType);
+
+	/// <summary>
+	///     Execute a Cloud Import operation for the enabled providers of one tenant
+	/// </summary>
+	Task<List<CloudImportResult>> SyncAllAsync(CloudImportTriggerType triggerType,
+		string tenantId);
 
 	Task<CloudImportResult> SyncAsync(string[] args);
 

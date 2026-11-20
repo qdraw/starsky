@@ -7,6 +7,7 @@ using starsky.feature.export.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.export.Services;
 
@@ -22,7 +23,7 @@ public class ExportServiceTest
 			]), new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage(["/test"],
 				["/test/test.jpg"])), new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(["/test"]);
@@ -41,7 +42,7 @@ public class ExportServiceTest
 			]), new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage(["/test"],
 				["/test/test.jpg", "/test/test.dng"])), new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(["/test/test.jpg"]);
@@ -63,7 +64,7 @@ public class ExportServiceTest
 			]), new AppSettings(),
 			new FakeSelectorStorage(new FakeIStorage(["/test"],
 				["/test/test.jpg", "/test/test.dng"])), new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(["/test/test.jpg"],
@@ -85,7 +86,7 @@ public class ExportServiceTest
 			// file not included in storage
 			new FakeSelectorStorage(new FakeIStorage(["/test"])),
 			new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(["/test"]);
@@ -104,7 +105,7 @@ public class ExportServiceTest
 			// file not included in storage
 			new FakeSelectorStorage(new FakeIStorage(["/test"])),
 			new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(["/test/test.jpg"]);
@@ -119,7 +120,7 @@ public class ExportServiceTest
 	public async Task ExportService_NotFoundNotInIndex()
 	{
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(),
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 		var (_, fileIndexResultsList) =
 			await exportService.PreflightAsync(["/test"]);
 		Assert.HasCount(1, fileIndexResultsList);
@@ -131,7 +132,7 @@ public class ExportServiceTest
 	public async Task ExportService_Thumbnail_True()
 	{
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(),
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 		var (zipHash, _) =
 			await exportService.PreflightAsync(["/test"], false, true);
 
@@ -142,7 +143,7 @@ public class ExportServiceTest
 	public async Task ExportService_Thumbnail_False()
 	{
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(),
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 		var (zipHash, _) =
 			await exportService.PreflightAsync(["/test"], false);
 
@@ -153,7 +154,7 @@ public class ExportServiceTest
 	public async Task FilePathToFileNameAsync_NotfoundIsNull()
 	{
 		var exportService = new ExportService(new FakeIQuery(), new AppSettings(),
-			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService());
+			new FakeSelectorStorage(), new FakeIWebLogger(), new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 		var fileName =
 			await exportService.FilePathToFileNameAsync(
 				["/test/not_found.jpg"], true);
@@ -174,7 +175,7 @@ public class ExportServiceTest
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { TempFolder = "/tmp/export-temp" },
 			new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { TempFolder = "/tmp/export-temp" }));
 
 		var (status, path) = exportService.StatusIsReady(name);
 
@@ -191,7 +192,7 @@ public class ExportServiceTest
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { TempFolder = "/tmp/export-temp" },
 			new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { TempFolder = "/tmp/export-temp" }));
 
 		var (status, path) = exportService.StatusIsReady("TNA995920129");
 
@@ -209,7 +210,7 @@ public class ExportServiceTest
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { TempFolder = "/tmp/export-temp" },
 			new FakeSelectorStorage(storage), new FakeIWebLogger(),
-			new FakeIThumbnailService());
+			new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { TempFolder = "/tmp/export-temp" }));
 
 		var (status, path) = exportService.StatusIsReady(slug);
 
@@ -227,7 +228,7 @@ public class ExportServiceTest
 		var logger = new FakeIWebLogger();
 		var exportService = new ExportService(new FakeIQuery(),
 			new AppSettings { TempFolder = "/tmp/export-temp" },
-			new FakeSelectorStorage(storage), logger, new FakeIThumbnailService());
+			new FakeSelectorStorage(storage), logger, new FakeIThumbnailService(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings { TempFolder = "/tmp/export-temp" }));
 
 		await exportService.CreateZip([new FileIndexItem("/test.jpg")], false, name);
 

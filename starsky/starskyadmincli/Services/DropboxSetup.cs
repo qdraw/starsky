@@ -10,6 +10,7 @@ using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starskyAdminCli.Models;
 
 namespace starskyAdminCli.Services;
@@ -42,6 +43,8 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 
 		console.WriteLine("Dropbox App Secret: ");
 		var clientSecret = console.ReadLine();
+
+		var tenantId = AskTenantId();
 
 		var authUrl =
 			DropboxDomain + "/oauth2/authorize" +
@@ -77,14 +80,38 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 
 		console.WriteLine("");
 		console.WriteLine("Merge this with an existing appsettings.json: ");
-		console.WriteLine(GetConfigSnippet(clientId!, clientSecret!, token));
+		console.WriteLine(GetConfigSnippet(clientId!, clientSecret!, token, tenantId));
 		console.WriteLine("Did you save the config? Press enter to exit.");
 		console.ReadLine();
 		return true;
 	}
 
+	/// <summary>
+	///     The tenant that receives the imported files; empty is the default tenant
+	/// </summary>
+	private string AskTenantId()
+	{
+		while ( true )
+		{
+			console.WriteLine("\nTenant id that receives the imported files " +
+			                  "(leave empty for the default tenant): ");
+			var input = console.ReadLine()?.Trim();
+			if ( string.IsNullOrEmpty(input) )
+			{
+				return TenantIdHelper.DefaultTenantId;
+			}
+
+			if ( TenantIdHelper.IsValid(input) )
+			{
+				return input;
+			}
+
+			console.WriteLine($"'{input}' is not a valid tenant id");
+		}
+	}
+
 	internal static string GetConfigSnippet(string clientId, string clientSecret,
-		DropboxTokenResponse token)
+		DropboxTokenResponse token, string tenantId = TenantIdHelper.DefaultTenantId)
 	{
 		const string prefix = "{\n  \"app\": {  \n    \"CloudImport\" :";
 		const string suffix = "\n  } \n}";
@@ -97,6 +124,7 @@ public class DropboxSetup(IConsole console, IHttpClientHelper httpClientHelper)
 				{
 					Id = "dropbox-import-example-id",
 					Provider = "Dropbox",
+					TenantId = tenantId,
 					RemoteFolder = "/Camera Uploads",
 					Enabled = true,
 					Credentials = new CloudProviderCredentials

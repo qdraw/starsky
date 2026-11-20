@@ -12,7 +12,7 @@ import { GetCookie } from "../cookie/get-cookie.ts";
 const FetchPost = async (
   url: string,
   body: string | FormData,
-  method: "post" | "delete" = "post",
+  method: "post" | "put" | "delete" = "post",
   headers: Record<string, string | undefined> = {}
 ): Promise<IConnectionDefault> => {
   const settings: RequestInit = {

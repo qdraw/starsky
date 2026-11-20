@@ -4,8 +4,9 @@ import useLocation from "../../../../hooks/use-location/use-location";
 import { IConnectionDefault } from "../../../../interfaces/IConnectionDefault";
 import { IEnvFeatures } from "../../../../interfaces/IEnvFeatures";
 import localization from "../../../../localization/localization.json";
+import { useTenants } from "../../../../hooks/use-tenants/use-tenants";
 import { Language } from "../../../../shared/language";
-import { UrlQuery } from "../../../../shared/url/url-query";
+import { TenantFromLocation, UrlQuery } from "../../../../shared/url/url-query";
 import Navigate from "./navigate";
 
 export interface IInlineSearchSuggestProps {
@@ -22,6 +23,14 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
   const settings = useGlobalSettings();
   const language = new Language(settings.language);
   const dataFeatures = props.featuresResult?.data as IEnvFeatures | undefined;
+
+  // only users with more than one tenant see this: the other tenants to switch to
+  const tenants = useTenants();
+  const otherTenants =
+    tenants && tenants.tenants.length > 1
+      ? tenants.tenants.filter((tenant) => tenant.tenantId !== TenantFromLocation())
+      : [];
+  const MessageSwitchTenant = language.key(localization.MessageSwitchTenant);
 
   useEffect(() => {
     if (dataFeatures?.systemTrashEnabled || dataFeatures?.useLocalDesktop) {
@@ -86,6 +95,20 @@ const InlineSearchSuggest: React.FunctionComponent<IInlineSearchSuggestProps> = 
               </li>
             );
           })
+        : null}
+      {props.suggest?.length === 0
+        ? otherTenants.map((tenant) => (
+            <li
+              className="menu-item menu-item--default"
+              key={`tenant-${tenant.tenantId}`}
+              data-test={`default-menu-item-tenant-${tenant.tenantId}`}
+            >
+              {/* a full page load: nothing of the other tenant may stay in the page */}
+              <a href={new UrlQuery().UrlTenantHomePage(tenant.tenantId)}>
+                {MessageSwitchTenant} {tenant.displayName}
+              </a>
+            </li>
+          ))
         : null}
       {props.suggest?.map((query, index) =>
         index <= 8 ? (

@@ -7,6 +7,7 @@ using starsky.feature.health.HealthCheck.Interfaces;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Extensions;
 using starsky.foundation.platform.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.health.HealthCheck.Service;
 
@@ -14,6 +15,10 @@ namespace starsky.feature.health.HealthCheck.Service;
 public class CheckHealthService : ICheckHealthService
 {
 	internal const string CacheKey = "health";
+
+	// the result depends on the folders of the tenant; the default tenant keeps the key
+	private static string TenantCacheName => TenantCacheKey.Prefix(CacheKey);
+
 	private readonly IMemoryCache? _cache;
 	private readonly IWebLogger _logger;
 	private readonly HealthCheckService _service;
@@ -66,7 +71,7 @@ public class CheckHealthService : ICheckHealthService
 		try
 		{
 			if ( _cache != null &&
-			     _cache.TryGetValue(CacheKey, out var objectHealthStatus) &&
+			     _cache.TryGetValue(TenantCacheName, out var objectHealthStatus) &&
 			     objectHealthStatus is HealthReport healthStatus &&
 			     healthStatus.Status == HealthStatus.Healthy )
 			{
@@ -76,7 +81,7 @@ public class CheckHealthService : ICheckHealthService
 			var result = await _service.CheckHealthAsync().TimeoutAfter(timeoutTime);
 			if ( _cache != null && result.Status == HealthStatus.Healthy )
 			{
-				_cache.Set(CacheKey, result, new TimeSpan(0, 1, 30));
+				_cache.Set(TenantCacheName, result, new TimeSpan(0, 1, 30));
 			}
 
 			return result;

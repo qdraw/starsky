@@ -6,7 +6,7 @@ namespace starsky.foundation.database.Models;
 
 [SuppressMessage("ReSharper", "UnusedAutoPropertyAccessor.Global")]
 [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
-public class ThumbnailItem
+public class ThumbnailItem : ITenantEntity
 {
 	public ThumbnailItem()
 	{

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
@@ -8,8 +7,10 @@ using System.Threading.Tasks;
 using starsky.foundation.injection;
 using starsky.foundation.platform.JsonConverter;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.realtime.Helpers;
 using starsky.foundation.realtime.Interfaces;
+using System.Net.WebSockets;
 
 namespace starsky.foundation.realtime.Services;
 
@@ -28,19 +29,47 @@ public sealed class WebSocketConnectionsService : IWebSocketConnectionsService
 		_connections.TryRemove(connectionId, out _);
 	}
 
-	public async Task SendToAllAsync(string message, CancellationToken cancellationToken)
+	public Task SendToAllAsync(string message, CancellationToken cancellationToken)
 	{
-		var connectionsTasks = new List<Task>();
-		connectionsTasks.AddRange(_connections.Values.Select(connection =>
-			connection.SendAsync(message, cancellationToken)));
-		await Task.WhenAll(connectionsTasks);
+		return SendToTenantAsync(TenantAmbient.Current, message, cancellationToken);
 	}
 
 	public Task SendToAllAsync<T>(ApiNotificationResponseModel<T> message,
 		CancellationToken cancellationToken)
 	{
-		var stringMessage = JsonSerializer.Serialize(message,
-			DefaultJsonSerializer.CamelCaseNoEnters);
-		return SendToAllAsync(stringMessage, cancellationToken);
+		return SendToTenantAsync(TenantAmbient.Current, Serialize(message), cancellationToken);
+	}
+
+	public async Task SendToTenantAsync(string tenantId, string message,
+		CancellationToken cancellationToken)
+	{
+		await Task.WhenAll(_connections.Values.Where(connection => connection.TenantId == tenantId)
+			.Select(connection => connection.SendAsync(message, cancellationToken)));
+	}
+
+	public async Task CloseConnectionsAsync(string? tenantId, int? userId, string reason)
+	{
+		var toClose = _connections.Values.Where(connection =>
+			( tenantId == null || connection.TenantId == tenantId ) &&
+			( userId == null || connection.UserId == userId )).ToList();
+		foreach ( var connection in toClose )
+		{
+			// 1008: PolicyViolation
+			await connection.CloseAsync(WebSocketCloseStatus.PolicyViolation, reason);
+			_connections.TryRemove(connection.Id, out _);
+		}
+	}
+
+	public async Task SendToEveryTenantAsync<T>(ApiNotificationResponseModel<T> message,
+		CancellationToken cancellationToken)
+	{
+		var stringMessage = Serialize(message);
+		await Task.WhenAll(_connections.Values.Select(connection =>
+			connection.SendAsync(stringMessage, cancellationToken)));
+	}
+
+	private static string Serialize<T>(ApiNotificationResponseModel<T> message)
+	{
+		return JsonSerializer.Serialize(message, DefaultJsonSerializer.CamelCaseNoEnters);
 	}
 }

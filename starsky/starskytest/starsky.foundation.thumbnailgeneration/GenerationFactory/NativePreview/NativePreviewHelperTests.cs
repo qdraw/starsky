@@ -9,6 +9,7 @@ using starsky.foundation.storage.Storage;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.NativePreview;
 
@@ -33,7 +34,7 @@ public class NativePreviewHelperTests
 		var readMeta = new FakeReadMetaSubPathStorage();
 		var logger = new FakeIWebLogger();
 		return new NativePreviewHelper(previewService, storage,
-			tempStorage, appSettings, existsService, readMeta, logger);
+			tempStorage, appSettings, existsService, readMeta, logger, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 	}
 
 	[TestMethod]

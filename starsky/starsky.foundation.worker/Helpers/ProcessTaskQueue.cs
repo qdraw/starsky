@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.worker.Interfaces;
 using starsky.foundation.worker.Models;
 
@@ -65,7 +66,7 @@ public static class ProcessTaskQueue
 					toDoItems.Add(queueJob);
 				}
 
-				var afterDistinct = toDoItems.DistinctBy(p => p.MetaData).ToList();
+				var afterDistinct = toDoItems.DistinctBy(p => (p.TenantId, p.MetaData)).ToList();
 
 				foreach ( var queueJob in afterDistinct )
 				{
@@ -174,7 +175,8 @@ public static class ProcessTaskQueue
 			return false;
 		}
 
-		using var scope = scopeFactory.CreateScope();
+		// the job runs as the tenant that queued it (scoped services and the ambient tenant)
+		using var scope = scopeFactory.CreateTenantScope(queueJob.TenantId);
 		var handlers = scope.ServiceProvider.GetServices<IBackgroundJobHandler>();
 		var handler = handlers.FirstOrDefault(h => h.JobType == queueJob.JobType);
 		if ( handler == null )
@@ -182,7 +184,23 @@ public static class ProcessTaskQueue
 			return false;
 		}
 
-		await handler.ExecuteAsync(queueJob.PayloadJson, cancellationToken);
+		// a disabled or deleted tenant does no background work (jobs may still be queued)
+		var registry = scope.ServiceProvider.GetService<ITenantRegistry>();
+		if ( registry != null && !registry.IsActive(queueJob.TenantId) )
+		{
+			return true;
+		}
+
+		TenantAmbient.Set(queueJob.TenantId);
+		try
+		{
+			await handler.ExecuteAsync(queueJob.PayloadJson, cancellationToken);
+		}
+		finally
+		{
+			TenantAmbient.Reset();
+		}
+
 		return true;
 	}
 }

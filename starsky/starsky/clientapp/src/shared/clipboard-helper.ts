@@ -1,3 +1,5 @@
+import { TenantFromLocation } from "./url/url-query";
+
 export interface IClipboardData {
   tags: string;
   description: string;
@@ -6,9 +8,12 @@ export interface IClipboardData {
 
 export class ClipboardHelper {
   /**
-   * Name of the sessionStorage
+   * Name of the sessionStorage, per tenant: what is copied in one tenant is not pasted in another
    */
-  private readonly clipBoardName = "starskyClipboardData";
+  private get clipBoardName(): string {
+    const tenant = TenantFromLocation();
+    return tenant === "default" ? "starskyClipboardData" : `starskyClipboardData;t:${tenant}`;
+  }
 
   public Copy(
     tagsReference: React.RefObject<HTMLDivElement | null>,

@@ -9,6 +9,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.platform.Services;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.webhtmlpublish.Services;
 
@@ -58,7 +59,7 @@ public class WebHtmlPublishServiceOptimizersTests
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage),
-			fakeOptimisationService);
+			fakeOptimisationService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		await sut.GenerateJpeg(profile,
 			[new FileIndexItem("/test.jpg") { ImageFormat = ExtensionRolesHelper.ImageFormat.jpg }],
@@ -102,7 +103,7 @@ public class WebHtmlPublishServiceOptimizersTests
 			selectorStorage, appSettings,
 			new FakeExifTool(storage, appSettings), new FakeIOverlayImage(selectorStorage),
 			new ConsoleWrapper(), new FakeIWebLogger(), new FakeIThumbnailService(selectorStorage),
-			fakeOptimisationService);
+			fakeOptimisationService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		await sut.GenerateJpeg(profile,
 			[new FileIndexItem("/test.jpg") { ImageFormat = ExtensionRolesHelper.ImageFormat.jpg }],

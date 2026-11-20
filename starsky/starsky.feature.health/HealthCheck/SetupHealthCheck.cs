@@ -3,11 +3,22 @@ using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Data;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.health.HealthCheck;
 
 public class SetupHealthCheck(AppSettings appSettings, IServiceCollection services)
 {
+	/// <summary>
+	///     The folders of the tenant of the request: a full or missing disk of another tenant
+	///     must show up there, not in the default tenant
+	/// </summary>
+	private ITenantSettings Tenant(IServiceProvider sp)
+	{
+		return sp.GetService<ITenantSettingsProvider>()?.GetSettings(TenantAmbient.Current) ??
+		       new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings);
+	}
+
 	/// <summary>
 	///     Enable .NET health checks
 	/// </summary>
@@ -18,38 +29,38 @@ public class SetupHealthCheck(AppSettings appSettings, IServiceCollection servic
 
 		services.AddHealthChecks()
 			.AddDbContextCheck<ApplicationDbContext>()
-			.AddDiskStorageHealthCheck(
-				diskOptions =>
+			.AddTenantDiskStorageHealthCheck(
+				(sp, diskOptions) =>
 				{
-					DiskOptionsPercentageSetup.Setup(appSettings.StorageFolder,
+					DiskOptionsPercentageSetup.Setup(Tenant(sp).StorageFolder,
 						diskOptions);
 				},
 				"Storage_StorageFolder")
-			.AddDiskStorageHealthCheck(
-				diskOptions =>
+			.AddTenantDiskStorageHealthCheck(
+				(sp, diskOptions) =>
 				{
-					DiskOptionsPercentageSetup.Setup(appSettings.ThumbnailTempFolder,
+					DiskOptionsPercentageSetup.Setup(Tenant(sp).ThumbnailTempFolder,
 						diskOptions);
 				},
 				"Storage_ThumbnailTempFolder")
-			.AddDiskStorageHealthCheck(
-				diskOptions =>
+			.AddTenantDiskStorageHealthCheck(
+				(sp, diskOptions) =>
 				{
-					DiskOptionsPercentageSetup.Setup(appSettings.TempFolder,
+					DiskOptionsPercentageSetup.Setup(Tenant(sp).TempFolder,
 						diskOptions);
 				},
 				"Storage_TempFolder")
-			.AddPathExistHealthCheck(
-				pathOptions => pathOptions.AddPath(appSettings.StorageFolder),
+			.AddTenantPathExistHealthCheck(
+				(sp, pathOptions) => pathOptions.AddPath(Tenant(sp).StorageFolder),
 				name: "Exist_StorageFolder", logger: logger)
-			.AddPathExistHealthCheck(
-				pathOptions => pathOptions.AddPath(appSettings.TempFolder),
+			.AddTenantPathExistHealthCheck(
+				(sp, pathOptions) => pathOptions.AddPath(Tenant(sp).TempFolder),
 				name: "Exist_TempFolder", logger: logger)
 			.AddPathExistHealthCheck(
 				pathOptions => pathOptions.AddPath(appSettings.ExifToolPath),
 				name: "Exist_ExifToolPath", logger: logger)
-			.AddPathExistHealthCheck(
-				pathOptions => pathOptions.AddPath(appSettings.ThumbnailTempFolder),
+			.AddTenantPathExistHealthCheck(
+				(sp, pathOptions) => pathOptions.AddPath(Tenant(sp).ThumbnailTempFolder),
 				name: "Exist_ThumbnailTempFolder", logger: logger)
 			.AddCheck<DateAssemblyHealthCheck>("DateAssemblyHealthCheck");
 

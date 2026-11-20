@@ -1,0 +1,16 @@
+{
+  "starsky": {
+    "local": {
+      "isEnabled": true
+    },
+    "docker": {
+      "isEnabled": true
+    },
+    "heroku-demo": {
+      "isEnabled": false
+    },
+    "no-create-account": {
+      "isEnabled": false
+    }
+  }
+}

@@ -1,3 +1,6 @@
+using starsky.foundation.platform.Tenancy;
+using Microsoft.Extensions.DependencyInjection;
+using System.Security.Claims;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -183,5 +186,31 @@ public sealed class WebSocketConnectionsMiddlewareTest
 		Assert.IsEmpty(connections,
 			"An unhandled WebSocketError code during receive must not leak the connection " +
 			"into the singleton _connections dictionary");
+	}
+
+	[TestMethod]
+	public async Task WebSocketConnection_TenantAndUserFromRequest()
+	{
+		var services = new ServiceCollection();
+		services.AddScoped<ITenantContext, TenantContext>();
+		await using var provider = services.BuildServiceProvider();
+		using var scope = provider.CreateScope();
+		( ( TenantContext ) scope.ServiceProvider.GetRequiredService<ITenantContext>() )
+			.SetTenant("acme", false);
+
+		var httpContext = new FakeWebSocketHttpContext
+		{
+			RequestServices = scope.ServiceProvider,
+			User = new ClaimsPrincipal(new ClaimsIdentity(
+				[new Claim(ClaimTypes.NameIdentifier, "7")], "Test"))
+		};
+		var socketManager = httpContext.WebSockets as FakeWebSocketManager;
+
+		await new WebSocketConnectionsMiddleware(null!, new WebSocketConnectionsOptions(),
+			new WebSocketConnectionsService(), new FakeIWebLogger()).Invoke(httpContext);
+
+		Assert.AreEqual(WebSocketCloseStatus.NormalClosure,
+			( socketManager?.FakeWebSocket as FakeWebSocket )?.FakeCloseOutputAsync
+			.LastOrDefault());
 	}
 }

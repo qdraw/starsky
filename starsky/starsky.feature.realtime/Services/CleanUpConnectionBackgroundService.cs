@@ -4,11 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.feature.realtime.Interface;
 using starsky.foundation.injection;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.realtime.Services;
 
 [Service(typeof(IHostedService), InjectionLifetime = InjectionLifetime.Singleton)]
-public class CleanUpConnectionBackgroundService(IServiceScopeFactory serviceScopeFactory)
+public class CleanUpConnectionBackgroundService(
+	IServiceScopeFactory serviceScopeFactory,
+	ITenantRegistry? tenantRegistry = null)
 	: BackgroundService
 {
 	/// <summary>
@@ -19,13 +22,16 @@ public class CleanUpConnectionBackgroundService(IServiceScopeFactory serviceScop
 	/// <returns>CompletedTask</returns>
 	protected override async Task ExecuteAsync(CancellationToken stoppingToken)
 	{
-		using ( var scope = serviceScopeFactory.CreateScope() )
-		{
-			var connectionsService =
-				scope.ServiceProvider.GetRequiredService<IRealtimeConnectionsService>();
+		// the notifications table has rows of every tenant
+		await TenantJobs.ForEachActiveTenantAsync(serviceScopeFactory,
+			tenantRegistry ?? new TenantRegistry(),
+			async (serviceProvider, _) =>
+			{
+				var connectionsService =
+					serviceProvider.GetRequiredService<IRealtimeConnectionsService>();
 
-			//exception is already catch-ed in the service
-			await connectionsService.CleanOldMessagesAsync();
-		}
+				//exception is already catch-ed in the service
+				await connectionsService.CleanOldMessagesAsync();
+			}, cancellationToken: CancellationToken.None);
 	}
 }

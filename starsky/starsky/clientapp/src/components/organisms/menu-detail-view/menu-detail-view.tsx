@@ -19,6 +19,7 @@ import { UrlQuery } from "../../../shared/url/url-query.ts";
 import Link from "../../atoms/link/link";
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MenuOption from "../../atoms/menu-option/menu-option";
+import TenantSwitcher from "../../molecules/tenant-switcher/tenant-switcher";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import Preloader from "../../atoms/preloader/preloader";
 import IsSearchQueryMenuSearchItem from "../../molecules/is-search-query-menu-search-item/is-search-query-menu-search-item";
@@ -363,6 +364,8 @@ const MenuDetailView: React.FunctionComponent<MenuDetailViewProps> = ({ state, d
               collections={state.collections === true}
             />
           </MoreMenu>
+
+          <TenantSwitcher />
         </div>
       </header>
 

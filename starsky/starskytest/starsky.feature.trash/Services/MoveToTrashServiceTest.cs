@@ -24,6 +24,7 @@ using starsky.foundation.readmeta.Services;
 using starsky.foundation.realtime.Interfaces;
 using starsky.foundation.worker.Interfaces;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.trash.Services;
 
@@ -34,12 +35,15 @@ public class MoveToTrashServiceTest
 	{
 		var serviceProvider = new ServiceCollection()
 			.AddSingleton<AppSettings>()
+			.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()))
 			.AddSingleton<ITrashService, FakeITrashService>()
 			.AddSingleton<IQuery, FakeIQuery>()
 			.AddSingleton<IUpdateBackgroundTaskQueue, FakeIUpdateBackgroundTaskQueue>()
 			.AddSingleton<IMetaPreflight, FakeMetaPreflight>()
 			.AddSingleton<IMetaUpdateService, FakeIMetaUpdateService>()
 			.AddSingleton<ITrashConnectionService, TrashConnectionService>()
+			.AddSingleton<ISystemTrashMover, SystemTrashMover>()
 			.AddSingleton<IWebSocketConnectionsService, FakeIWebSocketConnectionsService>()
 			.AddSingleton<INotificationQuery, FakeINotificationQuery>()
 			.AddSingleton<IMoveToTrashService, MoveToTrashService>()
@@ -55,11 +59,13 @@ public class MoveToTrashServiceTest
 		const string path = "/test/test.jpg";
 		var trashService = new FakeITrashService();
 		var appSettings = new AppSettings { UseSystemTrash = true };
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(scopeFactory),
-			trashService, new FakeIMetaUpdateService(),
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(scopeFactory),
+				new FakeIMetaUpdateService(),
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		await moveToTrashService.CreateEvent([path], true);
 
@@ -81,8 +87,8 @@ public class MoveToTrashServiceTest
 		const string path = "/test/test.jpg";
 		var trashService = new FakeITrashService();
 		var appSettings = new AppSettings { UseSystemTrash = true };
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([
 				new FileIndexItem(path)
 				{
 					IsDirectory = false, Status = FileIndexItem.ExifStatus.Ok
@@ -92,9 +98,11 @@ public class MoveToTrashServiceTest
 					IsDirectory = true, Status = FileIndexItem.ExifStatus.Ok
 				}
 			]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(scopeFactory),
-			trashService, new FakeIMetaUpdateService(),
-			new FakeITrashConnectionService());
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(scopeFactory),
+				new FakeIMetaUpdateService(),
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		await moveToTrashService.CreateEvent([dirPath], true);
 
@@ -114,11 +122,13 @@ public class MoveToTrashServiceTest
 		const string path = "/test/test.jpg";
 		var trashService = new FakeITrashService();
 		var appSettings = new AppSettings { UseSystemTrash = true };
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, new FakeIMetaUpdateService(),
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				new FakeIMetaUpdateService(),
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -133,11 +143,13 @@ public class MoveToTrashServiceTest
 		const string path = "/test/test.jpg";
 		var trashService = new FakeITrashService();
 		var appSettings = new AppSettings { UseSystemTrash = false };
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, new FakeIMetaUpdateService(),
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				new FakeIMetaUpdateService(),
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -152,11 +164,13 @@ public class MoveToTrashServiceTest
 		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings { UseSystemTrash = true }; // see supported
 		var metaUpdate = new FakeIMetaUpdateService();
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, metaUpdate,
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				metaUpdate,
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -174,11 +188,13 @@ public class MoveToTrashServiceTest
 		var appSettings =
 			new AppSettings { UseSystemTrash = false }; // see supported and other test
 		var metaUpdate = new FakeIMetaUpdateService();
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, metaUpdate,
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }]),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				metaUpdate,
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -195,11 +211,13 @@ public class MoveToTrashServiceTest
 		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings { UseSystemTrash = true }; // see supported
 		var metaUpdate = new FakeIMetaUpdateService();
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Deleted }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, metaUpdate,
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Deleted }]),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				metaUpdate,
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -251,9 +269,13 @@ public class MoveToTrashServiceTest
 		var metaPreflight = new MetaPreflight(query, appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
-		var moveToTrashService = new MoveToTrashService(appSettings, query,
-			metaPreflight, new FakeIUpdateBackgroundTaskQueue(),
-			new TrashService(), metaUpdate, new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				query,
+				metaPreflight,
+				new FakeIUpdateBackgroundTaskQueue(),
+				metaUpdate,
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, new TrashService(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -312,9 +334,13 @@ public class MoveToTrashServiceTest
 		var metaPreflight = new MetaPreflight(query, appSettings,
 			new FakeSelectorStorage(storage), new FakeIWebLogger());
 
-		var moveToTrashService = new MoveToTrashService(appSettings, query,
-			metaPreflight, new FakeIUpdateBackgroundTaskQueue(),
-			new TrashService(), metaUpdate, new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				query,
+				metaPreflight,
+				new FakeIUpdateBackgroundTaskQueue(),
+				metaUpdate,
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, new TrashService(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var result = await moveToTrashService.CreateEvent(
 			[path], true);
@@ -335,10 +361,13 @@ public class MoveToTrashServiceTest
 	public void DetectToUseSystemTrash_False()
 	{
 		var trashService = new FakeITrashService { IsSupported = false };
-		var moveToTrashService = new MoveToTrashService(new AppSettings(), new FakeIQuery(),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, new FakeIMetaUpdateService(),
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery(),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				new FakeIMetaUpdateService(),
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(new AppSettings(), trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings())));
 
 		// used for end-to-end test to enable / disable the trash
 		var result = moveToTrashService.DetectToUseSystemTrash();
@@ -353,11 +382,13 @@ public class MoveToTrashServiceTest
 		var trashService = new FakeITrashService { IsSupported = false };
 		var appSettings = new AppSettings { UseSystemTrash = true }; // see supported
 		var metaUpdate = new FakeIMetaUpdateService();
-		var moveToTrashService = new MoveToTrashService(appSettings,
-			new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Deleted }]),
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, metaUpdate,
-			new FakeITrashConnectionService());
+		var moveToTrashService = new MoveToTrashService(
+				new FakeIQuery([new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Deleted }]),
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				metaUpdate,
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var (fileIndexResultsList, _) = await moveToTrashService.AppendChildItemsToTrashList(
 			[new FileIndexItem("")],
@@ -391,9 +422,13 @@ public class MoveToTrashServiceTest
 		await query.AddItemAsync(new FileIndexItem(path));
 
 		var trashService = new FakeITrashService();
-		var sut = new MoveToTrashService(appSettings, query,
-			new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-			trashService, new FakeIMetaUpdateService(), new FakeITrashConnectionService());
+		var sut = new MoveToTrashService(
+				query,
+				new FakeMetaPreflight(),
+				new FakeIUpdateBackgroundTaskQueue(),
+				new FakeIMetaUpdateService(),
+				new FakeITrashConnectionService(),
+				new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 		var payload = new MoveToTrashPayload
 		{
@@ -425,9 +460,13 @@ public class MoveToTrashServiceTest
 				new FileIndexItem(path) { Status = FileIndexItem.ExifStatus.Ok }
 			]);
 			var trashService = new FakeITrashService();
-			var sut = new MoveToTrashService(appSettings, fakeQuery,
-				new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-				trashService, new FakeIMetaUpdateService(), new FakeITrashConnectionService());
+			var sut = new MoveToTrashService(
+					fakeQuery,
+					new FakeMetaPreflight(),
+					new FakeIUpdateBackgroundTaskQueue(),
+					new FakeIMetaUpdateService(),
+					new FakeITrashConnectionService(),
+					new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 			var payload = new MoveToTrashPayload
 			{
@@ -459,9 +498,13 @@ public class MoveToTrashServiceTest
 			]);
 			var fakeMetaUpdate = new FakeIMetaUpdateService();
 			var trashService = new FakeITrashService();
-			var sut = new MoveToTrashService(appSettings, fakeQuery,
-				new FakeMetaPreflight(), new FakeIUpdateBackgroundTaskQueue(),
-				trashService, fakeMetaUpdate, new FakeITrashConnectionService());
+			var sut = new MoveToTrashService(
+					fakeQuery,
+					new FakeMetaPreflight(),
+					new FakeIUpdateBackgroundTaskQueue(),
+					fakeMetaUpdate,
+					new FakeITrashConnectionService(),
+					new SystemTrashMover(appSettings, trashService, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)));
 
 			var payload = new MoveToTrashPayload
 			{

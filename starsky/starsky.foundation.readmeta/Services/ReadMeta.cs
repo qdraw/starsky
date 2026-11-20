@@ -12,6 +12,7 @@ using starsky.foundation.readmeta.Interfaces;
 using starsky.foundation.readmeta.ReadMetaHelpers;
 using starsky.foundation.storage.Interfaces;
 using starsky.foundation.storage.Services;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.readmeta.Services;
 
@@ -108,7 +109,7 @@ public sealed class ReadMeta : IReadMeta
 		}
 
 		// Return values from IMemoryCache
-		var queryReadMetaCacheName = CachePrefix + subPath;
+		var queryReadMetaCacheName = TenantCacheKey.Prefix(CachePrefix + subPath);
 
 		// Return Cached object if exist
 		if ( _cache.TryGetValue(queryReadMetaCacheName, out var objectExifToolModel) )
@@ -158,7 +159,7 @@ public sealed class ReadMeta : IReadMeta
 			return null;
 		}
 
-		var queryCacheName = CachePrefix + fullFilePath;
+		var queryCacheName = TenantCacheKey.Prefix(CachePrefix + fullFilePath);
 
 		if ( !_cache.TryGetValue(queryCacheName, out _) )
 		{
@@ -184,7 +185,7 @@ public sealed class ReadMeta : IReadMeta
 		}
 
 		var toUpdateObject = objectExifToolModel.Clone();
-		var queryReadMetaCacheName = CachePrefix + fullFilePath;
+		var queryReadMetaCacheName = TenantCacheKey.Prefix(CachePrefix + fullFilePath);
 		RemoveReadMetaCache(fullFilePath);
 		_cache.Set(queryReadMetaCacheName, toUpdateObject,
 			new TimeSpan(0, 15, 0));

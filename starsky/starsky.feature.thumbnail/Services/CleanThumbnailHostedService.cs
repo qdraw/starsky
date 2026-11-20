@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using starsky.foundation.injection;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.settings.Enums;
 using starsky.foundation.settings.Formats;
 using starsky.foundation.settings.Interfaces;
@@ -18,7 +20,8 @@ namespace starsky.feature.thumbnail.Services;
 	InjectionLifetime = InjectionLifetime.Singleton)]
 public class CleanThumbnailHostedService(
 	IServiceScopeFactory serviceScopeFactory,
-	IHostApplicationLifetime hostApplicationLifetime)
+	IHostApplicationLifetime hostApplicationLifetime,
+	ITenantRegistry? tenantRegistry = null)
 	: IHostedService
 {
 	private CancellationTokenRegistration? _applicationStartedRegistration;
@@ -84,18 +87,32 @@ public class CleanThumbnailHostedService(
 	internal async Task<List<string>> StartBackgroundAsync(TimeSpan delay,
 		CancellationToken cancellationToken)
 	{
-		using var scope = serviceScopeFactory.CreateScope();
-		var appSettings = scope.ServiceProvider.GetRequiredService<AppSettings>();
-		var settingService = scope.ServiceProvider.GetRequiredService<ISettingsService>();
-		if ( !await ContinueDueSettings(appSettings, settingService) )
+		var registry = tenantRegistry ?? new TenantRegistry();
+
+		// the last run is a setting of the tenant: ask each tenant if it is due
+		var dueTenants = await TenantJobs.SelectForTenantsAsync(serviceScopeFactory,
+			registry.ActiveTenantIds.ToArray(),
+			async (serviceProvider, tenantId) =>
+			{
+				var appSettings = serviceProvider.GetRequiredService<AppSettings>();
+				var settingService = serviceProvider.GetRequiredService<ISettingsService>();
+				return await ContinueDueSettings(appSettings, settingService) ? tenantId : null;
+			}, cancellationToken: cancellationToken);
+
+		if ( dueTenants.Count == 0 )
 		{
 			return [];
 		}
 
 		await Task.Delay(delay, cancellationToken);
 
-		var thumbnailCleaner = scope.ServiceProvider.GetRequiredService<IThumbnailCleaner>();
-		return await thumbnailCleaner.CleanAllUnusedFilesAsync();
+		var cleaned = await TenantJobs.SelectForTenantsAsync(serviceScopeFactory, dueTenants,
+			async (serviceProvider, _) =>
+			{
+				var thumbnailCleaner = serviceProvider.GetRequiredService<IThumbnailCleaner>();
+				return await thumbnailCleaner.CleanAllUnusedFilesAsync();
+			}, cancellationToken: cancellationToken);
+		return cleaned.SelectMany(p => p).ToList();
 	}
 
 	internal static async Task<bool> ContinueDueSettings(AppSettings appSettings,

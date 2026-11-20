@@ -3,6 +3,7 @@ using starsky.foundation.import.Helpers;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Models;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.import.Helpers;
 
@@ -21,7 +22,7 @@ public class RemoveTempAndParentStreamFolderHelperTest
 		}
 
 		var storage = new FakeIStorage([rootFolder]);
-		new RemoveTempAndParentStreamFolderHelper(storage, appSettings).RemoveTempAndParentStreamFolder(rootFolder);
+		new RemoveTempAndParentStreamFolderHelper(storage, appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)).RemoveTempAndParentStreamFolder(rootFolder);
 		
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, storage.Info(rootFolder).IsFolderOrFile);
 	}
@@ -32,7 +33,7 @@ public class RemoveTempAndParentStreamFolderHelperTest
 		var appSettings = new AppSettings();
 
 		var storage = new FakeIStorage(["/test", "/test/stream/"]);
-		new RemoveTempAndParentStreamFolderHelper(storage, appSettings).RemoveTempAndParentStreamFolder("/test/stream/");
+		new RemoveTempAndParentStreamFolderHelper(storage, appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)).RemoveTempAndParentStreamFolder("/test/stream/");
 		
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, storage.Info("/test/stream").IsFolderOrFile);
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Folder, storage.Info("/test").IsFolderOrFile);
@@ -44,7 +45,7 @@ public class RemoveTempAndParentStreamFolderHelperTest
 		var appSettings = new AppSettings();
 
 		var storage = new FakeIStorage(["/test", "/test/stream/"]);
-		new RemoveTempAndParentStreamFolderHelper(storage, appSettings).RemoveTempAndParentStreamFolder(
+		new RemoveTempAndParentStreamFolderHelper(storage, appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings)).RemoveTempAndParentStreamFolder(
 			["/test/stream/"]);
 		
 		Assert.AreEqual(FolderOrFileModel.FolderOrFileTypeList.Deleted, storage.Info("/test/stream").IsFolderOrFile);

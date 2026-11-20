@@ -10,6 +10,7 @@ using starsky.foundation.injection;
 using starsky.foundation.platform.Helpers;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 [assembly: InternalsVisibleTo("starskytest")]
 
@@ -25,9 +26,21 @@ public class CloudImportService(
 	private readonly Dictionary<string, CloudImportResult> _lastSyncResults = new();
 	private readonly ConcurrentDictionary<string, DateTime> _processedFiles = new();
 	private readonly ConcurrentDictionary<string, SemaphoreSlim> _providerLocks = new();
+
+	// provider id to the tenant it imports into, while a sync of it runs
+	private readonly ConcurrentDictionary<string, string> _runningTenants = new();
+
+	// tenants with a SyncAll running: covers the gaps between the providers of that batch
+	private readonly ConcurrentDictionary<string, byte> _runningTenantBatches = new();
 	private readonly Lock _resultsLock = new();
 
 	public bool IsSyncInProgress { get; private set; }
+
+	public bool IsSyncInProgressForTenant(string tenantId)
+	{
+		return _runningTenantBatches.ContainsKey(tenantId) ||
+		       _runningTenants.Values.Contains(tenantId);
+	}
 
 	public Dictionary<string, CloudImportResult> LastSyncResults
 	{
@@ -40,11 +53,30 @@ public class CloudImportService(
 		}
 	}
 
-	public async Task<List<CloudImportResult>> SyncAllAsync(CloudImportTriggerType triggerType)
+	public Task<List<CloudImportResult>> SyncAllAsync(CloudImportTriggerType triggerType)
+	{
+		return SyncAllAsync(appSettings.CloudImport?.GetEnabledProviders() ?? [], triggerType);
+	}
+
+	public async Task<List<CloudImportResult>> SyncAllAsync(CloudImportTriggerType triggerType,
+		string tenantId)
+	{
+		_runningTenantBatches[tenantId] = 0;
+		try
+		{
+			return await SyncAllAsync(appSettings.CloudImport?.GetEnabledProviders()
+				.Where(p => p.TenantId == tenantId).ToList() ?? [], triggerType);
+		}
+		finally
+		{
+			_runningTenantBatches.TryRemove(tenantId, out _);
+		}
+	}
+
+	private async Task<List<CloudImportResult>> SyncAllAsync(
+		List<CloudImportProviderSettings> enabledProviders, CloudImportTriggerType triggerType)
 	{
 		var results = new List<CloudImportResult>();
-		var enabledProviders = appSettings.CloudImport?
-			.GetEnabledProviders() ?? [];
 
 		if ( enabledProviders.Count == 0 )
 		{
@@ -100,6 +132,23 @@ public class CloudImportService(
 	public async Task<CloudImportResult> SyncAsync(string providerId,
 		CloudImportTriggerType triggerType)
 	{
+		// locks, results and running state are keyed by provider id: an id used by more than one
+		// provider (of different tenants) would share them
+		if ( appSettings.CloudImport?.Providers.Count(p => p.Id == providerId) > 1 )
+		{
+			var duplicateError =
+				$"[CloudImportService] Provider id '{providerId}' is used more than once";
+			logger.LogError(duplicateError);
+			return new CloudImportResult
+			{
+				ProviderId = providerId,
+				StartTime = DateTime.UtcNow,
+				EndTime = DateTime.UtcNow,
+				TriggerType = triggerType,
+				Errors = [duplicateError]
+			};
+		}
+
 		var providerSettings =
 			appSettings.CloudImport?.Providers.FirstOrDefault(p => p.Id == providerId);
 		if ( providerSettings == null )
@@ -133,12 +182,16 @@ public class CloudImportService(
 			};
 		}
 
+		// mark before waiting for the lock, so there is no gap for the tenant check
+		_runningTenants[providerId] = providerSettings.TenantId;
+
 		// Get or create a lock for this provider
 		var providerLock = _providerLocks.GetOrAdd(providerId, _ => new SemaphoreSlim(1, 1));
 
 		// Prevent overlapping sync executions for this provider
 		if ( !await providerLock.WaitAsync(0) )
 		{
+			// the running sync of this provider owns the entry, and removes it
 			logger.LogError(
 				$"[CloudImportService] Cloud Import already in progress for provider '{providerId}', skipping this execution");
 			return new CloudImportResult
@@ -152,6 +205,7 @@ public class CloudImportService(
 			};
 		}
 
+		var previousTenant = TenantAmbient.Current;
 		try
 		{
 			IsSyncInProgress = true;
@@ -166,8 +220,37 @@ public class CloudImportService(
 			logger.LogInformation(
 				$"[CloudImportService] Starting Cloud Import (Provider ID: {providerId}, Trigger: {triggerType}, Provider: {providerSettings.Provider}, Folder: {providerSettings.RemoteFolder})");
 
+			// the files are imported into the tenant of the provider: a plain scope is always the
+			// default tenant
+			if ( !TenantIdHelper.IsValid(providerSettings.TenantId) )
+			{
+				var invalidError =
+					$"[CloudImportService] Tenant id '{providerSettings.TenantId}' of provider " +
+					$"'{providerId}' is not valid";
+				logger.LogError(invalidError);
+				result.Errors.Add(invalidError);
+				result.EndTime = DateTime.UtcNow;
+				UpdateLastSyncResult(providerId, result);
+				return result;
+			}
+
+			using var scope = serviceScopeFactory.CreateTenantScope(providerSettings.TenantId);
+			var tenantRegistry = scope.ServiceProvider.GetService<ITenantRegistry>();
+			if ( tenantRegistry?.IsActive(providerSettings.TenantId) == false )
+			{
+				var tenantError =
+					$"[CloudImportService] Tenant '{providerSettings.TenantId}' of provider " +
+					$"'{providerId}' is not active";
+				logger.LogError(tenantError);
+				result.Errors.Add(tenantError);
+				result.EndTime = DateTime.UtcNow;
+				UpdateLastSyncResult(providerId, result);
+				return result;
+			}
+
+			_runningTenants[providerId] = providerSettings.TenantId;
+			TenantAmbient.Set(providerSettings.TenantId);
 			// Get the Cloud Import client
-			using var scope = serviceScopeFactory.CreateScope();
 			var cloudClient = GetCloudClient(scope, providerSettings.Provider);
 
 			if ( cloudClient is not { Enabled: true } )
@@ -244,6 +327,8 @@ public class CloudImportService(
 		}
 		finally
 		{
+			_runningTenants.TryRemove(providerId, out _);
+			TenantAmbient.Set(previousTenant);
 			providerLock.Release();
 			if ( _providerLocks.Values.All(l => l.CurrentCount != 0) )
 			{

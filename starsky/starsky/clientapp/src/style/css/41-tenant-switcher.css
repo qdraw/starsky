@@ -1,0 +1,119 @@
+.tenant-switcher {
+  position: absolute;
+  right: 12px;
+  top: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  -webkit-app-region: no-drag;
+}
+
+.tenant-switcher__button,
+.tenant-switcher__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1565c0;
+  color: #fff;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tenant-switcher__button {
+  border: 0;
+  cursor: pointer;
+  position: relative;
+  z-index: 501;
+}
+
+.tenant-switcher__button:focus-visible {
+  outline: 2px solid #fff;
+}
+
+.tenant-switcher__backdrop {
+  position: fixed;
+  inset: 0;
+  background: transparent;
+  border: 0;
+  z-index: 500;
+}
+
+.tenant-switcher__menu {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  min-width: 240px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: #fff;
+  color: #263238;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  z-index: 501;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tenant-switcher__menu {
+    background: #263238;
+    color: #fff;
+  }
+}
+
+.tenant-switcher__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+button.tenant-switcher__item {
+  cursor: pointer;
+}
+
+button.tenant-switcher__item:hover,
+button.tenant-switcher__item:focus-visible {
+  background: rgba(144, 164, 174, 0.3);
+}
+
+.tenant-switcher__item--current {
+  margin-bottom: 4px;
+  background: rgba(21, 101, 192, 0.15);
+}
+
+.tenant-switcher__item--current small {
+  display: block;
+  opacity: 0.7;
+}
+
+/* make room for the switcher: the header items are positioned from the right */
+.header .wrapper:has(> .tenant-switcher) > .item.item--more {
+  right: 62px;
+}
+.header .wrapper:has(> .tenant-switcher) > .item.item--labels,
+.header .wrapper:has(> .tenant-switcher) > .item.item--select {
+  right: 147px;
+}
+.header .wrapper:has(> .tenant-switcher) > .item.item--force-sync {
+  right: 257px;
+}
+
+@media screen and (max-width: 450px) {
+  .header .wrapper:has(> .tenant-switcher) > .item.item--more {
+    right: 52px;
+  }
+  .header .wrapper:has(> .tenant-switcher) > .item.item--labels,
+  .header .wrapper:has(> .tenant-switcher) > .item.item--select {
+    right: 128px;
+  }
+}

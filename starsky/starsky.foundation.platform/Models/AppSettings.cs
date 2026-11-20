@@ -185,6 +185,18 @@ public sealed class AppSettings
 	} = string.Empty;
 
 	/// <summary>
+	///     Parent of the folders of tenants that have no explicit folders:
+	///     TenantsRoot/{tenantId}/{storage,thumbnails,temp}. Must not be inside any tenant's StorageFolder
+	/// </summary>
+	public string TenantsRoot
+	{
+		get => string.IsNullOrEmpty(field)
+			? Path.Combine(BaseDirectoryProject, "tenants")
+			: field;
+		set => field = ReplaceEnvironmentVariable(value);
+	} = string.Empty;
+
+	/// <summary>
 	///     Allow overwriting this name in AppSettingsController
 	/// </summary>
 	public bool StorageFolderAllowEdit =>

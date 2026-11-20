@@ -125,6 +125,7 @@ Each cloud import provider can be configured independently:
           "Id": "dropbox-camera-uploads",
           "Enabled": true,
           "Provider": "Dropbox",
+          "TenantId": "default",
           "RemoteFolder": "/Camera Uploads",
           "SyncFrequencyMinutes": 0,
           "SyncFrequencyHours": 1,
@@ -150,11 +151,48 @@ Each cloud import provider can be configured independently:
 export app__CloudImport__Providers__0__Id="dropbox-camera-uploads"
 export app__CloudImport__Providers__0__Enabled="true"
 export app__CloudImport__Providers__0__Provider="Dropbox"
+export app__CloudImport__Providers__0__TenantId="default"
 export app__CloudImport__Providers__0__RemoteFolder="/Camera Uploads"
 export app__CloudImport__Providers__0__DeleteAfterImport="false"
 export app__CloudImport__Providers__0__Credentials__RefreshToken=""
 export app__CloudImport__Providers__0__Credentials__AppKey=""
 export app__CloudImport__Providers__0__Credentials__AppSecret=""
+```
+
+### Import into a tenant
+
+Every provider imports into one [tenant](../multi-tenancy.md), set with `TenantId`. Empty or left out is the
+`default` tenant. Use one provider (with its own Dropbox account) for each tenant that needs cloud import, with a
+unique `Id` for each.
+
+* The files are imported into the storage folder of that tenant, in a scope of that tenant. The scheduled sync does
+  the same.
+* On `/t/{tenant}/api/cloud-import/...` a user only sees the providers, the status and the results of that tenant.
+  Another tenant's provider answers `404`.
+* `TenantId` is trimmed and lowercased, and must be a valid tenant id (lowercase letters, digits and dashes). An
+  invalid id makes the sync return an error.
+* The `Id` of a provider must be unique over all tenants: a sync of an `Id` that is used more than once returns an
+  error, so tenants never share results or locks.
+* Only one sync runs at a time for a tenant: a second manual sync (all providers, or one) answers `409`.
+* A tenant that is not active (disabled or deleted) cannot import: the sync returns an error.
+* The configuration is shared by all tenants, so when there is more than one tenant only a platform administrator can
+  change it (including `TenantId`).
+
+```json
+{
+  "app": {
+    "CloudImport": {
+      "Providers": [
+        {
+          "Id": "dropbox-acme",
+          "Enabled": true,
+          "TenantId": "acme",
+          "other fields are omitted for brevity": "..."
+        }
+      ]
+    }
+  }
+}
 ```
 
 ### Filter on extensions

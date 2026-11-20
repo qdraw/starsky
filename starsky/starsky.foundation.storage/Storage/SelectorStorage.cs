@@ -35,10 +35,13 @@ public sealed class SelectorStorage : ISelectorStorage
 
 	private readonly IEnumerable<IStorage> _services;
 
-	public SelectorStorage(IServiceScopeFactory scopeFactory)
+	/// <summary>
+	///     Takes the provider of the current scope (not a new scope): the storages must see the
+	///     tenant of this request, and a new scope would never be disposed
+	/// </summary>
+	public SelectorStorage(IServiceProvider serviceProvider)
 	{
-		var scope = scopeFactory.CreateScope();
-		_services = scope.ServiceProvider.GetServices<IStorage>();
+		_services = serviceProvider.GetServices<IStorage>();
 	}
 
 	public IStorage Get(StorageServices storageServices)

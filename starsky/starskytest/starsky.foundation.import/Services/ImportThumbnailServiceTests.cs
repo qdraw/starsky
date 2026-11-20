@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.import.Services;
 using starsky.foundation.platform.Models;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.import.Services;
 
@@ -23,7 +24,7 @@ public class ImportThumbnailServiceTests
 	public async Task WriteThumbnailsTest_ListShouldBeEq()
 	{
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
-			_appSettings);
+			_appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var result = await sut.WriteThumbnails([],
 			["123"]);
 		Assert.IsFalse(result);
@@ -34,7 +35,7 @@ public class ImportThumbnailServiceTests
 	{
 		var logger = new FakeIWebLogger();
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), logger,
-			_appSettings);
+			_appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var result = await sut.WriteThumbnails(["123"],
 			["123"]);
@@ -51,7 +52,7 @@ public class ImportThumbnailServiceTests
 			["/upload/123.jpg"]);
 
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(storage), logger,
-			_appSettings);
+			_appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		await sut.WriteThumbnails(["/upload/123.jpg"],
 			["123"]);
@@ -66,7 +67,7 @@ public class ImportThumbnailServiceTests
 		var inputList = new List<string> { "12345678901234567890123456" };
 
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
-			_appSettings);
+			_appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var result = sut.MapToTransferObject(inputList).ToList();
 
@@ -79,7 +80,7 @@ public class ImportThumbnailServiceTests
 	{
 		var inputList = new List<string> { "12345678901234567890123456@2000" };
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
-			_appSettings);
+			_appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var result = sut.MapToTransferObject(inputList).ToList();
 
 		Assert.AreEqual("12345678901234567890123456", result.FirstOrDefault()?.FileHash);
@@ -91,7 +92,7 @@ public class ImportThumbnailServiceTests
 	{
 		var inputList = new List<string> { "1234567890123456" };
 		var sut = new ImportThumbnailService(new FakeSelectorStorage(), new FakeIWebLogger(),
-			_appSettings);
+			_appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		Assert.ThrowsExactly<ArgumentOutOfRangeException>(() =>
 			sut.MapToTransferObject(inputList));

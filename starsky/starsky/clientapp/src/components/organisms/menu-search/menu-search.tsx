@@ -21,6 +21,7 @@ import { MenuSelectCount } from "../../molecules/menu-select-count/menu-select-c
 import { MenuSelectFurther } from "../../molecules/menu-select-further/menu-select-further";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
+import TenantSwitcher from "../../molecules/tenant-switcher/tenant-switcher";
 import NavContainer from "../nav-container/nav-container";
 
 interface IMenuSearchProps {
@@ -192,6 +193,8 @@ const MenuSearch: React.FunctionComponent<IMenuSearchProps> = ({ state, dispatch
           <NavContainer hamburgerMenu={hamburgerMenu}>
             <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
           </NavContainer>
+
+          <TenantSwitcher />
         </div>
       </header>
 

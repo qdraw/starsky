@@ -4,6 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Services;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.storage.Services;
 
@@ -50,7 +51,7 @@ public class FullFilePathExistsServiceTests
 				subPath);
 		}
 
-		var service = new FullFilePathExistsService(_selectorStorage, _appSettings);
+		var service = new FullFilePathExistsService(_selectorStorage, _appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		// Act
 		var result = await service.GetFullFilePath(subPath, "filehash");
@@ -83,7 +84,7 @@ public class FullFilePathExistsServiceTests
 		var fakeTempStorage = new FakeIStorage();
 		var appSettings = new AppSettings();
 		var selectorStorage = new FakeSelectorStorageByType(null!, null!, null!, fakeTempStorage);
-		var service = new FullFilePathExistsService(selectorStorage, appSettings);
+		var service = new FullFilePathExistsService(selectorStorage, appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		const string fileHashWithExtension = "test-file.jpg";
 		await fakeTempStorage
@@ -104,7 +105,7 @@ public class FullFilePathExistsServiceTests
 		var appSettings = new AppSettings();
 		var selectorStorage = new FakeSelectorStorageByType(null!, null!,
 			null!, fakeTempStorage);
-		var service = new FullFilePathExistsService(selectorStorage, appSettings);
+		var service = new FullFilePathExistsService(selectorStorage, appSettings, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		const string fileHashWithExtension = "test-file.jpg";
 		await fakeTempStorage
