@@ -39,7 +39,11 @@ describe("Download files (70)", () => {
       headers: { "Content-Type": "text/plain" },
     }).then((response) => {
       expect(response.status).to.eq(200);
-      if (response.body.fileIndexItems.length >= 3) return;
+      const items: Array<{ filePath: string }> = response.body.fileIndexItems ?? [];
+      // check the specific files, other suites may leave files behind
+      if ([filePath1, filePath2, filePath3].every((fp) => items.some((i) => i.filePath === fp))) {
+        return;
+      }
       cy.wait(1500);
       index++;
       if (index < max) waitUntilUploaded(index, max);
@@ -124,9 +128,19 @@ describe("Download files (70)", () => {
     cy.visit(config.url);
     cy.wait(500);
 
-    cy.get(".item.item--select").click();
-    cy.get(`[data-filepath="${filePath1}"] button`, { timeout: 15000 }).should("be.visible").click({ force: true });
-    cy.get(`[data-filepath="${filePath2}"] button`, { timeout: 15000 }).should("be.visible").click({ force: true });
+    cy.get(".item.item--select", { timeout: 20000 }).click();
+    cy.get('[data-test="selected-0"]', { timeout: 20000 }).should("exist");
+
+    // the button can be covered by the thumbnail, so only require existence (same as test 60)
+    cy.get(`[data-filepath="${filePath1}"] button`, { timeout: 20000 })
+      .should("exist")
+      .click({ force: true });
+    cy.get('[data-test="selected-1"]', { timeout: 20000 }).should("exist");
+
+    cy.get(`[data-filepath="${filePath2}"] button`, { timeout: 20000 })
+      .should("exist")
+      .click({ force: true });
+    cy.get('[data-test="selected-2"]', { timeout: 20000 }).should("exist");
 
     cy.get(".item.item--more").click();
     cy.get("[data-test=export]").click();
