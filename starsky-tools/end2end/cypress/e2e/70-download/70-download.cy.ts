@@ -122,11 +122,29 @@ describe("Download files (70)", () => {
     });
   }
 
+  function visitUntilListed(index: number, max: number = 4) {
+    cy.visit(config.url);
+    cy.get("body", { timeout: 20000 }).then(($body) => {
+      // before the select-mode toggle there are no buttons, so look at the item containers
+      const listed = [filePath1, filePath2].every(
+        (fp) => $body.find(`[data-filepath="${fp}"]`).length > 0
+      );
+      if (listed || index + 1 >= max) return;
+      cy.wait(1500);
+      cy.then(() => {
+        sessionStorage.clear();
+      });
+      visitUntilListed(index + 1, max);
+    });
+  }
+
   it("Export modal opens from archive view with multiple files selected (70)", () => {
     if (!config.isEnabled) return;
 
-    cy.visit(config.url);
-    cy.wait(500);
+    // the archive list can be served from a stale cache (uploaded after the first listing),
+    // so drop the cache and reload until the uploaded files are rendered
+    cy.request({ method: "POST", url: config.searchClearCache, failOnStatusCode: false });
+    visitUntilListed(0);
 
     cy.get(".item.item--select", { timeout: 20000 }).click();
     cy.get('[data-test="selected-0"]', { timeout: 20000 }).should("exist");
