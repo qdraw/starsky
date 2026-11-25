@@ -22,7 +22,7 @@
     "axios": "^1.15.0",
     "cwait": "^1.1.2",
     "dotenv": "^17.3.1",
-    "jimp": "^1.6.0",
+    "jimp": "^1.7.0",
     "jpeg-autorotate": "^9.0.0",
     "p-iteration": "^1.1.8"
   },
