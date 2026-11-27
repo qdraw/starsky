@@ -12,6 +12,7 @@ import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-men
 import MenuOptionModal from "../../atoms/menu-option-modal/menu-option-modal";
 import MoreMenu from "../../atoms/more-menu/more-menu";
 import ForceSyncWaitButton from "../../molecules/force-sync-wait-button/force-sync-wait-button.tsx";
+import { MenuDesktopInlineSearch } from "../../molecules/menu-desktop-inline-search/menu-desktop-inline-search.tsx";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
 import { MenuOptionArchiveRename } from "../../molecules/menu-option-archive-rename/menu-option-archive-rename.tsx";
 import { MenuOptionBatchRename } from "../../molecules/menu-option-batch-rename/menu-option-batch-rename.tsx";
@@ -143,6 +144,8 @@ const MenuArchive: React.FunctionComponent = memo(() => {
             hamburgerMenu={hamburgerMenu}
             setHamburgerMenu={setHamburgerMenu}
           />
+
+          <MenuDesktopInlineSearch callback={() => setHamburgerMenu(!hamburgerMenu)} />
 
           <MenuSelectCount select={select} removeSidebarSelection={removeSidebarSelection} />
 
