@@ -1,0 +1,22 @@
+name: Global YAML Validator
+
+on:
+  push:
+    branches: master
+  pull_request:
+    branches: master
+
+jobs:
+  yaml-lint:
+    name: YAML Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@c2d88d3ecc89a9ef08eebf45d9637801dcee7eb5
+
+      - name: Install yamllint
+        run: sudo apt-get update && sudo apt-get install -y yamllint
+
+      - name: Run yamllint
+        run: yamllint .
