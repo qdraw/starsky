@@ -66,6 +66,24 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
     setStorageFolder(appSettings?.storageFolder);
   }, [appSettings]);
 
+  // macOS native folder picker: register the callback that Swift evaluates after the
+  // NSOpenPanel resolves. Only active when running inside WKWebView (window.webkit exists).
+  const isMacWebView =
+    typeof window !== "undefined" && "webkit" in window;
+
+  useEffect(() => {
+    if (!isMacWebView) return;
+    (window as unknown as Record<string, unknown>)["__starskyStorageFolderSelected"] =
+      async (path: string) => {
+        const resultStatusCode = await ChangeSetting(path, "storageFolder");
+        setStorageFolder(path);
+        setStorageFolderNotFound(resultStatusCode === 404);
+      };
+    return () => {
+      delete (window as unknown as Record<string, unknown>)["__starskyStorageFolderSelected"];
+    };
+  }, [isMacWebView]);
+
   return (
     <>
       <div className={isEnabled ? "warning-box warning-box--optional" : "warning-box"}>
@@ -83,6 +101,21 @@ const PreferencesAppSettingsStorageFolder: React.FunctionComponent = () => {
       >
         {storageFolder}
       </FormControl>
+
+      {isMacWebView && isEnabled && appSettings?.storageFolderAllowEdit === true ? (
+        <button
+          data-test="storage-folder-browse"
+          onClick={() => {
+            (
+              window as unknown as {
+                webkit: { messageHandlers: { storageFolderPicker: { postMessage: (v: unknown) => void } } };
+              }
+            ).webkit.messageHandlers.storageFolderPicker.postMessage({});
+          }}
+        >
+          Browse…
+        </button>
+      ) : null}
 
       {storageFolderNotFound ? (
         <div className="warning-box" data-test="storage-not-found">

@@ -1,9 +1,14 @@
 import Foundation
 import OSLog
+#if MAS
+import ServiceManagement
+#endif
 
 class BackendService: @unchecked Sendable {
     private let logger = Logger(subsystem: "nl.qdraw.starsky", category: "BackendService")
     private let fileLogger: DailyFileLogger
+
+    #if !MAS
     private var process: Process?
     private var isShuttingDown = false
     private var hasRestarted = false
@@ -17,18 +22,101 @@ class BackendService: @unchecked Sendable {
     var sigtermTimeout: TimeInterval = 5
     var sigintTimeout: TimeInterval = 2
     var restartDelay: TimeInterval = 2
+    #endif
 
-    init(fileLogger: DailyFileLogger, xattrPath: String = "/usr/bin/xattr", codesignPath: String = "/usr/bin/codesign") {
+    init(fileLogger: DailyFileLogger,
+         xattrPath: String = "/usr/bin/xattr",
+         codesignPath: String = "/usr/bin/codesign")
+    {
         self.fileLogger = fileLogger
+        #if !MAS
         self.xattrPath = xattrPath
         self.codesignPath = codesignPath
+        #endif
     }
+
+    // MARK: - MAS path (SMAppService login item)
+
+    #if MAS
+    private let loginItemIdentifier = "nl.qdraw.starsky.backend"
+    private var loginItem: SMAppService { .loginItem(identifier: loginItemIdentifier) }
+
+    var isRunning: Bool { loginItem.status == .enabled }
+
+    func start(port: Int) throws {
+        writePortToAppSettings(port: port)
+        // Unregister any stale instance before registering fresh.
+        try? loginItem.unregister()
+        do {
+            try loginItem.register()
+            logger.info("Backend login item registered on port \(port)")
+            fileLogger.info("Backend login item registered on port \(port)", category: "BackendService")
+        } catch {
+            if loginItem.status == .requiresApproval {
+                throw BackendError.requiresUserApproval
+            }
+            throw BackendError.loginItemRegistrationFailed(error)
+        }
+    }
+
+    func stop() {
+        try? loginItem.unregister()
+        logger.info("Backend login item unregistered")
+        fileLogger.info("Backend login item unregistered", category: "BackendService")
+    }
+
+    func beginShutdown() { stop() }
+    func forceStop() { stop() }
+
+    // Merges the Kestrel port into the App Group container's appsettings.json.
+    // The .NET backend reads this file on startup; PortProgramHelper detects
+    // the Kestrel endpoint and skips its own URL override logic.
+    private func writePortToAppSettings(port: Int) {
+        let file = ApplicationPaths.appSettingsFile
+        var root: [String: Any] = [:]
+        if let data = try? Data(contentsOf: file),
+           let existing = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+            root = existing
+        }
+        var kestrel = root["Kestrel"] as? [String: Any] ?? [:]
+        var endpoints = kestrel["Endpoints"] as? [String: Any] ?? [:]
+        endpoints["Http"] = ["Url": "http://localhost:\(port)"]
+        kestrel["Endpoints"] = endpoints
+        root["Kestrel"] = kestrel
+        guard let data = try? JSONSerialization.data(
+            withJSONObject: root, options: [.prettyPrinted, .sortedKeys]) else { return }
+        try? data.write(to: file, options: .atomic)
+    }
+
+    // MARK: - Non-MAS path (Foundation.Process)
+
+    #else
 
     var isRunning: Bool { process?.isRunning ?? false }
 
     func start(port: Int) throws {
         currentPort = port
         try launch(port: port)
+    }
+
+    // Returns the environment dictionary the backend process needs.
+    // Uses ApplicationPaths.* which always resolves to the App Group container,
+    // ensuring the same paths are used regardless of distribution channel.
+    static func buildEnvironment(port: Int) -> [String: String] {
+        var env = ProcessInfo.processInfo.environment
+        env["ASPNETCORE_URLS"] = "http://localhost:\(port)"
+        env["STARSKY_APP_GROUP"] = "group.nl.qdraw.starsky"
+        env["app__appsettingspath"] = ApplicationPaths.appSettingsFile.path
+        env["app__appsettingslocalpath"] = ApplicationPaths.appSettingsLocalFile.path
+        env["app__databaseConnection"] = "Data Source=\(ApplicationPaths.databaseFile.path)"
+        env["app__tempFolder"] = ApplicationPaths.tempFolder.path + "/"
+        env["app__thumbnailTempFolder"] = ApplicationPaths.thumbnailTempFolder.path + "/"
+        env["app__NoAccountLocalhost"] = "true"
+        env["app__UseLocalDesktop"] = "true"
+        env["app__AccountRegisterDefaultRole"] = "Administrator"
+        env["app__ThumbnailGenerationIntervalInMinutes"] = "300"
+        env["app__Verbose"] = "false"
+        return env
     }
 
     private func launch(port: Int) throws {
@@ -92,8 +180,7 @@ class BackendService: @unchecked Sendable {
         fileLogger.info("Backend stopped", category: "BackendService")
     }
 
-    // Marks shutdown intent and sends SIGTERM without waiting. Call this early in the
-    // termination path to give the backend time to flush; follow up with forceStop().
+    // Marks shutdown intent and sends SIGTERM without waiting.
     func beginShutdown() {
         isShuttingDown = true
         guard let proc = process, proc.isRunning else { return }
@@ -101,8 +188,7 @@ class BackendService: @unchecked Sendable {
         proc.terminate()
     }
 
-    // Sends SIGKILL immediately and clears the process reference. Call after a grace period
-    // to ensure the backend is dead before the parent process exits.
+    // Sends SIGKILL immediately and clears the process reference.
     func forceStop() {
         guard let proc = process else { return }
         if proc.isRunning {
@@ -152,27 +238,10 @@ class BackendService: @unchecked Sendable {
     }
 
     func quarantineDidClear(_: String) {
-        // Intentionally no-op by default: hook in tests (leave comment inside class)
+        // Intentionally no-op by default: hook in tests
     }
 
-    static func buildEnvironment(port: Int) -> [String: String] {
-        var env = ProcessInfo.processInfo.environment
-        let appSupport = ApplicationPaths.appSupport.path
-        let caches = ApplicationPaths.caches.path
-
-        env["ASPNETCORE_URLS"] = "http://localhost:\(port)"
-        env["app__appsettingspath"] = "\(appSupport)/appsettings.json"
-        env["app__appsettingslocalpath"] = "\(appSupport)/appsettings.local.json"
-        env["app__databaseConnection"] = "Data Source=\(appSupport)/starsky.db"
-        env["app__tempFolder"] = "\(caches)/tempFolder/"
-        env["app__thumbnailTempFolder"] = "\(appSupport)/thumbnailTempFolder/"
-        env["app__NoAccountLocalhost"] = "true"
-        env["app__UseLocalDesktop"] = "true"
-        env["app__AccountRegisterDefaultRole"] = "Administrator"
-        env["app__ThumbnailGenerationIntervalInMinutes"] = "300"
-        env["app__Verbose"] = "false"
-        return env
-    }
+    #endif
 
     deinit {
         stop()
@@ -181,11 +250,21 @@ class BackendService: @unchecked Sendable {
 
 enum BackendError: LocalizedError {
     case executableNotFound
+    #if MAS
+    case requiresUserApproval
+    case loginItemRegistrationFailed(Error)
+    #endif
 
     var errorDescription: String? {
         switch self {
         case .executableNotFound:
             return "The Starsky backend executable was not found in the application bundle."
+        #if MAS
+        case .requiresUserApproval:
+            return "Starsky needs permission to run its background helper. Open System Settings → General → Login Items & Extensions and enable Starsky."
+        case .loginItemRegistrationFailed(let e):
+            return "Failed to register the Starsky backend: \(e.localizedDescription)"
+        #endif
         }
     }
 }

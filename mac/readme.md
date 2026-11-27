@@ -247,6 +247,36 @@ spctl -a -vvv ../build/starsky.app
 
 Release builds on tagged commits are automated via [`.github/workflows/desktop-macos-pr-build.yml`](https://github.com/qdraw/starsky/actions/workflows/desktop-macos-pr-build.yml).
 
+### 7. Mac App Store build (optional)
+
+The `--mas` flag in `build-dmg.sh` switches to the `MAS` Xcode configuration (full App Sandbox, `SMAppService` backend, `Apple Distribution` signing). It produces a `.pkg` for upload to App Store Connect instead of a `.dmg`.
+
+**One-time setup:**
+
+1. **Register the App ID** at [developer.apple.com → Identifiers → +](https://developer.apple.com/account/resources/identifiers/add/bundleId):
+   - Select **App IDs** → Continue
+   - Select **App** → Continue
+   - Bundle ID: **Explicit** → `nl.qdraw.starsky`
+   - Enable capability: **App Groups** → Configure → add group `group.nl.qdraw.starsky`
+   - Continue → Register
+2. **Mac App Distribution certificate** — must exist before a provisioning profile can be created. In [developer.apple.com → Certificates → +](https://developer.apple.com/account/resources/certificates/add), select **Mac App Distribution** and follow the CSR steps to generate and download it. Double-click to install into Keychain Access.
+3. **Create a Mac App Store provisioning profile** at [developer.apple.com → Profiles → +](https://developer.apple.com/account/resources/profiles/add):
+   - Under **Distribution**, choose **Mac App Store Connect** → Continue
+   - Profile Type: Mac; App ID: `nl.qdraw.starsky` → Continue
+   - Select your Mac App Distribution certificate → Continue
+   - Name it `Starsky Mac App Store` → Generate → Download
+   - Double-click the `.mobileprovision` to install it into Xcode
+4. Register the app in [App Store Connect](https://appstoreconnect.apple.com) with bundle ID `nl.qdraw.starsky`.
+
+**Build:**
+
+```bash
+./build-dmg.sh --mas --arch universal --team-id <TEAM_ID> \
+  --profile "Starsky Mac App Store"
+```
+
+The script outputs `mac/dist/starsky.pkg`. Upload it via [Transporter](https://apps.apple.com/app/transporter/id1450874784) or `xcrun altool`.
+
 ---
 
 ## Project structure
