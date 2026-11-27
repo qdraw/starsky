@@ -36,7 +36,11 @@ public class AppSettingsFeaturesControllerTest
 		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>(), false);
 		var appSettingsFeaturesController = new AppSettingsFeaturesController(
 			fakeIMoveToTrashService, new FakeIOpenEditorDesktopService(false),
-			new AppSettings { UseLocalDesktop = false });
+			new AppSettings
+			{
+				UseLocalDesktop = false,
+				ExternalAuth = new ExternalAuthSettings { Enabled = false }
+			});
 
 		// Act
 		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
@@ -47,6 +51,8 @@ public class AppSettingsFeaturesControllerTest
 		Assert.IsFalse(json.UseLocalDesktop);
 		Assert.IsFalse(json.SystemTrashEnabled);
 		Assert.IsFalse(json.OpenEditorEnabled);
+		Assert.IsFalse(json.ExternalAuthEnabled);
+		Assert.IsEmpty(json.ExternalAuthProviders);
 	}
 
 	[TestMethod]
@@ -67,5 +73,55 @@ public class AppSettingsFeaturesControllerTest
 		Assert.IsTrue(json.UseLocalDesktop);
 		Assert.IsTrue(json.SystemTrashEnabled);
 		Assert.IsTrue(json.OpenEditorEnabled);
+		Assert.IsFalse(json.ExternalAuthEnabled);
+		Assert.IsEmpty(json.ExternalAuthProviders);
+	}
+
+	[TestMethod]
+	public void FeaturesViewTest_ExternalAuthEnabled_ReturnsProviderIds()
+	{
+		// Arrange
+		var fakeIMoveToTrashService = new FakeIMoveToTrashService(new List<FileIndexItem>());
+		var appSettingsFeaturesController = new AppSettingsFeaturesController(
+			fakeIMoveToTrashService,
+			new FakeIOpenEditorDesktopService(),
+			new AppSettings
+			{
+				ExternalAuth = new ExternalAuthSettings
+				{
+					Enabled = true,
+					Providers =
+					[
+						new ExternalAuthProviderSettings
+						{
+							Id = "okta-main",
+							Provider = "Okta",
+							Enabled = true
+						},
+						new ExternalAuthProviderSettings
+						{
+							Id = "azuread-main",
+							Provider = "AzureAd",
+							Enabled = true
+						},
+						new ExternalAuthProviderSettings
+						{
+							Id = "disabled-provider",
+							Provider = "Authentik",
+							Enabled = false
+						}
+					]
+				}
+			});
+
+		// Act
+		var result = appSettingsFeaturesController.FeaturesView() as JsonResult;
+		var json = result?.Value as EnvFeaturesViewModel;
+		Assert.IsNotNull(json);
+
+		// Assert
+		Assert.IsTrue(json.ExternalAuthEnabled);
+		CollectionAssert.AreEquivalent(new[] { "okta-main", "azuread-main" },
+			json.ExternalAuthProviders);
 	}
 }
