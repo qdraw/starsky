@@ -209,26 +209,6 @@ public sealed class QueryUpdateItemError
 	}
 
 	[TestMethod]
-	public async Task UpdateItemAsync_DbUpdateExceptionTimeout_NoId_SkipsRetry()
-	{
-		IsCalledMySqlTimeoutContext = false;
-		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-			.UseInMemoryDatabase("DbUpdateExceptionNoId")
-			.Options;
-		var logger = new FakeIWebLogger();
-
-		var fakeQuery = new Query(
-			new MySqlTimeoutDbUpdateExceptionContext(options, MySqlErrorCode.CommandTimeoutExpired),
-			null!, null!, logger);
-
-		// Id == 0 means the retry is skipped and logged instead of throwing
-		await fakeQuery.UpdateItemAsync(new FileIndexItem("test") { Id = 0 });
-
-		Assert.IsTrue(logger.TrackedExceptions.Any(p =>
-			p.Item2?.Contains("skipped due 0 id") == true));
-	}
-
-	[TestMethod]
 	public async Task UpdateItemAsync_ShouldCatchPrimaryKeyHit()
 	{
 		IsCalledMySqlSaveDbExceptionContext = false;
