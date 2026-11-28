@@ -15,6 +15,7 @@ using starsky.foundation.storage.Services;
 using starsky.foundation.storage.Storage;
 using starsky.foundation.storage.Structure;
 using starsky.foundation.writemeta.Interfaces;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.geolookup.Services;
 
@@ -65,6 +66,14 @@ public sealed class GeoCli
 	/// <returns>Void Task</returns>
 	public async Task CommandLineAsync(string[] args)
 	{
+		var isTenant = TenantAmbient.Current != TenantIdHelper.DefaultTenantId;
+		if ( isTenant && ArgsHelper.IsFullPathInArgs(args) )
+		{
+			// a full path is converted with the folders of the default tenant
+			_console.WriteLine("--path (a full path) can not be used with --tenant, use --subpath");
+			return;
+		}
+
 		_appSettings.Verbose = ArgsHelper.NeedVerbose(args);
 		// Set type of GeoReverseLookup
 		_appSettings.ApplicationType = AppSettings.StarskyAppType.Geo;
@@ -78,45 +87,18 @@ public sealed class GeoCli
 			await _geoFileDownload.DownloadAsync();
 		}
 
-		if ( ArgsHelper.NeedHelp(args) ||
-		     ( new ArgsHelper(_appSettings).GetPathFormArgs(args, false).Length <= 1
-		       && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
-		       && new ArgsHelper(_appSettings).GetRelativeValue(args) == null ) )
+		if ( ArgsHelper.NeedHelp(args) || NoFolderInArgs(args, isTenant) )
 		{
 			new ArgsHelper(_appSettings, _console).NeedHelpShowDialog();
 			return;
 		}
 
-		// Using both options
-		string inputPath;
-		// -s = if subPath || -p is path
-		if ( ArgsHelper.IsSubPathOrPath(args) )
-		{
-			var path = _appSettings.DatabasePathToFilePath(
-				ArgsHelper.GetSubPathFormArgs(args)
-			);
-			inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
-		}
-		else
-		{
-			inputPath = new ArgsHelper(_appSettings).GetPathFormArgs(args, false);
-		}
+		// the folder to work on, as a subPath of the storage of the tenant
+		var (inputPath, folderSubPath) = isTenant
+			? TenantFolder(args)
+			: DefaultTenantFolder(args);
 
-		// overwrite subPath with relative days
-		// use -g or --SubPathRelative to use it.
-		// envs are not supported
-		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
-		if ( getSubPathRelative != null )
-		{
-			inputPath = _appSettings.DatabasePathToFilePath(
-				new StructureService(_selectorStorage, _appSettings, _logger)
-					.ParseSubfolders(getSubPathRelative));
-		}
-
-		// used in this session to find the files back
-		_appSettings.StorageFolder = inputPath;
-
-		if ( _storage.IsFolderOrFile("/") ==
+		if ( _storage.IsFolderOrFile(folderSubPath) ==
 		     FolderOrFileModel.FolderOrFileTypeList.Deleted )
 		{
 			_console.WriteLine("Folder location is not found \n" +
@@ -124,8 +106,8 @@ public sealed class GeoCli
 			return;
 		}
 
-		// use relative to StorageFolder
-		var listOfFiles = _storage.GetAllFilesInDirectory("/")
+		// use relative to StorageFolder (the default tenant) or the storage of the tenant
+		var listOfFiles = _storage.GetAllFilesInDirectory(folderSubPath)
 			.Where(ExtensionRolesHelper.IsExtensionSyncSupported).ToList();
 
 		var fileIndexList = await _readMeta.ReadExifAndXmpFromFileAddFilePathHashAsync(listOfFiles);
@@ -163,6 +145,75 @@ public sealed class GeoCli
 		await RenameFileHash(fileIndexList);
 		// don't update in the database
 		// that's not the scope of this command
+	}
+
+	/// <summary>
+	///     No folder, and no relative date, in the arguments: show the help. A full path is not
+	///     read with a tenant (it throws), only the subPath is
+	/// </summary>
+	private bool NoFolderInArgs(string[] args, bool isTenant)
+	{
+		var argsHelper = new ArgsHelper(_appSettings);
+		return ( isTenant || argsHelper.GetPathFormArgs(args, false).Length <= 1 )
+		       && ArgsHelper.GetSubPathFormArgs(args).Length <= 1
+		       && argsHelper.GetRelativeValue(args) == null;
+	}
+
+	/// <summary>
+	///     The default tenant: this tool points the storage folder of the session at the given
+	///     folder, so that folder is the root of the storage
+	/// </summary>
+	private (string InputPath, string FolderSubPath) DefaultTenantFolder(string[] args)
+	{
+		// Using both options
+		string inputPath;
+		// -s = if subPath || -p is path
+		if ( ArgsHelper.IsSubPathOrPath(args) )
+		{
+			var path = _appSettings.DatabasePathToFilePath(
+				ArgsHelper.GetSubPathFormArgs(args)
+			);
+			inputPath = !string.IsNullOrEmpty(path) ? path : string.Empty;
+		}
+		else
+		{
+			inputPath = new ArgsHelper(_appSettings).GetPathFormArgs(args, false);
+		}
+
+		// overwrite subPath with relative days
+		// use -g or --SubPathRelative to use it.
+		// envs are not supported
+		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
+		if ( getSubPathRelative != null )
+		{
+			inputPath = _appSettings.DatabasePathToFilePath(
+				new StructureService(_selectorStorage, _appSettings, _logger)
+					.ParseSubfolders(getSubPathRelative));
+		}
+
+		// used in this session to find the files back
+		_appSettings.StorageFolder = inputPath;
+		return ( inputPath, "/" );
+	}
+
+	/// <summary>
+	///     A tenant has its own storage folder (not the folder of the settings of the session):
+	///     work on a subPath in it, and leave the storage folder alone
+	/// </summary>
+	private (string InputPath, string FolderSubPath) TenantFolder(string[] args)
+	{
+		var subPath = ArgsHelper.GetSubPathFormArgs(args);
+
+		// use -g or --SubPathRelative to use it.
+		var getSubPathRelative = new ArgsHelper(_appSettings).GetRelativeValue(args);
+		if ( getSubPathRelative != null )
+		{
+			subPath = new StructureService(_selectorStorage, _appSettings, _logger)
+				.ParseSubfolders(getSubPathRelative);
+		}
+
+		subPath = PathHelper.PrefixDbSlash(subPath);
+		return ( subPath, subPath );
 	}
 
 	private async Task RenameFileHash(IEnumerable<FileIndexItem> fileIndexList)

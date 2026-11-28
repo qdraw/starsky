@@ -12,6 +12,7 @@ using starsky.foundation.sync.SyncInterfaces;
 using starsky.foundation.database.Interfaces;
 using starsky.foundation.sync.WatcherHelpers;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.sync.WatcherHelpers;
 
@@ -62,6 +63,8 @@ public sealed class QueueProcessorJobHandlerTest
 
 		services.AddSingleton<ISynchronize>(synchronize);
 		services.AddSingleton(appSettings);
+		services.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 		services.AddSingleton<IWebSocketConnectionsService>(connectionsService);
 		services.AddSingleton<IQuery>(query);
 		services.AddSingleton<IWebLogger>(logger);

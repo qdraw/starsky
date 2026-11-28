@@ -24,13 +24,53 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0 # needed to diff against the base branch
+
+      - name: Detect backend changes
+        id: backend_changes
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          # Only PRs build their own binary; master/schedule/dispatch reuse the latest master build
+          CHANGED=false
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            if ! git diff --quiet "origin/${BASE_REF}...HEAD" -- starsky ':!starsky/starsky/clientapp'; then
+              CHANGED=true
+            fi
+          fi
+          echo "changed=$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "backend changed: $CHANGED"
+
+      - name: Setup .NET
+        if: ${{ steps.backend_changes.outputs.changed == 'true' }}
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73
+        with:
+          dotnet-version: 10.0.403
 
       - name: Create temp folder
         shell: bash
         id: create_temp_folder
         run: mkdir starsky-run && cd starsky-run && echo "folder_path=$(pwd)" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
 
+      - name: Build linux-x64 (backend changed in this PR)
+        if: ${{ steps.backend_changes.outputs.changed == 'true' }}
+        shell: bash
+        working-directory: ./starsky
+        run: bash build.sh --runtime "linux-x64" --no-unit-test --ready-to-run
+
+      - name: Use PR build instead of download
+        if: ${{ steps.backend_changes.outputs.changed == 'true' }}
+        shell: bash
+        run: |
+          cp starsky/starsky-linux-x64.zip "${{ steps.create_temp_folder.outputs.folder_path }}/"
+          unzip -p starsky/starsky-linux-x64.zip pm2-new-instance.sh > "${{ steps.create_temp_folder.outputs.folder_path }}/pm2-new-instance.sh"
+          chmod +x "${{ steps.create_temp_folder.outputs.folder_path }}/pm2-new-instance.sh"
+
       - name: github-artifacts-download
+        if: ${{ steps.backend_changes.outputs.changed != 'true' }}
         shell: bash
         working-directory: ./starsky/starsky
         env:

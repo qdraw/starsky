@@ -3,15 +3,16 @@ import { useSearchParams } from "react-router-dom";
 import MenuDefault from "../../components/organisms/menu-default/menu-default";
 import PreferencesAppSettings from "../../components/organisms/preferences-app-settings/preferences-app-settings";
 import PreferencesCloudImport from "../../components/organisms/preferences-cloud-import/preferences-cloud-import";
+import PreferencesTenants from "../../components/organisms/preferences-tenants/preferences-tenants";
 import PreferencesPassword from "../../components/organisms/preferences-password/preferences-password";
 import PreferencesUsername from "../../components/organisms/preferences-username/preferences-username";
 import useGlobalSettings from "../../hooks/use-global-settings";
 import localization from "../../localization/localization.json";
 import { Language } from "../../shared/language";
 
-type PreferencesTab = "username" | "password" | "app" | "cloud";
+type PreferencesTab = "username" | "password" | "app" | "cloud" | "tenants";
 
-const tabValues: Set<PreferencesTab> = new Set(["username", "password", "app", "cloud"]);
+const tabValues: Set<PreferencesTab> = new Set(["username", "password", "app", "cloud", "tenants"]);
 
 const isPreferencesTab = (value: string | null): value is PreferencesTab => {
   if (!value) {
@@ -28,6 +29,7 @@ export const Preferences: React.FunctionComponent = () => {
   const messagePassword = language.key(localization.MessagePassword);
   const messageAppSettings = language.key(localization.MessageAppSettings);
   const messageCloudImports = language.key(localization.MessageCloudImports);
+  const messageTenants = language.key(localization.MessageTenants);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -47,7 +49,8 @@ export const Preferences: React.FunctionComponent = () => {
     { id: "username", label: messageUsername },
     { id: "password", label: messagePassword },
     { id: "app", label: messageAppSettings },
-    { id: "cloud", label: messageCloudImports }
+    { id: "cloud", label: messageCloudImports },
+    { id: "tenants", label: messageTenants }
   ];
 
   const onChangeTab = (tab: PreferencesTab) => {
@@ -88,6 +91,7 @@ export const Preferences: React.FunctionComponent = () => {
       {activeTab === "password" && <PreferencesPassword />}
       {activeTab === "app" && <PreferencesAppSettings />}
       {activeTab === "cloud" && <PreferencesCloudImport />}
+      {activeTab === "tenants" && <PreferencesTenants />}
     </>
   );
 };

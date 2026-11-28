@@ -12,7 +12,7 @@ public enum QueueItemStatus
 	Failed = 3
 }
 
-public sealed class QueueItem
+public sealed class QueueItem : ITenantEntity
 {
 	[Key]
 	[DatabaseGenerated(DatabaseGeneratedOption.Identity)]

@@ -22,6 +22,7 @@ using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.Controllers;
 
@@ -63,6 +64,8 @@ public sealed class PublishControllerTest
 		var configuration = builder.Build();
 		// inject config as object to a service
 		services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
+		services.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 
 		// Add Background services
 		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
@@ -87,7 +90,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 			 new FakeIMetaInfo(null!),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var actionResult = controller.PublishGet() as JsonResult;
 		var result = actionResult?.Value as IEnumerable<KeyValuePair<string, bool>>;
@@ -101,7 +104,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true) as JsonResult;
@@ -116,7 +119,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.ReadOnly }]),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true) as JsonResult;
@@ -134,7 +137,7 @@ public sealed class PublishControllerTest
 				new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }
 			]),
 			new FakeSelectorStorage(),
-			fakeBg, new FakeIWebLogger());
+			fakeBg, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true);
@@ -157,7 +160,7 @@ public sealed class PublishControllerTest
 				[new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var actionResult = await controller.PublishCreateAsync("/not-found.jpg",
 			"test", "test", true) as NotFoundObjectResult;
@@ -174,7 +177,7 @@ public sealed class PublishControllerTest
 			new FakeIPublishPreflight(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 
 		// Act
@@ -195,7 +198,7 @@ public sealed class PublishControllerTest
 				[new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.NotFoundNotInIndex }]
 			),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		var actionResult = await controller.PublishCreateAsync("/not-found.jpg",
 			"test", "test", true) as BadRequestObjectResult;
@@ -215,7 +218,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
 			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test") as ConflictObjectResult;
@@ -236,7 +239,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(appSettings, new FakeIPublishPreflight(),
 			new FakeIMetaInfo([new FileIndexItem("/test.jpg") { Status = FileIndexItem.ExifStatus.Ok }]),
 			new FakeSelectorStorage(storage),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 
 		var actionResult = await controller.PublishCreateAsync("/test.jpg",
 			"test", "test", true) as JsonResult;
@@ -254,7 +257,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 		var actionResult = controller.Exist(string.Empty) as JsonResult;
 		var result = actionResult?.Value is bool;
 		Assert.IsTrue(result);
@@ -266,7 +269,7 @@ public sealed class PublishControllerTest
 		var controller = new PublishController(new AppSettings(), new FakeIPublishPreflight(),
 			new FakeIMetaInfo([]),
 			new FakeSelectorStorage(),
-			_bgTaskQueue, new FakeIWebLogger());
+			_bgTaskQueue, new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
 

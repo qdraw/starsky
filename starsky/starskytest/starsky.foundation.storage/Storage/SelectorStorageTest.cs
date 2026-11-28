@@ -12,13 +12,13 @@ public class SelectorStorageTest
 	/// <summary>
 	///     Service Provider
 	/// </summary>
-	private readonly IServiceScopeFactory _scopeFactory;
+	private readonly IServiceProvider _scopeFactory;
 
 	public SelectorStorageTest()
 	{
 		var serviceCollection = new ServiceCollection();
 		var sp = serviceCollection.BuildServiceProvider();
-		_scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+		_scopeFactory = sp;
 	}
 
 	[TestMethod]

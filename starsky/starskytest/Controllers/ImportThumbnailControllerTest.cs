@@ -14,6 +14,7 @@ using starsky.foundation.platform.Models;
 using starsky.foundation.storage.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.Controllers;
 
@@ -53,10 +54,10 @@ public class ImportThumbnailControllerTest
 		var thumbnailImportService = new ImportThumbnailService(
 			new FakeSelectorStorage(storageProvider),
 			new FakeIWebLogger(), _appSettings
-		);
+		, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var importController =
 			new ImportThumbnailController(_appSettings, new FakeSelectorStorage(storageProvider),
-				new FakeIThumbnailQuery(), thumbnailImportService)
+				new FakeIThumbnailQuery(), thumbnailImportService, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = RequestWithFile()
 			};
@@ -84,10 +85,10 @@ public class ImportThumbnailControllerTest
 		var thumbnailImportService = new ImportThumbnailService(
 			new FakeSelectorStorage(storageProvider),
 			new FakeIWebLogger(), _appSettings
-		);
+		, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var importController =
 			new ImportThumbnailController(_appSettings, new FakeSelectorStorage(storageProvider),
-				new FakeIThumbnailQuery(), thumbnailImportService)
+				new FakeIThumbnailQuery(), thumbnailImportService, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = RequestWithFile()
 			};
@@ -114,10 +115,10 @@ public class ImportThumbnailControllerTest
 		var thumbnailImportService = new ImportThumbnailService(
 			new FakeSelectorStorage(),
 			new FakeIWebLogger(), _appSettings
-		);
+		, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var importController =
 			new ImportThumbnailController(_appSettings, new FakeSelectorStorage(),
-				new FakeIThumbnailQuery(), thumbnailImportService)
+				new FakeIThumbnailQuery(), thumbnailImportService, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = RequestWithFile()
 			};
@@ -146,10 +147,10 @@ public class ImportThumbnailControllerTest
 		var thumbnailImportService = new ImportThumbnailService(
 			new FakeSelectorStorage(storageProvider),
 			new FakeIWebLogger(), _appSettings
-		);
+		, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var importController =
 			new ImportThumbnailController(_appSettings, new FakeSelectorStorage(storageProvider),
-				new FakeIThumbnailQuery(), thumbnailImportService)
+				new FakeIThumbnailQuery(), thumbnailImportService, new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings))
 			{
 				ControllerContext = RequestWithFile()
 			};

@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using starsky.feature.webhtmlpublish.Services;
 using starskytest.FakeMocks;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.feature.webhtmlpublish.Services;
 
@@ -15,7 +16,7 @@ public sealed class PublishCreateBackgroundJobHandlerTest
     public async Task ExecuteAsync_MissingPayload_ThrowsArgumentException()
     {
         var fakePublishService = new FakeIWebHtmlPublishService();
-        var handler = new PublishCreateBackgroundJobHandler(fakePublishService, new AppSettings(), new FakeIWebLogger());
+        var handler = new PublishCreateBackgroundJobHandler(fakePublishService, new AppSettings(), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
         ArgumentException? caught = null;
         try
@@ -36,7 +37,7 @@ public sealed class PublishCreateBackgroundJobHandlerTest
     public async Task ExecuteAsync_InvalidPayload_ThrowsArgumentException()
     {
         var fakePublishService = new FakeIWebHtmlPublishService();
-        var handler = new PublishCreateBackgroundJobHandler(fakePublishService, new AppSettings(), new FakeIWebLogger());
+        var handler = new PublishCreateBackgroundJobHandler(fakePublishService, new AppSettings(), new FakeIWebLogger(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings()));
 
         ArgumentException? caught = null;
         try

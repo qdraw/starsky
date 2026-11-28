@@ -34,6 +34,7 @@ using starsky.foundation.worker.Services;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.Controllers;
 
@@ -86,6 +87,8 @@ public sealed class ExportControllerTest
 		var configuration = builder.Build();
 		// inject config as object to a service
 		services.ConfigurePoCo<AppSettings>(configuration.GetSection("App"));
+		services.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 
 		// Add Background services
 		services.AddSingleton<IHostedService, UpdateBackgroundQueuedHostedService>();
@@ -115,7 +118,7 @@ public sealed class ExportControllerTest
 		var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 		var storageSelector = new FakeSelectorStorage(iStorage);
 		var export = new ExportService(_query, _appSettings, storageSelector,
-			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var controller = new ExportController(_bgTaskQueue, storageSelector, export);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -129,7 +132,7 @@ public sealed class ExportControllerTest
 		var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 		var storageSelector = new FakeSelectorStorage(iStorage);
 		var export = new ExportService(_query, _appSettings, storageSelector,
-			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var controller = new ExportController(_bgTaskQueue, storageSelector, export);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");
@@ -162,6 +165,8 @@ public sealed class ExportControllerTest
 		services.AddScoped<IBackgroundJobHandler, ExportBackgroundJobHandler>();
 		services.AddScoped<IQuery, FakeIQuery>();
 		services.AddSingleton<AppSettings>();
+		services.AddScoped<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 		services.AddScoped<IExport, ExportService>();
 		services.AddScoped<IThumbnailService, FakeIThumbnailService>();
 		services.AddScoped<ISelectorStorage, SelectorStorage>();
@@ -197,7 +202,7 @@ public sealed class ExportControllerTest
 
 		var export = new ExportService(query, appSettings, storageSelector,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(storageSelector as FakeSelectorStorage));
+			new FakeIThumbnailService(storageSelector as FakeSelectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 		var controller = new ExportController(
 			backgroundQueue, storageSelector, export)
 		{
@@ -242,7 +247,7 @@ public sealed class ExportControllerTest
 
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
+			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var item = new FileIndexItem
 		{
@@ -268,7 +273,7 @@ public sealed class ExportControllerTest
 
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
+			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var item = new FileIndexItem
 		{
@@ -294,7 +299,7 @@ public sealed class ExportControllerTest
 
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
+			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var item = new FileIndexItem
 		{
@@ -337,7 +342,7 @@ public sealed class ExportControllerTest
 
 		var export = new ExportService(fakeQuery, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var filePaths = await export.CreateListToExport(fileIndexResultsList, false);
 
@@ -355,7 +360,7 @@ public sealed class ExportControllerTest
 
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage));
+			new FakeIThumbnailService(selectorStorage as FakeSelectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var createAnImageNoExif = new CreateAnImageNoExif();
 
@@ -388,7 +393,7 @@ public sealed class ExportControllerTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 
 		var filePaths = new List<string> { Path.Combine("test", "file.jpg") };
 		var fileNames = await export.FilePathToFileNameAsync(filePaths, false);
@@ -402,7 +407,7 @@ public sealed class ExportControllerTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var filePaths = new List<string> { Path.Combine("test", "thumb.jpg") };
 
 		await _query.AddItemAsync(new FileIndexItem
@@ -425,7 +430,7 @@ public sealed class ExportControllerTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var controller = new ExportController(_bgTaskQueue, selectorStorage, export);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -441,7 +446,7 @@ public sealed class ExportControllerTest
 		var selectorStorage = new FakeSelectorStorage(storage);
 		var export = new ExportService(_query, _appSettings, selectorStorage,
 			new FakeIWebLogger(),
-			new FakeIThumbnailService(selectorStorage));
+			new FakeIThumbnailService(selectorStorage), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var controller = new ExportController(_bgTaskQueue, selectorStorage, export);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 
@@ -483,7 +488,7 @@ public sealed class ExportControllerTest
 		var iStorage = new StorageSubPathFilesystem(_appSettings, new FakeIWebLogger());
 		var storageSelector = new FakeSelectorStorage(iStorage);
 		var export = new ExportService(_query, _appSettings, storageSelector,
-			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector));
+			new FakeIWebLogger(), new FakeIThumbnailService(storageSelector), new TenantSettings(TenantIdHelper.DefaultTenantId, _appSettings));
 		var controller = new ExportController(_bgTaskQueue, storageSelector, export);
 		controller.ControllerContext.HttpContext = new DefaultHttpContext();
 		controller.ModelState.AddModelError("Key", "ErrorMessage");

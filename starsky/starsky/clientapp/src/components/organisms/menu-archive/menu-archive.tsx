@@ -32,6 +32,7 @@ import ModalArchiveSynchronizeManually from "../modal-archive-synchronize-manual
 import ModalDisplayOptions from "../modal-display-options/modal-display-options";
 import ModalDownload from "../modal-download/modal-download";
 import ModalPublishToggleWrapper from "../modal-publish/modal-publish-toggle-wrapper";
+import TenantSwitcher from "../../molecules/tenant-switcher/tenant-switcher";
 import NavContainer from "../nav-container/nav-container";
 import { SelectMenuItem } from "./internal/select-menu-item.tsx";
 import { UploadMenuItem } from "./internal/upload-menu-item";
@@ -314,6 +315,8 @@ const MenuArchive: React.FunctionComponent = memo(() => {
           <NavContainer hamburgerMenu={hamburgerMenu}>
             <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
           </NavContainer>
+
+          <TenantSwitcher />
         </div>
       </header>
 

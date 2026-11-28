@@ -158,7 +158,10 @@ declare global {
   }
 }
 
-function fileRequest(fileName: string, to: string, imageType: string) {
+/**
+ * @param apiPrefix base of the api of a tenant, e.g. /starsky/t/acme (default: the default tenant)
+ */
+function fileRequest(fileName: string, to: string, imageType: string, apiPrefix = "") {
   cy.fixture(fileName, "binary").then((imageBin) => {
     const blob = Cypress.Blob.binaryStringToBlob(imageBin, imageType);
     const data = new FormData();
@@ -170,7 +173,7 @@ function fileRequest(fileName: string, to: string, imageType: string) {
     return new Promise<void>((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.withCredentials = true;
-      xhr.open("POST", "/api/upload");
+      xhr.open("POST", `${apiPrefix}/api/upload`);
       xhr.setRequestHeader("accept", "application/json");
       xhr.setRequestHeader("to", to);
       xhr.onload = () => resolve();

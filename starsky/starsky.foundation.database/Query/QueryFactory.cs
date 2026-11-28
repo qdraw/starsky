@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using starsky.foundation.database.Helpers;
@@ -42,9 +43,21 @@ public class QueryFactory(
 			// IServiceScopeFactory scopeFactory, 
 			// 	IWebLogger logger, IMemoryCache memoryCache = null
 
-			return Activator.CreateInstance(query.GetType(), context,
-				appSettings, serviceScopeFactory, logger,
-				cache) as IQuery;
+			object?[] arguments = [context, appSettings, serviceScopeFactory, logger, cache];
+			// constructors may have more optional parameters (e.g. the tenant): use their defaults
+			var constructor = query.GetType().GetConstructors()
+				.FirstOrDefault(c => c.GetParameters().Length >= arguments.Length &&
+				                     c.GetParameters().Skip(arguments.Length)
+					                     .All(p => p.IsOptional));
+			if ( constructor == null )
+			{
+				throw new MissingMethodException(query.GetType().FullName, ".ctor");
+			}
+
+			var parameters = constructor.GetParameters();
+			var all = arguments
+				.Concat(parameters.Skip(arguments.Length).Select(p => p.DefaultValue)).ToArray();
+			return constructor.Invoke(all) as IQuery;
 		}
 
 		logger?.LogInformation("FakeIQuery _content detected");

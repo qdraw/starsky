@@ -68,7 +68,8 @@ namespace starsky.foundation.realtime.Services
 				var webSocketResponse =
 					new ApiNotificationResponseModel<HeartbeatModel>(new HeartbeatModel(SpeedInSeconds),
 						ApiNotificationType.Heartbeat);
-				await _connectionsService.SendToAllAsync(webSocketResponse, cancellationToken);
+				// no tenant data in a heartbeat: every connection of every tenant
+				await _connectionsService.SendToEveryTenantAsync(webSocketResponse, cancellationToken);
 				await Task.Delay(TimeSpan.FromSeconds(SpeedInSeconds), cancellationToken);
 			}
 		}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import HamburgerMenuToggle from "../../atoms/hamburger-menu-toggle/hamburger-menu-toggle";
 import MenuSearchBar from "../../molecules/menu-inline-search/menu-inline-search";
+import TenantSwitcher from "../../molecules/tenant-switcher/tenant-switcher";
 import NavContainer from "../nav-container/nav-container";
 
 interface IMenuDefaultProps {
@@ -22,6 +23,8 @@ const MenuDefault: React.FunctionComponent<IMenuDefaultProps> = () => {
         <NavContainer hamburgerMenu={hamburgerMenu}>
           <MenuSearchBar callback={() => setHamburgerMenu(!hamburgerMenu)} />
         </NavContainer>
+
+        <TenantSwitcher />
       </div>
     </header>
   );

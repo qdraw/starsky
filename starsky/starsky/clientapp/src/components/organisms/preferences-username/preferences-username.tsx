@@ -1,6 +1,7 @@
 import React from "react";
 import useFetch from "../../../hooks/use-fetch";
 import useGlobalSettings from "../../../hooks/use-global-settings";
+import { useTenants } from "../../../hooks/use-tenants/use-tenants";
 import localization from "../../../localization/localization.json";
 import { Language } from "../../../shared/language";
 import { UrlQuery } from "../../../shared/url/url-query";
@@ -10,6 +11,8 @@ const PreferencesUsername: React.FunctionComponent = () => {
   const language = new Language(settings.language);
   const MessageUsername = language.key(localization.MessageUsername);
   const MessageRole = language.key(localization.MessageRole);
+  const MessagePlatformAdmin = language.key(localization.MessagePlatformAdmin);
+  const tenants = useTenants();
 
   interface AccountStatusData {
     credentialsIdentifiers?: string[];
@@ -43,6 +46,14 @@ const PreferencesUsername: React.FunctionComponent = () => {
       </div>
       <div className="content--subheader">{MessageRole}</div>
       <div className="content--text preferences-role">{accountStatusData?.roleCode}</div>
+      {tenants?.isPlatformAdmin ? (
+        <div
+          className="content--text preferences-platform-admin"
+          data-test="preferences-platform-admin"
+        >
+          {MessagePlatformAdmin}
+        </div>
+      ) : null}
     </>
   );
 };

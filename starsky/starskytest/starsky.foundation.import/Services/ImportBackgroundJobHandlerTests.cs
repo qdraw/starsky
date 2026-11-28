@@ -19,6 +19,7 @@ using starsky.foundation.thumbnailmeta.Interfaces;
 using starsky.foundation.worker.Metrics;
 using starsky.foundation.writemeta.Interfaces;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.import.Services;
 
@@ -71,6 +72,8 @@ public class ImportBackgroundJobHandlerTests
 		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 		services.AddSingleton<IStorage, FakeIStorage>();
 		services.AddSingleton<AppSettings>();
+		services.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 		services.AddSingleton<IImportQuery, FakeIImportQuery>();
 		services.AddSingleton<IExifTool, FakeExifTool>();
 		services.AddSingleton<IQuery, FakeIQuery>();
@@ -110,6 +113,8 @@ public class ImportBackgroundJobHandlerTests
 		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 		services.AddSingleton<IStorage, FakeIStorage>();
 		services.AddSingleton<AppSettings>();
+		services.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 		services.AddSingleton<IImportQuery, FakeIImportQuery>();
 		services.AddSingleton<IExifTool, FakeExifTool>();
 		services.AddSingleton<IQuery, FakeIQuery>();
@@ -144,6 +149,8 @@ public class ImportBackgroundJobHandlerTests
 		services.AddSingleton<ISelectorStorage, FakeSelectorStorage>();
 		services.AddSingleton<IStorage, FakeIStorage>();
 		services.AddSingleton<AppSettings>();
+		services.AddSingleton<ITenantSettings>(sp => new TenantSettings(TenantIdHelper.DefaultTenantId,
+			sp.GetRequiredService<AppSettings>()));
 		services.AddSingleton<IImportQuery, FakeIImportQuery>();
 		services.AddSingleton<IExifTool, FakeExifTool>();
 		services.AddSingleton<IQuery, FakeIQuery>();

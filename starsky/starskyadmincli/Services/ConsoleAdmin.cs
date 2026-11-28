@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using starsky.foundation.accountmanagement.Interfaces;
+using starsky.foundation.database.Models.Account;
 using starsky.foundation.http.Interfaces;
 using starsky.foundation.platform.Interfaces;
 using starsky.foundation.platform.Models;
@@ -86,7 +87,7 @@ public class ConsoleAdmin
 				_console.WriteLine($"User {userName} is removed");
 				return;
 			case ManageAdminOptions.ToggleUserAdminRole:
-				ToggleUserAdminRole(userName);
+				await ToggleUserAdminRole(userName);
 				return;
 			case ManageAdminOptions.SetupDropbox:
 				await new DropboxSetup(_console, _httpClientHelper).Setup();
@@ -94,7 +95,7 @@ public class ConsoleAdmin
 		}
 	}
 
-	private void ToggleUserAdminRole(string userName)
+	private async Task ToggleUserAdminRole(string userName)
 	{
 		var user = _userManager.GetUser("Email", userName);
 		var currentRole = _userManager.GetRole("Email", userName);
@@ -110,10 +111,42 @@ public class ConsoleAdmin
 		{
 			_userManager.AddToRole(user, AccountRoles.AppAccountRoles.Administrator.ToString());
 			_console.WriteLine($"User {userName} has now the role Administrator");
+			await TogglePlatformAdmin(user, userName);
 			return;
 		}
 
 		_userManager.AddToRole(user, AccountRoles.AppAccountRoles.User.ToString());
 		_console.WriteLine($"User {userName} has now the role User");
+
+		// a platform admin that is no longer an administrator would keep tenant management rights
+		if ( user.IsPlatformAdmin &&
+		     await _userManager.SetPlatformAdminAsync(user.Id, false) )
+		{
+			_console.WriteLine($"User {userName} is no longer platform admin");
+		}
+	}
+
+	private async Task TogglePlatformAdmin(User user, string userName)
+	{
+		var makeAdmin = !user.IsPlatformAdmin;
+		_console.WriteLine(makeAdmin
+			? "\nMake this user also platform admin? (y/N)\n "
+			: "\nThis user is platform admin. Remove platform admin? (y/N)\n ");
+
+		var answer = _console.ReadLine();
+		if ( !string.Equals(answer?.Trim(), "y", StringComparison.OrdinalIgnoreCase) )
+		{
+			return;
+		}
+
+		if ( !await _userManager.SetPlatformAdminAsync(user.Id, makeAdmin) )
+		{
+			_console.WriteLine($"User {userName} is not found");
+			return;
+		}
+
+		_console.WriteLine(makeAdmin
+			? $"User {userName} is now platform admin"
+			: $"User {userName} is no longer platform admin");
 	}
 }

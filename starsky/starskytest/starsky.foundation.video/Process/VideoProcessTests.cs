@@ -12,6 +12,7 @@ using starsky.foundation.video.Process;
 using starsky.foundation.video.Process.Types;
 using starskytest.FakeCreateAn.CreateAnQuickTimeMp4;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.video.Process;
 
@@ -36,7 +37,7 @@ public class VideoProcessTests
 
 		_videoProcess = new VideoProcess(selectorStorage, _ffMpegDownload,
 			thumbnailPost, logger,
-			new FullFilePathExistsService(selectorStorage, new AppSettings()));
+			new FullFilePathExistsService(selectorStorage, new AppSettings(), new TenantSettings(TenantIdHelper.DefaultTenantId, new AppSettings())));
 	}
 
 	[TestCleanup]

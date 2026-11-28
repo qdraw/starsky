@@ -12,6 +12,7 @@ using starsky.feature.cloudimport.Services;
 using starsky.foundation.database.Models;
 using starsky.foundation.import.Interfaces;
 using starsky.foundation.platform.Models;
+using starsky.foundation.platform.Tenancy;
 using starsky.foundation.storage.Storage;
 using starskytest.FakeMocks;
 
@@ -787,5 +788,100 @@ public class CloudImportServiceTest
 		var result = CloudImportService.FilterExtensions(files, providerSettings);
 		var resultNames = result.Select(f => f.Name).ToList();
 		Assert.AreSequenceEqual(expected, resultNames, Microsoft.VisualStudio.TestTools.UnitTesting.SequenceOrder.InAnyOrder);
+	}
+
+	private static (CloudImportService Service, List<string> TenantsSeenByImport)
+		TenantService(string providerTenant, params string[] activeTenants)
+	{
+		var appSettings = new AppSettings
+		{
+			CloudImport = new CloudImportSettings
+			{
+				Providers =
+				[
+					new CloudImportProviderSettings
+					{
+						Id = "test",
+						Enabled = true,
+						Provider = "FakeProvider",
+						TenantId = providerTenant
+					}
+				]
+			}
+		};
+		var seen = new List<string>();
+		var serviceCollection = new ServiceCollection();
+		serviceCollection.AddScoped<ITenantContext, TenantContext>();
+		serviceCollection.AddSingleton<ITenantRegistry>(new FakeTenantRegistry(activeTenants));
+		serviceCollection.AddScoped<ICloudImportClient>(_ => new FakeCloudImportClient
+		{
+			FilesToReturn = [new CloudFile { Id = "1", Name = "photo1.jpg", Path = "/photo1.jpg" }]
+		});
+		serviceCollection.AddScoped<IImport>(provider =>
+		{
+			// the tenant of the scope the import runs in
+			seen.Add(provider.GetRequiredService<ITenantContext>().TenantId);
+			return new FakeIImport(new FakeSelectorStorage(
+				new StorageHostFullPathFilesystem(new FakeIWebLogger())));
+		});
+		var scopeFactory = serviceCollection.BuildServiceProvider()
+			.GetRequiredService<IServiceScopeFactory>();
+		return (new CloudImportService(scopeFactory, new FakeIWebLogger(), appSettings), seen);
+	}
+
+	[TestMethod]
+	public async Task SyncAsync_ImportsIntoTheTenantOfTheProvider()
+	{
+		var (service, seen) = TenantService("acme", "default", "acme");
+
+		var result = await service.SyncAsync("test", CloudImportTriggerType.Manual);
+
+		Assert.IsTrue(result.Success);
+		Assert.AreEqual("acme", seen.Single());
+		// the ambient tenant of the caller is back
+		Assert.AreEqual("default", TenantAmbient.Current);
+	}
+
+	[TestMethod]
+	public async Task SyncAsync_DefaultsToTheDefaultTenant()
+	{
+		var (service, seen) = TenantService(string.Empty, "default", "acme");
+
+		await service.SyncAsync("test", CloudImportTriggerType.Manual);
+
+		Assert.AreEqual("default", seen.Single());
+	}
+
+	[TestMethod]
+	public async Task SyncAsync_TenantNotActive_ReturnsErrorAndImportsNothing()
+	{
+		var (service, seen) = TenantService("gone", "default");
+
+		var result = await service.SyncAsync("test", CloudImportTriggerType.Manual);
+
+		Assert.IsFalse(result.Success);
+		Assert.Contains(e => e.Contains("not active"), result.Errors);
+		Assert.IsEmpty(seen);
+	}
+
+	[TestMethod]
+	public async Task SyncAllAsync_OnlyTheProvidersOfTheTenant()
+	{
+		var (service, seen) = TenantService("acme", "default", "acme");
+
+		Assert.IsEmpty(await service.SyncAllAsync(CloudImportTriggerType.Manual, "beta"));
+		Assert.IsEmpty(seen);
+
+		var results = await service.SyncAllAsync(CloudImportTriggerType.Manual, "acme");
+		Assert.HasCount(1, results);
+		Assert.AreEqual("acme", seen.Single());
+	}
+
+	[TestMethod]
+	public void IsSyncInProgressForTenant_NothingRunning_False()
+	{
+		var service = new CloudImportService(null!, null!, new AppSettings());
+
+		Assert.IsFalse(service.IsSyncInProgressForTenant("acme"));
 	}
 }

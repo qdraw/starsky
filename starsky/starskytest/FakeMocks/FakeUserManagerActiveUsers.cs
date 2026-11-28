@@ -38,9 +38,15 @@ public class FakeUserManagerActiveUsers : IUserManager
 		return Task.FromResult(new UserOverviewModel([CurrentUser!]));
 	}
 
+	/// <summary>
+	///     The value of the last SignUpAsync call
+	/// </summary>
+	public bool? LastJoinCurrentTenant { get; private set; }
+
 	public Task<SignUpResult> SignUpAsync(string name, string credentialTypeCode,
-		string? identifier, string? secret)
+		string? identifier, string? secret, bool joinCurrentTenant = true)
 	{
+		LastJoinCurrentTenant = joinCurrentTenant;
 		Users.Add(new User
 		{
 			Name = name,
@@ -139,6 +145,18 @@ public class FakeUserManagerActiveUsers : IUserManager
 	public Credential GetCredentialsByUserId(int userId)
 	{
 		return Credentials;
+	}
+
+	public Task<bool> SetPlatformAdminAsync(int userId, bool isPlatformAdmin)
+	{
+		var user = GetUser("Email", Credentials.Identifier!);
+		if ( user == null )
+		{
+			return Task.FromResult(false);
+		}
+
+		user.IsPlatformAdmin = isPlatformAdmin;
+		return Task.FromResult(true);
 	}
 
 	public Task<ValidateResult> RemoveUser(string credentialTypeCode,

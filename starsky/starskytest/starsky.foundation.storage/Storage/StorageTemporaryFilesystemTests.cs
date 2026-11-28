@@ -347,6 +347,25 @@ public sealed class StorageTemporaryFilesystemTests
 	}
 
 	[TestMethod]
+	public void Temporary_GetAllFilesInDirectory_AndGetDirectories_ReturnSubPaths()
+	{
+		_tempStorage.CreateDirectory("/test_GetAllFilesInDirectory");
+		_tempStorage.CreateDirectory("/test_GetAllFilesInDirectory/sub");
+		_tempStorage.WriteStream(StringToStreamHelper.StringToStream("test"),
+			"/test_GetAllFilesInDirectory/file_09010.tmp");
+
+		var files = _tempStorage.GetAllFilesInDirectory("/test_GetAllFilesInDirectory").ToList();
+		var folders = _tempStorage.GetDirectories("/test_GetAllFilesInDirectory").ToList();
+		var notFound = _tempStorage.GetAllFilesInDirectory("/test_GetAllFilesInDirectory_not_found");
+
+		Assert.EndsWith("file_09010.tmp", files.Single());
+		Assert.EndsWith("sub", folders.Single());
+		Assert.IsEmpty(notFound);
+
+		_tempStorage.FolderDelete("/test_GetAllFilesInDirectory");
+	}
+
+	[TestMethod]
 	public void Temporary_GetDirectories_Null_NotFound()
 	{
 		var result = _tempStorage.GetDirectories("/not_found");

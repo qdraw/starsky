@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.Caching.Memory;
 using starsky.feature.geolookup.Models;
 using static System.Int32;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.feature.geolookup.Services;
 
@@ -14,7 +15,7 @@ public class GeoCacheStatusService(IMemoryCache? memoryCache = null)
 			return new GeoCacheStatus { Total = -1 };
 		}
 
-		var totalCacheName = nameof(GeoCacheStatus) + path + StatusType.Total;
+		var totalCacheName = TenantCacheKey.Prefix(nameof(GeoCacheStatus) + path + StatusType.Total);
 		var result = new GeoCacheStatus();
 
 		if ( memoryCache.TryGetValue(totalCacheName, out var statusObjectTotal) &&
@@ -23,7 +24,7 @@ public class GeoCacheStatusService(IMemoryCache? memoryCache = null)
 			result.Total = totalStatus;
 		}
 
-		var currentCacheName = nameof(GeoCacheStatus) + path + StatusType.Current;
+		var currentCacheName = TenantCacheKey.Prefix(nameof(GeoCacheStatus) + path + StatusType.Current);
 		if ( memoryCache.TryGetValue(currentCacheName, out var statusObjectCurrent) &&
 		     TryParse(statusObjectCurrent?.ToString(), out var currentStatus) )
 		{
@@ -40,7 +41,7 @@ public class GeoCacheStatusService(IMemoryCache? memoryCache = null)
 			return;
 		}
 
-		var queryGeoCacheName = nameof(GeoCacheStatus) + path + type;
+		var queryGeoCacheName = TenantCacheKey.Prefix(nameof(GeoCacheStatus) + path + type);
 		memoryCache.Set(queryGeoCacheName, current, new TimeSpan(10, 0, 0));
 	}
 }

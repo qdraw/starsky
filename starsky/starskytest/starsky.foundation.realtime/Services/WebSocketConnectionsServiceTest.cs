@@ -91,4 +91,65 @@ public sealed class WebSocketConnectionsServiceTest
 		Assert.AreEqual("{\"data\":\"test\",\"type\":\"Unknown\"}",
 			fakeSocket.FakeSendItems.LastOrDefault());
 	}
+
+	[TestMethod]
+	public async Task CloseConnectionsAsync_OnlyMatchingTenantAndUser()
+	{
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
+		var acmeUser1 = new FakeWebSocket();
+		var acmeUser2 = new FakeWebSocket();
+		var betaUser1 = new FakeWebSocket();
+		service.AddConnection(new WebSocketConnection(acmeUser1, logger)
+		{
+			TenantId = "acme", UserId = 1
+		});
+		service.AddConnection(new WebSocketConnection(acmeUser2, logger)
+		{
+			TenantId = "acme", UserId = 2
+		});
+		service.AddConnection(new WebSocketConnection(betaUser1, logger)
+		{
+			TenantId = "beta", UserId = 1
+		});
+
+		await service.CloseConnectionsAsync("acme", 1, "revoked");
+
+		Assert.HasCount(1, acmeUser1.FakeCloseOutputAsync);
+		Assert.IsEmpty(acmeUser2.FakeCloseOutputAsync);
+		Assert.IsEmpty(betaUser1.FakeCloseOutputAsync);
+
+		// every tenant, every user
+		await service.CloseConnectionsAsync(null, null, "shutdown");
+		Assert.HasCount(1, acmeUser2.FakeCloseOutputAsync);
+		Assert.HasCount(1, betaUser1.FakeCloseOutputAsync);
+	}
+
+	[TestMethod]
+	public async Task CloseConnectionsAsync_UserInEveryTenant()
+	{
+		var logger = new FakeIWebLogger();
+		var service = new WebSocketConnectionsService();
+		var acme = new FakeWebSocket();
+		var beta = new FakeWebSocket();
+		var other = new FakeWebSocket();
+		service.AddConnection(new WebSocketConnection(acme, logger)
+		{
+			TenantId = "acme", UserId = 1
+		});
+		service.AddConnection(new WebSocketConnection(beta, logger)
+		{
+			TenantId = "beta", UserId = 1
+		});
+		service.AddConnection(new WebSocketConnection(other, logger)
+		{
+			TenantId = "beta", UserId = 2
+		});
+
+		await service.CloseConnectionsAsync(null, 1, "removed");
+
+		Assert.HasCount(1, acme.FakeCloseOutputAsync);
+		Assert.HasCount(1, beta.FakeCloseOutputAsync);
+		Assert.IsEmpty(other.FakeCloseOutputAsync);
+	}
 }

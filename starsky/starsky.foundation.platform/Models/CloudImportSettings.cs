@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using starsky.foundation.platform.Tenancy;
 
 namespace starsky.foundation.platform.Models;
 
@@ -21,6 +22,16 @@ public class CloudImportSettings
 	{
 		return Providers.Where(p => p.Enabled)
 			.ToList();
+	}
+
+	/// <summary>
+	///     The providers that import into one tenant
+	/// </summary>
+	/// <param name="tenantId">tenant</param>
+	/// <returns>list</returns>
+	public List<CloudImportProviderSettings> GetProvidersOfTenant(string tenantId)
+	{
+		return Providers.Where(p => p.TenantId == tenantId).ToList();
 	}
 
 	/// <summary>
@@ -47,6 +58,19 @@ public class CloudImportProviderSettings
 	///     Unique identifier for this provider configuration
 	/// </summary>
 	public string Id { get; set; } = string.Empty;
+
+	/// <summary>
+	///     The tenant that receives the imported files (and sees this provider). Empty is the
+	///     default tenant. The configuration itself is process wide: only a platform
+	///     administrator can change it when there is more than one tenant
+	/// </summary>
+	public string TenantId
+	{
+		get;
+		set => field = string.IsNullOrWhiteSpace(value)
+			? TenantIdHelper.DefaultTenantId
+			: value.Trim().ToLowerInvariant();
+	} = TenantIdHelper.DefaultTenantId;
 
 	/// <summary>
 	///     Enable or disable this Cloud Import provider

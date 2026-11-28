@@ -9,6 +9,7 @@ using starsky.foundation.platform.Thumbnails;
 using starsky.foundation.thumbnailgeneration.GenerationFactory.Generators;
 using starskytest.FakeCreateAn;
 using starskytest.FakeMocks;
+using starsky.foundation.platform.Tenancy;
 
 namespace starskytest.starsky.foundation.thumbnailgeneration.GenerationFactory.Generators;
 
@@ -37,7 +38,7 @@ public class NativePreviewThumbnailGeneratorTests
 			appSettings,
 			readMeta,
 			existsService
-		);
+		, new TenantSettings(TenantIdHelper.DefaultTenantId, appSettings));
 	}
 
 	[TestMethod]
