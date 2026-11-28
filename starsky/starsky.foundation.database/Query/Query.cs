@@ -216,6 +216,21 @@ public partial class Query : IQuery
 					"[UpdateItemAsync] save failed after DbUpdateConcurrencyException");
 			}
 		}
+		catch ( DbUpdateException exception ) when ( exception.InnerException is MySqlException
+		{
+			ErrorCode: MySqlErrorCode.CommandTimeoutExpired or MySqlErrorCode.QueryTimeout
+			or MySqlErrorCode.LockWaitTimeout or MySqlErrorCode.QueryInterrupted
+		} )
+		{
+			// EF Core wraps the MySqlException in a DbUpdateException, so the catch below never
+			// sees it. Timeouts happen when the DB is busy (e.g. parallel sync/watcher writes);
+			// a fresh scope after a pause usually succeeds.
+			await RetryHelper.DoAsync(() => RetryQueryUpdateSaveChangesAsync(
+					updateStatusContent, exception,
+					$"UpdateItemAsync DbUpdateException timeout {updateStatusContent.FilePath}",
+					2000),
+				TimeSpan.FromSeconds(2), 3);
+		}
 		catch ( MySqlException exception )
 		{
 			// Skip if Duplicate entry
