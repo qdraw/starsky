@@ -179,7 +179,7 @@ public sealed class QueryUpdateItemError
 		var seedScope = scopeFactory.CreateScope();
 		var seedContext = seedScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 		seedContext.FileIndex.Add(item);
-		await seedContext.SaveChangesAsync();
+		await seedContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
 		Assert.AreNotEqual(0, item.Id);
 
 		var fakeQuery = new Query(new MySqlTimeoutDbUpdateExceptionContext(options, code),
