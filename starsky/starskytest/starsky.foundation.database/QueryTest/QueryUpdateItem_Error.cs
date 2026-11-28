@@ -37,6 +37,8 @@ public sealed class QueryUpdateItemError
 
 	private static bool IsCalledMySqlSaveDbExceptionContext { get; set; }
 
+	private static bool IsCalledMySqlTimeoutContext { get; set; }
+
 	// ReSharper disable once UnusedAutoPropertyAccessor.Global
 	public bool IsWrittenConcurrencyException { get; set; }
 
@@ -157,6 +159,53 @@ public sealed class QueryUpdateItemError
 		// Assert that a MySqlException is thrown when UpdateItemAsync is called
 		await Assert.ThrowsExactlyAsync<MySqlException>(async () =>
 			await fakeQuery.UpdateItemAsync(new FileIndexItem("test")));
+	}
+
+	[TestMethod]
+	[DataRow(MySqlErrorCode.CommandTimeoutExpired)]
+	[DataRow(MySqlErrorCode.QueryTimeout)]
+	[DataRow(MySqlErrorCode.LockWaitTimeout)]
+	[DataRow(MySqlErrorCode.QueryInterrupted)]
+	public async Task UpdateItemAsync_DbUpdateExceptionTimeout_IsRetried(MySqlErrorCode code)
+	{
+		IsCalledMySqlTimeoutContext = false;
+		var scopeFactory = CreateNewScopeSqliteException();
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("DbUpdateExceptionTimeout" + code)
+			.Options;
+
+		// item must exist in the database used by the retry scope
+		var item = new FileIndexItem("/timeout_" + code + ".jpg");
+		var seedScope = scopeFactory.CreateScope();
+		var seedContext = seedScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+		seedContext.FileIndex.Add(item);
+		await seedContext.SaveChangesAsync(TestContext.CancellationTokenSource.Token);
+		Assert.AreNotEqual(0, item.Id);
+
+		var fakeQuery = new Query(new MySqlTimeoutDbUpdateExceptionContext(options, code),
+			null!, scopeFactory, new FakeIWebLogger());
+
+		var result = await fakeQuery.UpdateItemAsync(item);
+
+		Assert.IsTrue(IsCalledMySqlTimeoutContext);
+		Assert.AreEqual(item.FilePath, result.FilePath);
+	}
+
+	[TestMethod]
+	public async Task UpdateItemAsync_DbUpdateExceptionOtherMySqlError_IsThrown()
+	{
+		IsCalledMySqlTimeoutContext = false;
+		var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+			.UseInMemoryDatabase("DbUpdateExceptionOther")
+			.Options;
+
+		var fakeQuery = new Query(
+			new MySqlTimeoutDbUpdateExceptionContext(options, MySqlErrorCode.AccessDenied),
+			null!, null!, new FakeIWebLogger());
+
+		await Assert.ThrowsExactlyAsync<DbUpdateException>(async () =>
+			await fakeQuery.UpdateItemAsync(new FileIndexItem("test")));
+		Assert.IsTrue(IsCalledMySqlTimeoutContext);
 	}
 
 	[TestMethod]
@@ -939,6 +988,32 @@ public sealed class QueryUpdateItemError
 					MySqlErrorCode.AccessDenied, "test", message, new Exception()
 				]);
 			return instance;
+		}
+	}
+
+	private sealed class MySqlTimeoutDbUpdateExceptionContext : ApplicationDbContext
+	{
+		private readonly MySqlErrorCode _code;
+
+		public MySqlTimeoutDbUpdateExceptionContext(DbContextOptions options,
+			MySqlErrorCode code) : base(options)
+		{
+			_code = code;
+		}
+
+		public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+		{
+			IsCalledMySqlTimeoutContext = true;
+			var ctor = typeof(MySqlException).GetConstructors(
+					BindingFlags.Instance | BindingFlags.NonPublic)
+				.First(p => p.ToString() ==
+							"Void .ctor(MySqlConnector.MySqlErrorCode, System.String, System.String, System.Exception)");
+			var inner = ( MySqlException ) ctor.Invoke([
+				_code, "test", "The Command Timeout expired", new Exception()
+			]);
+			// EF Core wraps the provider exception like this
+			throw new DbUpdateException("An error occurred while saving the entity changes.",
+				inner);
 		}
 	}
 
